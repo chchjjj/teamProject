@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.test1.mapper.AdminMapper">
+<mapper namespace="com.example.teamProject.mapper.AdminMapper">
 	
-	
+	<!--10.28 18:31 test-->
 	
 
 </mapper>
