@@ -23,7 +23,7 @@
             <div class="logo">
                 <a href="javascript:;" onclick="window.location.reload()">
                     <!--로고 클릭시 홈페이지 새로고침 -->
-                    <img src="/img/logo.PNG" alt="쇼핑몰 로고">
+                    <img src="/img/logo.jpg" alt="쇼핑몰 로고">
                 </a>                
             </div>
             <!-- 검색창 -->
