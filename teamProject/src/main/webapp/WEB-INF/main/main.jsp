@@ -15,8 +15,8 @@
     }
 
     .main-membership img{
-        width: 500px;      
-        height: 350px;
+        width: 400px;      
+        height: 300px;
         border-radius: 10px;
     }
 
@@ -25,8 +25,8 @@
         margin: 0 auto;
     }
 
-    .cart{
-        width: 500px ;
+    #cart{
+        width: 400px ;
         height: 170px;
         box-sizing: border-box;
         border-radius: 10px;        
@@ -44,14 +44,14 @@
         <div class="container">
 
             <!-- 멤버십 가게 광고 패널 / 내 주변 가게 찾기 / 장바구니 -->
-            <div>★ 디저트 연구소 추천 업체! </div> 
+            <div>★ 디저트 연구소 추천 상품! </div> 
             <span class="main-membership">
                 <button><</button>
-                <img src="/img/cookies.jpg" alt="멤버쉽 광고 패널">
+                <img src="/img/member_cookies.jpg" alt="멤버쉽 광고 패널">
                 <button>></button>
             </span>
-            <span class="cart">
-                <a href="javascript:;">장바구니</a>
+            <span>
+                <button id="cart">장바구니</button>
             </span>
             <div>
                 
@@ -70,6 +70,13 @@
         data() {
             return {
                 // 변수 - (key : value)
+
+                // 메인 상단 - 멤버쉽 화면 홍보 이미지
+                productImages: [
+                    '/img/member_cookies.jpg',
+                    '/img/member_cake.jpg'
+                    // ...
+                ],
             };
         },
         methods: {
