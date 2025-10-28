@@ -1,0 +1,155 @@
+/* 모든 요소 적용 (웹 프로젝트에서 기본적으로 많이 사용되는 초기화 코드 중 하나) */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: Arial, sans-serif;
+}
+
+/* 헤더 스타일 */
+header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 20px;
+	background-color: rgb(255, 128, 128);
+	color: white;
+}
+
+.logo img {
+	height: 50px;
+	/* 로고 크기 조정 */
+}
+
+.search-bar {
+	display: flex;
+}
+
+.search-bar input {
+	padding: 5px;
+	font-size: 16px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+}
+
+.search-bar button {
+	padding: 5px 10px;
+	background-color: #ff6600;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	margin-left: 5px;
+}
+
+.search-bar button:hover {
+	background-color: #e65c00;
+}
+
+/* 메뉴 스타일 */
+nav ul {
+	
+	list-style-type: none;
+	display: flex;
+}
+
+nav ul li {
+	
+	margin: 0 15px;
+	position: relative;
+}
+
+nav ul li a {
+	color: white;
+	text-decoration: none;
+	font-size: 18px;
+}
+
+nav ul li a:hover {
+	text-decoration: underline;
+}
+
+/* 드롭다운 메뉴 스타일 */
+.dropdown:hover .dropdown-menu {
+	display: block;
+}
+
+.dropdown-menu {
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	background-color: #444;
+	padding: 10px 0;
+	list-style-type: none;
+	border-radius: 5px;
+	min-width: 150px;
+}
+
+.dropdown-menu li a {
+	padding: 8px 15px;
+	display: block;
+}
+
+.dropdown-menu li a:hover {
+	background-color: #555;
+}
+
+/* 로그인 버튼 스타일 */
+.login-btn button {
+	padding: 8px 15px;
+	background-color: #ff6600;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.login-btn button:hover {
+	background-color: #e65c00;
+}
+
+/* 제품 목록 스타일 */
+.product-list {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: 20px;
+	padding: 20px;
+	margin-top: 20px;
+}
+
+.product-item {
+	background-color: #f9f9f9;
+	padding: 10px;
+	border-radius: 8px;
+	text-align: center;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.product-item img {
+	width: 100%;
+	height: 220px;
+	border-radius: 5px;
+	margin-bottom: 10px;
+
+}
+
+.product-item h3 {
+	font-size: 18px;
+	margin-bottom: 10px;
+}
+
+.product-item p {
+	font-size: 16px;
+	color: #555;
+}
+
+.product-item .price {
+	font-size: 20px;
+	font-weight: bold;
+	color: #ff6600;
+	margin-top: 10px;
+}
