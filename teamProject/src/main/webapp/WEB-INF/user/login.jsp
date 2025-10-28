@@ -25,6 +25,20 @@
 <body>
     <div id="app">
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
+
+        <!-- 향후 소셜 로그인 추가 해야 할 수도 있음 -->
+        <div>
+            <label>아이디 : <input v-model="userId"></label>
+        </div>
+        <div>
+            <label>비밀번호 : <input type="password" v-model="userPass"></label>
+        </div>
+        <div>
+            <button @click="fnLogin">로그인</button>
+            <a href="/user/join.do"><button>회원가입</button></a>
+            <a href="/user/findId.do"><button>아이디 찾기</button></a>
+            <a href="/user/newPwd.do"><button>비밀번호 찾기</button></a>
+        </div>
     </div>
 </body>
 </html>
@@ -34,23 +48,29 @@
         data() {
             return {
                 // 변수 - (key : value)
+                userId: "",
+                userPass: ""
             };
         },
         methods: {
             // 함수(메소드) - (key : function())
-            fnList: function () {
-                let self = this;
-                let param = {};
-                $.ajax({
-                    url: "",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-
-                    }
-                });
-            }
+            fnLogin: function () {
+                    let self = this;
+                    let param = {
+                        userId: self.userId,
+                        userPass: self.userPass
+                    };
+                    $.ajax({
+                        url: "/user/login.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            alert(data.msg);
+                            
+                        }
+                    });
+                }
         }, // methods
         mounted() {
             // 처음 시작할 때 실행되는 부분
