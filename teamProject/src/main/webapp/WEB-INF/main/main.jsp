@@ -4,28 +4,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>:: 디저트 연구소 ::</title>
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
-        table, tr, td, th{
-            border : 1px solid black;
-            border-collapse: collapse;
-            padding : 5px 10px;
-            text-align: center;
-        }
-        th{
-            background-color: beige;
-        }
-        tr:nth-child(even){
-            background-color: azure;
-        }
+        
+    .main-membership{
+        margin-top: 20px;
+        margin-left: 20px;
+    }
+
+    .main-membership img{
+        width: 500px;      
+        height: 350px;
+        border-radius: 10px;
+    }
+
+    .container {
+        width: 860px;
+        margin: 0 auto;
+    }
+
+    .cart{
+        width: 500px ;
+        height: 170px;
+        box-sizing: border-box;
+        border-radius: 10px;        
+    }
+
     </style>
 </head>
 <body>
     <div id="app">
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
-         default 페이지입니다.
+
+        <!-- 헤더 -->
+        <%@ include file="/WEB-INF/main/header.jsp" %>
+
+        <div class="container">
+
+            <!-- 멤버십 가게 광고 패널 / 내 주변 가게 찾기 / 장바구니 -->
+            <div>★ 디저트 연구소 추천 업체! </div> 
+            <span class="main-membership">
+                <button><</button>
+                <img src="/img/cookies.jpg" alt="멤버쉽 광고 패널">
+                <button>></button>
+            </span>
+            <span class="cart">
+                <a href="javascript:;">장바구니</a>
+            </span>
+            <div>
+                
+            </div>
+
+
+
+
+        </div>                 
     </div>
 </body>
 </html>
