@@ -2,9 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.test1.mapper.UserMapper">
+<mapper namespace="com.example.teamProject.mapper.user.UserMapper">
 	
-	<!-- 10.27(월) 17:45 테스트 -->
+	<select id="login" parameterType="hashmap" resultType="com.example.teamProject.user.model.User"> 
+		SELECT * 
+		FROM USER_TBL
+		WHERE USER_ID = #{userId} 
+		AND USER_PASS = #{userPass} <!--해시 적용 후 제거할 것!-->
+	</select>
+	
+	<insert id="userAdd" parameterType="hashmap"> 
+		INSERT INTO USER_TBL 
+		VALUES (#{userId}, #{userPass}, #{userName}, #{email}, #{userAddr}, #{phone}, 'C', 'O', SYSDATE, SYSDATE) 
+	</insert>
+	
+	<select id="userCheck" parameterType="hashmap" resultType="com.example.teamProject.user.model.User"> 
+		SELECT * 
+		FROM USER_TBL 
+		WHERE USER_ID = #{userId} 
+	</select>
 	
 </mapper>
 
