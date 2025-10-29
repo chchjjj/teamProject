@@ -22,7 +22,7 @@
             <header class="top-header">
                 <div class="header-inner">
                     <div class="logo">
-                        <a href="javascript:;" onclick="window.location.reload()">
+                        <a href="/main.do">
                             <!--로고 클릭시 홈페이지 새로고침 -->
                             <img src="/img/로고.png" alt="쇼핑몰 로고">
                         </a>

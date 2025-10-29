@@ -17,7 +17,7 @@ public class Main {
 	private String createdAt; // 상품등록일 
 	
 	// 판매자 채팅 가능여부 (Y/N)
-	private String chatEnabled;
+	private String isChatEnabled;
 	
 	
 }
