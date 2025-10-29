@@ -35,7 +35,7 @@
         <!-- 파일 첨부는 나중에 구매자가 판매자로 회원가입할 때 사용하면 될 듯 -->
         <div>
             <label>아이디 :
-                <input v-if="userIdFlg" v-model="userId">
+                <input v-if="!userIdFlg" v-model="userId">
                 <input v-else v-model="userId" disabled>
             </label>
             <button @click="fnCheck">중복체크</button>
@@ -47,7 +47,7 @@
             <label>비밀번호 확인 : <input type="password" v-model="userPass2"></label>
         </div>
         <div>
-            닉네임/이름 : <input v-model="userName">
+            성함 : <input v-model="userName">
         </div>
         <div>
             이메일 : <input v-model="email">
@@ -189,7 +189,8 @@
             },
             fnJoin: function () {
                 let self = this;
-                let regex = "^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$";
+                let regPassword = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,500}$/; //비밀번호 정규식 (영문 숫자 특수기호 조합 8자리 이상 500자리 이하)
+                let regEmail = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i; // 이메일 정규식
                 let phone = self.phone1 + "-" + self.phone2 + "-" + self.phone3;
 
                 if (self.userId.length < 5) {
@@ -202,14 +203,8 @@
                     return;
                 }
 
-                //정규식
-                // if(!regex.test(self.userPass)){
-                //     alert("최소 6자, 하나 이상의 문자, 하나의 숫자 및 하나의 특수 문자를 입력해주세요.");
-                //     return;
-                // }
-
-                if (self.userPass.length < 6) {
-                    alert("최소 6자의 비밀번호를 넣어주세요.");
+                if(!regPassword.test(self.userPass)) {
+                    alert('비밀번호 형식에 따라 정확히 입력해주세요');
                     return;
                 }
 
@@ -219,12 +214,12 @@
                 }
 
                 if (self.userName == "") {
-                    alert("이름이 있어야 합니다.");
+                    alert("성함이 있어야 합니다.");
                     return;
                 }
 
-                if (self.email == "") {
-                    alert("이메일이 있어야 합니다.");
+                if(!regEmail.test(self.email)) {
+                    alert('이메일 형식에 따라 정확히 입력해주세요');
                     return;
                 }
 

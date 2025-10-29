@@ -2,10 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.teamProject.mapper.user.UserMapper">
+<mapper namespace="com.example.teamProject.user.mapper.UserMapper">
 	
 	<select id="login" parameterType="hashmap" resultType="com.example.teamProject.user.model.User"> 
-		SELECT * 
+		SELECT *  
 		FROM USER_TBL
 		WHERE USER_ID = #{userId} 
 		AND USER_PASS = #{userPass} <!--해시 적용 후 제거할 것!-->
