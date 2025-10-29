@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.teamProject.mapper.MainMapper">
+<mapper namespace="com.example.teamProject.main.mapper.MainMapper">
 
 	<!-- 메인페이지 / 상품리스트 조회 -->
 	<select id="selectMainProList" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">
@@ -17,6 +17,10 @@
 			<!--빈값이면 일단 전체 목록 다 나오도록 -->							
 		</if>
 		
+		<if test="Category != null and Category != ''">
+        AND PRO_TYPE = #{Category} 
+    	</if>
+		
 		<if test="order == 1"> 
 			ORDER BY P.CNT DESC <!--조회순 정렬-->
 		</if>
@@ -28,6 +32,7 @@
 		<if test="order == 3">
 			ORDER BY CREATED_AT DESC <!--최신순 정렬-->
 		</if>
+		
 		
 	</select>
 </mapper>
