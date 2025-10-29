@@ -1,6 +1,18 @@
 package com.example.teamProject.user.model;
 
+import lombok.Data;
+
+@Data
 public class User {
 
-	// 10.27 17:45 model 테스트!
+	private String userId;
+	private String userPass;
+	private String userName;
+	private String email;
+	private String userAddr;
+	private String phone;
+	private String role;
+	private String userStatus;
+	private String joinCdate;
+	private String udate;
 }
