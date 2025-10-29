@@ -34,7 +34,7 @@
             <label>비밀번호 : <input type="password" v-model="userPass"></label>
         </div>
         <div>
-            <button @click="fnLogin">로그인</button>
+            <button @click="fnLogin">로그인</button> 
             <button>카카오 로그인</button>
             <button>소셜 로그인</button>
             <a href="/user/join.do"><button>회원가입</button></a>

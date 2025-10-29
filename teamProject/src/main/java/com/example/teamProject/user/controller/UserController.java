@@ -60,6 +60,6 @@ public class UserController {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap = userService.userIdCheck(map);
 
-		return new Gson().toJson(resultMap);
+		return new Gson().toJson(resultMap); 
 	}
 }
