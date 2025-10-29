@@ -2,7 +2,10 @@ package com.example.teamProject.user.dao;
 
 import java.util.HashMap;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.teamProject.user.mapper.UserMapper;
@@ -14,39 +17,89 @@ public class UserService {
 	@Autowired
 	UserMapper userMapper;
 	
-	public HashMap<String, Object> login(HashMap<String, Object> map){
+	@Autowired
+	HttpSession session;
+
+	// 비밀번호 해시 객체 생성
+	@Autowired
+	PasswordEncoder passwordEncoder;
+
+	public HashMap<String, Object> login(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		
+
 		try {
 			User user = userMapper.login(map);
 			String result = "";
 			String message = "";
-			
-			if(user != null) {
-				result = "success";
-				message = "로그인 성공";
+
+			// ---------조건 처리 여기부터----------
+
+			// 수업 때 한 코드 복붙 후 수정함
+			if (user != null) {
+				// 아이디가 존재, 비밀번호 비교하기 전
+
+				// 사용자가 보낸 비밀번호 map에서 꺼낸 후 해시화한 값과
+				// user 객체 안에 있는 password와 비교
+				Boolean loginFlg = passwordEncoder.matches((String) map.get("userPass"), user.getUserPass());
+				//System.out.println("map.get(userPass) =>" + (String) map.get("userPass"));
+				//System.out.println("user.getUserPass() => " + user.getUserPass());
+				
+				if (loginFlg) {
+					// 아이디, 비밀번호를 정상 입력했을 경우
+
+					// 로그인 성공
+					// cnt값을 0으로 초기화
+					
+					message = "로그인 성공!";
+					result = "success";
+					session.setAttribute("sessionId", user.getUserId());
+					session.setAttribute("sessionName", user.getUserName());
+//					session.setAttribute("sessionStatus", member.getStatus());
+//					if (member.getStatus().equals("A")) {
+//						resultMap.put("url", "/mgr/member/list.do");
+//					} else {
+//						resultMap.put("url", "/main.do");
+//					}
+
+				} else {
+					// 아이디는 맞지만, 비밀번호가 다른 경우
+					//userMapper.updateCntIncrease(map);
+					message = "패스워드를 확인해주세요.";
+					result = "fail";
+				}
+
 			} else {
+				// 아이디가 없음
+				message = "아이디가 존재하지 않습니다.";
 				result = "fail";
-				message = "로그인 실패";
 			}
+
+		
+
+			// ------------여기까지---------
+
 			resultMap.put("result", result);
 			resultMap.put("msg", message);
-		
+
 		} catch (Exception e) {
 			resultMap.put("result", "fail");
 			resultMap.put("msg", "통신 에러");
 			System.out.println(e.getMessage());
 		}
-		
+
 		return resultMap;
 	}
-	
-	public HashMap<String, Object> addUser(HashMap<String, Object> map){
+
+	public HashMap<String, Object> addUser(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		
+
+		// 비밀번호 암호화(해시)
+		String hashPwd = passwordEncoder.encode((String) map.get("userPass"));
+		map.put("hashPwd", hashPwd);
+
 		try {
 			int cnt = userMapper.userAdd(map);
-			if(cnt > 0) {
+			if (cnt > 0) {
 				resultMap.put("result", "success");
 			} else {
 				resultMap.put("result", "fail");
@@ -55,20 +108,18 @@ public class UserService {
 			resultMap.put("result", "fail");
 			System.out.println(e.getMessage());
 		}
-		
-		
+
 		return resultMap;
 	}
-	
-	public HashMap<String, Object> userIdCheck(HashMap<String, Object> map){
+
+	public HashMap<String, Object> userIdCheck(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		User user = userMapper.userCheck(map);
 		String result = user != null ? "true" : "false";
-		
+
 		resultMap.put("result", result);
-		
+
 		return resultMap;
 	}
-	
-	
+
 }

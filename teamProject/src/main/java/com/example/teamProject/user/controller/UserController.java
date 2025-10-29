@@ -31,9 +31,19 @@ public class UserController {
 		return "/user/join";
 	}
 	
-	@RequestMapping("/addr.do")
+	@RequestMapping("/user/addr.do")
 	public String addr(Model model) throws Exception {
 		return "/user/jusoPopup";
+	}
+	
+	@RequestMapping("/user/wishList.do")
+	public String wishList(Model model) throws Exception {
+		return "/user/wishList";
+	}
+	
+	@RequestMapping("/user/userMyPage.do")
+	public String userMyPage(Model model) throws Exception {
+		return "/user/userMyPage";
 	}
 	
 	@RequestMapping(value = "/user/login.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
