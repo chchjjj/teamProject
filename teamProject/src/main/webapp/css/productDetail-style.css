@@ -1,0 +1,237 @@
+/* 기본 스타일 초기화 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans KR', sans-serif, Arial;
+}
+
+body {
+    
+    margin-top: 0;
+}
+
+/* ------------------------------------------- */
+/* 상세 정보 페이지 전체 레이아웃 */
+/* ------------------------------------------- */
+.product-detail-container {
+    max-width: 1200px; /* 컨텐츠 최대 너비 설정 */
+    margin: 50px auto; /* 중앙 정렬 및 상하 여백 */
+    padding: 0 20px;
+    background-color: #ffffff; /* 상세 페이지 배경색 */
+}
+
+.product-info-area {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 50px;
+}
+
+/* ------------------------------------------- */
+/* 왼쪽: 이미지 섹션 */
+/* ------------------------------------------- */
+.image-section {
+    width: 48%;
+}
+
+.main-image-box {
+    background-color: #e0e0e0; /* 이미지 배경색 (이미지 대체) */
+    width: 100%;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.thumbnail-list {
+    display: flex;
+    gap: 1.2%; /* 이미지 간격 */
+}
+
+.thumbnail-item {
+    background-color: #e0e0e0;
+    width: 19%; /* 5개 항목이 되도록 20%보다 약간 작게 설정 */
+    height: 80px;
+}
+
+/* ------------------------------------------- */
+/* 오른쪽: 옵션 섹션 */
+/* ------------------------------------------- */
+.option-section {
+    width: 48%;
+}
+
+.product-name {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.store-name {
+    color: #666;
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.price-and-action {
+    /* Flexbox 설정 */
+    display: flex;
+    flex-wrap: wrap; /* 내용이 넘치면 다음 줄로 이동하도록 허용 */
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+}
+
+.price {
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+    margin-right: 15px;
+    /* 💡 다음 요소가 무조건 줄 바꿈되도록 100% 너비 확보 */
+    width: 100%; 
+    order: 1; /* 가격을 1번째 순서로 */
+}
+
+.shipping-fee {
+    font-size: 14px;
+    color: #999;
+    margin-top: 5px; /* 가격과의 간격 조절 */
+    order: 2; /* 배송비를 2번째 순서로 */
+}
+
+.price-and-action img {
+    /* 좋아요/찜 아이콘은 오른쪽 끝에 배치 */
+    margin-left: auto;
+    order: 3; /* 좋아요 아이콘을 3번째 순서로 */
+    width: 50px;
+    height: auto;
+}
+
+.favorite-icon {
+    font-size: 24px;
+    color: #e0e0e0; /* 찜 아이콘 색상 (비활성 회색) */
+    cursor: pointer;
+}
+
+.delivery-date-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+/* 옵션 선택 영역 */
+.option-selectors {
+    border-top: 1px solid #eee;
+}
+
+.option-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 10px;
+    border-bottom: 1px solid #eee;
+    background-color: #e0e0e0; /* 이미지 속 옵션 박스 배경색 */
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 1px; /* 테두리 미세 조정 */
+}
+
+.option-item .material-symbols-outlined {
+    font-size: 20px;
+    transform: rotate(180deg); /* 아이콘을 펼쳐진 모양으로 뒤집기 */
+}
+
+/* 레터링 입력 영역 (입력 필드 대신 텍스트로 대체) */
+.lettering-input-area {
+    margin-top: 20px;
+    padding: 15px 0;
+}
+
+.lettering-input-area .prompt {
+    font-weight: 500;
+    margin-bottom: 10px;
+    /* 입력 필드 역할을 하는 텍스트 스타일 */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #999;
+}
+
+
+/* 구매 버튼 */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 30px;
+}
+.action-buttons  button{
+    background-color: #3E2723;
+    color: #ffffff;
+}
+.buy-btn, .cart-btn {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    background-color: #e0e0e0; /* 이미지와 같은 회색 버튼 */
+    color: #333;
+}
+
+
+/* ------------------------------------------- */
+/* 하단 탭 메뉴 (상세정보, 리뷰, QnA) */
+/* ------------------------------------------- */
+.tab-menu {
+    display: flex;
+    border-bottom: 1px solid #ccc;
+    margin-top: 30px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 15px 0;
+    background-color: #e0e0e0; /* 탭 버튼 배경색 */
+    border: 1px solid #ccc;
+    border-right: none;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+}
+
+.tab-btn:first-child {
+    border-left: none;
+}
+
+.tab-btn:last-child {
+    border-right: 1px solid #ccc;
+}
+
+.tab-btn.active {
+    background-color: #ffffff; /* 활성화된 탭은 흰색 */
+    border-top: 2px solid #333; /* 활성화 표시선 */
+    border-bottom: 1px solid #ffffff; /* 아래쪽 경계를 덮음 */
+    color: #333;
+    margin-bottom: -1px; 
+}
+
+.tab-content {
+    min-height: 400px;
+    padding: 20px;
+    background-color: #ffffff;
+    /* 상세 정보 콘텐츠가 들어갈 영역 */
+}
