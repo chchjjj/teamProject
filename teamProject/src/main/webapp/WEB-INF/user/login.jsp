@@ -26,7 +26,7 @@
     <div id="app">
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
 
-        <!-- 향후 소셜 로그인 추가 해야 할 수도 있음 -->
+        <!-- 향후 소셜 로그인 추가 필요 -->
         <div>
             <label>아이디 : <input v-model="userId"></label>
         </div>
@@ -34,7 +34,9 @@
             <label>비밀번호 : <input type="password" v-model="userPass"></label>
         </div>
         <div>
-            <button @click="fnLogin">로그인</button>
+            <button @click="fnLogin">로그인</button> 
+            <button>카카오 로그인</button>
+            <button>소셜 로그인</button>
             <a href="/user/join.do"><button>회원가입</button></a>
             <a href="/user/findId.do"><button>아이디 찾기</button></a>
             <a href="/user/newPwd.do"><button>비밀번호 찾기</button></a>
