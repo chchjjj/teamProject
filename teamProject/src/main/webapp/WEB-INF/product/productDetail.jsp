@@ -102,6 +102,7 @@
             data() {
                 return {
                     // 변수 - (key : value)
+                    proNo : "${proNo}"
                 };
             },
             methods: {
