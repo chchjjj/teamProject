@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.example.teamProject.admin.model.Admin;
 import com.example.teamProject.user.model.User;
 
 @Mapper
@@ -13,7 +14,7 @@ public interface AdminMapper {
 	
 	//1.사용자 관리
 		//userlist 
-		List <User> userListSelect(HashMap<String, Object> map);
+		List <Admin> userListSelect(HashMap<String, Object> map);
 		
 		//userdeleteall
 		int userListDelete (HashMap<String, Object> map);
@@ -22,11 +23,29 @@ public interface AdminMapper {
 		int userCount(HashMap<String, Object> map);
 		
 		//userview
-		User userSelect(HashMap<String, Object> map);
+		Admin userSelect(HashMap<String, Object> map);
 		
 		//userupdate
 		int userUpdate(HashMap<String, Object> map);
 		
+		//2.판매자 관리	
+		//sellerlist 
+		List <Admin> sellerListSelect(HashMap<String, Object> map);
+				
+		//sellerdeleteall
+		int sellerListDelete (HashMap<String, Object> map);
+				
+		//sellercnt
+		int sellerCount(HashMap<String, Object> map);
+				
+		//sellerview
+		Admin sellerSelect(HashMap<String, Object> map);
+				
+		//sellerupdate
+		int sellerUpdate(HashMap<String, Object> map);
 		
+		//membership관리
+		List <Admin> membershipListSelect(HashMap<String, Object> map);
+
 
 }
