@@ -30,7 +30,13 @@ public class MainController {
 
         return "/main/header";
     }
+	
+	@RequestMapping("/main/footer.do") 
+    public String footer(Model model) throws Exception{
 
+        return "/main/footer";
+    }
+	
 	@RequestMapping(value = "/main/list.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String proList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
