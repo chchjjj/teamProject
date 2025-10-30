@@ -42,10 +42,10 @@
                     <!---->
                     <div class="navButton">
                         <div>
-                            <button>대시보드</button>
+                            <button @click="fnAmdinMain()">대시보드</button>
                         </div>
                         <div>
-                            <button @click="fnBuyerManage()">구매자관리</button>
+                            <button @click="fnBuyerManage()">사용자 관리</button>
                         </div>
                         <div>
                             <button @click="fnSellerManage()">판매자관리</button>
@@ -74,12 +74,12 @@
                 </div>
 
                 <!--메인 페이지 바디 내용-->
-                <div class="userAdmin">
-                    <!--구매자관리-->
+                <div class="User">
+                    <!--사용자수정 페이지-->
                     <div>
                         <!--구역이름-->
                         <div>
-                            구매자관리
+                            사용자 정보 수정
                         </div>
                         <!--아이콘-->
                         <div></div>
@@ -87,57 +87,45 @@
                         <table>
                             <tr>
                                 <th>아이디</th>
-                                <th>닉네임/</th>
-                                <th>연락처</th>
-                                <th>등록일자</th>
+                                <td><input type="text" v-model="userId" readonly></td>
                             </tr>
-                            <tr v-for="user in userList">
-                                <td>{{user.userId}}</td>
-                                <td>{{user.userName}}</td>
-                                <td>{{user.phone}}</td>
-                                <td>{{user.joinCdate}}</td>
-                            </tr>
-                        </table>
-                    </div>
-
-                    <!--판매자관리-->
-                    <div>
-                        <!--구역이름-->
-                        <div>
-                            판매자관리
-                        </div>
-                        <!--아이콘-->
-                        <div></div>
-                        <!--태이블-->
-                        <table>
                             <tr>
-                                <th>아이디</th>
-                                <th>가게이름</th>
                                 <th>닉네임</th>
-                                <th>사업자번호</th>
-                                <th>승인여부</th>
+                                <td><input type="text" v-model="userName"></td>
                             </tr>
                             <tr>
-                                <td></td>
+                                <th>연락처</th>
+                                <td><input type="text" v-model="phone"></td>
                             </tr>
-                        </table>
-                    </div>
-
-
-                    <!--매출관리-->
-                    <div>
-                        <!--구역이름-->
-                        <div>
-                            판매자관리
-                        </div>
-                        <!--아이콘-->
-                        <div></div>
-                        <!--차트-->
-
+                            <tr>
+                                <th>이메일</th>
+                                <td><input type="text" v-model="email"></td>
+                            </tr>
+                            <tr>
+                                <th>주소</th>
+                                <td><input type="text" v-model="userAddr"></td>
+                            </tr>
+                            <tr>
+                                <th>활동탈퇴여부</th>
+                                <td><input type="text" v-model="userStatus"></td>
+                            </tr>
+                            <tr>
+                                <th>가입일자</th>
+                                <td><input type="text" v-model="joinCdate" readonly></td>
+                            </tr>
+                            <tr>
+                                <th>권한</th>
+                                <td><input type="text" v-model="role"></td>  
+                            </tr>
                         </table>
                     </div>
                 </div>
 
+                <div>
+                    <button @click="fnEdit(userId)">
+                        수정
+                    </button>
+                </div>
 
             </div>
 
@@ -151,43 +139,76 @@
             data() {
                 return {
                     // 변수 - (key : value)
-                    userList: [],
-                    sellerList: []
+                    userId:"${userId}",
+                    user:{},
+                    userName:"",
+                    phone:"",
+                    email:"",
+                    userAddr:"",
+                    userStatus:"",
+                    joinCdate:"",
+                    role:"",   
 
                 };
             },
             methods: {
                 // 함수(메소드) - (key : function())
-                fnUserList: function () {
-                    let self = this;
-                    let param = {};
-                    $.ajax({
-                        url: "/dashboard/userList.dox",
-                        dataType: "json",
-                        type: "POST",
-                        data: param,
-                        success: function (data) {
-                            self.userList = data.userList;
+                fnUser: function () {
+                let self = this;
+                let param = {
+                    userId:self.userId
+                };
+                $.ajax({
+                    url: "/aduser/view.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        self.user=data.user;
+                        self.userId=data.user.userId;
+                        self.userName=data.user.userName;
+                        self.phone=data.user.phone;
+                        self.email=data.user.email;
+                        self.userAddr=data.user.userAddr;
+                        self.userStatus=data.user.userStatus;
+                        self.joinCdate=data.user.joinCdate;
+                        self.role=data.user.role;
+                        
+                    }
+                });
+            },
+            fnEdit: function () {
+                let self = this;
+                let param = {
+                    user:self.user,
+                    userId:self.userId,
+                    userName:self.userName,
+                    phone:self.phone,
+                    email:self.email,
+                    userAddr:self.userAddr,
+                    userStatus:self.userStatus,
+                    role:self.role, 
+                };
+                $.ajax({
+                    url: "/aduser/update.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        alert("수정되었습니다.");
+                        self.fnBack();
+                    }
+                });
+            },
 
-                        }
-                    });
-                },
+            fnBack:function(){
+                location.href="/admin/userlist.do";
+            },
 
-                fnSellerList: function () {
-                    let self = this;
-                    let param = {};
-                    $.ajax({
-                        url: "/dashboard/userList.dox",
-                        dataType: "json",
-                        type: "POST",
-                        data: param,
-                        success: function (data) {
-                            self.sellerList = data.sellerList;
-                        }
-                    });
-                },
 
-                fnAdminMain: function () {
+                
+
+                fnAdminMain:function(){
                     location.href = "/admin/main.do";
                 },
 
@@ -222,13 +243,15 @@
                 }
 
 
+
+
             }, // methods
 
             mounted() {
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
-                self.fnUserList();
-                self.fnSellerList();
+                self.fnUser();
+
             }
         });
 
