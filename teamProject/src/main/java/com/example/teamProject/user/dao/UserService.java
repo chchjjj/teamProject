@@ -2,7 +2,7 @@ package com.example.teamProject.user.dao;
 
 import java.util.HashMap;
 
-import javax.servlet.http.HttpSession;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,14 +11,16 @@ import org.springframework.stereotype.Service;
 import com.example.teamProject.user.mapper.UserMapper;
 import com.example.teamProject.user.model.User;
 
+import jakarta.servlet.http.HttpSession;
+
 @Service
 public class UserService {
 
 	@Autowired
 	UserMapper userMapper;
 	
-//	@Autowired
-//	HttpSession session;
+	@Autowired
+	HttpSession session;
 
 	// 비밀번호 해시 객체 생성
 	@Autowired
@@ -26,7 +28,7 @@ public class UserService {
 
 	public HashMap<String, Object> login(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-
+		
 		try {
 			User user = userMapper.login(map);
 			String result = "";
@@ -52,11 +54,13 @@ public class UserService {
 					
 					message = "로그인 성공!";
 					result = "success";
-//					session.setAttribute("sessionId", user.getUserId());
-//					session.setAttribute("sessionName", user.getUserName());
-//					session.setAttribute("sessionStatus", user.getUserStatus());
-//					if (member.getStatus().equals("A")) {
-//						resultMap.put("url", "/mgr/member/list.do");
+					
+					session.setAttribute("sessionId", user.getUserId());
+					session.setAttribute("sessionName", user.getUserName());
+					session.setAttribute("sessionRole", user.getRole());
+					resultMap.put("url", "/main.do");
+//					if (user.getRole().equals("A")) {
+//						resultMap.put("url", "/admin/main.do");
 //					} else {
 //						resultMap.put("url", "/main.do");
 //					}

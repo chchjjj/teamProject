@@ -70,8 +70,8 @@
                         success: function (data) {
                             alert(data.msg);
                             if (data.result == "success") {
-                                //location.href = data.url;
-                                location.href="/main.do";
+                                location.href = data.url;
+                                //location.href="/main.do";
                             }
                         }
                     });

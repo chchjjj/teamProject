@@ -21,9 +21,6 @@ public class UserController {
 	@Autowired
 	UserService userService;
 	
-//	@Autowired
-//	HttpSession session;
-	
 	@RequestMapping("/user/login.do")
 	public String login(Model model) throws Exception {
 		
@@ -98,7 +95,7 @@ public class UserController {
 	@ResponseBody
 	public String userUpdatePassword(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		System.out.println("제발 ㅠㅠ");
+		
 		resultMap = userService.resetPassword(map);
 
 		return new Gson().toJson(resultMap);
