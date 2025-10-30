@@ -47,10 +47,10 @@ public class AdminController {
        return "/admin/admin-sellerChart"; 
    }
 	
-	@RequestMapping("/admin/userinfo.do")
-	public String userinfo(Model model) throws Exception{
-       return "/admin/admin-userInfo"; 
-   }
+//	@RequestMapping("/admin/userinfo.do")
+//	public String userinfo(Model model) throws Exception{
+//       return "/admin/admin-userInfo"; 
+//   }
 	
 	@RequestMapping("/admin/membership.do")
 	public String adminmembership(Model model) throws Exception{
@@ -78,6 +78,12 @@ public class AdminController {
         return "/admin/admin-userEdit";
 	}
 	
+	@RequestMapping("/admin/userinfo.do")
+    public String order(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{
+		request.setAttribute("userId",map.get("userId"));
+        return "/admin/admin-userInfo";
+	}
+	
 	@RequestMapping("/admin/selleredit.do")
     public String sellerEdit(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{
 		request.setAttribute("storeId",map.get("storeId"));
@@ -102,7 +108,7 @@ public class AdminController {
 		return new Gson().toJson(resultMap);
 	}
 	
-	@RequestMapping(value = "aduser/deleteall.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/aduser/deleteall.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String DeleteList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
@@ -123,6 +129,17 @@ public class AdminController {
 	public String userview(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap = adminService.SelectUser(map);
+		
+		System.out.println(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/aduser/order.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String userorder(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = adminService.SelectOrder(map);
 		
 		System.out.println(map);
 		
@@ -209,7 +226,7 @@ public class AdminController {
 	}
 
 
-
+//
 
 
 
