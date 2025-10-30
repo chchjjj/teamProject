@@ -46,6 +46,9 @@ public interface AdminMapper {
 		
 		//membership관리
 		List <Admin> membershipListSelect(HashMap<String, Object> map);
+		
+		//user의 구매정보
+		Admin orderSelect(HashMap<String, Object> map);
 
 
 }

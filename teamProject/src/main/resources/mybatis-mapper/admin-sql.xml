@@ -124,6 +124,18 @@
 	
 	
 	
+	<select id="orderSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
+   		SELECT U.USER_NAME,O.ORDER_ID,P.PRO_NO,P.PRO_NAME,P.PRO_TYPE,O.FULL_ADDRESS,O.TOTAL_PRICE 
+		FROM ORDER_TBL O
+		LEFT JOIN ORDER_DETAIL_TBL D ON O.ORDER_ID=D.ORDER_ID
+		LEFT JOIN PRODUCT_TBL P ON P.PRO_NO=D.PRO_NO
+		LEFT JOIN USER_TBL U ON U.USER_ID=O.USER_ID
+		WHERE O.USER_ID=#{userId}
+	</select>
+	
+	
+	
+	
 	
 	
 	

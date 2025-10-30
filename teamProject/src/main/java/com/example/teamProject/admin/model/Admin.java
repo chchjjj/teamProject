@@ -68,5 +68,25 @@ public class Admin {
 	private int count;
 	
 	
+	//product
+	// 상품 정보
+	private String proInfo;	
+	private int cnt;
+	private int sellCount;
+	private String createdAt; // 상품등록일 
+	private String lettering;
+	private String proType;
+	
+	// 판매자 채팅 가능여부 (Y/N)
+	private String isChatEnabled;
+	
+	// 상위옵션
+	private String optionName;
+	private String isQuantitySelectAble;
+	
+	// 하위옵션
+	private String valueName;
+
+	
 	
 }
