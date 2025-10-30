@@ -98,7 +98,7 @@
 
                             </div>
                             <div class="product-grid">
-                                <div class="product-item" v-for="item in list">
+                                <div class="product-item" v-for="item in list" @click="fnProDetail(item.proNo)">
                                     <div class="product-image-placeholder">판매자 등록 썸네일</div>
                                     <p class="product-title">{{item.proName}}</p>
                                     <p>{{item.storeName}}</p>
@@ -146,7 +146,10 @@
                     userId: "${userId}", // 로그인 했을 시 전달 받은 아이디
                     area: "", // 디폴트 : 전체 지역 조회
                     order: 1, // 디폴트 :  조회순 정렬
-                    selectedCategory: '' // 디폴트
+                    selectedCategory: '', // 디폴트
+
+                    proNo : "" // 상품번호
+
                 };
             },
 
@@ -196,8 +199,15 @@
                     }
                 },
 
+                // 리스트에서 상품 클릭시 상세페이지 이동
+                fnProDetail: function (proNo) {
+                    let self = this;
+                    pageChange("/productDetail.do", { proNo : proNo }); 
+                    console.log(self.proNo);
+                }
 
             }, // methods
+
             mounted() {
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
@@ -205,6 +215,8 @@
                 console.log(self.userId); // 로그인한 아이디 잘 넘어오나 테스트
             }
         });
+
+    
 
         app.mount('#app');
     </script>
