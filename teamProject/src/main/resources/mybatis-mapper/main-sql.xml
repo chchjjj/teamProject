@@ -11,14 +11,22 @@
 		INNER JOIN SELLER_INFO_TBL S
 		ON P.STORE_ID = S.STORE_ID
 		WHERE 1=1	
+		
+		<!-- 지역 목록 -->
 		<if test="area != '' and area !=null">	<!--area가 빈값이나 null이 아닐 때-->
 			AND STORE_AREA = #{area} 
 			<!--내가 area값으로 보낸 (선택한) 지역 값이 들어가면 그 내역만 나오게! -->	
 			<!--빈값이면 일단 전체 목록 다 나오도록 -->							
 		</if>
 		
-		<if test="Category != null and Category != ''">
-        AND PRO_TYPE = #{Category} 
+		<!-- 검색 조건에 맞게 출력 -->
+		<if test="keyword != '' and keyword !=null">
+			AND PRO_NAME LIKE '%' || #{keyword} || '%'
+		</if>
+		
+		<!-- 상품 카테고리별 -->
+		<if test="category != null and category != ''">
+        AND PRO_TYPE = #{category} 
     	</if>
 		
 		<if test="order == 1"> 
@@ -31,8 +39,40 @@
 		
 		<if test="order == 3">
 			ORDER BY CREATED_AT DESC <!--최신순 정렬-->
-		</if>
-		
-		
+		</if>		
 	</select>
+	
+	
+	<!-- 헤더 QnA 버튼 눌렀을 때 (QnA 전체 리스트 불러오기)  -->
+	<select id="selectQnaList" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">
+		 SELECT 
+	        Q.QUESTION_ID,
+	        Q.PRO_NO,
+	        Q.USER_ID,
+	        U.USER_NAME AS userName,   <!--질문자 이름--> 
+	        Q.QUESTION_CONTENT,
+	        TO_CHAR(Q.QUESTION_DATE, 'YYYY-MM-DD') AS QUESTION_DATE,
+	        Q.STORE_ID,
+	        S.STORE_NAME AS storeName,         <!--판매자(가게명)-->
+	        Q.ANSWER_CONTENT,
+	        TO_CHAR(Q.ANSWER_DATE, 'YYYY-MM-DD') AS ANSWER_DATE
+	    FROM QA_TBL Q
+	    LEFT JOIN USER_TBL U
+	        ON Q.USER_ID = U.USER_ID
+	    LEFT JOIN SELLER_INFO_TBL S
+	        ON Q.STORE_ID = S.STORE_ID
+	    WHERE 1=1			
+		
+		<!-- 검색 조건에 맞게 출력 -->
+		<!--<if test="keyword != '' and keyword !=null">
+			AND PRO_NAME LIKE '%' || #{keyword} || '%'
+		</if>		-->	
+
+		ORDER BY 
+	    CASE WHEN <!-- 미답변 건부터 위로 오게 정렬 -->
+	    	Q.ANSWER_CONTENT IS NULL THEN 0 ELSE 1 END ASC,
+	    Q.QUESTION_DATE DESC <!-- 최신순이 위로 가게 -->
+		<!--OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY --> <!--페이징-->
+	</select>
+	
 </mapper>

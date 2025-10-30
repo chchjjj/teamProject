@@ -11,5 +11,6 @@ public interface MainMapper {
 	// 메인화면 상품목록
 	List<Main> selectMainProList(HashMap<String, Object> map); 
 	
-	
+	// 헤더 메뉴 중 QnA 접속 및 리스트
+	List<Main> selectQnaList(HashMap<String, Object> map);
 }

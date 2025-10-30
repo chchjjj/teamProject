@@ -5,6 +5,7 @@ public class Main {
 	
 	// 사용자 정보
 	private String userId;
+	private String userName;
 	
 	// 상품 정보
 	private int proNo;
@@ -19,5 +20,12 @@ public class Main {
 	// 판매자 채팅 가능여부 (Y/N)
 	private String isChatEnabled;
 	
+	// 판매자 정보 (QnA 관련)	
+	private int storeId;
+	private int questionId;
+    private String questionContent;
+    private String questionDate;
+    private String answerContent;
+    private String answerDate;
 	
 }

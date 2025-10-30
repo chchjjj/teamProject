@@ -1,6 +1,3 @@
-헤더
-
-
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
     <!DOCTYPE html>
     <html lang="en">
@@ -28,7 +25,7 @@
             <header class="top-header">
                 <div class="header-inner">
                     <div class="logo">
-                        <a href="javascript:;" onclick="window.location.reload()">
+                        <a href="javascript:;" onclick="location.href='/main.do'">
                             <!--로고 클릭시 홈페이지 새로고침 -->
                             <img src="/img/로고.png" alt="쇼핑몰 로고">
                         </a>
@@ -58,7 +55,7 @@
                             <ul class="submenu">
                                 <li><a href="#" @click="fnCategory('케이크')">케이크</a></li>
                                 <li><a href="#" @click="fnCategory('쿠키')">쿠키</a></li>
-                                <li><a href="#" @click="fnCategory('초코사탕')">초콜릿/사탕</a></li>
+                                <li><a href="#" @click="fnCategory('초콜렛')">초콜릿/사탕</a></li>
                             </ul>
                         </li>
                         <li class="menu-item dropdown">
@@ -102,6 +99,7 @@
                         alert("검색어를 입력해주세요.");
                         return;
                     }
+                    
                     //  검색어 전달
                     // keyword가 유효할 때만 main.jsp (상위 컴포넌트)에 이벤트 전송
                     emitter.emit('keyword', self.keyword); // 보내는 이름도 keyword (main.jsp에서 구현해야함)
@@ -160,13 +158,13 @@
                     } else {
                         alert("로그인 된 상태입니다.(화면구현중)");
                         pageChange("/applyStore.do", { userId: self.userId }); 
-                }
+                    }
                 },
 
-                // QnA 메뉴 (비로그인자도 접속은 가능)
+                // QnA 메뉴 (비로그인자도 접속은 가능) - 구매자 전체 QnA 목록 보여줌
                 fnQnA: function () {
                     let self = this;
-                    pageChange("/user/qna.do", { userId: self.userId }); // 임시 주소 입력해둔 상태!
+                    pageChange("/main/qna.do", { userId: self.userId }); 
                     // userId 없으면 undefined
                 },
 
