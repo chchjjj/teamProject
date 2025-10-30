@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
+        <title>멤버십관리</title>
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -103,8 +103,7 @@
                                 <th>가입일</th>
                                 <th>맴버십 상태</th>
                                 <th>월정액 요금</th>
-                                <th>종료일</th>
-                                <th>수정</th>  
+                                <th>종료일</th>    
                             </tr>
                             <tr v-for="membership in membershipList">
                                 <td>{{membership.membershipId}}</td>
@@ -114,7 +113,6 @@
                                 <td>{{membership.membershipStatus}}</td>
                                 <td>{{membership.monthlyFee}}</td>
                                 <td>{{membership.expirationDate}}</td>
-                                <td><button @click="fnEdit(membership.membershipId)">수정</button></td> 
                             </tr>
                         </table>
                     </div>

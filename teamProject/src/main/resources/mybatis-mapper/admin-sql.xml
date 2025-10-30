@@ -4,9 +4,9 @@
 
 <mapper namespace="com.example.teamProject.admin.mapper.AdminMapper">
 
-	<select id="userListSelect" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
+	<select id="userListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
    		SELECT * FROM USER_TBL
-   		WHERE ROLE='C' AND 1=1
+   		WHERE 1=1
    		<if test="option=='all'">
    			AND (USER_ID LIKE '%'||#{keyWord}||'%' OR USER_NAME LIKE '%'||#{keyWord}||'%')
    		</if>
@@ -42,7 +42,7 @@
    		</if>
 	</select>
 	
-	<select id="userSelect" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
+	<select id="userSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
 		SELECT *
 		FROM USER_TBL
 		WHERE USER_ID = #{userId}
@@ -53,6 +53,78 @@
 		SET USER_NAME=#{userName},EMAIL=#{email},USER_ADDR=#{userAddr},PHONE=#{phone},USER_STATUS=#{userStatus},ROLE=#{role}
 		WHERE USER_ID=#{userId}
 	</update>
+	
+	
+	
+	
+	
+	
+	<select id="sellerListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
+   		SELECT STORE_ID,STORE_NAME,U.USER_ID,BUSINESS_NO,STORE_INTRO,STORE_ADDR,STORE_PASS,JOIN_CDATE,REJECT_REASON,GRADE_CODE, MEMBERSHIP,REG_DATE FROM SELLER_INFO_TBL S
+		LEFT JOIN USER_TBL U ON S.USER_ID=U.USER_ID
+   		WHERE 1=1
+   		<if test="option=='all'">
+   			AND (STORE_ID LIKE '%'||#{keyWord}||'%' OR STORE_NAME LIKE '%'||#{keyWord}||'%')
+   		</if>
+   		<if test="option=='storeId'">
+   			AND STORE_ID LIKE '%'||#{keyWord}||'%'
+   		</if>
+   		<if test="option=='storeName'">
+   			AND STORE_NAME LIKE '%'||#{keyWord}||'%'
+   		</if>
+		ORDER BY STORE_ID DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
+	</select>
+
+	<delete id="sellerListDelete" parameterType="hashmap">
+		DELETE FROM SELLER_INFO_TBL WHERE STORE_ID IN
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+
+	<select id="sellerCount" parameterType="hashmap" resultType="int">
+   		SELECT COUNT(*) AS TOTAL_ROWS
+   		FROM SELLER_INFO_TBL
+   		WHERE 1=1
+   		<if test="option=='all'">
+   			AND (STORE_ID LIKE '%'||#{keyWord}||'%' OR STORE_NAME LIKE '%'||#{keyWord}||'%')
+   		</if>
+   		<if test="option=='storeId'">
+   			AND STORE_ID LIKE '%'||#{keyWord}||'%'
+   		</if>
+   		<if test="option=='storeName'">
+   			AND STORE_NAME LIKE '%'||#{keyWord}||'%'
+   		</if>
+	</select>
+	
+	<select id="sellerSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
+		SELECT *
+		FROM SELLER_INFO_TBL
+		WHERE STORE_ID = #{storeId}
+	</select>
+	
+	<update id="sellerUpdate" parameterType="hashmap">
+		UPDATE SELLER_INFO_TBL 
+		SET STORE_NAME=#{storeName},STORE_ADDR=#{storeAddr},STORE_PASS=#{storePass},REJECT_REASON=#{rejectReason},MEMBERSHIP=#{membership}
+		WHERE STORE_ID=#{storeId}
+	</update>
+	
+	
+	
+	
+	<select id="membershipListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
+   		SELECT * FROM MEMBERSHIP_TBL
+   		WHERE USER_ID LIKE '%'||#{keyWord}||'%'
+		ORDER BY MEMBERSHIP_ID DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
+	</select>
+	
+	
+	
+	
+	
+	
 	
 	
 	
