@@ -150,7 +150,7 @@
                     ],
 
                     list: [],
-                    userId: "${userId}", // 로그인 했을 시 전달 받은 아이디
+                    userId: "${sessionId}", // 로그인 했을 시 전달 받은 아이디
                     area: "", // 디폴트 : 전체 지역 조회
                     order: 1, // 디폴트 :  조회순 정렬
                     selectedCategory: '', // 디폴트
@@ -204,7 +204,7 @@
                         alert("로그인 후 이용해주세요!");
                         location.href = "/user/login.do"; // 로그인 페이지 이동
                     } else {
-                        pageChange("", { userId: self.userId }); // 장바구니 페이지 주소 넣어야 함
+                        pageChange("/product/cart.do", { userId: self.userId }); 
                     }
                 },
 
