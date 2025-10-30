@@ -143,7 +143,7 @@
             },
             fnAddr: function () {
                 //두 번째 인자가 팝업창의 이름
-                window.open("/addr.do", "addr", "width=500, height=500, top=100, left=100");
+                window.open("/user/addr.do", "addr", "width=500, height=500, top=100, left=100");
             },
             fnResult: function (roadFullAddr, addrDetail, zipNo) {
                 let self = this;

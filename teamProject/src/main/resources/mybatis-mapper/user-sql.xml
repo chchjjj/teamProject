@@ -8,12 +8,12 @@
 		SELECT *  
 		FROM USER_TBL
 		WHERE USER_ID = #{userId} 
-		AND USER_PASS = #{userPass} <!--해시 적용 후 제거할 것!-->
+		<!--AND USER_PASS = #{userPass}--> <!--해시 적용 후 주석 처리(필요없어짐)-->
 	</select>
 	
 	<insert id="userAdd" parameterType="hashmap"> 
 		INSERT INTO USER_TBL 
-		VALUES (#{userId}, #{userPass}, #{userName}, #{email}, #{userAddr}, #{phone}, 'C', 'O', SYSDATE, SYSDATE) 
+		VALUES (#{userId}, #{hashPwd}, #{userName}, #{email}, #{userAddr}, #{phone}, 'C', 'O', SYSDATE, SYSDATE) 
 	</insert>
 	
 	<select id="userCheck" parameterType="hashmap" resultType="com.example.teamProject.user.model.User"> 
