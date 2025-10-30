@@ -13,4 +13,7 @@ public interface MainMapper {
 	
 	// 헤더 메뉴 중 QnA 접속 및 리스트
 	List<Main> selectQnaList(HashMap<String, Object> map);
+	
+	// QnA 게시글 전체 개수 구하기 (페이징 위해)
+	int selectQnaCnt(HashMap<String, Object> map);
 }

@@ -10,12 +10,12 @@
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
-        <!--페이지 이동-->
-        <script src="/js/page-change.js"></script>
-
-        <!-- mitt 불러오기 -->
+        <!-- mitt 불러오기 (이거 먼저!)-->
         <script src="https://unpkg.com/mitt/dist/mitt.umd.js"></script> 
 
+        <!--페이지 이동-->
+        <script src="/js/page-change.js"></script>
+        
         <style>
 
         </style>
@@ -129,13 +129,15 @@
                     </main>
                 </div>
             </div>
+            <!-- 푸터 -->
+            <%@ include file="/WEB-INF/main/footer.jsp" %>
     </body>
 
     </html>
 
     <script>
         // mitt 전역 이벤트 버스 생성 (헤더, 메인 양쪽에서 동일하게 사용)
-        const emitter = mitt();
+        //const emitter = mitt();
 
         const app = Vue.createApp({
             data() {
@@ -220,19 +222,31 @@
             mounted() {
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
-                self.fnList();
                 console.log("로그인 아이디 ===> " + self.userId); // 로그인한 아이디 잘 넘어오나 테스트
+
+                // 1. URL에서 keyword 파라미터 확인
+                const urlParams = new URLSearchParams(window.location.search);
+                const keyword = urlParams.get('keyword');
+                
+                // 2. 키워드 유무에 따라 다르게 리스트 호출
+                if (keyword) {
+                    self.keyword = keyword;  // Vue data에 넣기
+                    self.fnList();           // fnList 실행
+                } else {
+                    // URL에 키워드 없으면 기본 목록 호출
+                    self.fnList();
+                }
 
 
                 // 헤더에서 keyword (검색어) 이벤트 수신
-                emitter.on('keyword', (keyword) => {
+                window.emitter.on('keyword', (keyword) => {
                     console.log("헤더에서 받은 검색어:", keyword);
                     self.keyword = keyword;
                     self.fnList(); // 메인에서 검색 실행
                 });
 
                 // 헤더 메뉴 중 '카테고리' 하위 메뉴 클릭 이벤트 수신
-                emitter.on('categoryClick', (categoryName) => {
+                window.emitter.on('categoryClick', (categoryName) => {
                     console.log("카테고리 클릭:", categoryName);
                     self.selectedCategory = categoryName;
                     self.fnList(); // 해당 카테고리 상품만 조회

@@ -7,11 +7,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>헤더</title>
         <link rel="stylesheet" href="/css/main-style.css">
+
+        <!-- mitt 불러오기 (먼저!) -->
+        <script src="https://unpkg.com/mitt/dist/mitt.umd.js"></script>
+
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <link rel="stylesheet"
             href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=search" />
+        
+        
        
         <!--페이지 이동-->
         <script src="/js/page-change.js"></script>
@@ -79,13 +85,16 @@
     </html>
 
     <script>
+        // ★ mitt 전역 공유 선언 
+        window.emitter = window.emitter || mitt();
+
         const header = Vue.createApp({
             data() {
                 return {
                     // 변수 - (key : value)
                     
                     keyword: "", // 검색어
-                    userId : "${userId}", // 로그인 했을 시 전달 받은 아이디
+                    userId: "${sessionId}", // 로그인 했을 시 전달 받은 아이디
                 };
             },
             methods: {
@@ -99,10 +108,19 @@
                         alert("검색어를 입력해주세요.");
                         return;
                     }
+
+                    // 현재 페이지 경로 확인
+                    const currentPath = window.location.pathname;
+
+                    if (currentPath === "/main/main.do") {
+                        // main 페이지면 emit만 (검색어 전달)
+                        // keyword가 유효할 때만 main.jsp (상위 컴포넌트)에 이벤트 전송
+                        emitter.emit('keyword', self.keyword); // 보내는 이름도 keyword (main.jsp에서 구현해야함)
+                    } else {
+                        // main 페이지가 아니면 main.do로 이동
+                        location.href = "/main.do?keyword=" + encodeURIComponent(self.keyword);
+                    }                    
                     
-                    //  검색어 전달
-                    // keyword가 유효할 때만 main.jsp (상위 컴포넌트)에 이벤트 전송
-                    emitter.emit('keyword', self.keyword); // 보내는 이름도 keyword (main.jsp에서 구현해야함)
                 },
 
                 // 위시리스트(하트) 클릭 시
@@ -132,12 +150,12 @@
                 // '카테고리' 메뉴에서 각 하위 메뉴 클릭 시
                 fnCategory: function(categoryName) {
                     // 선택한 카테고리를 main으로 전달
-                    emitter.emit('categoryClick', categoryName);
+                    window.emitter.emit('categoryClick', categoryName);
                 },
 
                 // '베스트' 메뉴에서 하위 1, 2, 3위 각 클릭 시
                 fnBestItem: function(rank) {
-                    emitter.emit('bestClick', rank); // rank = 1, 2, 3
+                    window.emitter.emit('bestClick', rank); // rank = 1, 2, 3
                 },
 
                 // '알레르기 프리' 메뉴 (userId 보내야할까? 거기서 구매로 이어진다면?)
