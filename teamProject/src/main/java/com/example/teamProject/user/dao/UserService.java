@@ -17,8 +17,8 @@ public class UserService {
 	@Autowired
 	UserMapper userMapper;
 	
-	@Autowired
-	HttpSession session;
+//	@Autowired
+//	HttpSession session;
 
 	// 비밀번호 해시 객체 생성
 	@Autowired
@@ -52,8 +52,8 @@ public class UserService {
 					
 					message = "로그인 성공!";
 					result = "success";
-					session.setAttribute("sessionId", user.getUserId());
-					session.setAttribute("sessionName", user.getUserName());
+//					session.setAttribute("sessionId", user.getUserId());
+//					session.setAttribute("sessionName", user.getUserName());
 //					session.setAttribute("sessionStatus", member.getStatus());
 //					if (member.getStatus().equals("A")) {
 //						resultMap.put("url", "/mgr/member/list.do");
