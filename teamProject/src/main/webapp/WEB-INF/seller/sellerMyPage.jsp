@@ -142,8 +142,8 @@
             
             <div class="sidebar">
                 <ul class="sidebar-menu">
-                    <li class="active"><a href="#" >가게 정보</a></li>
-                    <li><a href="#">매출</a></li>
+                   <li class="active"><a href="/seller/storeList.do" >가게 정보</a></li>
+                    <li><a href="/seller/sales.do">매출</a></li>
                     <li><a href="#">판매 내역</a></li>
                     <li ><a href="#">고객 관리(채팅)</a></li>
                     <li><a href="#">리뷰 관리(임시)</a></li>

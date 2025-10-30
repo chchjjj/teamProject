@@ -31,7 +31,13 @@ public class SellerController {
 	@RequestMapping("/seller/storeList.do") 
     public String myPage(Model model) throws Exception{
 
-        return "/seller/sellerMyPage";
+        return "seller/sellerMyPage";
+    }
+	
+	@RequestMapping("/seller/sales.do") 
+    public String sales(Model model) throws Exception{
+
+        return "seller/sellerMyPageSales";
     }
 
 	@RequestMapping(value = "/store/list.dox",  method = RequestMethod.POST, produces = "application/json;charset=UTF-8")

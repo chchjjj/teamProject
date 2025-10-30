@@ -25,4 +25,6 @@ public interface SellerMapper {
 	int updateChatInfoMap(Map<String,Object> storeMap);
 
 	List<Seller> selectStoreList(HashMap<String, Object> map);
+	//월별 매월 가져오는 리스트
+	List<Seller>selectMonthlySalesByUser(HashMap<String, Object> map);
 }

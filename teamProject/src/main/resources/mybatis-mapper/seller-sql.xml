@@ -48,6 +48,29 @@
             UDATE = SYSDATE
         WHERE STORE_ID = #{storeId}
     </update>
+    
+    <select id="selectMonthlySalesByUser" parameterType="string" resultType="map">
+    SELECT 
+        s.STORE_NAME,
+        TO_CHAR(o.ORDER_DATE, 'YYYY-MM') AS ORDER_MONTH,
+        COUNT(o.ORDER_ID) AS ORDER_COUNT,
+        SUM(o.TOTAL_PRICE) AS TOTAL_SALES
+    FROM 
+        SELLER_INFO_TBL s
+    JOIN 
+        ORDER_TBL o
+    ON 
+        s.STORE_NAME = o.STORE_NAME
+    WHERE
+        s.USER_ID = #{userId}  <!-- 로그인한 사용자 파라미터 -->
+    GROUP BY 
+        s.STORE_NAME,
+        TO_CHAR(o.ORDER_DATE, 'YYYY-MM')
+    ORDER BY 
+        ORDER_MONTH
+</select>
+
+
 
 </mapper>
 
