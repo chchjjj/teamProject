@@ -142,8 +142,8 @@
             
             <div class="sidebar">
                 <ul class="sidebar-menu">
-                    <li class="active"><a href="#" >가게 정보</a></li>
-                    <li><a href="#">매출</a></li>
+                    <li><a href="javascript:void(0);" onclick="location.href='sellerMyPage.jsp'" >가게 정보</a></li>
+                    <li class="active"><a href="javascript:void(0);" onclick="location.href='sellerMyPageSales.jsp'">매출</a></li>
                     <li><a href="#">판매 내역</a></li>
                     <li ><a href="#">고객 관리(채팅)</a></li>
                     <li><a href="#">리뷰 관리(임시)</a></li>
@@ -153,33 +153,7 @@
                 </ul>
             </div>
             
-            <div class="content-area">
-                <h1 class="page-title">마이페이지 (판매자)</h1>
-                
-                <div v-for="item in list" :key="item.id" class="store-card">
-                    <div class="store-header">
-                        <div class="store-name-section">
-                            <h3>{{ item.storeName  }}</h3>
-                            <button>가게 이름 수정하기</button>
-                        </div>
-                        <div class="membership-info">
-                            <span>멤버십 사용 중</span>
-                            <!-- 조인해야해서 잠시 주석할게요 -->
-                            <!-- <span style="font-weight: bold; color: #007bff;" >{{ item.membership  }}까지</span> -->
-                        </div>
-                    </div>
-                    
-                    <div class="store-intro">
-                        <p>{{ item.description }}</p>
-                    </div>
-                    
-                    <div class="management-buttons">
-                        <button>프로필 이미지 수정</button>
-                        <button>배너 이미지 수정</button>
-                        <button>상품 관리</button>
-                        <button class="primary-btn">수정하기</button>
-                    </div>
-                </div>
+           
 
             </div>
         </div>

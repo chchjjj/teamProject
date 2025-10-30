@@ -24,5 +24,10 @@ public class Seller {
 	    private String membership;      // MEMBERSHIP
 	    private Date regDate;           // REG_DATE
 	    private Date udate;             // UDATE
+	    
+	    
+	    private String orderMonth;    // YYYY-MM 형식, ORDER_TBL 기준
+	    private Integer orderCount;   // 월별 주문 건수
+	    private Integer totalSales;   // 월별 총 매출
 
 }
