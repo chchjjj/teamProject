@@ -179,7 +179,7 @@ body {
     background-color: #3E2723;
     color: #ffffff;
 }
-.buy-btn, .cart-btn {
+.buy-btn, .cart {
     flex: 1;
     padding: 15px;
     border: none;

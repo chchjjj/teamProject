@@ -12,7 +12,7 @@
 footer {
     width: 100%;
     /* 푸터 영역의 배경색을 메뉴바(#3E2723)보다 살짝 밝은 톤으로 설정 */
-    background-color: #5d4037; 
+    background-color: #3E2723; 
     color: #f0f0f0; /* 텍스트 색상을 밝게 */
     padding: 5px 0;
 
@@ -22,7 +22,7 @@ footer {
 .footer-inner {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 25px 20px;
     display: flex;
     justify-content: space-between; /* 항목들을 가로로 배치 */
     gap: 30px; /* 항목 간 간격 */
@@ -55,7 +55,7 @@ footer {
     </style>
 </head>
 <body>
-    <div id="app">
+    <div id="footer">
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
         <footer>
     <div class="footer-inner">
@@ -87,7 +87,7 @@ footer {
 </html>
 
 <script>
-    const app = Vue.createApp({
+    const footer = Vue.createApp({
         data() {
             return {
                 // 변수 - (key : value)
@@ -115,5 +115,5 @@ footer {
         }
     });
 
-    app.mount('#app');
+    footer.mount('#footer');
 </script>

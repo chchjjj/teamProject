@@ -76,7 +76,7 @@
 
                                 <div class="action-buttons">
                                     <button class="buy-btn">구매</button>
-                                    <button class="cart-btn">장바구니</button>
+                                    <button class="cart">장바구니</button>
                                 </div>
                             </div>
                         </div>
@@ -93,6 +93,7 @@
                 </div>
 
             </div>
+            <%@ include file="/WEB-INF/main/footer.jsp" %>
     </body>
 
     </html>
