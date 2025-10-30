@@ -141,7 +141,7 @@
                     selectedOptions: {},
 
                     // 💡 3. 새로 추가: 선택된 수량을 저장할 객체
-                    selectedQuantities: {},
+                    selectedQuantities: {}, 
 
                     // 💡 날짜 선택 관련 data 추가
                     selectedDate: null,

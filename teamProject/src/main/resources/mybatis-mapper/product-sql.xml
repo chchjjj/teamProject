@@ -16,7 +16,7 @@
 	<!--상위옵션-->
 	<select id="topOptList" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
 		SELECT *			
-		FROM PRODUCT_OPTION_TBL
+		FROM PRODUCT_OPTION_TBL 
 		WHERE PRO_NO = #{proNo}
 	</select>
 
