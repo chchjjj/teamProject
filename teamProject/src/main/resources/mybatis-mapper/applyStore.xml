@@ -1,21 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.teamProject.mapper.ApplyStoreMapper">
+<mapper namespace="com.example.teamProject.applyStore.mapper.ApplyStoreMapper">
 
-    <select id="getStoreInfo" parameterType="int" resultType="com.example.teamProject.applyStore.model.ApplyStore">
-        SELECT
-        STORE_ID,
-        STORE_NAME,
-        USER_ID
-        FROM SELLER_INFO_TBL
-        WHERE STORE_ID = #{storeId}
-    </select>
+	<select id="getStoreInfo" parameterType="int"
+		resultType="com.example.teamProject.applyStore.model.ApplyStore">
+		SELECT
+		STORE_ID,
+		STORE_NAME,
+		USER_ID
+		FROM SELLER_INFO_TBL
+		WHERE STORE_ID = #{storeId}
+	</select>
 
-    <!-- 'insert' 태그에서 resultType을 제거 -->
-    <insert id="insertSellerInfo" parameterType="hashmap">
-        INSERT INTO SELLER_INFO_TBL
-        VALUES (
+<insert id="insertSellerInfo" parameterType="hashmap">
+    INSERT INTO SELLER_INFO_TBL (
+        STORE_ID,           
+        STORE_NAME,         
+        USER_ID,            
+        BUSINESS_NO,        
+        STORE_INTRO,        
+        DELIVERY_YN,        
+        IS_CHAT_ENABLED,    
+        CHAT_START,        
+        CHAT_END,           
+        STORE_ADDR,         
+        STORE_AREA,         STORE_PASS,         
+        REJECT_REASON,      
+        GRADE_CODE,         
+        MEMBERSHIP,         
+        REG_DATE,           
+        UDATE               
+    )
+    VALUES (
         SELLER_INFO_SEQ.NEXTVAL,
         #{storeName},
         #{userId},
@@ -23,30 +40,33 @@
         #{storeIntro},
         #{deliveryYn},
         #{isChatEnabled},
-        #{chatStart},
-        #{chatEnd},
+        
+     
+        TO_DATE(#{chatStart}, 'HH24:MI:SS'), 
+        TO_DATE(#{chatEnd}, 'HH24:MI:SS'),   
+        
         #{storeAddr},
-        #{storeArea},
-        #{storePass},
-        #{rejectReason},
-        #{gradeCode},
-        #{membership},
-        SYSDATE,
-        SYSDATE
-        )
-    </insert>
+        #{storeArea},     #{storePass},     
+        #{rejectReason},  
+        #{gradeCode},     
+        #{membership},    
+        
+        SYSDATE,          
+        SYSDATE           
+    )
+</insert>
 
-    <!-- 'insert' 태그에서 resultType을 제거 -->
-    <insert id="insertStoreImages" parameterType="hashmap">
-        INSERT INTO SELLER_IMG_TBL
-        VALUES (
-        #{storeId},
-        #{fileUse},
-        #{filePath},
-        #{fileName},
-        #{fileOrgName},
-        #{fileExt}
-        )
-    </insert>
+
+	<insert id="insertStoreImages" parameterType="hashmap">
+		INSERT INTO SELLER_IMG_TBL
+		VALUES (
+		#{storeId},
+		#{fileUse},
+		#{filePath},
+		#{fileName},
+		#{fileOrgName},
+		#{fileExt}
+		)
+	</insert>
 
 </mapper>

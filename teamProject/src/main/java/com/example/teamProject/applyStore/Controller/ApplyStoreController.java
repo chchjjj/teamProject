@@ -1,12 +1,14 @@
 package com.example.teamProject.applyStore.Controller;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,25 +23,47 @@ public class ApplyStoreController {
 	
 	@RequestMapping("/applyStore.do")
 	public String apply(Model model) throws Exception{
-       return "/applyStore"; 
+       return "/applyStore/apply_store_info"; 
+   }
+	@RequestMapping("/applyStore/img.do")
+	public String applyImg(Model model) throws Exception{
+		return "applyStore/apply_store_img"; 
    }
 	
-	  @GetMapping("/storePage.do")
-	    public String getStorePage(Model model, @RequestParam("storeId") int storeId) {
-	        // 서비스에서 가게 정보를 가져옴
-	        HashMap<String, Object> storeInfo = applyStoreService.getStoreInfo(storeId);
-
-	        // 가게 정보가 존재하면 모델에 추가
-	        if (storeInfo != null) {
-	            model.addAttribute("storeId", storeInfo.get("storeId"));
-	            model.addAttribute("storeName", storeInfo.get("storeName"));
-	            model.addAttribute("userId", storeInfo.get("userId"));
-	        } else {
-	            model.addAttribute("errorMessage", "가게 정보를 찾을 수 없습니다.");
-	        }
-
-	        return "apply_store_img";  // 이미지 업로드 페이지로 이동
-	    }
+	@PostMapping("/saveStoreInfo")
+	@ResponseBody
+    public HashMap<String, Object> saveStoreInfo(@RequestBody HashMap<String, Object> storeInfoMap) {
+        
+     
+        
+        System.out.println("컨트롤러에 POST /saveStoreInfo 요청 도착!");
+        
+       
+        HashMap<String, Object> result = applyStoreService.insertStoreInfo(storeInfoMap);
+        
+       
+        return result;
+    }
+	
+	@GetMapping("/getStoreIdByUserId.do")
+    public Map<String, Object> getStoreIdByUserId(@RequestParam String userId) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Long storeId = applyStoreService.getStoreIdByUserId(userId);
+            if (storeId != null) {
+                response.put("success", true);
+                response.put("storeId", storeId);
+            } else {
+                response.put("success", false);
+                response.put("storeId", null);
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("storeId", null);
+            response.put("error", e.getMessage());
+        }
+        return response;
+    }
 	
 	  @PostMapping("/saveStoreImages.do")
 	    @ResponseBody

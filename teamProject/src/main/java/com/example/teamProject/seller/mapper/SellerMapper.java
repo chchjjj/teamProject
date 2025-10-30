@@ -1,8 +1,28 @@
 package com.example.teamProject.seller.mapper;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Mapper;
+
+import com.example.teamProject.seller.model.Seller;
 
 @Mapper
 public interface SellerMapper {
 
+	//특정 사용자의 가게 목록 조회
+	List<HashMap<String, Object>> selectSellerApprovedStoreList(String userId);
+
+	// 가게 이름 수정
+	int updateStoreNameMap(Map<String,Object> storeMap);
+
+	// 가게 소개글 수정
+	int updateStoreIntroMap(Map<String,Object> storeMap);
+
+
+	// 채팅 가능 여부 및 시간 정보 수정
+	int updateChatInfoMap(Map<String,Object> storeMap);
+
+	List<Seller> selectStoreList(HashMap<String, Object> map);
 }

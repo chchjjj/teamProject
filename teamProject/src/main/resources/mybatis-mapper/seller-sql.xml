@@ -2,6 +2,52 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.teamProject.mapper.seller.SellerMapper">
-	
+<mapper namespace="com.example.teamProject.seller.mapper.SellerMapper">
+
+    <select id="selectStoreList" resultType="com.example.teamProject.seller.model.Seller">
+       SELECT 
+            STORE_ID,
+            STORE_NAME,
+            BUSINESS_NO,
+            STORE_INTRO,
+            DELIVERY_YN,
+            IS_CHAT_ENABLED,
+            CHAT_START,
+            CHAT_END,
+            STORE_ADDR,
+            STORE_AREA,
+            STORE_PASS,
+            REJECT_REASON,
+            GRADE_CODE,
+            MEMBERSHIP,
+            REG_DATE,
+            UDATE
+        FROM SELLER_INFO_TBL
+        WHERE USER_ID = #{userId, jdbcType=VARCHAR}
+          AND STORE_PASS = 'P'
+        ORDER BY STORE_ID
+    </select>
+
+    <update id="updateStoreName">
+        UPDATE SELLER_INFO_TBL
+        SET STORE_NAME = #{storeName}, UDATE = SYSDATE
+        WHERE STORE_ID = #{storeId}
+    </update>
+
+    <update id="updateStoreIntro">
+        UPDATE SELLER_INFO_TBL
+        SET STORE_INTRO = #{storeIntro}, UDATE = SYSDATE
+        WHERE STORE_ID = #{storeId}
+    </update>
+
+    <update id="updateChatInfo">
+        UPDATE SELLER_INFO_TBL
+        SET IS_CHAT_ENABLED = #{isChatEnabled},
+            CHAT_START = #{chatStart},
+            CHAT_END = #{chatEnd},
+            UDATE = SYSDATE
+        WHERE STORE_ID = #{storeId}
+    </update>
+
 </mapper>
+

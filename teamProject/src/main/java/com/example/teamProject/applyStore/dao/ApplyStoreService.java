@@ -23,8 +23,8 @@ public class ApplyStoreService {
     public HashMap<String, Object> insertStoreInfo(HashMap<String, Object> map) {
         HashMap<String, Object> resultMap = new HashMap<String, Object>();
         try {
-            // ApplyStoreModel 객체를 그대로 파라미터로 전달
-            int rowsAffected = applyStoreMapper.insertSellerInfo(map);  // 데이터베이스에 업데이트 쿼리 실행
+            
+            int rowsAffected = applyStoreMapper.insertSellerInfo(map);  
 
             if (rowsAffected > 0) {
                 resultMap.put("success", true);
@@ -43,13 +43,8 @@ public class ApplyStoreService {
     }
 
     // 가게 정보 조회
-    public HashMap<String, Object> getStoreInfo(int storeId) {
-        try {
-            return applyStoreMapper.getStoreInfo(storeId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;  
-        }
+    public Long getStoreIdByUserId(String userId) {
+        return applyStoreMapper.getStoreIdByUserId(userId);
     }
 
     // 가게 이미지 저장
