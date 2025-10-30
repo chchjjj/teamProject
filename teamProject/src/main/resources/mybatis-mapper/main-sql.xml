@@ -68,11 +68,20 @@
 			AND PRO_NAME LIKE '%' || #{keyword} || '%'
 		</if>		-->	
 
-		ORDER BY 
+		ORDER BY  
 	    CASE WHEN <!-- 미답변 건부터 위로 오게 정렬 -->
 	    	Q.ANSWER_CONTENT IS NULL THEN 0 ELSE 1 END ASC,
 	    Q.QUESTION_DATE DESC <!-- 최신순이 위로 가게 -->
-		<!--OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY --> <!--페이징-->
+	    
+		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY <!--페이징-->
+	</select>
+	
+	
+	<!-- 페이징 처리 위해 게시글 개수 구하기 (resultType int) -->
+	<select id="selectQnaCnt" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*) AS CNT
+		FROM QA_TBL
+		WHERE 1=1			
 	</select>
 	
 </mapper>
