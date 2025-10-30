@@ -7,7 +7,7 @@
 }
 
 body {
-    
+
     margin-top: 0;
 }
 
@@ -15,10 +15,13 @@ body {
 /* 상세 정보 페이지 전체 레이아웃 */
 /* ------------------------------------------- */
 .product-detail-container {
-    max-width: 1200px; /* 컨텐츠 최대 너비 설정 */
-    margin: 50px auto; /* 중앙 정렬 및 상하 여백 */
+    max-width: 1200px;
+    /* 컨텐츠 최대 너비 설정 */
+    margin: 50px auto;
+    /* 중앙 정렬 및 상하 여백 */
     padding: 0 20px;
-    background-color: #ffffff; /* 상세 페이지 배경색 */
+    background-color: #ffffff;
+    /* 상세 페이지 배경색 */
 }
 
 .product-info-area {
@@ -35,7 +38,8 @@ body {
 }
 
 .main-image-box {
-    background-color: #e0e0e0; /* 이미지 배경색 (이미지 대체) */
+    background-color: #e0e0e0;
+    /* 이미지 배경색 (이미지 대체) */
     width: 100%;
     height: 500px;
     display: flex;
@@ -48,12 +52,14 @@ body {
 
 .thumbnail-list {
     display: flex;
-    gap: 1.2%; /* 이미지 간격 */
+    gap: 1.2%;
+    /* 이미지 간격 */
 }
 
 .thumbnail-item {
     background-color: #e0e0e0;
-    width: 19%; /* 5개 항목이 되도록 20%보다 약간 작게 설정 */
+    width: 19%;
+    /* 5개 항목이 되도록 20%보다 약간 작게 설정 */
     height: 80px;
 }
 
@@ -73,17 +79,18 @@ body {
 .store-name {
     color: #666;
     font-size: 20px;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
 }
 
 .price-and-action {
     /* Flexbox 설정 */
     display: flex;
-    flex-wrap: wrap; /* 내용이 넘치면 다음 줄로 이동하도록 허용 */
+    flex-wrap: wrap;
+    /* 내용이 넘치면 다음 줄로 이동하도록 허용 */
     align-items: center;
-    padding-bottom: 15px;
+    padding-bottom: 5px;
     border-bottom: 1px solid #eee;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
 }
 
 .price {
@@ -92,28 +99,32 @@ body {
     color: #333;
     margin-right: 15px;
     /* 💡 다음 요소가 무조건 줄 바꿈되도록 100% 너비 확보 */
-    width: 100%; 
-    order: 1; /* 가격을 1번째 순서로 */
+    width: 100%;
+    order: 1;
+    /* 가격을 1번째 순서로 */
 }
 
 .shipping-fee {
     font-size: 14px;
     color: #999;
-    margin-top: 5px; /* 가격과의 간격 조절 */
-    order: 2; /* 배송비를 2번째 순서로 */
+    /* margin-top: 5px; 가격과의 간격 조절 */
+    order: 2;
+    /* 배송비를 2번째 순서로 */
 }
 
 .price-and-action img {
     /* 좋아요/찜 아이콘은 오른쪽 끝에 배치 */
     margin-left: auto;
-    order: 3; /* 좋아요 아이콘을 3번째 순서로 */
+    order: 3;
+    /* 좋아요 아이콘을 3번째 순서로 */
     width: 50px;
     height: auto;
 }
 
 .favorite-icon {
     font-size: 24px;
-    color: #e0e0e0; /* 찜 아이콘 색상 (비활성 회색) */
+    color: #e0e0e0;
+    /* 찜 아이콘 색상 (비활성 회색) */
     cursor: pointer;
 }
 
@@ -135,39 +146,72 @@ body {
 }
 
 .option-item {
+    /* 각 셀렉트 박스 + 수량 버튼을 가로로 정렬하기 위한 Flex 설정 */
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 12px 10px;
-    border-bottom: 1px solid #eee;
-    background-color: #e0e0e0; /* 이미지 속 옵션 박스 배경색 */
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    margin-top: 1px; /* 테두리 미세 조정 */
+    gap: 10px;
+    /* select와 수량 버튼 사이의 간격 */
+
+    width: 100%;
+    position: relative;
+
+    /* 회색 틀 제거를 위해 기존 스타일 수정 */
+    padding: 0;
+    border-bottom: none;
+    background-color: transparent;
+    font-size: initial;
+    /* 폰트 크기 초기화 */
+    font-weight: initial;
+    /* 폰트 굵기 초기화 */
+    cursor: default;
+    margin-top: 10px;
+    /* 각 옵션 항목 간 세로 간격 */
 }
 
 .option-item .material-symbols-outlined {
     font-size: 20px;
-    transform: rotate(180deg); /* 아이콘을 펼쳐진 모양으로 뒤집기 */
+    transform: rotate(180deg);
+    /* 아이콘을 펼쳐진 모양으로 뒤집기 */
 }
 
-/* 레터링 입력 영역 (입력 필드 대신 텍스트로 대체) */
 .lettering-input-area {
-    margin-top: 20px;
-    padding: 15px 0;
-}
-
-.lettering-input-area .prompt {
-    font-weight: 500;
-    margin-bottom: 10px;
-    /* 입력 필드 역할을 하는 텍스트 스타일 */
-    padding: 10px;
+    /* 영역 자체에 패딩 또는 마진이 필요하면 추가 */
     border: 1px solid #ccc;
-    border-radius: 4px;
-    color: #999;
+    /* 경계선을 추가하여 시각적으로 구분 */
+    padding: 10px;
+    border-radius: 5px;
+    /* 모서리를 약간 둥글게 */
+    background-color: #f9f9f9;
+    /* 배경색을 약간 다르게 */
+    margin-top: 10px;
 }
 
+.lettering-input-area label {
+    display: flex;
+    /* label과 input을 가로로 정렬하기 위해 플렉스 사용 */
+    align-items: center;
+    /* 수직 중앙 정렬 */
+    font-weight: bold;
+    color: #333;
+}
+
+.lettering-input-area input {
+    /* 인풋 필드가 남은 공간을 모두 차지하도록 flex-grow 설정 */
+    flex-grow: 1;
+    margin-left: 10px;
+    /* 라벨과 인풋 사이에 간격 부여 */
+    padding: 8px;
+    /* 입력 필드 내부 패딩 */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+}
+
+.lettering-input-area input:focus {
+    /* 포커스 시 테두리 색상 변경 */
+    border-color: #4CAF50;
+    outline: none;
+}
 
 /* 구매 버튼 */
 .action-buttons {
@@ -175,11 +219,14 @@ body {
     gap: 10px;
     margin-top: 30px;
 }
-.action-buttons  button{
+
+.action-buttons button {
     background-color: #3E2723;
     color: #ffffff;
 }
-.buy-btn, .cart {
+
+.buy-btn,
+.cart {
     flex: 1;
     padding: 15px;
     border: none;
@@ -187,7 +234,8 @@ body {
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
-    background-color: #e0e0e0; /* 이미지와 같은 회색 버튼 */
+    background-color: #e0e0e0;
+    /* 이미지와 같은 회색 버튼 */
     color: #333;
 }
 
@@ -204,7 +252,8 @@ body {
 .tab-btn {
     flex: 1;
     padding: 15px 0;
-    background-color: #e0e0e0; /* 탭 버튼 배경색 */
+    background-color: #e0e0e0;
+    /* 탭 버튼 배경색 */
     border: 1px solid #ccc;
     border-right: none;
     font-size: 16px;
@@ -222,11 +271,14 @@ body {
 }
 
 .tab-btn.active {
-    background-color: #ffffff; /* 활성화된 탭은 흰색 */
-    border-top: 2px solid #333; /* 활성화 표시선 */
-    border-bottom: 1px solid #ffffff; /* 아래쪽 경계를 덮음 */
+    background-color: #ffffff;
+    /* 활성화된 탭은 흰색 */
+    border-top: 2px solid #333;
+    /* 활성화 표시선 */
+    border-bottom: 1px solid #ffffff;
+    /* 아래쪽 경계를 덮음 */
     color: #333;
-    margin-bottom: -1px; 
+    margin-bottom: -1px;
 }
 
 .tab-content {
@@ -234,4 +286,145 @@ body {
     padding: 20px;
     background-color: #ffffff;
     /* 상세 정보 콘텐츠가 들어갈 영역 */
+}
+
+/* 옵션 셀렉트박스 */
+/* =======================================
+   2. 개별 옵션 항목 (셀렉트 박스) 스타일
+   ======================================= */
+.option-item {
+    /* 각 셀렉트 박스 + 아이콘(만약 있다면)을 감싸는 div */
+    width: 100%;
+    /* 부모 컨테이너(option-selectors) 너비 전체 사용 */
+    position: relative;
+    /* 아이콘이 있다면: display: flex; align-items: center; */
+}
+
+/* =======================================
+   3. 실제 <select> 태그 스타일 (핵심)
+   ======================================= */
+.option-item select {
+    /* 수량 버튼이 있을 때 남은 공간을 모두 차지하도록 flex-grow 설정 */
+    flex-grow: 1;
+    width: auto;
+    /* flex-grow를 위해 auto 설정 */
+
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #333;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #fff;
+    cursor: pointer;
+    line-height: 1.5;
+    transition: border-color 0.2s;
+}
+
+.option-item select:focus {
+    /* 선택 시 포커스 스타일 */
+    border-color: #007bff;
+    /* 파란색 강조 */
+    outline: none;
+    /* 기본 외곽선 제거 */
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* =======================================
+   4. 드롭다운 화살표 커스텀 (선택 사항)
+   ======================================= */
+
+
+/* =======================================
+   수량 선택 컴포넌트 (quantity-selector) 스타일 추가
+   ======================================= */
+.quantity-selector {
+    display: flex;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden; 
+    flex-shrink: 0; /* 너비가 줄어들지 않도록 고정 */
+    height: 42px; /* select의 높이와 비슷하게 조정 (10px 패딩 + 1px 테두리 * 2) */
+}
+
+.quantity-selector button {
+    width: 35px;
+    background-color: #f0f0f0;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    line-height: 1;
+    padding: 0; /* 버튼 패딩 제거 */
+    transition: background-color 0.1s;
+}
+
+.quantity-selector button:hover {
+    background-color: #e0e0e0;
+}
+
+.quantity-selector .quantity-display {
+    width: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 500;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    background-color: #fff;
+}
+
+/* 💡 <select> 태그의 오른쪽 끝에 커스텀 화살표 추가 */
+/* form-select 클래스를 가진 select 태그만 타겟팅 */
+.option-item .form-select {
+    /* select 자체에 relative 속성을 주고 after를 추가하여,
+       after가 select의 영역에만 국한되도록 합니다. */
+    position: relative;
+}
+
+.option-item .form-select::after {
+    content: '▼'; /* 화살표 문자 */
+    position: absolute;
+    /* select의 오른쪽 15px 지점에 배치 */
+    right: 25px; 
+    /* 상하 중앙 정렬 */
+    top: 50%; 
+    transform: translateY(-50%);
+    
+    font-size: 10px; 
+    color: #666;
+    /* 클릭 이벤트 방지 */
+    pointer-events: none; 
+    
+    /* 💡 중요: select 태그가 flex-grow로 늘어나기 때문에
+       .option-item::after가 아닌 .option-item select::after를 사용해야 
+       화살표가 select 내부에 존재하게 되나, 
+       Vue.js 템플릿의 <select> 태그는 자식 요소를 가질 수 없으므로 
+       `.option-item` 내부에 커스텀 화살표를 표시해야 합니다.
+    */
+}
+.option-item select + div:not(.quantity-selector) + .form-select::after,
+.option-item .form-select:last-child::after {
+    content: '▼';
+    position: absolute;
+    top: 50%;
+    right: 15px; 
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 10px;
+    color: #666;
+}
+.option-item:has(select:only-child)::after {
+    content: '▼';
+    position: absolute;
+    top: 50%;
+    right: 15px; /* select 오른쪽 끝에 위치 */
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 10px;
+    color: #666;
 }

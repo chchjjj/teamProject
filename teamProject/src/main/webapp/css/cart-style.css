@@ -1,0 +1,227 @@
+/* 사용자 요청 컨테이너 스타일 */
+.product-detail-container {
+    max-width: 1200px;
+    /* 컨텐츠 최대 너비 설정 */
+    margin: 50px auto;
+    /* 중앙 정렬 및 상하 여백 */
+    padding: 0 20px;
+    background-color: #cacaca;
+    /* 상세 페이지 배경색 */
+}
+
+.product-info-area {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 50px;
+}
+
+/* --- 상품 선택 섹션 스타일 --- */
+.product-selection-section {
+    /* 이미지 상의 전체 컨테이너는 회색 배경입니다. */
+    background-color: #cacaca; /* 회색 배경 */
+    padding: 50px 30px;
+    width: 100%; /* product-info-area 내에서 전체 너비 사용 */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* 주문하기 버튼 오른쪽 정렬을 위해 사용 */
+
+}
+
+/* 상품/옵션 카드 */
+.product-card {
+    display: block; /* label 전체를 클릭 가능하게 */
+    background-color: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    width: 100%; /* 부모 컨테이너 너비 채우기 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+/* 선택된 상품 카드 스타일 */
+.product-card.selected-product {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 실제 라디오 버튼 숨기기 */
+.product-card input[type="radio"] {
+    display: none;
+}
+
+.product-card-content {
+    display: flex;
+    align-items: flex-start; /* 라디오 버튼과 내용 상단 정렬 */
+}
+
+/* 커스텀 라디오 버튼 스타일 */
+.radio-button-circle {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #A9A9A9;
+    border-radius: 50%;
+    margin-right: 20px;
+    flex-shrink: 0; /* 공간 고정 */
+    position: relative;
+    top: 5px; /* 상점 이름과 비슷한 높이에 위치 */
+}
+
+/* 선택되었을 때 커스텀 라디오 버튼 내부 채우기 */
+.product-card input[type="radio"]:checked + .product-card-content .radio-button-circle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background-color: #000000; /* 채워지는 색상 */
+    border-radius: 50%;
+}
+
+.product-details {
+    flex-grow: 1;
+}
+
+.store-name {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #E0E0E0;
+    color: #444444;
+}
+
+.item-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.item-left {
+    display: flex;
+    flex-grow: 1;
+}
+
+/* 이미지 자리 표시 */
+.item-image-placeholder {
+    width: 100px;
+    height: 100px;
+    background-color: #F0F0F0; /* 이미지 자리 회색 */
+    border-radius: 4px;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.item-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.item-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0 0 5px 0;
+    color: #333333;
+}
+
+.item-delivery, .item-description {
+    font-size: 14px;
+    color: #666666;
+    margin: 0 0 5px 0;
+}
+
+.item-price-detail {
+    font-size: 14px;
+    color: #999999;
+    margin: 10px 0 0 0;
+}
+
+.item-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-left: 20px;
+    flex-shrink: 0;
+}
+
+.item-final-price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333333;
+    margin: 0 0 10px 0;
+}
+
+/* 수량 조절 버튼 */
+.quantity-control {
+    display: flex;
+    border: 1px solid #D3D3D3;
+    border-radius: 4px;
+    overflow: hidden;
+    height: 30px;
+}
+
+.quantity-btn {
+    background-color: #F8F8F8;
+    border: none;
+    padding: 0 8px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    color: #666666;
+    outline: none;
+    transition: background-color 0.1s;
+}
+
+.quantity-btn:hover:not(:disabled) {
+    background-color: #EAEAEA;
+}
+
+.quantity-btn:disabled {
+    color: #CCCCCC;
+    cursor: default;
+}
+
+.quantity-control input[type="text"] {
+    width: 30px;
+    text-align: center;
+    border: none;
+    border-left: 1px solid #D3D3D3;
+    border-right: 1px solid #D3D3D3;
+    font-size: 14px;
+    color: #333333;
+    outline: none;
+    padding: 0;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/* 주문하기 버튼 */
+.order-button-container {
+    margin-top: 20px;
+}
+
+.order-button {
+    background-color: #A9A9A9; /* 이미지 상의 회색 버튼 */
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s;
+}
+
+/* 주문하기 버튼 오른쪽 정렬 */
+.order-button-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}

@@ -2,6 +2,30 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.teamProject.mapper.ProductMapper">
+<mapper namespace="com.example.teamProject.product.mapper.ProductMapper">
+	
+	<select id="proInfo" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
+		SELECT *			
+		FROM PRODUCT_TBL P
+		INNER JOIN SELLER_INFO_TBL S
+		ON P.STORE_ID = S.STORE_ID
+		WHERE PRO_NO = #{proNo}
+	</select>
+	
+	<!--옵션 관리-->
+	<!--상위옵션-->
+	<select id="topOptList" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
+		SELECT *			
+		FROM PRODUCT_OPTION_TBL
+		WHERE PRO_NO = #{proNo}
+	</select>
+
+	<!--상위옵션+하위옵션-->
+	<select id="allOptList" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
+		SELECT * FROM PRODUCT_OPTION_TBL T
+		LEFT JOIN PRODUCT_SUB_OPTION_TBL S ON T.TOP_OPTION_ID = S.TOP_OPTION_ID
+		WHERE PRO_NO = #{proNo}
+	</select>
+	
 
 </mapper>
