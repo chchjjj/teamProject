@@ -27,5 +27,25 @@
 		WHERE PRO_NO = #{proNo}
 	</select>
 	
-
+	<!--장바구니 불러오기-->
+	<select id="cart" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
+		SELECT 
+		    c.CART_ID,
+		    p.PRO_NAME,
+		    P.PRICE AS DEF_PRICE,
+		    po.OPTION_NAME AS TOP_OPT,
+		    pso.VALUE_NAME AS SUB_OPT,
+		    co.CART_OPT_QUANTITY AS OPT_QTT,
+		    NVL(pso.PRICE_DIFF, 0) AS SUB_OPT_PRICE
+		FROM CART_TBL c
+		JOIN PRODUCT_TBL p 
+		    ON c.PRO_NO = p.PRO_NO
+		JOIN CART_OPTION_TBL co 
+		    ON c.CART_ID = co.CART_ID
+		JOIN PRODUCT_SUB_OPTION_TBL pso 
+		    ON co.SUB_OPTION_ID = pso.SUB_OPTION_ID
+		JOIN PRODUCT_OPTION_TBL po 
+		    ON pso.TOP_OPTION_ID = po.TOP_OPTION_ID
+		WHERE USER_ID = #{userId}
+	</select>
 </mapper>

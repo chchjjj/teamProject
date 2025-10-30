@@ -18,4 +18,7 @@ public interface ProductMapper {
 	
 	// 상위옵션+하위옵션
 	List<Product> allOptList(HashMap<String, Object> map); 
+	
+	// 장바구니
+	List<Product> cart(HashMap<String, Object> map);
 }

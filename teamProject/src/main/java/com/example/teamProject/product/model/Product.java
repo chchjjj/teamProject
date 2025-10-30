@@ -26,7 +26,16 @@ public class Product {
 		private String isQuantitySelectAble;
 		
 		// 하위옵션
-		private String subOptionId;
+		private int subOptionId;
 		private String valueName;
-		private String priceDiff;
+		private int priceDiff;
+		
+		//장바구니
+		private int cartId;
+		private int defPrice;
+		private String topOpt;
+		private String subOpt;
+		private int qptQtt;
+		private int subOptPrice;
+		
 }

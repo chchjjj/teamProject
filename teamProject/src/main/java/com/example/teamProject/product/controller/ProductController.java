@@ -54,4 +54,12 @@ public class ProductController {
 		resultMap = ProductService.getAllOptList(map);
 		return new Gson().toJson(resultMap);
 	}
+	
+	@RequestMapping(value = "/product/cart.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String cart(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = ProductService.getCartList(map);
+		return new Gson().toJson(resultMap);
+	}
 }
