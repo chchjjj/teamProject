@@ -12,6 +12,10 @@
 
         <!--페이지 이동-->
         <script src="/js/page-change.js"></script>
+
+        <!-- mitt 불러오기 -->
+        <script src="https://unpkg.com/mitt/dist/mitt.umd.js"></script> 
+
         <style>
 
         </style>
@@ -63,7 +67,7 @@
                                 @click.prevent="selectedCategory = '쿠키'; fnList()">쿠키</a>
 
                             <a href="#" class="category-btn" :class="{ active: selectedCategory === '초콜릿/사탕' }"
-                                @click.prevent="selectedCategory = '초콜릿/사탕'; fnList()">초콜릿/사탕</a>
+                                @click.prevent="selectedCategory = '초콜렛'; fnList()">초콜릿/사탕</a>
                         </section>
 
                         <hr class="divider">
@@ -75,7 +79,7 @@
                                 <!-- 지역별 조회-->
                                 <div class="product-list-section">
                                     <select v-model="area" @change="fnList">
-                                        <option value="">:: 지역별조회 ::</option> <!--전체-->
+                                        <option value="">:: 지역조회(전체) ::</option> <!--전체-->
                                         <option value="1">:: 서울 ::</option>
                                         <option value="2">:: 인천 ::</option>
                                         <option value="3">:: 경기 ::</option>
@@ -130,6 +134,9 @@
     </html>
 
     <script>
+        // mitt 전역 이벤트 버스 생성 (헤더, 메인 양쪽에서 동일하게 사용)
+        const emitter = mitt();
+
         const app = Vue.createApp({
             data() {
                 return {
@@ -148,7 +155,8 @@
                     order: 1, // 디폴트 :  조회순 정렬
                     selectedCategory: '', // 디폴트
 
-                    proNo : "" // 상품번호
+                    proNo : "", // 상품번호
+                    keyword: "" // 검색 키워드 변수 추가
 
                 };
             },
@@ -161,7 +169,8 @@
                         // 선택할 때마다 새로 목록 가져오게 해야함(위에서 @change 처리함)
                         area: self.area,
                         order: self.order,
-                        Category: self.selectedCategory
+                        category: self.selectedCategory,
+                        keyword: self.keyword
                     };
                     $.ajax({
                         url: "/main/list.dox", // 상품 리스트 조회주소 넣어야함
@@ -180,7 +189,7 @@
                 fnMapDessert: function () {
                     let self = this;
                     if (self.userId == "" || self.userId == null) {
-                        alert("로그인 후 이용해주세요");
+                        alert("로그인 후 이용해주세요!");
                         location.href = "/user/login.do"; // 로그인 페이지 이동
                     } else {
                         pageChange("", { userId: self.userId }); // 주변 디저트 찾기 페이지 주소 넣어야 함
@@ -192,7 +201,7 @@
                 fnCart: function () {
                     let self = this;
                     if (self.userId == "" || self.userId == null) {
-                        alert("로그인 후 이용해주세요");
+                        alert("로그인 후 이용해주세요!");
                         location.href = "/user/login.do"; // 로그인 페이지 이동
                     } else {
                         pageChange("", { userId: self.userId }); // 장바구니 페이지 주소 넣어야 함
@@ -202,8 +211,8 @@
                 // 리스트에서 상품 클릭시 상세페이지 이동
                 fnProDetail: function (proNo) {
                     let self = this;
-                    pageChange("/productDetail.do", { proNo : proNo }); 
-                    console.log(self.proNo);
+                    console.log(proNo); // main 화면에서 클릭한 상품번호 출력(확인완료)
+                    pageChange("/productDetail.do", { proNo : proNo });  // 상세페이지로 proNo 넘겨줌            
                 }
 
             }, // methods
@@ -212,7 +221,23 @@
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
                 self.fnList();
-                console.log(self.userId); // 로그인한 아이디 잘 넘어오나 테스트
+                console.log("로그인 아이디 ===> " + self.userId); // 로그인한 아이디 잘 넘어오나 테스트
+
+
+                // 헤더에서 keyword (검색어) 이벤트 수신
+                emitter.on('keyword', (keyword) => {
+                    console.log("헤더에서 받은 검색어:", keyword);
+                    self.keyword = keyword;
+                    self.fnList(); // 메인에서 검색 실행
+                });
+
+                // 헤더 메뉴 중 '카테고리' 하위 메뉴 클릭 이벤트 수신
+                emitter.on('categoryClick', (categoryName) => {
+                    console.log("카테고리 클릭:", categoryName);
+                    self.selectedCategory = categoryName;
+                    self.fnList(); // 해당 카테고리 상품만 조회
+                });
+
             }
         });
 

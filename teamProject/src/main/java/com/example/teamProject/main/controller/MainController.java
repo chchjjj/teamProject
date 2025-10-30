@@ -17,7 +17,7 @@ import com.google.gson.Gson;
 public class MainController {	
 	
 	@Autowired
-	MainService MainService;
+	MainService mainService;
 
 	@RequestMapping("/main.do") 
     public String main(Model model) throws Exception{
@@ -37,11 +37,27 @@ public class MainController {
         return "/main/footer";
     }
 	
+	@RequestMapping("/main/qna.do") 
+    public String qna(Model model) throws Exception{
+
+        return "/main/qna";
+    }
+	
+	// 메인 화면 상품 리스트
 	@RequestMapping(value = "/main/list.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String proList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap = MainService.getProList(map);
+		resultMap = mainService.getProList(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	// 헤더 QnA 버튼으로 페이지 이동 후 QnA 리스트
+	@RequestMapping(value = "/main/qna.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String qnaList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = mainService.getQnaList(map);
 		return new Gson().toJson(resultMap);
 	}
 	
