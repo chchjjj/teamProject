@@ -15,5 +15,11 @@ public interface UserMapper {
 		
 	//회원가입
 	int userAdd(HashMap<String, Object> map);
+
+	//아이디, 이름, 번호를 가진 사람이 db에 있는지 확인하는 로직
+	int authUser(HashMap<String, Object> map);
+	
+	//비밀번호 수정
+	int updateUserPass(HashMap<String, Object> map);
 	
 }

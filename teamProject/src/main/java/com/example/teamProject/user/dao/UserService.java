@@ -54,7 +54,7 @@ public class UserService {
 					result = "success";
 //					session.setAttribute("sessionId", user.getUserId());
 //					session.setAttribute("sessionName", user.getUserName());
-//					session.setAttribute("sessionStatus", member.getStatus());
+//					session.setAttribute("sessionStatus", user.getUserStatus());
 //					if (member.getStatus().equals("A")) {
 //						resultMap.put("url", "/mgr/member/list.do");
 //					} else {
@@ -119,6 +119,55 @@ public class UserService {
 
 		resultMap.put("result", result);
 
+		return resultMap;
+	}
+
+	public HashMap<String, Object> userAuth(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+			int cnt = userMapper.authUser(map);
+
+			if(cnt > 0) {
+				resultMap.put("result", "success");
+			} else {
+				resultMap.put("result", "fail");
+			}
+			
+		} catch (Exception e) {
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
+		}
+		
+		return resultMap;
+	}
+
+	public HashMap<String, Object> resetPassword(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		try {
+			User user = userMapper.userCheck(map);
+			boolean pwdFlg = passwordEncoder.matches((String) map.get("userPass"), user.getUserPass());
+			if(pwdFlg) {
+				resultMap.put("result", "fail");
+				resultMap.put("msg", "비밀번호가 이전과 동일합니다.");
+			} else {
+				String hashPwd = passwordEncoder.encode((String)map.get("userPass"));
+				map.put("hashPwd", hashPwd);
+				int cnt = userMapper.updateUserPass(map);
+				resultMap.put("result", "success");
+				resultMap.put("msg", "수정되었습니다.");
+			}
+			
+			
+			System.out.println(map);
+			
+			resultMap.put("result", "success");
+		}catch (Exception e) {
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
+		}
+		
 		return resultMap;
 	}
 

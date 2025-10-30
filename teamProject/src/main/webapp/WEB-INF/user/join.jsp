@@ -75,10 +75,10 @@
             문자인증이 완료되었습니다.
         </div>
 
-        <!-- 파일 첨부는 나중에 구매자가 판매자로 회원가입할 때 사용하면 될 듯 -->
-        <div>
-            파일첨부: <input type="file" id="file1" name="file1" accept=".jpg, .png"><!-- multiple 속성을 주면 다중 -->
-        </div>
+        <!-- multiple 속성을 주면 다중 -->
+        <!-- <div>
+            파일첨부: <input type="file" id="file1" name="file1" accept=".jpg, .png">
+        </div> -->
 
 
         <div>

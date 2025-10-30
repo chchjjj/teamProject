@@ -18,9 +18,22 @@
 	
 	<select id="userCheck" parameterType="hashmap" resultType="com.example.teamProject.user.model.User"> 
 		SELECT * 
-		FROM USER_TBL d
+		FROM USER_TBL
 		WHERE USER_ID = #{userId} 
 	</select>
+	
+	<select id="authUser" parameterType="hashmap" resultType="int"> 
+		SELECT COUNT(*)
+		FROM USER_TBL 
+		WHERE USER_ID = #{userId} AND USER_NAME = #{userName} 
+		AND REPLACE(PHONE, '-', '') = #{phone}
+	</select>
+	
+	<update id="updateUserPass" parameterType="hashmap">
+		UPDATE USER_TBL
+		SET USER_PASS = #{hashPwd}
+		WHERE USER_ID = #{userId}
+	</update> 
 	
 </mapper>
 
