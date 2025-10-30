@@ -1,11 +1,32 @@
 package com.example.teamProject.admin.controller;
 
+import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.example.teamProject.admin.dao.AdminService;
+import com.example.teamProject.user.dao.UserService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class AdminController {
+	
+	@Autowired
+	AdminService adminService;
+	
+	
 	@RequestMapping("/admin/main.do")
 	public String main(Model model) throws Exception{
        return "/admin/admin-main"; 
@@ -50,6 +71,67 @@ public class AdminController {
 	public String board(Model model) throws Exception{
        return "/admin/admin-boardManage"; 
    }
+	
+	@RequestMapping("/admin/useredit.do")
+    public String userEdit(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{
+		request.setAttribute("userId",map.get("userId"));
+        return "/admin/admin-userEdit";
+	}
+	
+	
+	
+	
+	@RequestMapping(value = "/aduser/userlist.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String userList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		
+		resultMap = adminService.SelectUserList(map);
+		
+		System.out.println(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "aduser/deleteall.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String DeleteList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		String json = map.get("selectItem").toString(); 
+		ObjectMapper mapper = new ObjectMapper();
+		List<Object> list = mapper.readValue(json, new TypeReference<List<Object>>(){});
+		map.put("list", list);
+		System.out.println(map);
+		resultMap=adminService.DeleteUserList(map);
+		return new Gson().toJson(resultMap);
+		
+	}
+	
+	
+	@RequestMapping(value = "/aduser/view.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String userview(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = adminService.SelectUser(map);
+		
+		System.out.println(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/aduser/update.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String userupdate(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = adminService.UpdateUser(map);
+		
+		System.out.println(map);
+		
+		return new Gson().toJson(resultMap);
+	}
 
 
 

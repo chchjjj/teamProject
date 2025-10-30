@@ -2,9 +2,64 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.teamProject.mapper.AdminMapper">
+<mapper namespace="com.example.teamProject.admin.mapper.AdminMapper">
+
+	<select id="userListSelect" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
+   		SELECT * FROM USER_TBL
+   		WHERE ROLE='C' AND 1=1
+   		<if test="option=='all'">
+   			AND (USER_ID LIKE '%'||#{keyWord}||'%' OR USER_NAME LIKE '%'||#{keyWord}||'%')
+   		</if>
+   		<if test="option=='userId'">
+   			AND USER_ID LIKE '%'||#{keyWord}||'%'
+   		</if>
+   		<if test="option=='userName'">
+   			AND USER_NAME LIKE '%'||#{keyWord}||'%'
+   		</if>
+		ORDER BY USER_ID DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
+	</select>
+
+	<delete id="userListDelete" parameterType="hashmap">
+		DELETE FROM USER_TBL WHERE USER_ID IN
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+
+	<select id="userCount" parameterType="hashmap" resultType="int">
+   		SELECT COUNT(*) AS TOTAL_ROWS
+   		FROM USER_TBL
+   		WHERE 1=1
+   		<if test="option=='all'">
+   			AND (USER_ID LIKE '%'||#{keyWord}||'%' OR USER_NAME LIKE '%'||#{keyWord}||'%')
+   		</if>
+   		<if test="option=='userId'">
+   			AND USER_ID LIKE '%'||#{keyWord}||'%'
+   		</if>
+   		<if test="option=='userName'">
+   			AND USER_NAME LIKE '%'||#{keyWord}||'%'
+   		</if>
+	</select>
 	
-	<!--10.28 18:34 test-->
+	<select id="userSelect" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
+		SELECT *
+		FROM USER_TBL
+		WHERE USER_ID = #{userId}
+	</select>
+	 
+	<update id="userUpdate" parameterType="hashmap">
+		UPDATE USER_TBL 
+		SET USER_NAME=#{userName},EMAIL=#{email},USER_ADDR=#{userAddr},PHONE=#{phone},USER_STATUS=#{userStatus},ROLE=#{role}
+		WHERE USER_ID=#{userId}
+	</update>
 	
+	
+	
+
+	
+	
+	
+	 
 
 </mapper>
