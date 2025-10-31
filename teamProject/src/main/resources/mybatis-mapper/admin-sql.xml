@@ -72,6 +72,9 @@
    		<if test="option=='storeName'">
    			AND STORE_NAME LIKE '%'||#{keyWord}||'%'
    		</if>
+   		<if test="flgApp=='true'">
+   			AND STORE_PASS='G'
+   		</if>
 		ORDER BY STORE_ID DESC
 		OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
 	</select>
@@ -110,6 +113,12 @@
 		UPDATE SELLER_INFO_TBL 
 		SET STORE_NAME=#{storeName},STORE_ADDR=#{storeAddr},STORE_PASS=#{storePass},REJECT_REASON=#{rejectReason},MEMBERSHIP=#{membership}
 		WHERE STORE_ID=#{storeId}
+	</update>
+	
+	<update id="sellerRoleUpdate" parameterType="hashmap">
+		UPDATE SELLER_INFO_TBL 
+		SET STORE_PASS='R'
+		WHERE USER_ID=#{userId}
 	</update>
 	
 	<select id="salesSelect" resultType="HashMap">
@@ -197,6 +206,51 @@
 		  ]]>
 	</select>
 	
+	
+	
+	
+	<select id="qnAListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
+   		SELECT * FROM QA_TBL
+   		WHERE 1=1
+   		<if test="option=='all'">
+   			AND (STORE_ID LIKE '%'||#{keyWord}||'%' OR USER_ID LIKE '%'||#{keyWord}||'%' OR QUESTION_CONTENT LIKE '%'||#{keyWord}||'%' ANSWER_CONTENT LIKE '%'||#{keyWord}||'%')
+   		</if>
+   		<if test="option=='userId'">
+   			AND USER_ID LIKE '%'||#{keyWord}||'%'
+   		</if>
+   		<if test="option=='storeId'">
+   			AND STORE_ID LIKE '%'||#{keyWord}||'%'
+   		</if>
+   		<if test="option=='questionContent'">
+   			AND QUESTION_CONTENT LIKE '%'||#{keyWord}||'%' 
+   		</if>
+   		<if test="option=='answerContent'">
+   			AND ANSWER_CONTENT LIKE '%'||#{keyWord}||'%'
+   		</if>
+		ORDER BY QUESTION_DATE DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
+	</select>
+	
+	
+	<select id="qnACount" parameterType="hashmap" resultType="int">
+   		SELECT * FROM QA_TBL
+   		WHERE 1=1
+   		<if test="option=='all'">
+   			AND (STORE_ID LIKE '%'||#{keyWord}||'%' OR USER_ID LIKE '%'||#{keyWord}||'%' OR QUESTION_CONTENT LIKE '%'||#{keyWord}||'%' ANSWER_CONTENT LIKE '%'||#{keyWord}||'%')
+   		</if>
+   		<if test="option=='userId'">
+   			AND USER_ID LIKE '%'||#{keyWord}||'%'
+   		</if>
+   		<if test="option=='storeId'">
+   			AND STORE_ID LIKE '%'||#{keyWord}||'%'
+   		</if>
+   		<if test="option=='questionContent'">
+   			AND QUESTION_CONTENT LIKE '%'||#{keyWord}||'%' 
+   		</if>
+   		<if test="option=='answerContent'">
+   			AND ANSWER_CONTENT LIKE '%'||#{keyWord}||'%'
+   		</if>
+	</select>
 		
 	
 	

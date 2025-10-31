@@ -28,6 +28,12 @@ public interface AdminMapper {
 		//userupdate
 		int userUpdate(HashMap<String, Object> map);
 		
+		//판매자의 롤이 바뀌는 동시에 입접승인 상태도 같이 변함
+		int sellerRoleUpdate (HashMap<String, Object> map);
+		
+		
+		
+		
 		//2.판매자 관리	
 		//sellerlist 
 		List <Admin> sellerListSelect(HashMap<String, Object> map);
@@ -59,8 +65,13 @@ public interface AdminMapper {
 		
 		
 		
-		//5.월 판매량 트랜드 차트 구현
+		//5.판매량 관리 
+		//월 판매량 트랜드 차트 구현
 		List <HashMap> salesTrendsSelect(HashMap<String, Object> map);
+		
+		
+		
+		//
 
 
 }
