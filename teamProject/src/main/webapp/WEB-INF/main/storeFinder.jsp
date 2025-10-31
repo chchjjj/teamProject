@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>:: QnA ::</title>
+        <title>:: 내 주변 디저트 지점 찾기 ::</title>
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -14,13 +14,15 @@
         <script src="/js/page-change.js"></script>
 
         <!-- mitt 불러오기 -->
-        <!-- <script src="https://unpkg.com/mitt/dist/mitt.umd.js"></script>  -->
+        <!-- <script src="https://unpkg.com/mitt/dist/mitt.umd.js"></script>  -->         
+        
 
         <style>
-            /* QnA 제목 스타일 */
-            .qna-title {
+            /* 제목 스타일 */
+            .title {
                 font-size: 28px;        /* 적당히 크고 눈에 띄게 */
                 font-weight: 700;       /* 진하게 */
+                font-family: 'GmarketSansMedium', sans-serif;
                 color: #333;            /* 어두운 색상으로 가독성 확보 */
                 margin-top: 30px;       /* 위에 간격 */
                 margin-bottom: 25px;    /* 아래(목록 설정)와의 간격 */
@@ -43,11 +45,6 @@
                 text-align: center; /* 기본 텍스트는 가운데 정렬 */
             }
 
-            table .status-cell {
-                /* 완료, 대기 부분 */
-                text-align: center; 
-                vertical-align: middle;
-            }
             /* 제목은 왼쪽 정렬 */
             table td:nth-child(1) {
                 text-align: center;
@@ -58,41 +55,7 @@
                 text-align: left;
                 white-space: nowrap;      /* 텍스트가 줄 바꿈 되는 것을 방지 */
             }
-
-            /* 답변 p 태그 마진 제거 */
-            table .answer-content p {
-                margin: 0; /* 기존 마진 제거 */
-                padding-left: 50px; 
-                /* 필요에 따라 line-height를 조정하여 가독성을 높일 수 있습니다. */
-                /* line-height: 1.6; */ 
-            }
-            
-
-            /* 5. 답변 상태 버튼 스타일 (이미지 '대기', '완료' 부분) */
-            table .status-btn {
-                display: inline-block;
-                padding: 5px 10px;
-                border-radius: 4px;
-                font-size: 12px;
-                font-weight: 500;
-                min-width: 50px;
-                text-align: center;
-                border: none;
-                cursor: default;
-            }
-
-            /* 답변 상태별 색상 */
-            table .status-btn.waiting { /* '대기' 상태 */
-                background-color: #f0f0f0;
-                color: #666;
-            }
-
-            table .status-btn.completed { /* '완료' 상태 */
-                background-color: #e9f7ef; /* 옅은 녹색 */
-                color: #27ae60; /* 진한 녹색 */
-                border: 1px solid #27ae60;
-            }
-
+          
             /* N개씩 보기 */
             .pageSelect {
                 padding: 8px 10px;
@@ -103,11 +66,7 @@
                 -moz-appearance: none;
                 appearance: none;
                 background-color: white;
-            }
-
-            /* '나의 질문' 보기 */
-            .myQna {
-                margin-left: 20px;
+                margin-bottom: 30px;
             }
 
             /* 검색 기능 컨테이너 스타일 */
@@ -179,8 +138,9 @@
 
                 <div class="container">
 
+
                     <main class="content-container">                        
-                        <h1 class="qna-title">Q&A</h1>
+                        <h1 class="title">내 주변 디저트 지점 찾기</h1>
                         <hr class="divider">
 
                         <!-- 게시글 페이징 (N개씩 보기) -->
@@ -190,58 +150,14 @@
                             <option value="10">:: 10개씩 ::</option>
                             <option value="20">:: 20개씩 ::</option>
                         </select>
-                        <input type="checkbox" class="myQna" v-model="myQnaOnly" @change="fnQnaList"> 
-                        나의 질문
 
-                        <span class="info">※ '나의 질문' 기능은 로그인 시에만 이용 가능합니다.</span>
-
-                        <table>
-                            <colgroup>
-                                <col style="width: 10%;">    
-                                <col style="width: 57%;">   
-                                <col style="width: 8%;">    
-                                <col style="width: 10%;">   
-                                <col style="width: 15%;">   
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th>번호</th>
-                                    <th>제목</th>
-                                    <th>작성자</th>
-                                    <th>작성일</th>
-                                    <th>답변 상태</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <template v-for="(item, index) in list" :key="item.questionId">
-                                    <tr @click="toggleAnswer(index)" style="cursor: pointer;">
-                                        <td>{{item.questionId}}</td>
-                                        <td>
-                                            <strong style="color: #c0392b;">Q.</strong> {{item.questionContent}}
-                                        </td>
-                                        <td>{{item.userName}}</td>
-                                        <td>{{item.questionDate}}</td>
-                                        <td class="status-cell">
-                                            <span v-if="item.answerContent" class="status-btn completed">
-                                                완료
-                                            </span>
-                                            <span v-else class="status-btn waiting">
-                                                대기
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    
-                                    <tr v-if="item.answerContent" v-show="activeIndex === index" class="answer-row">
-                                        <td colspan="5" style="padding: 20px 30px 20px 60px; text-align: left; background-color: #f9f9f9;">
-                                            <div class="answer-content">
-                                                <strong style="color: #3498db;">A.</strong> 
-                                                <p style="margin-top: 5px;">{{item.answerContent}}</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>   
+                        <div>※ 현재 고객님의 마이페이지 주소를 기반으로 한 주변 디저트 지점 정보입니다. </div>
+                        <div>
+                            내 주소 : {{info.userAddr}}
+                        </div>
+                        
+                        
+                        
 
                          <!--페이징-->                        
                          <div class="pagination">
@@ -251,17 +167,6 @@
                                 {{num}} 
                             </a>
                             <a href="#" @click="fnMove(+1)" v-if="page != index">&gt;</a>
-                        </div>
-
-                        <!-- 검색기능 -->
-                        <div class="search-area">
-                        <select v-model="searchOption">
-                            <option value="all">:: 전체 :: ▼</option>
-                            <option value="content">:: 내용 ::</option>
-                            <option value="id">:: 작성자 ::</option>
-                        </select>
-                        <input v-model="qnaKeyword" @keyup.enter="fnQnaList" placeholder="검색어를 입력해주세요.">
-                        <button @click="fnQnaList">검색</button>
                         </div>
                       
 
@@ -285,7 +190,7 @@
             data() {
                 return {
                     // 변수 - (key : value)
-
+                    info : {},
                     list: [],
                     userId: "${sessionId}", // 로그인 했을 시 전달 받은 아이디
 
@@ -309,53 +214,6 @@
             methods: {
                 // 함수(메소드) - (key : function())
 
-                fnPageSizeChange: function() {
-                    let self = this;
-                    self.page = 1; // 페이지 초기화
-                    self.fnQnaList();
-                },
-
-                fnQnaList: function () {
-                    let self = this;
-                    let param = {
-                        qnaKeyword: self.qnaKeyword,
-                        searchOption : self.searchOption,
-                        pageSize : self.pageSize,
-                        page : (self.page-1) * self.pageSize
-                    };
-
-                    // '나의 질문' 보기 체크 시(myQnaOnly가 true일 때) userId 추가
-                    if (self.myQnaOnly && self.userId) {
-                        param.userId = self.userId;
-                    } 
-
-                    $.ajax({
-                        url: "/main/qna.dox", // QnA 리스트 조회주소 
-                        dataType: "json",
-                        type: "POST",
-                        data: param,
-                        success: function (data) {
-                            console.log(data);
-                            self.list = data.list; // data에 있는 list 값을 변수 list에 담기      
-                            self.index = Math.ceil(data.cnt / self.pageSize); 
-                            // 게시글 총개수를 몇페이지씩 표시할지 기준으로 나누고, 소수점 발생시 올림처리 => index에 넣기
-                        }
-                    });
-                },
-
-                // QnA 답변을 보이거나 숨기는 토글 함수
-                toggleAnswer: function (index) {
-                    let self = this;
-                    // 만약 이미 열려있는 항목을 다시 클릭하면 닫고 (-1로 설정)
-                    if (self.activeIndex === index) {
-                        self.activeIndex = -1;
-                    } 
-                    // 다른 항목을 클릭하면 새 항목을 열기
-                    else {
-                        self.activeIndex = index;
-                    }
-                },
-
                 // 헤더 검색창에 내용 검색했을 때 main 쪽에서 검색되도록
                 fnList: function () {
                     let self = this;
@@ -374,6 +232,30 @@
                         }
                     });
                 },
+
+                // 로그인 세션 사용자의 주소 불러오기
+                fnUserInfo: function () {
+                let self = this;
+                let param = {
+                    userId : self.userId
+                };
+                $.ajax({
+                    url: "/main/userAddr.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) { // data에는 service에서 작성한 info와 result가 담김
+                        self.info = data.info;
+                    }
+                });
+                },
+
+                // 페이지 초기화
+                fnPageSizeChange: function() {
+                    let self = this;
+                    self.page = 1; 
+                    self.fnQnaList();
+                },           
 
                 // 페이지 숫자 클릭시 리스트를 페이지에 맞게 갱신   
                 fnPage : function(num){ // 파라미터로 클릭한 num 보내주기
@@ -395,10 +277,8 @@
             mounted() {
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
-                console.log("로그인 아이디 ===> " + self.userId); // 로그인한 아이디 잘 넘어오나 테스트
-
-                // QnA 목록 가져오기
-                self.fnQnaList();               
+                console.log("로그인 아이디 ===> " + self.userId); // 로그인한 아이디 잘 넘어오나 테스트 
+                self.fnUserInfo();                           
 
 
                 // 헤더에서 keyword (검색어) 이벤트 수신 (주석처리해도 되네?)

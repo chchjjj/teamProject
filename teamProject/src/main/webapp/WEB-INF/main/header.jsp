@@ -46,8 +46,8 @@
                             </button>
                         </div>
                         <div class="user-menu">
-                            <img src="/img/찜.png" alt="찜 목록" @click="fnWishList">
-                            <img src="/img/마이페이지.png" alt="마이페이지" @click="fnMypage">
+                            <img src="/img/찜.png" alt="찜 목록" @click="fnWishList"> <!--하트 그림-->
+                            <img :src="userIcon" :alt="userAlt" @click="fnUserToggle"> <!--로그인/로그아웃-->
                         </div>
                     </div>
                 </div>
@@ -91,10 +91,11 @@
         const header = Vue.createApp({
             data() {
                 return {
-                    // 변수 - (key : value)
-                    
+                    // 변수 - (key : value)                    
                     keyword: "", // 검색어
                     userId: "${sessionId}", // 로그인 했을 시 전달 받은 아이디
+                    userIcon : "", // 로그인 상태에 따라 이미지 변경
+                    userAlt: "",  // 로그인 상태 이미지 대체 텍스트
                 };
             },
             methods: {
@@ -123,7 +124,7 @@
                     
                 },
 
-                // 위시리스트(하트) 클릭 시
+                // 위시리스트(하트) 클릭 시 (오른쪽 상단)
                 fnWishList: function () {
                     let self = this;
                     if(self.userId == "" || self.userId == null){
@@ -135,7 +136,52 @@
                     }
                 },
 
-                // 마이페이지 클릭 시 (사람 이모티콘 or 메뉴 '마이페이지')
+                // 사람모양 & 전원모양 클릭 시 (로그인 / 로그아웃 토글)
+                fnUserToggle: function () {
+                    let self = this;
+
+                    // 세션 정보가 없을 경우 → 로그인 페이지로 이동
+                    if (self.userId == "" || self.userId == null) {
+                        location.href = "/user/login.do";                       
+                    }
+
+                    // 세션 정보가 있을 경우 → 로그아웃 실행
+                    else if (confirm("로그아웃 하시겠습니까?")) {
+                        self.fnLogout();
+                    }
+                },
+
+                // 로그아웃 기능
+                fnLogout: function () {
+                    let self = this;
+                    let param = {                       
+                    };
+                    $.ajax({
+                        url: "/user/logout.dox", // 로그아웃 url 주소
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            alert(data.msg);                            
+                            self.setUserIcon(); // 아이콘도 로그인용으로 변경
+                            location.href="/main.do";    
+                        }
+                    });
+                },
+
+                 // 로그인 상태에 따른 아이콘 이미지 설정
+                setUserIcon: function () {
+                    let self = this;
+                    if (self.userId == "" || self.userId == null) {
+                        self.userIcon = "/img/마이페이지.png"; // 로그인 전 아이콘
+                        self.userAlt = "로그인 아이콘";
+                    } else {
+                        self.userIcon = "/img/로그아웃.png"; // 로그인 상태 아이콘
+                        self.userAlt = "로그아웃 아이콘";
+                    }
+                },
+
+                // '마이페이지' 메뉴 클릭 시 
                 fnMypage: function () {
                     let self = this;
                     if(self.userId == "" || self.userId == null){
@@ -149,8 +195,21 @@
 
                 // '카테고리' 메뉴에서 각 하위 메뉴 클릭 시
                 fnCategory: function(categoryName) {
+
+                    // 현재 페이지 경로 확인
+                    const currentPath = window.location.pathname;
+
                     // 선택한 카테고리를 main으로 전달
-                    window.emitter.emit('categoryClick', categoryName);
+                    //window.emitter.emit('categoryClick', categoryName);
+
+                    if (currentPath === "/main/main.do") {
+                        // main 페이지면 emit만 
+                        emitter.emit('categoryClick', categoryName);
+                    } else {
+                        // main 페이지가 아니면 main.do로 이동
+                        location.href = "/main.do?category=" + encodeURIComponent(categoryName);
+                    }  
+
                 },
 
                 // '베스트' 메뉴에서 하위 1, 2, 3위 각 클릭 시
@@ -174,7 +233,6 @@
                         alert("로그인 후 이용해주세요!");
                         location.href="/user/login.do"; // 로그인 페이지 이동
                     } else {
-                        alert("로그인 된 상태입니다.(화면구현중)");
                         pageChange("/applyStore.do", { userId: self.userId }); 
                     }
                 },
@@ -191,6 +249,7 @@
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
                 console.log(self.userId); // 로그인 아이디 있나 콘솔 찍어보기
+                self.setUserIcon(); // 로그인/로그아웃 아이콘 반영
             }
         });
 
