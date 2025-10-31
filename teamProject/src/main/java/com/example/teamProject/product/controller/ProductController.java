@@ -34,7 +34,7 @@ public class ProductController {
         return "/product/cart";
     }
 	
-	@RequestMapping("/product/wish.do") 
+	@RequestMapping("/product/wishlist.do") 
     public String wish(Model model) throws Exception{
 
         return "/product/wishList";
