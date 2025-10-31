@@ -60,5 +60,10 @@
 		WHERE CART_ID = #{cartId}
 	</delete>
 	
+<!--	<insert id="insertCart" parameterType="hashmap">
+		INSERT INTO CART_OPTION_TBL
+		VALUES(SEQ_CART_OPT_ID.NEXTVAL, )
+	</insert>-->
+	
 	
 </mapper>

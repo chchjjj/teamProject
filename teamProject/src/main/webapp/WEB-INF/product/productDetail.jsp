@@ -278,7 +278,8 @@
                             });
                         }
                     }
-                    
+					subOptionList = JSON.stringify(subOptionList);
+					
                     let param = {
                         userId: self.userId,
                         proNo: self.proNo,
@@ -289,15 +290,16 @@
                         subOptionList: subOptionList
                     };
                     console.log("장바구니 전송 데이터:", param);
-                    // $.ajax({
-                    //     url: "",
-                    //     dataType: "json",
-                    //     type: "POST",
-                    //     data: param,
-                    //     success: function (data) {
+					console.log("subOptionList", subOptionList);
+                    $.ajax({
+                        url: "/product/cartInsert.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
 
-                    //     }
-                    // });
+                        }
+                    });
                 },
                 // 그룹화 함수
                 groupOptions() {

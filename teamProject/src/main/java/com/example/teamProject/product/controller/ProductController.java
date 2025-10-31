@@ -1,6 +1,7 @@
 package com.example.teamProject.product.controller;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.teamProject.product.dao.ProductService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 @Controller
@@ -74,6 +77,19 @@ public class ProductController {
 	public String cartDelete(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap = ProductService.deleteCart(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/product/cartInsert.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String cartInsert(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		String json = map.get("subOptionList").toString(); 
+		ObjectMapper mapper = new ObjectMapper();
+		List<HashMap<String, Object>> list = mapper.readValue(json, new TypeReference<List<HashMap<String, Object>>>(){});
+		map.put("list", list);
+		resultMap = ProductService.insertCart(map);
 		return new Gson().toJson(resultMap);
 	}
 }

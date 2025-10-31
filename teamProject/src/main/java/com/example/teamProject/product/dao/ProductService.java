@@ -86,4 +86,24 @@ public class ProductService {
 		return resultMap;
 		
 	}
+	
+	public HashMap<String, Object> insertCart(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		List<HashMap<String, Object>> list = (List<HashMap<String, Object>>) map.get("list");
+		
+		System.out.println(map);
+		for(int i=0; i<list.size(); i++) {
+			// mapper.insert~~~
+			
+			HashMap<String, Object> inputMap = list.get(i);
+			// inputMap.put("cartId", "insert후에 나온 키 값");
+			System.out.println(i+1 + "번째 맵 ==> " + inputMap);
+//			ProductMapper.insertCart(inputMap);
+		}
+		
+		return resultMap;
+		
+	}
 }
