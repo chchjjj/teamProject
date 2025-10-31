@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.teamProject.admin.mapper.AdminMapper;
 import com.example.teamProject.admin.model.Admin;
@@ -55,14 +56,28 @@ public class AdminService {
 		return resultMap;
 	}
 	
-	
+	@Transactional
 	public HashMap<String, Object> UpdateUser(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
 		
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		int cnt= adminMapper.userUpdate(map);
-		resultMap.put("result","success");
-		return resultMap;
+		try {
+			int cnt= adminMapper.userUpdate(map);
+			int cnt2=adminMapper.sellerRoleUpdate(map);
+		        if (cnt > 0 && cnt2 > 0) {
+		            resultMap.put("result", "success");
+		        } else if (cnt > 0) {
+		            resultMap.put("result", "fail");
+		        } else {
+		            resultMap.put("result", "fail");
+		        }
+		        
+		    } catch (Exception e) {
+		        resultMap.put("result", "fail");
+		        System.out.println(e.getMessage());
+		    }
+		    
+		    return resultMap;
 	}
 	
 	

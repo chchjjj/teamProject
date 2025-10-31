@@ -25,6 +25,7 @@ public class Admin {
     private String rejectReason;
     private String membership;
     private String regDate;
+    private String passDate;
     
 	
 	
@@ -98,5 +99,17 @@ public class Admin {
     private String answerDate;
 
 	
+    //광고
+    private int adId;
+    private String adName;
+    private String startDate;
+    private String endDate;
+    private String adType;
+    private String linkUrl;
+    private int clicks;
+    private int clickUnitCost;
+    private String adStatus;
 	
+    
+    //광고 
 }

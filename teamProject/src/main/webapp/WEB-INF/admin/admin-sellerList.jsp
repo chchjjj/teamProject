@@ -99,6 +99,7 @@
                             <input type="text" v-model="keyWord">
                             <button @click="fnSellerList">검색</button>
                         </div>
+                        <div><input type="checkbox" @click="fnApp">입점신청서 관리</div>
                         <!--태이블-->
                         <table>
                             <tr>
@@ -111,8 +112,9 @@
                                 <th>입점 승인여부</th>
                                 <th>가입일자</th>
                                 <th>입점거절 사유</th>
-                                <th>맴버십 가입 여부 </th>  
-                                <th>가게승인 일자</th>
+                                <th>맴버십 가입 여부 </th>
+                                <td>등록 일자</td>  
+                                <th v-if="flgApp===false">가게승인 일자</th>
                                 <th>수정</th>  
                             </tr>
                             <tr v-for="seller in sellerList">
@@ -122,12 +124,31 @@
                                 <td>{{seller.userId}}</td>
                                 <td>{{seller.businessNo}}</td>
                                 <td>{{seller.storeAddr}}</td>
-                                <td>{{seller.storePass}}</td>
+                                <td>
+                                    <span v-if="seller.storePass==='P'">승인</span>
+                                    <span v-if="seller.storePass==='G'">승인대기</span>
+                                    <span v-if="seller.storePass==='R'">거절</span>
+                                </td>
                                 <td>{{seller.joinCdate}}</td>
-                                <td>{{seller.rejectReason}}</td> 
-                                <td>{{seller.membership}}</td> 
-                                <td>{{seller.regDate}}</td> 
-                                <td><button @click="fnEdit(seller.storeId)">수정</button></td> 
+                                <td>
+                                    <span v-if="seller.rejectReason===null">-</span>
+                                    <span v-else>{{seller.rejectReason}}</span>
+                                </td> 
+                                <td>
+                                    <span v-if="seller.membership==='Y'">가입</span>
+                                    <span v-if="seller.membership==='N'">미가입</span>
+                                </td> 
+                                <td>{{seller.regDate}}</td>
+                                <td v-if="flgApp===false">
+                                    <span v-if="seller.passDate">{{seller.passDate}}</span>
+                                    <span v-else>-</span>
+                                </td>
+                                <td>
+                                    <button @click="fnEdit(seller.storeId)">
+                                        <span v-if="flgApp===true">신청내역 보기</span>
+                                        <span v-if="flgApp===false">수정</span>
+                                    </button>
+                                </td> 
                             </tr>
                         </table>
                     </div>
@@ -180,7 +201,10 @@
                     pageSize: 10,//뿌렸을 때 한 페이지에 몇 행
                     page: 1,//지금 페이지
                     pageRange: 5,//한 화면에 몇개 페이지 수 나오게 한다
-                    pageNum: 0//목록 전체를 가져오려면 합하여 몇 페지
+                    pageNum: 0,//목록 전체를 가져오려면 합하여 몇 페지
+
+                    //신청서 관리
+                    flgApp:false
 
                 };
             },
@@ -191,6 +215,7 @@
                     let param = {
                         option: self.option,
                         keyWord: self.keyWord,
+                        flgApp:self.flgApp,
                         offset: (self.page - 1) * self.pageSize,
                         fetchRows: self.pageSize,
                     };
@@ -305,6 +330,13 @@
                     if (self.page < self.pageNum) {
                         self.page++;
                     }
+                    self.fnSellerList();
+
+                },
+
+                fnApp:function(){
+                    let self=this;
+                    self.flgApp = !self.flgApp;
                     self.fnSellerList();
 
                 },

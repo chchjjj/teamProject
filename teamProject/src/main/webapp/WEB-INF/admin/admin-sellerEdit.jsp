@@ -119,7 +119,7 @@
                                 <th>가입일자</th>
                                 <td>{{seller.joinCdate}}</td>
                             </tr>
-                            <tr v-if="seller.rejectReason==='R'">
+                            <tr v-if="seller.storePass==='R'||seller.storePass==='G'">
                                 <th>입점거절 사유</th>
                                 <td><input type="text" v-model="rejectReason"></td>
                             </tr>

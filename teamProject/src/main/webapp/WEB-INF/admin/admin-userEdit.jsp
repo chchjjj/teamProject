@@ -1,33 +1,42 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-    <!DOCTYPE html>
-    <html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사용자관리</title>
+    <!-- 관리자 스타일시트 -->
+    <link rel="stylesheet" href="/css/admin-style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js" 
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" 
+            crossorigin="anonymous"></script>
+    <!-- Vue.js -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- 페이지 변경 유틸리티 -->
+    <script src="/js/page-change.js"></script>
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>사용자정보수정</title>
-        <script src="https://code.jquery.com/jquery-3.7.1.js"
-            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-        <style>
-            table,
-            tr,
-            td,
-            th {
-                border: 1px solid black;
-                border-collapse: collapse;
-                padding: 5px 10px;
-                text-align: center;
-            }
+    <style>
+        .userEdit{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);  
+        }
 
-            th {
-                background-color: beige;
-            }
+        .title{
+            font-size:30px;
+            font-weight: bold;
+            text-align: center;
+            color:#3E2723;
+            margin-bottom:23px;
 
-            tr:nth-child(even) {
-                background-color: azure;
-            }
-        </style>
+        }
+    </style>
     </head>
 
     <body>
@@ -74,15 +83,17 @@
                 </div>
 
                 <!--메인 페이지 바디 내용-->
-                <div class="User">
+                <div class="userEdit">
                     <!--사용자수정 페이지-->
                     <div>
                         <!--구역이름-->
-                        <div>
+                        <div class="title">
                             사용자 정보 수정
                         </div>
                         <!--아이콘-->
-                        <div></div>
+                        <div>
+
+                        </div>
                         <!--태이블-->
                         <table>
                             <tr>
@@ -121,11 +132,9 @@
                             <tr>
                                 <th>권한</th>
                                 <td>
-                                    <select v-model="role">
-                                        <option value="S">판매자</option>
-                                        <option value="C">구매자</option>
-                                        <option value="A">관리자</option>
-                                    </select>
+                                    <span v-if="user.role==='S'">판매자</span>
+                                    <span v-if="user.role==='C'">구매자</span>
+                                    <span v-if="user.role==='A'">관리자</span>
                                 </td>  
                             </tr>
                         </table>
