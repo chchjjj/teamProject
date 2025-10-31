@@ -49,7 +49,7 @@
         </div>
         <div v-else>
             <div>
-                <label>비밀번호 : <input v-model="userPass"></label>
+                <label>비밀번호 : <input v-model="userPass" placeholder="영문 숫자 특수기호 조합 8자리 이상"></label>
             </div>
             <div>
                 <label>비밀번호 확인 : <input v-model="userPass2"></label>
@@ -133,6 +133,11 @@
                 },
                 fnChangePwd: function () {
                     let self = this;
+                    let regPassword = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,500}$/; //비밀번호 정규식 (영문 숫자 특수기호 조합 8자리 이상 500자리 이하)
+                    if(!regPassword.test(self.userPass)) {
+                    alert('비밀번호 형식에 따라 정확히 입력해주세요');
+                    return;
+                    }
                     if (self.userPass != self.userPass2) {
                         alert("비밀번호가 다릅니다!");
                         return;
@@ -150,6 +155,7 @@
                             console.log(data);
                             if (data.result == "success") {
                                 alert(data.msg);
+                                location.href="/main.do";
                             } else {
                                 alert(data.msg);
                             }

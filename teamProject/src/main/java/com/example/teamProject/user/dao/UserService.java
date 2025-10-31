@@ -179,7 +179,6 @@ public class UserService {
 			
 			System.out.println(map);
 			
-			resultMap.put("result", "success");
 		}catch (Exception e) {
 			resultMap.put("result", "fail");
 			System.out.println(e.getMessage());
