@@ -29,10 +29,7 @@
     <div id="app">
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
 
-        <!-- 비밀번호 정규식 제대로 작동 안해서 주석 처리 -->
-        <!-- 이메일 정규식 향후 추가 -->
-        <!-- 문자 인증 기능 잠시 정지시킴 -->
-        <!-- 파일 첨부는 나중에 구매자가 판매자로 회원가입할 때 사용하면 될 듯 -->
+        <!-- 문자 인증 안 해도 되게끔 주석처리 -->
         <div>
             <label>아이디 :
                 <input v-if="!userIdFlg" v-model="userId">
@@ -62,9 +59,9 @@
             <input class="phone" v-model="phone3">
         </div>
 
-        <div v-if="!joinFlg">
+        <div v-if="!smsFlg">
             문자인증 : <input v-model="inputNum" :placeholder="timer">
-            <template v-if="!smsFlg">
+            <template v-if="!sendMessageFlg">
                 <button @click="fnSms">인증번호 전송</button>
             </template>
             <template v-else>
@@ -74,12 +71,6 @@
         <div v-else style="color : red;">
             문자인증이 완료되었습니다.
         </div>
-
-        <!-- multiple 속성을 주면 다중 -->
-        <!-- <div>
-            파일첨부: <input type="file" id="file1" name="file1" accept=".jpg, .png">
-        </div> -->
-
 
         <div>
             <button @click="fnJoin">회원가입</button>
@@ -109,12 +100,12 @@
                 phone1: "",
                 phone2: "",
                 phone3: "",
+                userIdFlg: false, //아이디 중복 체크 유무
                 inputNum: "", //문자인증 번호
-                smsFlg: false, //문자인증 메세지 전송 여부
+                sendMessageFlg: false, //문자인증 메세지 전송 여부
                 timer: "",
                 count: 180,
-                userIdFlg: false, //아이디 중복 체크 유무
-                joinFlg: false, //문자 인증 유무
+                smsFlg: false, //문자 인증 유무
                 ranStr: "" //문자 인증 번호
             };
         },
@@ -162,7 +153,7 @@
                         if (data.res.statusCode == "2000") {
                             alert("문자 전송 완료");
                             self.ranStr = data.ranStr;
-                            self.smsFlg = true;
+                            self.sendMessageFlg = true;
                             self.fnTimer();
                         } else {
                             alert("잠시 후 다시 시도해주세요.");
@@ -233,11 +224,9 @@
                     return;
                 }
 
-                //문자 인증 기능 잠시 정지 시킴
-
                 //문자 인증이 완료되지 않으면 
                 //회원가입 불가능(안내문구 출력)
-                // if(!self.joinFlg){
+                // if(!self.smsFlg){
                 //     alert("문자 인증을 진행해주세요.");
                 //     return;
                 // }
@@ -259,11 +248,7 @@
                     success: function (data) {
                         if (data.result == "success") {
                             alert("회원가입 완료");
-                            var form = new FormData();
-                            form.append("file1", $("#file1")[0].files[0]);
-                            form.append("id", data.id); // 임시 pk
-                            self.upload(form);
-                            //location.href = "/member/login.do";
+                            location.href = "/user/login.do";
                         }
                         else {
                             alert("오류가 발생했습니다.");
@@ -273,25 +258,11 @@
                     }
                 });
             },
-                // 파일 업로드
-            upload: function (form) {
-                var self = this;
-                $.ajax({
-                    url: "/member/fileUpload.dox"
-                    , type: "POST"
-                    , processData: false
-                    , contentType: false
-                    , data: form
-                    , success: function (data) {
-                        console.log(data);
-                    }
-                });
-            },
             fnSmsAuth: function () {
                 let self = this;
                 if (self.ranStr == self.inputNum) {
                     alert("문자인증이 완료되었습니다.");
-                    self.joinFlg = true;
+                    self.smsFlg = true;
                 } else {
                     alert("문자인증에 실패했습니다.");
                 }

@@ -46,7 +46,7 @@
         <!-- 아이디를 알려주는 출력문 -->
         <div v-else>
             {{userName}}님의 아이디는 
-            {{userId}}
+            {{info.userId}}
             입니다.
         </div>
     </div>
@@ -58,7 +58,7 @@
         data() {
             return {
                 // 변수 - (key : value)
-                userId: "",
+                info: {},
                 userName: "",
                 phone1: "",
                 phone2: "",
@@ -114,16 +114,35 @@
             },
             fnSmsAuth: function () {
                 let self = this;
-                if(!self.smsFlg){
+                if(!self.sendMessageFlg){
                     alert("문자 인증을 진행해주세요.");
                     return;
                 }
                 if (self.ranStr == self.inputNum) {
                     alert("문자인증이 완료되었습니다.");
                     self.smsFlg = true;
+                    self.fnFind(); //db에서 id 가져오는 함수 실행
                 } else {
                     alert("문자인증에 실패했습니다.");
                 }
+            },
+            fnFind: function(){
+                let self = this;
+                let phone = self.phone1 + "-" + self.phone2 + "-" + self.phone3;
+                let param = {
+                    phone: phone,
+                    userName: self.userName
+                };
+                $.ajax({
+                    url: "/user/findId.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        console.log(data);
+                        self.info = data.info;
+                    }
+                });
             }
             
         }, // methods
