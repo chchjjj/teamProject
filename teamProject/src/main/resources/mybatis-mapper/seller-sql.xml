@@ -70,7 +70,17 @@
         ORDER_MONTH
 </select>
 
-
+<select id="selectMonthlySales" resultType="hashmap" parameterType="hashmap">
+      SELECT 
+        TO_CHAR(o.order_date, 'MM') AS MONTH,
+        SUM(o.total_price) AS TOTAL
+    FROM order_tbl o
+    INNER JOIN seller_info_tbl s
+        ON o.store_name = s.store_name
+    WHERE s.user_id = #{userId}  <!-- 여기에 특정 판매자 아이디 조건 추가 -->
+    GROUP BY TO_CHAR(o.order_date, 'MM')
+    ORDER BY TO_CHAR(o.order_date, 'MM')
+    </select>
 
 </mapper>
 

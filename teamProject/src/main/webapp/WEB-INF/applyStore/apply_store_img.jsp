@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ include file="/WEB-INF/main/header.jsp" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -7,6 +8,7 @@
     <title>가게 이미지 업로드</title>
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
     <style>
         body {
             font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
