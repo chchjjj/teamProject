@@ -133,6 +133,22 @@ public class AdminService {
 			return resultMap;
 		}
 		
+		//판매자 매출 상세
+		public HashMap<String, Object> SelectSales(HashMap<String, Object> map) {
+			// TODO Auto-generated method stub
+			HashMap<String, Object> resultMap = new HashMap<String, Object>();
+			try {
+				List <HashMap> list= adminMapper.salesSelect(map);
+				resultMap.put("list",list);
+				resultMap.put("result","success");
+			}catch(Exception e) {
+				resultMap.put("result","fail");
+				System.out.println(e.getMessage());		
+			}	
+			 return resultMap;
+					
+		}
+		
 		
 		
 		

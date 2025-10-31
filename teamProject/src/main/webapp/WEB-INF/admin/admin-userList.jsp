@@ -121,14 +121,23 @@
                                 <td>{{user.phone}}</td>
                                 <td>{{user.email}}</td>
                                 <td>{{user.userAddr}}</td>
-                                <td>{{user.userStatus}}</td>
+                                <td>
+                                    <span v-if="user.userStatus==='O'">활동</span>
+                                    <span v-if="user.userStatus==='X'">탈퇴</span>
+                                </td>
                                 <td>{{user.joinCdate}}</td>
-                                <td>{{user.role}}</td> 
+                                <td>
+                                    <span v-if="user.role==='S'">판매자</span>
+                                    <span v-if="user.role==='C'">구매자</span>
+                                    <span v-if="user.role==='A'">관리자</span>
+                                </td> 
                                 <td><button @click="fnEdit(user.userId)">수정</button></td> 
                             </tr>
                         </table>
                     </div>
 
+
+                    <!--페이징 구역-->
                     <div>
                         <span v-if="page>1">
                             <button @click="fnPre()">◀</button>
@@ -161,6 +170,8 @@
                     // 변수 - (key : value)
                     userList: [],
                     sessionId: "${sessionId}",
+                
+                    
 
                     //선택
                     selectItem: [],
@@ -257,7 +268,7 @@
                     });
                 },
 
-                //수정 페이지로 이동
+                //수정으로로 이동
                 fnEdit: function (userId) {
                     pageChange("/admin/useredit.do",{userId:userId});
                 },
@@ -267,7 +278,7 @@
                 },
 
 
-                //페이징 메소드:모든 수량의 페이징을 처리
+                //페이징 메소드:화면에 나오는 페이지를 자동적으로 합산 모든 수량의 페이징을 처리
                 //이게 걱정할 필요가 없습니다. 원래 실습대로 다하면 자동적으로 계산됩니다.
                 fnpageRange: function () {
                     let self = this;

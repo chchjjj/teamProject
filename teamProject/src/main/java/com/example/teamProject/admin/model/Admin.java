@@ -86,6 +86,16 @@ public class Admin {
 	
 	// 하위옵션
 	private String valueName;
+	
+	
+	
+	// 판매자 정보 (QnA 관련)	
+		
+	private int questionId;
+    private String questionContent;
+    private String questionDate;
+    private String answerContent;
+    private String answerDate;
 
 	
 	
