@@ -96,7 +96,7 @@
                 <a href="javascript:;" onclick="location.href='/seller/sales.do'">매출</a>
             </li>
             <li class="<%= currentUri.contains("/seller/salesHistory.do") ? "active" : "" %>">
-                <a href="#">판매 내역</a>
+                <a href="javascript:;" onclick="location.href='/seller/salesHistory.do'">판매 내역</a>
             </li>
             <li class="<%= currentUri.contains("/seller/customer.do") ? "active" : "" %>">
                 <a href="#">고객 관리(채팅)</a>

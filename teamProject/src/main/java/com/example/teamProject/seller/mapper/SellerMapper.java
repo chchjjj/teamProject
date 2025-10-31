@@ -27,4 +27,8 @@ public interface SellerMapper {
 	//월별 매월 가져오는 리스트
 	List<HashMap<String, Object>> selectMonthlySales(HashMap<String, Object> map);
 	
+	//판매 내역 가져오는 리스트
+	List<HashMap<String, Object>> selectOrderList(HashMap<String, Object> map);
+	//주문 번호로 상세 보여주기
+	List<HashMap<String, Object>> selectOrderDetail(HashMap<String, Object> map);
 }
