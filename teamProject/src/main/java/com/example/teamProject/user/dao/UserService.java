@@ -177,13 +177,32 @@ public class UserService {
 			}
 			
 			
-			System.out.println(map);
+			
 			
 		}catch (Exception e) {
 			resultMap.put("result", "fail");
 			System.out.println(e.getMessage());
 		}
 		
+		return resultMap;
+	}
+
+	public HashMap<String, Object> findId(HashMap<String, Object> map) {
+		
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+			User user = userMapper.selectFindId(map);
+			resultMap.put("result", "true");
+			resultMap.put("info", user);
+		} catch (Exception e) {
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
+		}
+		
+		
+		
+
 		return resultMap;
 	}
 

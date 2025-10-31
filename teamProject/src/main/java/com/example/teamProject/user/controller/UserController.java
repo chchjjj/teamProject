@@ -114,4 +114,14 @@ public class UserController {
 
 		return new Gson().toJson(resultMap);
 	}
+	
+	@RequestMapping(value = "/user/findId.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String findId(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		resultMap = userService.findId(map);
+
+		return new Gson().toJson(resultMap);
+	}
 }
