@@ -16,7 +16,9 @@
         <!-- mitt 불러오기 -->
         <!-- <script src="https://unpkg.com/mitt/dist/mitt.umd.js"></script>  -->         
         
-
+        <!--카카오맵 api-->
+        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=1dea2458084bcfa27a4ea450ca55655b&libraries=services"></script>
+        
         <style>
             /* 제목 스타일 */
             .title {
