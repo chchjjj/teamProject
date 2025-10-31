@@ -18,30 +18,36 @@ public class MainController {
 	
 	@Autowired
 	MainService mainService;
-
+	
+	// 메인페이지
 	@RequestMapping("/main.do") 
     public String main(Model model) throws Exception{
-
         return "/main/main";
     }
 	
+	// 헤더
 	@RequestMapping("/main/header.do") 
     public String header(Model model) throws Exception{
-
         return "/main/header";
     }
 	
+	// 풋터
 	@RequestMapping("/main/footer.do") 
     public String footer(Model model) throws Exception{
-
         return "/main/footer";
     }
 	
+	// 헤더메뉴 QnA
 	@RequestMapping("/main/qna.do") 
     public String qna(Model model) throws Exception{
-
         return "/main/qna";
     }
+	
+	// 메인페이지 내 '내 주변 디저트 찾기'
+	@RequestMapping("/main/storeFinder.do") 
+	   public String storeFind(Model model) throws Exception{
+		return "/main/storeFinder";
+	   }
 	
 	// 메인 화면 상품 리스트
 	@RequestMapping(value = "/main/list.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -57,8 +63,19 @@ public class MainController {
 	@ResponseBody
 	public String qnaList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		System.out.println("Controller userId => " + map.get("userId"));
 		resultMap = mainService.getQnaList(map);
 		return new Gson().toJson(resultMap);
+	}
+	
+	// '내 주변 디저트 찾기'에서 로그인한 고객 주소 불러오기 위해
+	@RequestMapping(value = "/main/userAddr.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String userAddr(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		System.out.println(map);
+		resultMap = mainService.getUser(map); 		
+		return new Gson().toJson(resultMap); // 결과를 resultMap에 담음
 	}
 	
 }

@@ -16,4 +16,9 @@ public interface MainMapper {
 	
 	// QnA 게시글 전체 개수 구하기 (페이징 위해)
 	int selectQnaCnt(HashMap<String, Object> map);
+	
+	// '내 주변 디저트찾기'에서 로그인세션 특정 고객 정보 불러오기
+	Main selectUser(HashMap<String, Object> map);
+	
+	
 }

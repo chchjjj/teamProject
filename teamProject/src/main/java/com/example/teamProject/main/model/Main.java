@@ -6,6 +6,7 @@ public class Main {
 	// 사용자 정보
 	private String userId;
 	private String userName;
+	private String userAddr;
 	
 	// 상품 정보
 	private int proNo;
