@@ -55,7 +55,14 @@
                                     <p class="price">{{infoList.price}} 원~</p>
                                     <br>
                                     <p class="shipping-fee">배송비 {{infoList.deliveryFee}}</p>
-                                    <img src="/img/좋아요누르기전.png" alt="찜 목록"></a>
+
+                                    <span v-if="isWished">
+                                        <img src="/img/좋아요누른후.png" alt="찜 완료" @click="fnwish" class="wish-icon">
+                                    </span>
+                                    <span v-else class="like">
+                                        <img src="/img/좋아요누르기전.png" alt="찜하기" @click="fnwish" class="wish-icon">
+                                    </span>
+
                                 </div>
 
                                 <div class="delivery-date-selection">
@@ -69,8 +76,7 @@
                                     <div class="option-item" v-for="topOption in groupedOptions"
                                         :key="topOption.topOptionId">
 
-                                        <select v-model="selectedOptions[topOption.topOptionId]" class="form-select"
-                                            >
+                                        <select v-model="selectedOptions[topOption.topOptionId]" class="form-select">
 
                                             <option :value="null" disabled selected>
                                                 :: {{topOption.optionName}} ::
@@ -99,12 +105,26 @@
                                 <div class="lettering-input-area" v-if="infoList.lettering === 'Y'">
                                     <label>문구:<input v-model="letteringText" placeholder="레터링 문구를 입력하세요."></label>
                                 </div>
-
+                                <div class="chat-selection-area" v-if="infoList.isChatEnabled === 'Y'">
+                                    <label style="display: block; margin-bottom: 10px; font-weight: bold;">
+                                        채팅 상담 신청
+                                    </label>
+                                    <div class="chat-toggle-buttons">
+                                        <button :class="{ 'selected': isChatRequested === 'Y' }"
+                                            @click="isChatRequested = 'Y'">
+                                            채팅 신청 (추가금액 발생 가능)
+                                        </button>
+                                        <button :class="{ 'selected': isChatRequested === 'N' }"
+                                            @click="isChatRequested = 'N'">
+                                            채팅 필요 X
+                                        </button>
+                                    </div>
+                                </div>
                                 <div class="total-price-display">
                                     <div style="display: flex; align-items: center; gap: 10px;">
                                         <p>총 금액: <strong>{{ totalPrice.toLocaleString() }}</strong> 원</p>
 
-                                        <!-- ✅ 전체 수량 조절 버튼 -->
+                                        <!--  전체 수량 조절 버튼 -->
                                         <div class="quantity-selector">
                                             <button @click="decreaseTotalQuantity"> &lt; </button>
                                             <div class="quantity-display">{{ totalQuantity }}</div>
@@ -113,25 +133,18 @@
                                     </div>
                                 </div>
                                 <div class="action-buttons">
-                                    <button class="buy-btn">구매</button>
+                                    <button class="buy-btn" @click="fnBuy">구매</button>
                                     <button class="cart" @click="fnCart">장바구니</button>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="tab-menu">
-                            <button class="tab-btn active">상세정보</button>
-                            <button class="tab-btn">리뷰</button>
-                            <button class="tab-btn">QnA</button>
-                        </div>
-
-                        <div class="tab-content">
-                        </div>
                     </main>
                 </div>
 
             </div>
-            <%@ include file="/WEB-INF/main/footer.jsp" %>
+            <%@ include file="/WEB-INF/product/productDetail-tab.jsp" %>
+                <%@ include file="/WEB-INF/main/footer.jsp" %>
     </body>
 
     </html>
@@ -146,6 +159,7 @@
                     infoList: {},
                     topList: [],
                     allOptList: [],
+                    isChatRequested: 'N',
 
                     // 1. **핵심**: 화면 출력을 위한 그룹화된 옵션 목록
                     groupedOptions: [],
@@ -171,7 +185,9 @@
                     ],
                     letteringText: "",
                     // 전체 상품 수량
-                    totalQuantity: 1
+                    totalQuantity: 1,
+
+                    isWished: ''
                 };
             },
             computed: {
@@ -207,6 +223,15 @@
             },
             methods: {
                 // 함수(메소드) - (key : function())
+                fnBuy: function () {
+                    let self = this;
+                    if (self.isChatRequested === 'Y') {
+                        alert('채팅연결'); 
+                    }else{
+                        alert(self.selectedDate);
+                    }
+                    
+                },
                 fnInfo: function () {
                     let self = this;
                     let param = {
@@ -279,19 +304,19 @@
                             });
                         }
                     }
-					subOptionList = JSON.stringify(subOptionList); // 백앤드로 리스트를 넘기는게 안되므로 리스트를 제이슨형태로 변환 후 파람으로 넘겨줘야함
-					
+                    subOptionList = JSON.stringify(subOptionList); // 백앤드로 리스트를 넘기는게 안되므로 리스트를 제이슨형태로 변환 후 파람으로 넘겨줘야함
+
                     let param = {
                         userId: self.userId,
                         proNo: self.proNo,
                         storeId: self.infoList.storeId,
                         cartQuantity: self.totalQuantity,
                         totalPrice: self.totalPrice,
-                        letteringText: self.letteringText, 
+                        letteringText: self.letteringText,
                         subOptionList: subOptionList // 옵션 리스트
                     };
                     console.log("장바구니 전송 데이터:", param);
-					console.log("subOptionList", subOptionList);
+                    console.log("subOptionList", subOptionList);
                     $.ajax({
                         url: "/product/cartInsert.dox",
                         dataType: "json",
@@ -385,6 +410,55 @@
                         this.datePicker.open();
                     }
                 },
+                fnCheckWish: function () { // 찜 여부 확인
+                    let self = this;
+                    $.ajax({
+                        url: "/product/checkWishlist.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: { userId: self.userId, proNo: self.proNo },
+                        success: function (data) {
+                            self.isWished = data.isWished; // true or false
+
+                        }
+                    });
+                },
+                fnwish: function () {
+                    let self = this;
+                    if (self.isWished) {
+                        let param = {
+                            userId: self.userId,
+                            proNo: self.proNo
+                        };
+                        $.ajax({
+                            url: "/product/WishlistDel.dox",
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                alert("찜 목록에서 제거되었습니다.");
+                                location.reload();
+                            }
+                        });
+                    }
+                    else {
+                        let param = {
+                            userId: self.userId,
+                            proNo: self.proNo
+                        };
+                        $.ajax({
+                            url: "/product/WishlistAdd.dox",
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                alert("찜 목록에서 추가되었습니다.");
+                                location.reload();
+                            }
+                        });
+                    }
+                }
+
             }, // methods
             mounted() {
                 // 처음 시작할 때 실행되는 부분
@@ -393,6 +467,7 @@
                 self.fnInfo();
                 self.fnTopOpt();
                 self.fnAllOpt();
+                self.fnCheckWish();
 
                 // 임시로, 모든 데이터가 로드될 시간을 주고 그룹화 함수 실행 (비동기 이슈 발생 가능)
                 setTimeout(() => {

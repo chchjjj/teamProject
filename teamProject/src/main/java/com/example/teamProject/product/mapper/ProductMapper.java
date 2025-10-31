@@ -33,4 +33,22 @@ public interface ProductMapper {
 	
 	// 장바구니 추가(장바구니 옵션 테이블)
 	int insertCartOpt(HashMap<String, Object> inputMap);
+	
+	// 찜 여부 확인
+    int checkWishlist(HashMap<String, Object> map);
+
+    // 찜 추가
+    int addWishlist(HashMap<String, Object> map);
+
+    // 찜 삭제
+    int deleteWishlist(HashMap<String, Object> map);
+    
+    // 헤더 메뉴 중 QnA 접속 및 리스트
+ 	List<Main> selectQnaList(HashMap<String, Object> map);
+ 	
+ 	// QnA 게시글 전체 개수 구하기 (페이징 위해)
+ 	int selectQnaCnt(HashMap<String, Object> map);
+ 	
+ 	// 리뷰
+ 	List<Product> selectReviewList(HashMap<String, Object> map); 
 }

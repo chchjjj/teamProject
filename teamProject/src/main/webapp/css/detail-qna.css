@@ -1,0 +1,251 @@
+/* QnA 제목 스타일 */
+.qna-title {
+    font-size: 28px;
+    /* 적당히 크고 눈에 띄게 */
+    font-weight: 700;
+    /* 진하게 */
+    color: #333;
+    /* 어두운 색상으로 가독성 확보 */
+    margin-top: 30px;
+    /* 위에 간격 */
+    margin-bottom: 25px;
+    /* 아래(목록 설정)와의 간격 */
+    padding-bottom: 10px;
+    /* 구분선과 텍스트 사이의 간격 */
+    text-align: left;
+    /* 왼쪽 정렬 */
+}
+
+table {
+    width: 100%;
+    /* 테이블 전체 너비 */
+    border-collapse: collapse;
+    /* 테이블 셀 경계선을 하나로 합침 */
+    table-layout: fixed;
+    /* 컬럼 너비를 고정된 비율로 설정 */
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+/* 2. 테이블 헤더와 셀 스타일 */
+th,
+td {
+    padding: 15px 10px;
+    /* 셀 내부 여백을 넓직하게 설정 */
+    border-bottom: 1px solid #eee;
+    /* 하단에 옅은 회색 선 추가 */
+    text-align: center;
+    /* 기본 텍스트는 가운데 정렬 */
+}
+
+table .status-cell {
+    /* 완료, 대기 부분 */
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* 제목은 왼쪽 정렬 */
+table td:nth-child(1) {
+    text-align: center;
+    padding-left: 20px;
+}
+
+table td:nth-child(2) {
+    text-align: left;
+    white-space: nowrap;
+    /* 텍스트가 줄 바꿈 되는 것을 방지 */
+}
+
+/* 답변 p 태그 마진 제거 */
+table .answer-content p {
+    margin: 0;
+    /* 기존 마진 제거 */
+    padding-left: 50px;
+    /* 필요에 따라 line-height를 조정하여 가독성을 높일 수 있습니다. */
+    /* line-height: 1.6; */
+}
+
+
+/* 5. 답변 상태 버튼 스타일 (이미지 '대기', '완료' 부분) */
+table .status-btn {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    min-width: 50px;
+    text-align: center;
+    border: none;
+    cursor: default;
+}
+
+/* 답변 상태별 색상 */
+table .status-btn.waiting {
+    /* '대기' 상태 */
+    background-color: #f0f0f0;
+    color: #666;
+}
+
+table .status-btn.completed {
+    /* '완료' 상태 */
+    background-color: #e9f7ef;
+    /* 옅은 녹색 */
+    color: #27ae60;
+    /* 진한 녹색 */
+    border: 1px solid #27ae60;
+}
+
+/* N개씩 보기 */
+.pageSelect {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    /* 살짝 둥근 모서리 */
+    font-size: 13px;
+    height: 35px;
+    /* 버튼, 입력창과 높이 맞추기 */
+    -moz-appearance: none;
+    appearance: none;
+    background-color: white;
+}
+
+/* '나의 질문' 보기 */
+.myQna {
+    margin-left: 20px;
+}
+
+/* 검색 기능 컨테이너 스타일 */
+.search-area {
+    display: flex;
+    /* 요소들을 한 줄에 정렬 */
+    gap: 10px;
+    /* 요소들 사이의 간격 */
+    justify-content: center;
+    /* 가운데 정렬 (페이지 하단에 적용 시) */
+    align-items: center;
+    margin-top: 30px;
+    /* 목록 위/아래 공간 확보 */
+    margin-bottom: 30px;
+}
+
+/* 드롭다운 (select) 스타일 */
+.search-area select {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    /* 살짝 둥근 모서리 */
+    font-size: 14px;
+    height: 38px;
+    /* 버튼, 입력창과 높이 맞추기 */
+    -webkit-appearance: none;
+    /* 기본 화살표 숨기기 */
+    -moz-appearance: none;
+    appearance: none;
+    background-color: white;
+}
+
+/* 입력 필드 (input) 스타일 */
+.search-area input {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    flex-grow: 1;
+    /* 남은 공간을 채우도록 너비 확장 */
+    max-width: 300px;
+    /* 최대 너비 지정으로 너무 길어지는 것을 방지 */
+    height: 40px;
+}
+
+/* 검색 버튼 (button) 스타일 */
+.search-area button {
+    padding: 8px 15px;
+    background-color: #555;
+    /* 어두운 계열 (헤더 QnA 버튼과 유사하게) */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    height: 38px;
+}
+
+.search-area button:hover {
+    background-color: #333;
+}
+
+.info {
+    margin-left: 30px;
+    font-size: 12px;
+    color: #666;
+}
+/* 리뷰  */
+/* 전체 후기 목록 영역 */
+.review-list {
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* 개별 후기 블록 스타일 */
+.review-block {
+    display: flex; /* 후기 사진과 내용을 옆으로 나란히 배치 */
+    padding: 20px 0;
+    border-bottom: 1px solid #ccc; /* 블록 아래에 회색 구분선 추가 */
+}
+
+/* 마지막 후기 블록은 구분선이 없도록 설정 */
+.review-block:last-child {
+    border-bottom: none;
+}
+
+/* 후기 사진이 들어가는 왼쪽 영역 */
+.review-photo-area {
+    width: 100px; /* 고정된 크기 */
+    height: 100px;
+    background-color: #f0f0f0; /* 배경색 */
+    border: 1px solid #ddd;
+    margin-right: 20px; /* 내용과의 오른쪽 간격 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    color: #666;
+    flex-shrink: 0; /* 내용이 길어져도 이 영역 크기가 줄어들지 않도록 고정 */
+}
+
+/* 후기 텍스트, 별점 등이 들어가는 오른쪽 영역 */
+.review-content-area {
+    flex-grow: 1; /* 남은 공간을 모두 차지하도록 설정 */
+}
+
+/* 닉네임과 작성일이 있는 줄 */
+.review-meta {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #333;
+}
+
+.review-meta .date {
+    margin-left: 10px;
+    color: #666; /* 작성일은 닉네임보다 연한 색으로 */
+}
+
+/* 후기 내용 텍스트 */
+.review-text {
+    margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+}
+
+/* 별점 표시 영역 */
+.rating {
+    font-size: 14px;
+    color: #333;
+}
+
+.rating-value {
+    font-weight: bold;
+    margin-left: 5px;
+}

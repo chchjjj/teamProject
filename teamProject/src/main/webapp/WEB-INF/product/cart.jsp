@@ -86,16 +86,17 @@
                                 </div>
                             </label>
 
-                            <div v-if="groupedCartList.length === 0"
-                                style="text-align: center; padding: 50px; border: 1px solid #ddd; margin-top: 20px;">
-                                <p>장바구니에 담긴 상품이 없습니다.</p>
-                            </div>
+                            <div class="product-selection-section">
+                                <div v-if="groupedCartList.length === 0" class="empty-cart-message">
+                                    <p>장바구니에 담긴 상품이 없습니다.</p>
+                                </div>
 
-                            <div class="order-button-container">
-                                <button class="order-button" @click="fnDel">삭제하기</button>
-                            </div>
-                            <div class="order-button-container">
-                                <button class="order-button">주문하기</button>
+                                <div class="order-button-container">
+                                    <button class="order-button" @click="fnDel">삭제하기</button>
+                                </div>
+                                <div class="order-button-container">
+                                    <button class="order-button">주문하기</button>
+                                </div>
                             </div>
                         </div>
                     </div>

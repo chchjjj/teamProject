@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.teamProject.main.model.Main;
 import com.example.teamProject.product.mapper.ProductMapper;
 import com.example.teamProject.product.model.Product;
 
@@ -112,4 +113,68 @@ public class ProductService {
 		return resultMap;
 		
 	}
+	//	위시리스트(찜)
+	public HashMap<String, Object> checkWishlist(HashMap<String, Object> map) {
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    int count = ProductMapper.checkWishlist(map); // 해당 상품이 위시리스트에 있는지 확인
+	    if (count > 0) {
+	        resultMap.put("isWished", true);
+	    } else {
+	        resultMap.put("isWished", false);
+	    }
+	    resultMap.put("result", "success");
+	    return resultMap;
+	}
+	// 위시리스트 (인서트)
+	public HashMap<String, Object> WishlistInsert(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		int cnt = ProductMapper.addWishlist(map);
+		
+		resultMap.put("result", "success");
+		return resultMap;
+	}
+	// 위시리스트 (딜리트)
+	public HashMap<String, Object> WishlistDelete(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		int cnt = ProductMapper.deleteWishlist(map);
+		
+		resultMap.put("result", "success");
+		return resultMap;
+	}
+	// 리뷰목록
+	public HashMap<String, Object> getReviewList(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+			List<Product> list = ProductMapper.selectReviewList(map);			
+			resultMap.put("list", list); 
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
+		}				
+		return resultMap;
+	}
+	
+	// 헤더 QnA 클릭 시 QnA 전체목록 불러오기 & 게시글 개수세기(페이징)
+		public HashMap<String, Object> getQnaList(HashMap<String, Object> map) {
+			// TODO Auto-generated method stub
+			HashMap<String, Object> resultMap = new HashMap<String, Object>();		
+			try {
+				List<Main> list = ProductMapper.selectQnaList(map); // QnA 전체목록
+				int cnt = ProductMapper.selectQnaCnt(map); // QnA 게시글 개수
+				resultMap.put("list", list); 
+				resultMap.put("cnt", cnt);
+				resultMap.put("result", "success");
+			} catch (Exception e) {
+				// TODO: handle exception
+				resultMap.put("result", "fail");
+				System.out.println(e.getMessage());
+			}				
+			return resultMap;
+		}
 }
