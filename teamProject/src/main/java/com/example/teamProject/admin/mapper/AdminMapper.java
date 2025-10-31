@@ -49,6 +49,9 @@ public interface AdminMapper {
 		
 		//user의 구매정보
 		Admin orderSelect(HashMap<String, Object> map);
+		
+		//판매자 상세: 월 판매량 따라 차트 구현
+		List <HashMap> salesTrendsSelect(HashMap<String, Object> map);
 
 
 }

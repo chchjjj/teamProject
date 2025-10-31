@@ -80,6 +80,9 @@ public class AdminService {
 	}
 	
 	
+			
+	
+	
 	//2.판매자 관리
 	
 		public HashMap<String, Object> SelectSellerList(HashMap<String, Object> map) {
@@ -131,6 +134,8 @@ public class AdminService {
 		}
 		
 		
+		
+		
 		//3.membership
 		public HashMap<String, Object> SelectMembershipList(HashMap<String, Object> map) {
 			// TODO Auto-generated method stub
@@ -149,6 +154,23 @@ public class AdminService {
 			 return resultMap;
 					
 		}
+		
+		//4.매출관리
+		public HashMap<String, Object> SelectSalesTrends(HashMap<String, Object> map) {
+			// TODO Auto-generated method stub
+			HashMap<String, Object> resultMap = new HashMap<String, Object>();
+			try {
+				List <HashMap> list= adminMapper.salesTrendsSelect(map);
+				resultMap.put("list",list);
+				resultMap.put("result","success");
+			}catch(Exception e) {
+				resultMap.put("result","fail");
+				System.out.println(e.getMessage());		
+			}	
+			 return resultMap;
+					
+		}
+		
 		
 		
 	
