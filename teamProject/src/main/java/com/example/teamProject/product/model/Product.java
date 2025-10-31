@@ -5,6 +5,10 @@ import lombok.Data;
 @Data
 public class Product {
 
+		// 유저아이디
+		private String userId;
+		private String storeId;
+		
 		// 상품 정보
 		private int proNo;
 		private String proName;
@@ -37,5 +41,12 @@ public class Product {
 		private String subOpt;
 		private int qptQtt;
 		private int subOptPrice;
+		private int cartQuantity;
+		private int totalPrice;
+		private String letteringText;
+		
+		//장바구니 옵션
+		private int cartOptQuantity;
+
 		
 }

@@ -274,11 +274,12 @@
                             const quantity = self.selectedQuantities[topId] || 1;
                             subOptionList.push({
                                 subOptionId: subOption.subOptionId,
-                                cartOptQuantity: quantity
+                                cartOptQuantity: quantity,
+                                priceDiff: subOption.priceDiff
                             });
                         }
                     }
-					subOptionList = JSON.stringify(subOptionList);
+					subOptionList = JSON.stringify(subOptionList); // 백앤드로 리스트를 넘기는게 안되므로 리스트를 제이슨형태로 변환 후 파람으로 넘겨줘야함
 					
                     let param = {
                         userId: self.userId,
@@ -287,7 +288,7 @@
                         cartQuantity: self.totalQuantity,
                         totalPrice: self.totalPrice,
                         letteringText: self.letteringText, 
-                        subOptionList: subOptionList
+                        subOptionList: subOptionList // 옵션 리스트
                     };
                     console.log("장바구니 전송 데이터:", param);
 					console.log("subOptionList", subOptionList);
@@ -297,7 +298,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-
+                            alert("장바구니에 추가되었습니다.")
                         }
                     });
                 },
