@@ -42,10 +42,12 @@ public class AdminController {
        return "/admin/admin-sellerList"; 
    }
 	
+	
 	@RequestMapping("/admin/sellerchart.do")
-	public String sellerchart(Model model) throws Exception{
-       return "/admin/admin-sellerChart"; 
-   }
+    public String sellerchart(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{
+		request.setAttribute("storeId",map.get("storeId"));
+        return "/admin/admin-sellerChart";
+	}
 	
 //	@RequestMapping("/admin/userinfo.do")
 //	public String userinfo(Model model) throws Exception{
@@ -204,6 +206,21 @@ public class AdminController {
 	public String sellerupdate(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap = adminService.UpdateSeller(map);
+		
+		System.out.println(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	
+	@RequestMapping(value = "/adseller/sales.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String sales(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		
+		resultMap = adminService.SelectSales(map);
 		
 		System.out.println(map);
 		

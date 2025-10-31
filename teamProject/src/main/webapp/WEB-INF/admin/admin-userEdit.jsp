@@ -87,7 +87,7 @@
                         <table>
                             <tr>
                                 <th>아이디</th>
-                                <td><input type="text" v-model="userId" readonly></td>
+                                <td>{{user.userId}}</td>
                             </tr>
                             <tr>
                                 <th>닉네임</th>
@@ -107,15 +107,26 @@
                             </tr>
                             <tr>
                                 <th>활동탈퇴여부</th>
-                                <td><input type="text" v-model="userStatus"></td>
+                                <td>
+                                    <select v-model="userStatus">
+                                        <option value="O">활동</option>
+                                        <option value="X">탈퇴</option>
+                                    </select>
+                                </td>  
                             </tr>
                             <tr>
                                 <th>가입일자</th>
-                                <td><input type="text" v-model="joinCdate" readonly></td>
+                                <td>{{user.joinCdate}}</td>
                             </tr>
                             <tr>
                                 <th>권한</th>
-                                <td><input type="text" v-model="role"></td>  
+                                <td>
+                                    <select v-model="role">
+                                        <option value="S">판매자</option>
+                                        <option value="C">구매자</option>
+                                        <option value="A">관리자</option>
+                                    </select>
+                                </td>  
                             </tr>
                         </table>
                     </div>
@@ -147,7 +158,8 @@
                     userAddr:"",
                     userStatus:"",
                     joinCdate:"",
-                    role:"",   
+                    role:"", 
+                    storePass:""  
 
                 };
             },
@@ -188,6 +200,7 @@
                     userAddr:self.userAddr,
                     userStatus:self.userStatus,
                     role:self.role, 
+                    storePass:self.storePass
                 };
                 $.ajax({
                     url: "/aduser/update.dox",

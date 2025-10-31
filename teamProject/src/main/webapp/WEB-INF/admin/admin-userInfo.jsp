@@ -87,22 +87,16 @@
                         <table>
                             <tr>
                                 <th>상품번호</th>
-                                <td>{{order.proNo}}</td>
-                            </tr>
-                            <tr>
                                 <th>상품명</th>
-                                <td>{{order.proName}}</td>
-                            </tr>
-                            <tr>
                                 <th>상품 종류</th>
-                                <td>{{order.proType}}</td>
-                            </tr>
-                            <tr>
                                 <th>배달된 주소</th>
-                                <td>{{order.fullAddress}}</td>
+                                <th>총가격</th>
                             </tr>
                             <tr>
-                                <th>총가격</th>
+                                <td>{{order.proNo}}</td>
+                                <td>{{order.proName}}</td>
+                                <td>{{order.proType}}</td>
+                                <td>{{order.fullAddress}}</td>
                                 <td>{{order.totalPrice}}</td>
                             </tr>
                         </table>

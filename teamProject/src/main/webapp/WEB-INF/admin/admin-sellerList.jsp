@@ -266,7 +266,7 @@
                 },
 
                 fnSellerInfo:function(storeId){
-                    pageChange("/admin/sellerInfo.do",{storeId:storeId});
+                    pageChange("/admin/sellerchart.do",{storeId:storeId});
                 },
 
 
