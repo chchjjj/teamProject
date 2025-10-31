@@ -32,13 +32,15 @@ public class MainService {
 		return resultMap;
 	}
 	
-	// 헤더 QnA 클릭 시 QnA 전체 목록 불러오기
+	// 헤더 QnA 클릭 시 QnA 전체목록 불러오기 & 게시글 개수세기(페이징)
 	public HashMap<String, Object> getQnaList(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();		
 		try {
-			List<Main> list = mainMapper.selectQnaList(map);			
+			List<Main> list = mainMapper.selectQnaList(map); // QnA 전체목록
+			int cnt = mainMapper.selectQnaCnt(map); // QnA 게시글 개수
 			resultMap.put("list", list); 
+			resultMap.put("cnt", cnt);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			// TODO: handle exception

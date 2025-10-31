@@ -1,16 +1,11 @@
 package com.example.teamProject.user.dao;
 
 import java.util.HashMap;
-
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.example.teamProject.user.mapper.UserMapper;
 import com.example.teamProject.user.model.User;
-
 import jakarta.servlet.http.HttpSession;
 
 @Service
@@ -59,6 +54,8 @@ public class UserService {
 					session.setAttribute("sessionName", user.getUserName());
 					session.setAttribute("sessionRole", user.getRole());
 					resultMap.put("url", "/main.do");
+					
+					//밑에 주석처리 한거는 혹시라도 관리자 여부에 따라 이동할 페이지를 다르게 하고 싶을 때 사용하면 된다.
 //					if (user.getRole().equals("A")) {
 //						resultMap.put("url", "/admin/main.do");
 //					} else {
@@ -93,6 +90,22 @@ public class UserService {
 
 		return resultMap;
 	}
+	
+	public HashMap<String, Object> logout(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		//세션정보 삭제 방법
+		//1개씩 키값을 이용해 삭제하거나, 전체를 한번에 삭제하는 방법이 있음
+		
+		String message = session.getAttribute("sessionName") + "님 로그아웃 되었습니다.";
+		resultMap.put("msg", message);
+		
+		//session.removeAttribute("sessionId"); //1개씩 삭제
+		
+		session.invalidate(); //세션정보 전체 삭제
+		
+		return resultMap;
+	}
+	
 
 	public HashMap<String, Object> addUser(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();

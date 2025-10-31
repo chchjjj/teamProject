@@ -48,6 +48,11 @@ public class UserController {
 		return "/user/userMyPage";
 	}
 	
+	@RequestMapping("/user/findId.do")
+	public String findId(Model model) throws Exception {
+		return "/user/findId";
+	}
+	
 	@RequestMapping("/user/newPwd.do")
 	public String newPwd(Model model) throws Exception {
 		return "/user/newPwd";
@@ -60,6 +65,15 @@ public class UserController {
 		resultMap = userService.login(map);
 		
 		
+
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/user/logout.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String logout(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = userService.logout(map);
 
 		return new Gson().toJson(resultMap);
 	}

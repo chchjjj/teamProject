@@ -57,5 +57,22 @@ public class ProductService {
 		}				
 		return resultMap;
 	}
+	
+	// 장바구니 리스트
+	public HashMap<String, Object> getCartList(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+			List<Product> list = ProductMapper.cart(map);			
+			resultMap.put("list", list); 
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
+		}				
+		return resultMap;
+	}
 
 }

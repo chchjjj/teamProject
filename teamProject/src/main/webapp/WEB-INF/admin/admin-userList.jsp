@@ -263,7 +263,7 @@
                 },
 
                 fnUserInfo:function(userId){
-                    pageChange("/admin/userInfo.do",{userId:userId});
+                    pageChange("/admin/userinfo.do",{userId:userId});
                 },
 
 

@@ -66,6 +66,20 @@ public class AdminService {
 	}
 	
 	
+	//구매자 상세
+	public HashMap<String, Object> SelectOrder(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		Admin order= adminMapper.orderSelect(map);	
+		
+		resultMap.put("order",order);
+		resultMap.put("result","success");
+		return resultMap;
+	}
+	
+	
 	//2.판매자 관리
 	
 		public HashMap<String, Object> SelectSellerList(HashMap<String, Object> map) {
@@ -135,6 +149,7 @@ public class AdminService {
 			 return resultMap;
 					
 		}
+		
 		
 	
 	

@@ -95,7 +95,7 @@
                             </tr>
                             <tr>
                                 <th>상품 종류</th>
-                                <td>{{order.proType}}></td>
+                                <td>{{order.proType}}</td>
                             </tr>
                             <tr>
                                 <th>배달된 주소</th>
@@ -107,12 +107,6 @@
                             </tr>
                         </table>
                     </div>
-                </div>
-
-                <div>
-                    <button @click="fnEdit(userId)">
-                        수정
-                    </button>
                 </div>
 
             </div>
@@ -128,15 +122,7 @@
                 return {
                     // 변수 - (key : value)
                     userId:"${userId}",
-                    user:{},
-                    userName:"",
-                    phone:"",
-                    email:"",
-                    userAddr:"",
-                    userStatus:"",
-                    joinCdate:"",
-                    role:"",   
-
+                    order:{},  
                 };
             },
             methods: {
@@ -147,47 +133,17 @@
                     userId:self.userId
                 };
                 $.ajax({
-                    url: "/aduser/view.dox",
+                    url: "/aduser/order.dox",
                     dataType: "json",
                     type: "POST",
                     data: param,
                     success: function (data) {
                         self.order=data.order;
-                        self.orderId=data.order.orderId;
-                        self.orderName=data.order.orderName;
-                        self.phone=data.order.phone;
-                        self.email=data.order.email;
-                        self.orderAddr=data.order.orderAddr;
-                        self.orderStatus=data.order.orderStatus;
-                        self.joinCdate=data.order.joinCdate;
-                        self.role=data.order.role;
                         
                     }
                 });
             },
-            fnEdit: function () {
-                let self = this;
-                let param = {
-                    order:self.user,
-                    userId:self.userId,
-                    userName:self.userName,
-                    phone:self.phone,
-                    email:self.email,
-                    userAddr:self.userAddr,
-                    userStatus:self.userStatus,
-                    role:self.role, 
-                };
-                $.ajax({
-                    url: "/aduser/update.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-                        alert("수정되었습니다.");
-                        self.fnBack();
-                    }
-                });
-            },
+            
 
             fnBack:function(){
                 location.href="/admin/userlist.do";
