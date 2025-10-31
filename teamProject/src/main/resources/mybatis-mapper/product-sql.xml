@@ -48,4 +48,22 @@
 		    ON pso.TOP_OPTION_ID = po.TOP_OPTION_ID
 		WHERE USER_ID = #{userId}
 	</select>
+	
+<!--장바구니 삭제-->
+	<delete id="deleteCart" parameterType="hashmap">
+		DELETE FROM CART_TBL
+		WHERE CART_ID = #{cartId}
+	</delete>
+	
+	<delete id="deleteCartOpt" parameterType="hashmap">
+		DELETE FROM CART_OPTION_TBL
+		WHERE CART_ID = #{cartId}
+	</delete>
+	
+<!--	<insert id="insertCart" parameterType="hashmap">
+		INSERT INTO CART_OPTION_TBL
+		VALUES(SEQ_CART_OPT_ID.NEXTVAL, )
+	</insert>-->
+	
+	
 </mapper>

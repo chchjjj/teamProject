@@ -21,4 +21,12 @@ public interface ProductMapper {
 	
 	// 장바구니
 	List<Product> cart(HashMap<String, Object> map);
+	
+	// 장바구니 삭제(1)
+	int deleteCart(HashMap<String, Object> map);
+	
+	// 장바구니 삭제(2)
+	int deleteCartOpt(HashMap<String, Object> map);
+	
+	int insertCart(HashMap<String, Object> map);
 }

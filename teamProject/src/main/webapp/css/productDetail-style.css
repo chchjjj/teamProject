@@ -428,3 +428,13 @@ body {
     font-size: 10px;
     color: #666;
 }
+.total-price-display {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    text-align: right;
+}
+.total-price-display strong {
+    color: #3c1cf3;
+}
