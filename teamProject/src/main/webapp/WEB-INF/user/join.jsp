@@ -41,7 +41,7 @@
             <button @click="fnCheck">중복체크</button>
          </div>
         <div>
-            <label>비밀번호 : <input type="password" v-model="userPass"></label>
+            <label>비밀번호 : <input type="password" v-model="userPass" placeholder="영문 숫자 특수기호 조합 8자리 이상"></label>
         </div>
         <div>
             <label>비밀번호 확인 : <input type="password" v-model="userPass2"></label>
