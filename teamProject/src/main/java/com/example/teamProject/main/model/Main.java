@@ -28,5 +28,6 @@ public class Main {
     private String questionDate;
     private String answerContent;
     private String answerDate;
+    private String storeAddr;
 	
 }

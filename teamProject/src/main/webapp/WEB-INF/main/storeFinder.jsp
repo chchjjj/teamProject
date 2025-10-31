@@ -17,19 +17,50 @@
         <!-- <script src="https://unpkg.com/mitt/dist/mitt.umd.js"></script>  -->         
         
         <!--카카오맵 api-->
-        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=1dea2458084bcfa27a4ea450ca55655b&libraries=services"></script>
-        
+        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=1dea2458084bcfa27a4ea450ca55655b&libraries=services,geometry"></script>
+
         <style>
+            /* 카카오맵 인포윈도우 텍스트 표시용 */
+            .simple-infowindow {
+                background-color: white;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                padding: 6px 10px;
+                color: #000;
+                font-size: 13px;
+                text-align: center;
+                white-space: nowrap;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            }
+
             /* 제목 스타일 */
             .title {
-                font-size: 28px;        /* 적당히 크고 눈에 띄게 */
-                font-weight: 700;       /* 진하게 */
+                font-size: 28px;        
+                font-weight: 700;       
                 font-family: 'GmarketSansMedium', sans-serif;
-                color: #333;            /* 어두운 색상으로 가독성 확보 */
-                margin-top: 30px;       /* 위에 간격 */
-                margin-bottom: 25px;    /* 아래(목록 설정)와의 간격 */
-                padding-bottom: 10px;   /* 구분선과 텍스트 사이의 간격 */
-                text-align: left;       /* 왼쪽 정렬 */
+                color: #333;            
+                margin-top: 30px;       
+                margin-bottom: 25px;    
+                padding-bottom: 10px;   
+                text-align: left;       
+            }
+
+            
+            #map { 
+                width:100%; 
+                height:350px; 
+                border-radius:10px; 
+                margin: 20px auto; /* 위아래 여백 20px, 좌우 자동 중앙정렬 */
+                display: block;    /* auto 정렬을 위해 block 지정 */
+            }
+            .addr-info { 
+                margin-top:10px; color:#555; 
+            }
+
+            /* 카카오맵 인포윈도우 공통 스타일 */
+            div.kakao-infowindow, .wrap div {
+                color: #000 !important;
+                opacity: 1 !important;
             }
 
             table {
@@ -48,80 +79,16 @@
             }
 
             /* 제목은 왼쪽 정렬 */
-            table td:nth-child(1) {
+            /* table td:nth-child(1) {
                 text-align: center;
                 padding-left: 20px;
             }
 
             table td:nth-child(2) {
                 text-align: left;
-                white-space: nowrap;      /* 텍스트가 줄 바꿈 되는 것을 방지 */
-            }
+                white-space: nowrap;      /* 텍스트가 줄 바꿈 되는 것을 방지 
+            } */
           
-            /* N개씩 보기 */
-            .pageSelect {
-                padding: 8px 10px;
-                border: 1px solid #ccc;
-                border-radius: 4px; /* 살짝 둥근 모서리 */
-                font-size: 13px;
-                height: 35px; /* 버튼, 입력창과 높이 맞추기 */
-                -moz-appearance: none;
-                appearance: none;
-                background-color: white;
-                margin-bottom: 30px;
-            }
-
-            /* 검색 기능 컨테이너 스타일 */
-            .search-area {
-                display: flex; /* 요소들을 한 줄에 정렬 */
-                gap: 10px; /* 요소들 사이의 간격 */
-                justify-content: center; /* 가운데 정렬 (페이지 하단에 적용 시) */
-                align-items: center;
-                margin-top: 30px; /* 목록 위/아래 공간 확보 */
-                margin-bottom: 30px;
-            }
-
-            /* 드롭다운 (select) 스타일 */
-            .search-area select {
-                padding: 8px 10px;
-                border: 1px solid #ccc;
-                border-radius: 4px; /* 살짝 둥근 모서리 */
-                font-size: 14px;
-                height: 38px; /* 버튼, 입력창과 높이 맞추기 */
-                -webkit-appearance: none; /* 기본 화살표 숨기기 */
-                -moz-appearance: none;
-                appearance: none;
-                background-color: white;
-            }
-
-            /* 입력 필드 (input) 스타일 */
-            .search-area input {
-                padding: 8px 12px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                font-size: 14px;
-                flex-grow: 1; /* 남은 공간을 채우도록 너비 확장 */
-                max-width: 300px; /* 최대 너비 지정으로 너무 길어지는 것을 방지 */
-                height: 40px;
-            }
-
-            /* 검색 버튼 (button) 스타일 */
-            .search-area button {
-                padding: 8px 15px;
-                background-color: #555; /* 어두운 계열 (헤더 QnA 버튼과 유사하게) */
-                color: white;
-                border: none;
-                border-radius: 4px;
-                font-size: 14px;
-                cursor: pointer;
-                transition: background-color 0.3s;
-                height: 38px;
-            }
-
-            .search-area button:hover {
-                background-color: #333;
-            }
-
             .info{
                 margin-left: 30px;
                 font-size: 12px;
@@ -145,32 +112,33 @@
                         <h1 class="title">내 주변 디저트 지점 찾기</h1>
                         <hr class="divider">
 
-                        <!-- 게시글 페이징 (N개씩 보기) -->
-                        <select v-model="pageSize" @change="fnPageSizeChange" class="pageSelect">
-                             <!-- 바꿀때마다 페이지 초기화 -->
-                            <option value="5">:: 5개씩 ::</option>
-                            <option value="10">:: 10개씩 ::</option>
-                            <option value="20">:: 20개씩 ::</option>
-                        </select>
-
                         <div>※ 현재 고객님의 마이페이지 주소를 기반으로 한 주변 디저트 지점 정보입니다. </div>
                         <div>
                             내 주소 : {{info.userAddr}}
                         </div>
-                        
-                        
-                        
 
-                         <!--페이징-->                        
-                         <div class="pagination">
-                            <!-- 페이지 숫자 양옆 화살표 (fnMove) -->
-                            <a href="#" @click="fnMove(-1)" v-if="page != 1">&lt;</a>
-                            <a href="#" v-for="num in index" :key="num" @click="fnPage(num)" :class="{ active : page == num }" >
-                                {{num}} 
-                            </a>
-                            <a href="#" @click="fnMove(+1)" v-if="page != index">&gt;</a>
-                        </div>
-                      
+                        <!-- 고객 주소 기반 지도 표시 -->
+                        <div id="map"></div>
+
+                        <!-- 주변 반경 5km 미만(임시) 가게 리스트 -->
+                        <!-- <table v-if="nearbySellers.length > 0">
+                            <thead>
+                                <tr>
+                                    <th>상호</th>
+                                    <th>주소</th>
+                                    <th>거리(km)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in nearbySellers" :key="item.id">
+                                    <td>{{ item.storeName }}</td>
+                                    <td>{{ item.storeAddr }}</td>
+                                    <td>{{ (item.distance/1000).toFixed(2) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div v-else>5km 이내 디저트 지점이 없습니다.</div>                       -->
+
 
                         <section class="external-ad">
                             <p>외부 광고</p>
@@ -193,23 +161,21 @@
                 return {
                     // 변수 - (key : value)
                     info : {},
-                    list: [],
+                    list: [], // 헤더에서 쓰는 리스트
                     userId: "${sessionId}", // 로그인 했을 시 전달 받은 아이디
-
-                    proNo : "", // 상품번호
                     keyword: "", // 헤더 검색 키워드 변수 추가
 
-                    activeIndex: -1, // 현재 열려 있는 Q&A의 인덱스 (-1은 아무것도 열려있지 않음)
-
+                    // 페이징
                     pageSize : 10, // 한 페이지에 출력할 게시글 개수 (10개로 기본값)
                     page : 1, // 현재 페이지(위치) - 최초 1페이지부터 시작 (OFFSET 다음에 오는 숫자)
                     index : 0, // 최대 페이지 값 (표현할 페이지 개수)
 
-                    myQnaOnly: false, // 나의 질문만 보기 여부
-
-                    qnaKeyword : "", // 화면 하단 QnA 검색 키워드
-                    searchOption : "all",
-
+                    // 지도 관련
+                    map: null,
+                    geocoder: null,
+                    userCoords: null,
+                    sellerList : [], // 전체 판매자 리스트
+                    nearbySellers: [], // 필터링된 5km 이내 판매자
                 };
             },
 
@@ -236,43 +202,109 @@
                 },
 
                 // 로그인 세션 사용자의 주소 불러오기
-                fnUserInfo: function () {
-                let self = this;
-                let param = {
-                    userId : self.userId
-                };
-                $.ajax({
-                    url: "/main/userAddr.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) { // data에는 service에서 작성한 info와 result가 담김
-                        self.info = data.info;
-                    }
-                });
-                },
-
-                // 페이지 초기화
-                fnPageSizeChange: function() {
+                fnUserInfo(callback) {
                     let self = this;
-                    self.page = 1; 
-                    self.fnQnaList();
-                },           
+                    let param = {
+                        userId : self.userId
+                    };
+                    $.ajax({
+                        url: "/main/userAddr.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            self.info = data.info;
+                            // 로그인 유저 USER_TBL 기반 주소 위치부분에 문구 표시
+                            self.setMarkerByAddress(self.info.userAddr, "내 주소 위치", true);
 
-                // 페이지 숫자 클릭시 리스트를 페이지에 맞게 갱신   
-                fnPage : function(num){ // 파라미터로 클릭한 num 보내주기
-                    let self = this; 
-                    self.page = num; // 현재 페이지를 num의 숫자로 반영
-                    self.fnQnaList(); // 반영 후 기준으로 리스트 재호출
+                            if(callback) callback(); // userCoords 세팅 후 실행
+                        }
+                    });
                 },
 
-                // 페이지 숫자 양옆 화살표 버튼 누르면 페이지 이동
-                fnMove : function(move){
-                    let self = this; 
-                    self.page += move; // 현재 페이지를 -1 또는 +1 
-                    self.fnQnaList();
-                },
-                                
+                // 지도에 마커 찍기 (고객 주소)
+                // setMarkerByAddress(address, titleText = "위치", setUser=false) {
+                //     let self = this;
+                //     if (!self.geocoder || !self.map) {
+                //         console.warn("지도 또는 Geocoder가 초기화되지 않았습니다.");
+                //         return;
+                //     }
+
+                //     self.geocoder.addressSearch(address, function(result, status) {
+                //         if (status === kakao.maps.services.Status.OK) {
+                //             const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+                //             if(setUser) self.userCoords = coords;
+
+                //             // 마커 생성
+                //             const marker = new kakao.maps.Marker({
+                //                 map: self.map,
+                //                 position: coords
+                //             });
+
+                //             // 인포윈도우
+                //             const infowindow = new kakao.maps.InfoWindow({
+                //                 content: '<div style="padding:5px; font-size:13px;">내 주소 위치</div>'
+                //             });
+                //             infowindow.open(self.map, marker);
+
+                //             // 마커 클릭 이벤트 등록 
+                //             kakao.maps.event.addListener(marker, 'click', function() {
+                //                 infowindow.open(self.map, marker);
+                //             });
+
+                //             // 지도 중심 이동
+                //             //self.map.setCenter(coords);
+                //             if(setUser) self.map.setCenter(coords);
+
+                //         } 
+
+                //     });
+                // },   
+
+                // // 판매자(가게) 리스트
+                // fnSellerList() {
+                //     let self = this;
+                //     $.ajax({
+                //         url: "", // 전체 판매자 리스트 가져오기
+                //         dataType: "json",
+                //         type: "POST",
+                //         success: function(data) {
+                //             self.sellerList = data.list; // 전체 리스트를 받아옴
+                //             self.filterNearbySellers(); // 5km 필터 적용
+                //         }
+                //     });
+                // },
+                
+                // // 5km 이내 판매자(가게 주소) 필터링
+                // filterNearbySellers() {
+                //     let self = this;
+                //     if(!self.userCoords) return;
+
+                //     const promises = self.sellerList.map(seller => {
+                //         return new Promise((resolve) => {
+                //             self.geocoder.addressSearch(seller.storeAddr, function(result, status){
+                //                 if(status === kakao.maps.services.Status.OK){
+                //                     const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                //                     const distance = kakao.maps.geometry.spherical.computeDistanceBetween(self.userCoords, coords);
+                //                     if(distance <= 5000){ // 5km
+                //                         seller.distance = distance;
+                //                         resolve(seller);
+                //                     } else {
+                //                         resolve(null);
+                //                     }
+                //                 } else {
+                //                     resolve(null);
+                //                 }
+                //             });
+                //         });
+                //     });
+
+                //     Promise.all(promises).then(results => {
+                //         self.nearbySellers = results.filter(s => s!==null);
+                //     });
+                // }
+                                                
 
             }, // methods
 
@@ -280,8 +312,7 @@
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
                 console.log("로그인 아이디 ===> " + self.userId); // 로그인한 아이디 잘 넘어오나 테스트 
-                self.fnUserInfo();                           
-
+                //self.fnUserInfo();                        
 
                 // 헤더에서 keyword (검색어) 이벤트 수신 (주석처리해도 되네?)
                 // emitter.on('keyword', (keyword) => {
@@ -291,16 +322,42 @@
                 // });
 
                 // 헤더 메뉴 중 '카테고리' 하위 메뉴 클릭 이벤트 수신
-                emitter.on('categoryClick', (categoryName) => {
-                    console.log("카테고리 클릭:", categoryName);
-                    self.selectedCategory = categoryName;
-                    self.fnList(); // 해당 카테고리 상품만 조회
-                });
+                // emitter.on('categoryClick', (categoryName) => {
+                //     console.log("카테고리 클릭:", categoryName);
+                //     self.selectedCategory = categoryName;
+                //     self.fnList(); // 해당 카테고리 상품만 조회
+                // });
 
-            }
-        });
 
+                // 지도 초기화
+            //     kakao.maps.load(() => {
+            //         const mapContainer = document.getElementById('map');
+            //         self.map = new kakao.maps.Map(mapContainer, {
+            //             center: new kakao.maps.LatLng(37.5665, 126.9780),
+            //             level: 4
+            //         });
+
+            //         // Geocoder 생성
+            //         self.geocoder = new kakao.maps.services.Geocoder();
+
+            //         // 로그인 사용자의 주소 불러오기
+            //         self.fnUserInfo(() => {
+            //             // userCoords가 세팅된 이후에 반경 5km 이내 판매자 리스트 조회
+            //             self.fnSellerList();
+
+            //             // 지도 렌더링 후 bounds 확인
+            //             kakao.maps.event.addListener(self.map, 'idle', function() {
+            //             // 지도 반경 계산 (선택 사항)
+            //             const bounds = self.map.getBounds();
+            //             const ne = bounds.getNorthEast();
+            //             const center = self.map.getCenter();
+            //             const distance = kakao.maps.geometry.spherical.computeDistanceBetween(center, ne);
+            //             console.log("현재 지도 반경(약): " + (distance / 1000).toFixed(2) + " km");
+            //         });
+            //     });
+            // });
+        }   
+    });
     
-
         app.mount('#app');
     </script>
