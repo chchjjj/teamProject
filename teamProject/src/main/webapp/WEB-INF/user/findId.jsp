@@ -35,22 +35,19 @@
             <input class="phone" v-model="phone3">
         </div>
         <div v-if="!smsFlg">
-            문자인증 : <input v-model="inputNum" :placeholder="timer">
             <template v-if="!sendMessageFlg">
-                <button @click="fnSendSms">인증번호 전송</button>
+                <button @click="fnSendSms">인증</button>
             </template>
             <template v-else>
-                <button @click="fnSmsAuth">인증</button>
+                문자인증 : <input v-model="inputNum" :placeholder="timer">
+                <button @click="fnSmsAuth">확인</button>
             </template>
         </div>
-        <div v-else style="color : red;">
-            문자인증이 완료되었습니다.
-        </div>
-        <div>
-            <button @click="fnFind">확인</button>
-        </div>
-        <div>
-            <!-- 아이디를 알려주는 출력문 -->
+        <!-- 아이디를 알려주는 출력문 -->
+        <div v-else>
+            {{userName}}님의 아이디는 
+            {{userId}}
+            입니다.
         </div>
     </div>
 </body>
@@ -61,6 +58,7 @@
         data() {
             return {
                 // 변수 - (key : value)
+                userId: "",
                 userName: "",
                 phone1: "",
                 phone2: "",
@@ -89,7 +87,7 @@
                         if (data.res.statusCode == "2000") {
                             alert("문자 전송 완료");
                             self.ranStr = data.ranStr;
-                            self.smsFlg = true;
+                            self.sendMessageFlg = true;
                             self.fnTimer();
                         } else {
                             alert("잠시 후 다시 시도해주세요.");
@@ -116,35 +114,18 @@
             },
             fnSmsAuth: function () {
                 let self = this;
+                if(!self.smsFlg){
+                    alert("문자 인증을 진행해주세요.");
+                    return;
+                }
                 if (self.ranStr == self.inputNum) {
                     alert("문자인증이 완료되었습니다.");
                     self.smsFlg = true;
                 } else {
                     alert("문자인증에 실패했습니다.");
                 }
-            },
-            fnFind: function () {
-                let self = this;
-
-                //문자 인증이 완료되지 않으면 
-                //회원가입 불가능(안내문구 출력)
-                if(!self.smsFlg){
-                    alert("문자 인증을 진행해주세요.");
-                    return;
-                }
-                let param = {
-                    //뭘 보내줘야 할까?
-                };
-                $.ajax({
-                    url: "",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-                        //미정 flg 값을 변경
-                    }
-                });
             }
+            
         }, // methods
         mounted() {
             // 처음 시작할 때 실행되는 부분

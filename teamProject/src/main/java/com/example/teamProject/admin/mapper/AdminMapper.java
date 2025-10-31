@@ -44,13 +44,22 @@ public interface AdminMapper {
 		//sellerupdate
 		int sellerUpdate(HashMap<String, Object> map);
 		
-		//membership관리
+		//판매자 상세: 월 판매량 따라 차트 구현
+		List <HashMap> salesSelect(HashMap<String, Object> map);
+		
+		
+		
+		//3.membership관리
 		List <Admin> membershipListSelect(HashMap<String, Object> map);
 		
-		//user의 구매정보
+		
+		
+		//4. user의 구매정보
 		Admin orderSelect(HashMap<String, Object> map);
 		
-		//판매자 상세: 월 판매량 따라 차트 구현
+		
+		
+		//5.월 판매량 트랜드 차트 구현
 		List <HashMap> salesTrendsSelect(HashMap<String, Object> map);
 
 

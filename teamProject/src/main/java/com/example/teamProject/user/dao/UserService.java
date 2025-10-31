@@ -173,13 +173,12 @@ public class UserService {
 				map.put("hashPwd", hashPwd);
 				int cnt = userMapper.updateUserPass(map);
 				resultMap.put("result", "success");
-				resultMap.put("msg", "수정되었습니다.");
+				resultMap.put("msg", "수정되었습니다."); 
 			}
 			
 			
 			System.out.println(map);
 			
-			resultMap.put("result", "success");
 		}catch (Exception e) {
 			resultMap.put("result", "fail");
 			System.out.println(e.getMessage());

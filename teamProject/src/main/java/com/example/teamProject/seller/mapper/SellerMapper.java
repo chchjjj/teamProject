@@ -11,8 +11,7 @@ import com.example.teamProject.seller.model.Seller;
 @Mapper
 public interface SellerMapper {
 
-	//특정 사용자의 가게 목록 조회
-	List<HashMap<String, Object>> selectSellerApprovedStoreList(String userId);
+	
 
 	// 가게 이름 수정
 	int updateStoreNameMap(Map<String,Object> storeMap);
@@ -23,8 +22,9 @@ public interface SellerMapper {
 
 	// 채팅 가능 여부 및 시간 정보 수정
 	int updateChatInfoMap(Map<String,Object> storeMap);
-
+	//가게 정보 에서 가게 리스트 가져오는 
 	List<Seller> selectStoreList(HashMap<String, Object> map);
 	//월별 매월 가져오는 리스트
-	List<Seller>selectMonthlySalesByUser(HashMap<String, Object> map);
+	List<HashMap<String, Object>> selectMonthlySales(HashMap<String, Object> map);
+	
 }

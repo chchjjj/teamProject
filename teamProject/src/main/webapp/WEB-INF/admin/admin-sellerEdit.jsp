@@ -87,7 +87,7 @@
                         <table>
                             <tr>
                                 <th>가게 번호</th>
-                                <td><input type="text" v-model="storeId" readonly></td>
+                                <td>{{seller.storeId}}</td>
                             </tr>
                             <tr>
                                 <th>가게 이름</th>
@@ -95,11 +95,11 @@
                             </tr>
                             <tr>
                                 <th>소유자 유저 아이디</th>
-                                <td><input type="text" v-model="userId" readonly></td>
+                                <td>{{seller.userId}}</td>
                             </tr>
                             <tr>
                                 <th>사업자 번호</th>
-                                <td><input type="text" v-model="businessNo" readonly></td>
+                                <td>{{seller.businessNo}}</td>
                             </tr>
                             <tr>
                                 <th>가게 주소</th>
@@ -107,23 +107,30 @@
                             </tr>
                             <tr>
                                 <th>입점 승인여부</th>
-                                <td><input type="text" v-model="storePass"></td>
+                                <td>
+                                    <select v-model="storePass">
+                                        <option value="P">승인</option>
+                                        <option value="R">거절</option>
+                                        <option value="G">심사 진행 중</option>
+                                    </select>
+                                </td>
                             </tr>
                             <tr>
                                 <th>가입일자</th>
-                                <td><input type="text" v-model="joinCdate" readonly></td>
+                                <td>{{seller.joinCdate}}</td>
                             </tr>
-                            <tr>
+                            <tr v-if="seller.rejectReason==='R'">
                                 <th>입점거절 사유</th>
-                                <td><input type="text" v-model="rejectReason"></td>  
+                                <td><input type="text" v-model="rejectReason"></td>
                             </tr>
                             <tr>
-                                <th>맴버십 가입 여부 </th>  
-                                <td><input type="text" v-model="membership"></td>  
+                                <th>맴버십 가입 여부 </th>
+                                <td v-if="seller.membership==='N'">미가입</td>
+                                <td v-if="seller.membership==='Y'">가입</td>
                             </tr>
-                            <tr>
-                                <th>가게승인 일자</th>  
-                                <td><input type="text" v-model="regDate" readonly></td>  
+                            <tr v-if="seller.rejectReason==='P'">
+                                <th>가게승인 일자</th>
+                                <td><input type="text" v-model="regDate" readonly></td>
                             </tr>
                         </table>
                     </div>
@@ -147,77 +154,78 @@
             data() {
                 return {
                     // 변수 - (key : value)
-                    storeId:"${storeId}",
-                    seller:{},
-                    storeName:"",
-                    userId:"",
-                    businessNo:"",
-                    storeAddr:"",
-                    storePass:"",
-                    joinCdate:"",
-                    rejectReason:"",
-                    membership:"",
-                    regDate:""   
+                    storeId: "${storeId}",
+                    seller: {},
+                    storeName: "",
+                    userId: "",
+                    businessNo: "",
+                    storeAddr: "",
+                    storePass: "",
+                    joinCdate: "",
+                    rejectReason: "",
+                    membership: "",
+                    regDate: ""
 
                 };
             },
             methods: {
                 // 함수(메소드) - (key : function())
                 fnSeller: function () {
-                let self = this;
-                let param = {
-                    storeId:self.storeId
-                };
-                $.ajax({
-                    url: "/adseller/view.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-                        self.seller=data.seller;
-                        self.storeId=data.seller.storeId;
-                        self.storeName=data.seller.storeName;
-                        self.userId=data.seller.userId;
-                        self.businessNo=data.seller.businessNo;
-                        self.storeAddr=data.seller.storeAddr;
-                        self.storePass=data.seller.storePass;
-                        self.joinCdate=data.seller.joinCdate;
-                        self.rejectReason=data.seller.rejectReason;
-                        self.membership=data.seller.membership;
-                        self.regDate=data.seller.regDate;
-                    }
-                });
-            },
-            fnEdit: function () {
-                let self = this;
-                let param = {
-                    storeId:self.storeId,
-                    storeName:self.storeName,
-                    storeAddr:self.storeAddr,
-                    storePass:self.storePass,
-                    rejectReason:self.rejectReason,
-                    membership:self.membership  
-                };
-                $.ajax({
-                    url: "/adseller/update.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-                        alert("수정되었습니다.");
-                        self.fnBack();
-                    }
-                });
-            },
+                    let self = this;
+                    let param = {
+                        storeId: self.storeId
+                    };
+                    $.ajax({
+                        url: "/adseller/view.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            self.seller = data.seller;
+                            self.storeId = data.seller.storeId;
+                            self.storeName = data.seller.storeName;
+                            self.userId = data.seller.userId;
+                            self.businessNo = data.seller.businessNo;
+                            self.storeAddr = data.seller.storeAddr;
+                            self.storePass = data.seller.storePass;
+                            self.joinCdate = data.seller.joinCdate;
+                            self.rejectReason = data.seller.rejectReason;
+                            self.membership = data.seller.membership;
+                            self.regDate = data.seller.regDate;
+                        }
+                    });
+                },
+                fnEdit: function () {
+                    let self = this;
+                    let param = {
+                        storeId: self.storeId,
+                        storeName: self.storeName,
+                        storeAddr: self.storeAddr,
+                        storePass: self.storePass,
+                        rejectReason: self.rejectReason,
+                        membership: self.membership,
+                        
+                    };
+                    $.ajax({
+                        url: "/adseller/update.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            alert("수정되었습니다.");
+                            self.fnBack();
+                        }
+                    });
+                },
 
-            fnBack:function(){
-                location.href="/admin/sellerlist.do";
-            },
+                fnBack: function () {
+                    location.href = "/admin/sellerlist.do";
+                },
 
 
-                
 
-                fnAdminMain:function(){
+
+                fnAdminMain: function () {
                     location.href = "/admin/main.do";
                 },
 

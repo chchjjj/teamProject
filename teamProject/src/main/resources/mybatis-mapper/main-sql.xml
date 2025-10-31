@@ -63,11 +63,26 @@
 	        ON Q.STORE_ID = S.STORE_ID
 	    WHERE 1=1			
 		
-		<!-- 검색 조건에 맞게 출력 -->
-		<!--<if test="keyword != '' and keyword !=null">
-			AND PRO_NAME LIKE '%' || #{keyword} || '%'
-		</if>		-->	
-
+		<!-- 검색어가 있을 때만 조건 추가 -->
+		<if test="qnaKeyword != null and qnaKeyword != ''">
+		    <choose>
+		        <when test="searchOption == 'all'">
+		            AND (Q.QUESTION_CONTENT LIKE '%' || #{qnaKeyword} || '%' 
+		                 OR U.USER_NAME LIKE '%' || #{qnaKeyword} || '%')
+		        </when>
+		        <when test="searchOption == 'content'">
+		            AND Q.QUESTION_CONTENT LIKE '%' || #{qnaKeyword} || '%'
+		        </when>
+		        <when test="searchOption == 'id'">
+		            AND U.USER_NAME LIKE '%' || #{qnaKeyword} || '%'
+		        </when>
+		    </choose>
+		</if>
+		
+		<if test="userId != null and userId != ''">
+        AND Q.USER_ID = #{userId}
+   		</if>
+		
 		ORDER BY  
 	    CASE WHEN <!-- 미답변 건부터 위로 오게 정렬 -->
 	    	Q.ANSWER_CONTENT IS NULL THEN 0 ELSE 1 END ASC,
@@ -82,6 +97,14 @@
 		SELECT COUNT(*) AS CNT
 		FROM QA_TBL
 		WHERE 1=1			
+	</select>
+	
+	
+	<!--'내 주변 디저트 찾기'에서 로그인 세션 고객 주소 불러오기-->
+	<select id="selectUser" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main"> 
+		SELECT *
+		FROM USER_TBL
+		WHERE USER_ID = #{userId}
 	</select>
 	
 </mapper>

@@ -32,8 +32,11 @@
 
 <body>
     <div id="app">
-        <!-- html 코드는 id가 app인 태그 안에서 작업 -->
-        <div id="chart"></div>
+        <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+        <!-- html代码必须在id是app的tag里面进行 -->
+         <div id="chart"></div>
+
+
     </div>
 </body>
 
@@ -43,37 +46,85 @@
     const app = Vue.createApp({
         data() {
             return {
+                storeId:"${storeId}",
                 // 변수 - (key : value)
-                options: {
+                options : {
                     series: [{
-                        name: "Desktops",
+                        name: '',
                         data: []
                     }],
                     chart: {
                         height: 350,
-                        type: 'line',
-                        zoom: {
-                            enabled: false
+                        type: 'bar',
+                    },
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 10,
+                            dataLabels: {
+                                position: 'top', // top, center, bottom
+                            },
                         }
                     },
                     dataLabels: {
-                        enabled: false
+                        enabled: true,
+                        formatter: function (val) {
+                            return val;
+                        },
+                        offsetY: -20,
+                        style: {
+                            fontSize: '12px',
+                            colors: ["#304758"]
+                        }
                     },
-                    stroke: {
-                        curve: 'smooth'
+
+                    xaxis: {
+                        categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                        position: 'bottom',
+                        axisBorder: {
+                            show: false
+                        },
+                        axisTicks: {
+                            show: false
+                        },
+                        crosshairs: {
+                            fill: {
+                                type: 'gradient',
+                                gradient: {
+                                    colorFrom: '#D8E3F0',
+                                    colorTo: '#BED1E6',
+                                    stops: [0, 100],
+                                    opacityFrom: 0.4,
+                                    opacityTo: 0.5,
+                                }
+                            }
+                        },
+                        tooltip: {
+                            enabled: true,
+                        }
+                    },
+                    yaxis: {
+                        axisBorder: {
+                            show: false
+                        },
+                        axisTicks: {
+                            show: false,
+                        },
+                        labels: {
+                            show: false,
+                            formatter: function (val) {
+                                return val + "%";
+                            }
+                        }
+
                     },
                     title: {
-                        text: 'Product Trends by Month',
-                        align: 'center'
-                    },
-                    grid: {
-                        row: {
-                            colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
-                            opacity: 0.5
-                        },
-                    },
-                    xaxis: {
-                        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+                        text: '',
+                        floating: true,
+                        offsetY: 330,
+                        align: 'center',
+                        style: {
+                            color: '#444'
+                        }
                     }
                 }
             };
@@ -82,15 +133,45 @@
             // 함수(메소드) - (key : function())
             fnList: function () {
                 let self = this;
-                let param = {};
+                let param = {
+                    storeId:self.storeId
+                };
                 $.ajax({
-                    url: "/adsale/salestrends.dox",
+                    url: "/adseller/sales.dox",
                     dataType: "json",
-                    type: "GET",
+                    type: "POST",
                     data: param,
                     success: function (data) {
-                        self.options.series[0].data = data.list;
+                        
+                        if (data.result === "success" && data.list && data.list.length > 0) {
+                            // Extract the sales data object
+                            let salesData = data.list[0];
+                            
+                            // 월별 데이터를 삽입
+                            let monthlyData = [
+                                salesData.JAN || 0,
+                                salesData.FEB || 0,
+                                salesData.MAR || 0,
+                                salesData.APR || 0,
+                                salesData.MAY || 0,
+                                salesData.JUN || 0,
+                                salesData.JUL || 0,
+                                salesData.AUG || 0,
+                                salesData.SEP || 0,
+                                salesData.OCT || 0,
+                                salesData.NOV || 0,
+                                salesData.DEC || 0
+                            ];
+                            
+                            // Update the chart with new data
+                            self.chart.updateSeries([{
+                                name: "Sales",
+                                data: monthlyData
+                            }]);
+                        }
+                    
 
+                            
                     }
                 });
             }
@@ -98,12 +179,13 @@
         mounted() {
             // 처음 시작할 때 실행되는 부분
             let self = this;
-            var chart = new ApexCharts(document.querySelector("#chart"), self.options);
-            chart.render();
-            self.chart.updateSeries([{
-                name: "Sales",
-                data: data.list
-            }]);
+            // 1️⃣ 先创建图表实例
+    self.chart = new ApexCharts(document.querySelector("#chart"), self.options);
+    
+    // 2️⃣ 渲染图表（此时显示空图表）
+    self.chart.render();
+            self.fnList();
+            
         }
     });
 

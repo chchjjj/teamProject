@@ -47,7 +47,7 @@
 		FROM USER_TBL
 		WHERE USER_ID = #{userId}
 	</select>
-	 
+	
 	<update id="userUpdate" parameterType="hashmap">
 		UPDATE USER_TBL 
 		SET USER_NAME=#{userName},EMAIL=#{email},USER_ADDR=#{userAddr},PHONE=#{phone},USER_STATUS=#{userStatus},ROLE=#{role}
@@ -99,8 +99,10 @@
 	</select>
 	
 	<select id="sellerSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
-		SELECT *
-		FROM SELLER_INFO_TBL
+		SELECT * FROM USER_TBL U
+		LEFT JOIN
+		SELLER_INFO_TBL S
+		ON S.USER_ID=U.USER_ID
 		WHERE STORE_ID = #{storeId}
 	</select>
 	
@@ -109,6 +111,37 @@
 		SET STORE_NAME=#{storeName},STORE_ADDR=#{storeAddr},STORE_PASS=#{storePass},REJECT_REASON=#{rejectReason},MEMBERSHIP=#{membership}
 		WHERE STORE_ID=#{storeId}
 	</update>
+	
+	<select id="salesSelect" resultType="HashMap">
+		  <![CDATA[
+		   WITH MONTHS AS (
+			    SELECT LEVEL AS MONTH
+			    FROM DUAL
+			    CONNECT BY LEVEL <= 12
+			)
+		SELECT
+		    NVL(SUM(CASE WHEN M.MONTH = 1 THEN D.SUBTOTAL END),0) AS JAN,
+		    NVL(SUM(CASE WHEN M.MONTH = 2 THEN D.SUBTOTAL END),0) AS FEB,
+		    NVL(SUM(CASE WHEN M.MONTH = 3 THEN D.SUBTOTAL END),0) AS MAR,
+		    NVL(SUM(CASE WHEN M.MONTH = 4 THEN D.SUBTOTAL END),0) AS APR,
+		    NVL(SUM(CASE WHEN M.MONTH = 5 THEN D.SUBTOTAL END),0) AS MAY,
+		    NVL(SUM(CASE WHEN M.MONTH = 6 THEN D.SUBTOTAL END),0) AS JUN,
+		    NVL(SUM(CASE WHEN M.MONTH = 7 THEN D.SUBTOTAL END),0) AS JUL,
+		    NVL(SUM(CASE WHEN M.MONTH = 8 THEN D.SUBTOTAL END),0) AS AUG,
+		    NVL(SUM(CASE WHEN M.MONTH = 9 THEN D.SUBTOTAL END),0) AS SEP,
+		    NVL(SUM(CASE WHEN M.MONTH = 10 THEN D.SUBTOTAL END),0) AS OCT,
+		    NVL(SUM(CASE WHEN M.MONTH = 11 THEN D.SUBTOTAL END),0) AS NOV,
+		    NVL(SUM(CASE WHEN M.MONTH = 12 THEN D.SUBTOTAL END),0) AS DEC
+		FROM MONTHS M
+		LEFT JOIN ORDER_DETAIL_TBL D
+		       ON EXTRACT(MONTH FROM (SELECT O.ORDER_DATE FROM ORDER_TBL O WHERE O.ORDER_ID = D.ORDER_ID)) = M.MONTH
+		       AND EXTRACT(YEAR FROM (SELECT O.ORDER_DATE FROM ORDER_TBL O WHERE O.ORDER_ID = D.ORDER_ID)) = EXTRACT(YEAR FROM SYSDATE)
+		       WHERE STORE_ID=#{storeId}
+		  ]]>
+	</select>
+	
+	
+	
 	
 	
 	
@@ -163,6 +196,8 @@
 		           AND EXTRACT(YEAR FROM (SELECT O.ORDER_DATE FROM ORDER_TBL O WHERE O.ORDER_ID = D.ORDER_ID)) = EXTRACT(YEAR FROM SYSDATE)
 		  ]]>
 	</select>
+	
+		
 	
 	
 	

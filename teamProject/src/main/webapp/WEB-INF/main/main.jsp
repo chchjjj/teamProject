@@ -194,7 +194,7 @@
                         alert("로그인 후 이용해주세요!");
                         location.href = "/user/login.do"; // 로그인 페이지 이동
                     } else {
-                        pageChange("", { userId: self.userId }); // 주변 디저트 찾기 페이지 주소 넣어야 함
+                        pageChange("/main/storeFinder.do", { userId: self.userId }); 
                     }
 
                 },
@@ -224,18 +224,25 @@
                 let self = this;
                 console.log("로그인 아이디 ===> " + self.userId); // 로그인한 아이디 잘 넘어오나 테스트
 
-                // 1. URL에서 keyword 파라미터 확인
+                // 1. URL에서 파라미터 확인 (검색키워드 or 카테고리)
                 const urlParams = new URLSearchParams(window.location.search);
                 const keyword = urlParams.get('keyword');
-                
+                const category = urlParams.get('category'); 
+
                 // 2. 키워드 유무에 따라 다르게 리스트 호출
                 if (keyword) {
                     self.keyword = keyword;  // Vue data에 넣기
                     self.fnList();           // fnList 실행
-                } else {
-                    // URL에 키워드 없으면 기본 목록 호출
+                } else if (category) {
+                    //  3. 또는 카테고리 파라미터가 있을 때
+                    console.log("URL에서 받은 category:", category);
+                    self.selectedCategory = category;
                     self.fnList();
-                }
+                }                
+                else {
+                    // 이도저도 아니면 기본 목록 호출
+                    self.fnList();
+                }             
 
 
                 // 헤더에서 keyword (검색어) 이벤트 수신
