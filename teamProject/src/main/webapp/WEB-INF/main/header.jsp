@@ -131,8 +131,7 @@
                     alert("로그인 후 이용해주세요!");
                     location.href="/user/login.do"; // 로그인 페이지 이동
                     } else {
-                        alert("로그인 된 상태입니다.(화면구현중)");
-                        pageChange("/product/wishlist.do", { userId: self.userId }); // 임시 주소 입력해둔 상태!
+                        pageChange("/product/wishlist.do", { userId: self.userId });
                     }
                 },
 
