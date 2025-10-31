@@ -28,23 +28,48 @@ public class SellerController {
         return "/seller/addComplete";
     }
 	
-	@RequestMapping("/seller/storeList.do") 
-    public String myPage(Model model) throws Exception{
-
-        return "seller/sellerMyPage";
-    }
+	@RequestMapping("/seller/storeList.do")
+	public String storeListRedirect() throws Exception {
+		 return "seller/sellerMyPage";
+	}
 	
 	@RequestMapping("/seller/sales.do") 
     public String sales(Model model) throws Exception{
 
         return "seller/sellerMyPageSales";
     }
+	
+	@RequestMapping("/seller/orderList.do") 
+    public String orderList(Model model) throws Exception{
+
+        return "seller/sellerOrderHistory";
+    }
+	
+	@RequestMapping(value = "/seller/orderList.dox",  method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String orderList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = sellerService.getOrderList(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	
 
 	@RequestMapping(value = "/store/list.dox",  method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String storeList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap = sellerService.getStoreList(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/seller/sales.dox",  method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String sellesChart(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = sellerService.getSellesChart(map);
 		
 		return new Gson().toJson(resultMap);
 	}
