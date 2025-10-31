@@ -87,20 +87,26 @@ public class ProductService {
 		
 	}
 	
+	//장바구니 추가
+	@Transactional
 	public HashMap<String, Object> insertCart(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
+		// 선택한 옵션의 내용을 담은 list
 		List<HashMap<String, Object>> list = (List<HashMap<String, Object>>) map.get("list");
 		
 		System.out.println(map);
+		
+		int cnt1 = ProductMapper.insertCart(map); // 장바구니 테이블 
+		
+		//장바구니 옵션 테이블 반복
 		for(int i=0; i<list.size(); i++) {
-			// mapper.insert~~~
 			
 			HashMap<String, Object> inputMap = list.get(i);
-			// inputMap.put("cartId", "insert후에 나온 키 값");
+			inputMap.put("cartId", map.get("cartId"));
 			System.out.println(i+1 + "번째 맵 ==> " + inputMap);
-//			ProductMapper.insertCart(inputMap);
+			ProductMapper.insertCartOpt(inputMap);
 		}
 		
 		return resultMap;

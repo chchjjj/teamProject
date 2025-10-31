@@ -60,10 +60,18 @@
 		WHERE CART_ID = #{cartId}
 	</delete>
 	
-<!--	<insert id="insertCart" parameterType="hashmap">
-		INSERT INTO CART_OPTION_TBL
-		VALUES(SEQ_CART_OPT_ID.NEXTVAL, )
-	</insert>-->
+<!--장바구니 인서트-->
+	<insert id="insertCart" parameterType="hashmap"
+		useGeneratedKeys="true" 
+		keyColumn="CART_ID" 
+		keyProperty="cartId">
+		INSERT INTO CART_TBL
+		VALUES(SEQ_CART_ID.NEXTVAL, #{userId}, #{proNo}, #{storeId}, #{cartQuantity}, #{totalPrice}, SYSDATE, SYSDATE, #{letteringText})
+	</insert>
 	
+	<insert id="insertCartOpt" parameterType="hashmap">
+		INSERT INTO CART_OPTION_TBL
+		VALUES(SEQ_CART_OPT_ID.NEXTVAL, #{cartId}, #{subOptionId}, #{cartOptQuantity}, #{priceDiff})
+	</insert>
 	
 </mapper>
