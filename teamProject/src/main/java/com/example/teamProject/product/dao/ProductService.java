@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.example.teamProject.main.model.Main;
 import com.example.teamProject.product.mapper.ProductMapper;
 import com.example.teamProject.product.model.Product;
 
@@ -74,5 +74,16 @@ public class ProductService {
 		}				
 		return resultMap;
 	}
-
+	
+	// 장바구니 삭제
+	@Transactional
+	public HashMap<String, Object> deleteCart(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		int cnt1 = ProductMapper.deleteCartOpt(map);
+		int cnt2 = ProductMapper.deleteCart(map);
+		resultMap.put("result", "success");
+		return resultMap;
+		
+	}
 }

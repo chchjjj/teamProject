@@ -174,12 +174,17 @@
                         return;
                     }
                     $.ajax({
-                        url: "/product/cartDel.dox",
+                        url: "/product/cartDelete.dox",
                         dataType: "json",
                         type: "POST",
                         data: param,
                         success: function (data) {
-
+                            if (data.result === "success") {
+                                alert("삭제 되었습니다.");
+                                self.fnCart;
+                            } else {
+                                alert("삭제에 실패했습니다.");
+                            }
                         }
                     });
                 },

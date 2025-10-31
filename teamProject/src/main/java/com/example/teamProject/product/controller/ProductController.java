@@ -31,6 +31,12 @@ public class ProductController {
         return "/product/cart";
     }
 	
+	@RequestMapping("/product/wish.do") 
+    public String wish(Model model) throws Exception{
+
+        return "/product/wishList";
+    }
+	
 	@RequestMapping(value = "/product/info.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String info(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
@@ -60,6 +66,14 @@ public class ProductController {
 	public String cart(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap = ProductService.getCartList(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/product/cartDelete.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String cartDelete(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = ProductService.deleteCart(map);
 		return new Gson().toJson(resultMap);
 	}
 }

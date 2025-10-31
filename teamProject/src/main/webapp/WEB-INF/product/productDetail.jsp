@@ -70,7 +70,7 @@
                                         :key="topOption.topOptionId">
 
                                         <select v-model="selectedOptions[topOption.topOptionId]" class="form-select"
-                                            @change="handleOptionChange(topOption.topOptionId)">
+                                            >
 
                                             <option :value="null" disabled selected>
                                                 :: {{topOption.optionName}} ::
@@ -97,12 +97,24 @@
                                 </div>
 
                                 <div class="lettering-input-area" v-if="infoList.lettering === 'Y'">
-                                    <label>문구:<input placeholder="레터링 문구를 입력하세요."></label>
+                                    <label>문구:<input v-model="letteringText" placeholder="레터링 문구를 입력하세요."></label>
                                 </div>
 
+                                <div class="total-price-display">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <p>총 금액: <strong>{{ totalPrice.toLocaleString() }}</strong> 원</p>
+
+                                        <!-- ✅ 전체 수량 조절 버튼 -->
+                                        <div class="quantity-selector">
+                                            <button @click="decreaseTotalQuantity"> &lt; </button>
+                                            <div class="quantity-display">{{ totalQuantity }}</div>
+                                            <button @click="increaseTotalQuantity"> &gt; </button>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="action-buttons">
                                     <button class="buy-btn">구매</button>
-                                    <button class="cart">장바구니</button>
+                                    <button class="cart" @click="fnCart">장바구니</button>
                                 </div>
                             </div>
                         </div>
@@ -130,6 +142,7 @@
                 return {
                     // 변수 - (key : value)
                     proNo: "${proNo}",
+                    userId: "${sessionId}", // 로그인 했을 시 전달 받은 아이디
                     infoList: {},
                     topList: [],
                     allOptList: [],
@@ -149,13 +162,16 @@
 
                     // 💡 [수정] 오류의 원인: Flatpickr disable 옵션에서 참조하는 변수 추가
                     disabledDates: [
-                        "2025-11-01", 
-                        "2025-11-05", 
+                        "2025-11-01",
+                        "2025-11-05",
                         {
-                            from: "2025-11-10", 
+                            from: "2025-11-10",
                             to: "2025-11-15"
                         }
-                    ] 
+                    ],
+                    letteringText: "",
+                    // 전체 상품 수량
+                    totalQuantity: 1
                 };
             },
             computed: {
@@ -165,6 +181,28 @@
                         return this.selectedDate + ' (변경)';
                     }
                     return '픽업/배송 날짜 및 시간 선택';
+                },
+                // ✅ 총 금액 계산
+                totalPrice() {
+                    let total = 0;
+
+                    // 1️⃣ 기본 상품 가격
+                    if (this.infoList.price) {
+                        total += Number(this.infoList.price);
+                    }
+
+                    // 2️⃣ 선택한 옵션 가격들
+                    for (const [topId, subOption] of Object.entries(this.selectedOptions)) {
+                        if (subOption && subOption.priceDiff !== undefined) {
+                            const qty = this.selectedQuantities[topId] || 1;
+                            total += subOption.priceDiff * qty;
+                        }
+                    }
+
+                    // 3️⃣ 전체 수량 적용
+                    total *= this.totalQuantity;
+
+                    return total;
                 }
             },
             methods: {
@@ -219,7 +257,49 @@
                         }
                     });
                 },
-                // **새로 추가할 그룹화 함수**
+                // 전체 수량 조절
+                increaseTotalQuantity() {
+                    this.totalQuantity++;
+                },
+                decreaseTotalQuantity() {
+                    if (this.totalQuantity > 1) this.totalQuantity--;
+                },
+                fnCart: function () {
+                    let self = this;
+                    // 하위 옵션 선택 내역 수집
+                    let subOptionList = [];
+
+                    for (const [topId, subOption] of Object.entries(self.selectedOptions)) {
+                        if (subOption && subOption.subOptionId) {
+                            const quantity = self.selectedQuantities[topId] || 1;
+                            subOptionList.push({
+                                subOptionId: subOption.subOptionId,
+                                cartOptQuantity: quantity
+                            });
+                        }
+                    }
+                    
+                    let param = {
+                        userId: self.userId,
+                        proNo: self.proNo,
+                        storeId: self.infoList.storeId,
+                        cartQuantity: self.totalQuantity,
+                        totalPrice: self.totalPrice,
+                        letteringText: self.letteringText, 
+                        subOptionList: subOptionList
+                    };
+                    console.log("장바구니 전송 데이터:", param);
+                    // $.ajax({
+                    //     url: "",
+                    //     dataType: "json",
+                    //     type: "POST",
+                    //     data: param,
+                    //     success: function (data) {
+
+                    //     }
+                    // });
+                },
+                // 그룹화 함수
                 groupOptions() {
                     const grouped = new Map();
 
