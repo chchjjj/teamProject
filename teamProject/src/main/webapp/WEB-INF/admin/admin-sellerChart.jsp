@@ -33,7 +33,7 @@
 <body>
     <div id="app">
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
-         <div id="chart"></div>
+        <div id="chart"></div>
     </div>
 </body>
 
@@ -47,7 +47,7 @@
                 options: {
                     series: [{
                         name: "Desktops",
-                        data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
+                        data: []
                     }],
                     chart: {
                         height: 350,
@@ -84,11 +84,12 @@
                 let self = this;
                 let param = {};
                 $.ajax({
-                    url: "http://localhost:3009/",
+                    url: "/adsale/salestrends.dox",
                     dataType: "json",
                     type: "GET",
                     data: param,
                     success: function (data) {
+                        self.options.series[0].data = data.list;
 
                     }
                 });
@@ -99,6 +100,10 @@
             let self = this;
             var chart = new ApexCharts(document.querySelector("#chart"), self.options);
             chart.render();
+            self.chart.updateSeries([{
+                name: "Sales",
+                data: data.list
+            }]);
         }
     });
 
