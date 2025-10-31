@@ -138,7 +138,7 @@
                 data() {
                     return {
                         list: [],        // 가게 목록
-                        userId: 'user04',
+                         userId: "${sessionId}",
                         salesData: []    // 월별 매출
                     }
                 },

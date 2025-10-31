@@ -6,13 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.teamProject.seller.dao.SellerService;
 import com.google.gson.Gson;
-
-import org.springframework.web.bind.annotation.RequestMethod;
 
 
 
@@ -39,11 +38,21 @@ public class SellerController {
         return "seller/sellerMyPageSales";
     }
 	
-	@RequestMapping("/seller/orderList.do") 
+	@RequestMapping("/seller/salesHistory.do") 
     public String orderList(Model model) throws Exception{
 
         return "seller/sellerOrderHistory";
     }
+	
+	@RequestMapping("/seller/OrderHistoryViewDetails.do")
+	public String view(@RequestParam(value="orderId", required=false) String orderId, Model model) {
+	    if(orderId != null && !orderId.isEmpty()) {
+	        model.addAttribute("orderId", orderId);
+	    } else {
+	        model.addAttribute("error", "주문 ID가 없습니다.");
+	    }
+	    return "seller/OrderHistoryViewDetails";
+	}
 	
 	@RequestMapping(value = "/seller/orderList.dox",  method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
@@ -53,6 +62,7 @@ public class SellerController {
 		
 		return new Gson().toJson(resultMap);
 	}
+	
 	
 	
 
@@ -73,6 +83,22 @@ public class SellerController {
 		
 		return new Gson().toJson(resultMap);
 	}
+	
+	@RequestMapping(value = "/seller/orderDetail.dox",  method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String orderDetail(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = sellerService.getOrderDetail(map);
+		 
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+
+
+
+
+
 	
 
 }

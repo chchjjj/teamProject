@@ -1,86 +1,134 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.teamProject.seller.mapper.SellerMapper">
 
-    <select id="selectStoreList" resultType="com.example.teamProject.seller.model.Seller">
-       SELECT 
-            STORE_ID,
-            STORE_NAME,
-            BUSINESS_NO,
-            STORE_INTRO,
-            DELIVERY_YN,
-            IS_CHAT_ENABLED,
-            CHAT_START,
-            CHAT_END,
-            STORE_ADDR,
-            STORE_AREA,
-            STORE_PASS,
-            REJECT_REASON,
-            GRADE_CODE,
-            MEMBERSHIP,
-            REG_DATE,
-            UDATE
-        FROM SELLER_INFO_TBL
-        WHERE USER_ID = #{userId, jdbcType=VARCHAR}
-          AND STORE_PASS = 'P'
-        ORDER BY STORE_ID
-    </select>
+	<select id="selectStoreList"
+		resultType="com.example.teamProject.seller.model.Seller">
+		SELECT
+		STORE_ID,
+		STORE_NAME,
+		BUSINESS_NO,
+		STORE_INTRO,
+		DELIVERY_YN,
+		IS_CHAT_ENABLED,
+		CHAT_START,
+		CHAT_END,
+		STORE_ADDR,
+		STORE_AREA,
+		STORE_PASS,
+		REJECT_REASON,
+		GRADE_CODE,
+		MEMBERSHIP,
+		REG_DATE,
+		UDATE
+		FROM SELLER_INFO_TBL
+		WHERE USER_ID = #{userId, jdbcType=VARCHAR}
+		AND STORE_PASS = 'P'
+		ORDER BY STORE_ID
+	</select>
 
-    <update id="updateStoreName">
-        UPDATE SELLER_INFO_TBL
-        SET STORE_NAME = #{storeName}, UDATE = SYSDATE
-        WHERE STORE_ID = #{storeId}
-    </update>
+	<update id="updateStoreName">
+		UPDATE SELLER_INFO_TBL
+		SET STORE_NAME = #{storeName}, UDATE = SYSDATE
+		WHERE STORE_ID = #{storeId}
+	</update>
 
-    <update id="updateStoreIntro">
-        UPDATE SELLER_INFO_TBL
-        SET STORE_INTRO = #{storeIntro}, UDATE = SYSDATE
-        WHERE STORE_ID = #{storeId}
-    </update>
+	<update id="updateStoreIntro">
+		UPDATE SELLER_INFO_TBL
+		SET STORE_INTRO = #{storeIntro}, UDATE = SYSDATE
+		WHERE STORE_ID = #{storeId}
+	</update>
 
-    <update id="updateChatInfo">
-        UPDATE SELLER_INFO_TBL
-        SET IS_CHAT_ENABLED = #{isChatEnabled},
-            CHAT_START = #{chatStart},
-            CHAT_END = #{chatEnd},
-            UDATE = SYSDATE
-        WHERE STORE_ID = #{storeId}
-    </update>
-    
-    <select id="selectMonthlySalesByUser" parameterType="string" resultType="map">
-    SELECT 
-        s.STORE_NAME,
-        TO_CHAR(o.ORDER_DATE, 'YYYY-MM') AS ORDER_MONTH,
-        COUNT(o.ORDER_ID) AS ORDER_COUNT,
-        SUM(o.TOTAL_PRICE) AS TOTAL_SALES
-    FROM 
-        SELLER_INFO_TBL s
-    JOIN 
-        ORDER_TBL o
-    ON 
-        s.STORE_NAME = o.STORE_NAME
-    WHERE
-        s.USER_ID = #{userId}  <!-- 로그인한 사용자 파라미터 -->
-    GROUP BY 
-        s.STORE_NAME,
-        TO_CHAR(o.ORDER_DATE, 'YYYY-MM')
-    ORDER BY 
-        ORDER_MONTH
-</select>
+	<update id="updateChatInfo">
+		UPDATE SELLER_INFO_TBL
+		SET IS_CHAT_ENABLED = #{isChatEnabled},
+		CHAT_START = #{chatStart},
+		CHAT_END = #{chatEnd},
+		UDATE = SYSDATE
+		WHERE STORE_ID = #{storeId}
+	</update>
 
-<select id="selectMonthlySales" resultType="hashmap" parameterType="hashmap">
-      SELECT 
-        TO_CHAR(o.order_date, 'MM') AS MONTH,
-        SUM(o.total_price) AS TOTAL
-    FROM order_tbl o
-    INNER JOIN seller_info_tbl s
-        ON o.store_name = s.store_name
-    WHERE s.user_id = #{userId}  <!-- 여기에 특정 판매자 아이디 조건 추가 -->
-    GROUP BY TO_CHAR(o.order_date, 'MM')
-    ORDER BY TO_CHAR(o.order_date, 'MM')
-    </select>
+	<select id="selectMonthlySalesByUser" parameterType="string"
+		resultType="map"> SELECT s.STORE_NAME, TO_CHAR(o.ORDER_DATE, 'YYYY-MM')
+		AS ORDER_MONTH, COUNT(o.ORDER_ID) AS ORDER_COUNT, SUM(o.TOTAL_PRICE) AS
+		TOTAL_SALES FROM SELLER_INFO_TBL s JOIN ORDER_TBL o ON s.STORE_NAME =
+		o.STORE_NAME WHERE s.USER_ID = #{userId} <!-- 로그인한 사용자 파라미터 --> GROUP BY s.STORE_NAME,
+		TO_CHAR(o.ORDER_DATE, 'YYYY-MM') ORDER BY ORDER_MONTH </select>
+
+	<select id="selectMonthlySales" resultType="hashmap" parameterType="hashmap">
+		SELECT TO_CHAR(o.order_date, 'MM') AS MONTH, SUM(o.total_price) AS TOTAL
+		FROM order_tbl o INNER JOIN seller_info_tbl s ON o.store_name =
+		s.store_name WHERE s.user_id = #{userId} <!-- 여기에 특정 판매자 아이디 조건 추가 --> GROUP BY TO_CHAR(o.order_date,
+		'MM') ORDER BY TO_CHAR(o.order_date, 'MM') </select>
+
+
+	<select id="selectOrderList" parameterType="HashMap"
+		resultType="HashMap">
+		SELECT
+		T1.USER_NAME,
+		T2.ORDER_ID,
+		T3.PRO_NAME,
+		T4.OPTION_NAME,
+		T5.VALUE_NAME,
+		T3.PRICE,
+		T6.PRICE_DIFF,
+		COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE) PICKUP_DELIVERY_DATE,
+		T10.STORE_NAME
+		FROM
+		ORDER_TBL T2
+		JOIN
+		USER_TBL T1 ON T2.USER_ID = T1.USER_ID
+		JOIN
+		ORDER_DETAIL_TBL T3 ON T2.ORDER_ID = T3.ORDER_ID
+		JOIN
+		PRODUCT_TBL T8 ON T3.PRO_NO = T8.PRO_NO
+		JOIN
+		SELLER_INFO_TBL T10 ON T8.STORE_ID = T10.STORE_ID
+		LEFT JOIN
+		ORDER_OPTION_TBL T6 ON T3.ORDER_DETAIL_ID = T6.ORDER_DETAIL_ID
+		LEFT JOIN
+		PRODUCT_OPTION_TBL T4 ON T6.TOP_OPTION_ID = T4.TOP_OPTION_ID
+		LEFT JOIN
+		PRODUCT_SUB_OPTION_TBL T5 ON T6.SUB_OPTION_ID = T5.SUB_OPTION_ID
+		LEFT JOIN
+		DELIVERY_TBL T7 ON T2.ORDER_ID = T7.ORDER_ID
+		LEFT JOIN
+		PICKUP_TBL T9 ON T2.ORDER_ID = T9.ORDER_ID
+		WHERE
+		T10.USER_ID = #{userId}
+	</select>
+
+	<select id="selectOrderDetail" parameterType="java.util.HashMap"
+		resultType="java.util.HashMap">
+		SELECT
+		T1.USER_NAME,
+		T2.ORDER_ID,
+		T3.PRO_NAME,
+		COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE),
+		T10.STORE_NAME,
+		T3.PRICE,
+		SUM(NVL(T6.PRICE_DIFF, 0)),
+		LISTAGG(T4.OPTION_NAME || ': ' || T5.VALUE_NAME, ', ') WITHIN GROUP
+		(ORDER BY T6.ORDER_OPTION_ID)
+		FROM
+		ORDER_TBL T2
+		JOIN USER_TBL T1 ON T2.USER_ID = T1.USER_ID
+		JOIN ORDER_DETAIL_TBL T3 ON T2.ORDER_ID = T3.ORDER_ID
+		JOIN PRODUCT_TBL T8 ON T3.PRO_NO = T8.PRO_NO
+		JOIN SELLER_INFO_TBL T10 ON T8.STORE_ID = T10.STORE_ID
+		LEFT JOIN ORDER_OPTION_TBL T6 ON T3.ORDER_DETAIL_ID = T6.ORDER_DETAIL_ID
+		LEFT JOIN PRODUCT_OPTION_TBL T4 ON T6.TOP_OPTION_ID = T4.TOP_OPTION_ID
+		LEFT JOIN PRODUCT_SUB_OPTION_TBL T5 ON T6.SUB_OPTION_ID =
+		T5.SUB_OPTION_ID
+		LEFT JOIN DELIVERY_TBL T7 ON T2.ORDER_ID = T7.ORDER_ID
+		LEFT JOIN PICKUP_TBL T9 ON T2.ORDER_ID = T9.ORDER_ID
+		WHERE T2.ORDER_ID = #{orderId}
+		GROUP BY
+		T1.USER_NAME, T2.ORDER_ID, T3.PRO_NAME, T3.PRICE,
+		COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE), T10.STORE_NAME
+	</select>
+
 
 </mapper>
 

@@ -205,14 +205,16 @@
         data() {
             return {
                 list: [],
-                userId: '',
+                userId: "${sessionId}",
+                storeName: ""
             };
         },
         methods: {
             fnList: function () {
                 let self = this;
                 let param = {
-                    userId: 'user04'
+                    userId: self.userId,
+                    storeName: self.storeName
                 };
                 $.ajax({
                     url: "/store/list.dox",
@@ -221,10 +223,14 @@
                     data: param,
                     success: function (data) {
                         self.list = data.list;
+                        console.log(data);
+                        console.log(self.userId);
                     },
                     error: function (xhr, status, error) {
                         console.error("가게 목록 조회 실패:", error);
                         self.list = [];
+                         console.log(data);
+                         console.log(self.userId);
                     }
                 });
             }
