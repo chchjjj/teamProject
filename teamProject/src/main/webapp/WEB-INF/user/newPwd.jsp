@@ -51,16 +51,16 @@
 
                 <!-- 여기 밑 세 줄을 문자인증 도입하면 주석 처리 -->
 
-                <!-- <div>
+                <div>
                     <button @click="fnAuth">인증</button>
-                </div> -->
+                </div>
 
                 <!-- 문자 인증 도입하기 전에는 밑에 줄 주석처리 여기부터 -->
                 
-                <div v-if="!smsFlg">
+                <!-- <div v-if="!smsFlg">
                     문자인증 : <input v-model="inputNum" :placeholder="timer">
                     <template v-if="!sendMessageFlg">
-                        <button @click="fnSms">인증번호 전송</button>
+                        <button @click="fnSendSms">인증번호 전송</button>
                     </template>
                     <template v-else>
                         <button @click="fnSmsAuth">문자인증</button>
@@ -68,7 +68,7 @@
                 </div>
                 <div v-else>
                     <button @click="fnAuth">사용자인증</button>
-                </div>
+                </div> -->
 
                 <!-- 여기까지 -->
 
@@ -165,14 +165,17 @@
                         }
                     });
                 },
-                fnSms: function () {
+                fnSendSms: function () {
                     let self = this;
-                    let param = {};
+                    let param = {
+                        phone : self.phone
+                    };
                     $.ajax({
                         url: "/send-one",
                         dataType: "json",
                         type: "POST",
-                        data: param,
+                        data: JSON.stringify(param), //에러 잡으려고 수정함
+                        contentType: "application/json", //에러 잡으려고 추가함
                         success: function (data) {
                             console.log(data);
                             if (data.res.statusCode == "2000") {
