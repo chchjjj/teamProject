@@ -23,5 +23,8 @@ public interface MainMapper {
 	// '내 주변 디저트찾기'에서 로그인세션 특정 고객 정보 불러오기
 	Main selectUser(HashMap<String, Object> map);
 	
+	// '내 주변 디저트찾기'에서 가게(판매자) 목록 불러오기
+	List<Main> selectSeller(HashMap<String, Object> map);
+	
 	
 }
