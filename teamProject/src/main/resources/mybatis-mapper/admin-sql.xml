@@ -99,6 +99,9 @@
    		<if test="option=='storeName'">
    			AND STORE_NAME LIKE '%'||#{keyWord}||'%'
    		</if>
+   		<if test="flgApp=='true'">
+   			AND STORE_PASS='G'
+   		</if>
 	</select>
 	
 	<select id="sellerSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
@@ -160,6 +163,12 @@
    		WHERE USER_ID LIKE '%'||#{keyWord}||'%'
 		ORDER BY MEMBERSHIP_ID DESC
 		OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
+	</select>
+	
+	<select id="membershipCount" parameterType="hashmap" resultType="int">
+   		SELECT COUNT(*) FROM MEMBERSHIP_TBL
+   		WHERE USER_ID LIKE '%'||#{keyWord}||'%'
+		ORDER BY MEMBERSHIP_ID DESC
 	</select>
 	
 	

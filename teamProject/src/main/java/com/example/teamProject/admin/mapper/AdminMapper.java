@@ -56,7 +56,10 @@ public interface AdminMapper {
 		
 		
 		//3.membership관리
+		//list
 		List <Admin> membershipListSelect(HashMap<String, Object> map);
+		//count
+		int membershipCount(HashMap<String, Object> map);
 		
 		
 		
