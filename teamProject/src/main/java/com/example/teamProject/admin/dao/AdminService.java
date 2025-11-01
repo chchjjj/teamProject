@@ -175,7 +175,7 @@ public class AdminService {
 			try {
 				List <Admin> membershipList= adminMapper.membershipListSelect(map);
 				resultMap.put("membershipList",membershipList);
-				int totalRows=adminMapper.sellerCount(map);
+				int totalRows=adminMapper.membershipCount(map);
 				resultMap.put("totalRows",totalRows);
 				resultMap.put("result","success");
 			}catch(Exception e) {

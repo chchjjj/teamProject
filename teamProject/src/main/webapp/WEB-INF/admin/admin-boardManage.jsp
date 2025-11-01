@@ -59,7 +59,7 @@
                             <button @click="fnAdRequest()">광고관리</button>
                         </div>
                         <div>
-                            <button @click="fnMembership()">맴버쉽관리</button>
+                            <button @click="fnMembership()">멤버십관리</button>
                         </div>
                         <div>
                             <button @click="fnQandA()">Q&A</button>
@@ -75,18 +75,31 @@
 
                 </div>
 
+
+                <div>
+                    <label><input type="radio" name="boardManage" value="qnA" v-model="selectedTable">
+                        QnA</label>
+                    <label><input type="radio" name="boardManage" value="review" v-model="selectedTable">
+                        리뷰</label>
+                    <label><input type="radio" name="boardManage" value="board" v-model="selectedTable">
+                        게시판</label>
+                </div>
+
                 <!--메인 페이지 바디 내용-->
-                <div class="userList">
-                    <!--사용자list-->
+
+                <!--1.qnAlist-->
+                <div class="userList" v-if="selectedTable==='qnA'">
+                    
                     <div>
                         <!--구역이름-->
                         <div>
-                            사용자관리
+                            QnA관리
                         </div>
                         <!--아이콘-->
                         <div></div>
                         <!--선택사항-->
                         <div>
+
                             <select v-model="pageSize" @change="fnQnAList">
                                 <option value="10">10</option>
                                 <option value="15">15</option>
@@ -102,6 +115,7 @@
                             <input type="text" v-model="keyWord">
                             <button @click="fnQnAList">검색</button>
                         </div>
+
                         <!--태이블-->
                         <table>
                             <tr>
@@ -111,7 +125,7 @@
                                 <th>질문자</th>
                                 <th>질문 시간</th>
                                 <th>답변 시간</th>
-                                <th>답변 상태</th> 
+                                <th>답변 상태</th>
                             </tr>
                             <tr v-for="qnA in qnAList">
                                 <td><input type="checkbox" :value="questionId" v-model="selectItem"></td>
@@ -124,7 +138,78 @@
                                     <span v-if="qnA.answerContent">완료</span>
                                     <span v-else>대기</span>
                                 </td>
-                                
+
+                            </tr>
+                        </table>
+                    </div>
+
+
+                    <!--페이징 구역-->
+                    <div>
+                        <span v-if="page>1">
+                            <button @click="fnPre()">◀</button>
+                        </span>
+                        <a href="javascript:;" v-for="num in pageRangeList" @click="fnChange(num)"
+                            :class="{active:page == num}">{{num}}</a>
+                        <span v-if="page!=pageNum"><button @click="fnNext()">▶</button></span>
+                    </div>
+
+
+                </div>
+
+
+                <!--2. reviewlist-->
+                <div class="userList" v-if="selectedTable==='review'">
+                    
+                    <div>
+                        <!--구역이름-->
+                        <div>
+                            리뷰관리
+                        </div>
+                        <!--아이콘-->
+                        <div></div>
+                        <!--선택사항-->
+                        <div>
+
+                            <select v-model="pageSize" @change="fnReviewList">
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                            </select>
+                            <select v-model="option">
+                                <option value="all">::전체::</option>
+                                <option value="userId">구매자</option>
+                                <option value="storeId">판매자</option>
+                            </select>
+                            <input type="text" v-model="keyWord">
+                            <button @click="fnReviewList">검색</button>
+                        </div>
+
+                        <!--태이블-->
+                        <table>
+                            <tr>
+                                <th>선택<input type="checkbox" @click="fnSelectAll"></th>
+                                <th>리뷰번호</th>
+                                <th>주문번호</th>
+                                <th>상품</th>
+                                <th>작성자</th>
+                                <th>판매자</th>
+                                <th>평점</th>
+                                <th>내용</th>
+                                <th>작성시간</th>
+                                <th>수정시간</th>
+                            </tr>
+                            <tr v-for="review in reviewList">
+                                <td><input type="checkbox" :value="reviewId" v-model="selectItem"></td>
+                                <td>{{review.reviewId}}</td>
+                                <td>{{review.orderId}}</td>
+                                <td>{{review.proNo}}</td>
+                                <td>{{review.userId}}</td>
+                                <td>{{review.storeId}}</td>
+                                <td>{{review.rating}}</td>
+                                <td>{{review.content}}</td>
+                                <td>{{review.cDateTime}}</td>
+                                <td>{{review.uDateTime}}</td>
                             </tr>
                         </table>
                     </div>
@@ -158,13 +243,32 @@
 
     <script>
         const app = Vue.createApp({
+            watch: {
+                selectedTable(value) {
+                    if (value === "QnA") {
+                        this.fnQnAList();
+                    } else if (value === "review") {
+                        this.fnReviewList();
+                    } else if (value === "board") {
+                        this.fnBoardList();
+                    }
+
+                    // this.selectQnA = [];
+                    // this.selectReview = [];
+                    // this.selectBoard = [];
+                },
+
+            },
             data() {
                 return {
                     // 변수 - (key : value)
                     qnAList: [],
+                    reviewList: [],
+                    boardList: [],
                     sessionId: "${sessionId}",
-                
-                    
+                    selectedTable: "qnA",
+
+
 
                     //선택
                     selectItem: [],
@@ -196,7 +300,7 @@
                         fetchRows: self.pageSize,
                     };
                     $.ajax({
-                        url: "/adqna/qnalist.dox",
+                        url: "/adboard/qnalist.dox",
                         dataType: "json",
                         type: "POST",
                         data: param,
@@ -208,7 +312,48 @@
                         }
                     });
                 },
-
+                fnReviewList: function () {
+                    let self = this;
+                    let param = {
+                        option: self.option,
+                        keyWord: self.keyWord,
+                        offset: (self.page - 1) * self.pageSize,
+                        fetchRows: self.pageSize,
+                    };
+                    $.ajax({
+                        url: "/adboard/reviewlist.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            self.reviewList = data.reviewList;
+                            self.totalRows = data.totalRows;
+                            self.pageNum = Math.ceil(self.totalRows / self.pageSize);
+                            self.fnpageRange();
+                        }
+                    });
+                },
+                fnBoardList: function () {
+                    let self = this;
+                    let param = {
+                        option: self.option,
+                        keyWord: self.keyWord,
+                        offset: (self.page - 1) * self.pageSize,
+                        fetchRows: self.pageSize,
+                    };
+                    $.ajax({
+                        url: "#",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            self.boardList = data.boardList;
+                            self.totalRows = data.totalRows;
+                            self.pageNum = Math.ceil(self.totalRows / self.pageSize);
+                            self.fnpageRange();
+                        }
+                    });
+                },
                 //선택
                 fnSelectAll: function () {
                     let self = this;
@@ -263,11 +408,11 @@
 
                 //수정으로로 이동
                 fnEdit: function (userId) {
-                    pageChange("/admin/useredit.do",{userId:userId});
+                    pageChange("/admin/useredit.do", { userId: userId });
                 },
 
-                fnUserInfo:function(userId){
-                    pageChange("/admin/userinfo.do",{userId:userId});
+                fnUserInfo: function (userId) {
+                    pageChange("/admin/userinfo.do", { userId: userId });
                 },
 
 
@@ -310,7 +455,7 @@
 
                 },
 
-                fnAdminMain:function(){
+                fnAdminMain: function () {
                     location.href = "/admin/main.do";
                 },
 

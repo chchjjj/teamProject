@@ -97,6 +97,14 @@ public class Admin {
     private String questionDate;
     private String answerContent;
     private String answerDate;
+    
+    
+    // reivew
+    private int reviewId;
+    private int rating;
+    private String uDateTime;
+    private String cDateTime;
+    private String content;
 
 	
     //광고
@@ -111,5 +119,4 @@ public class Admin {
     private String adStatus;
 	
     
-    //광고 
 }

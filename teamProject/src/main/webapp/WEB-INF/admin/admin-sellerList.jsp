@@ -58,7 +58,7 @@
                             <button @click="fnAdRequest()">광고관리</button>
                         </div>
                         <div>
-                            <button @click="fnMembership()">맴버쉽관리</button>
+                            <button @click="fnMembership()">멤버십관리</button>
                         </div>
                         <div>
                             <button @click="fnQandA()">Q&A</button>

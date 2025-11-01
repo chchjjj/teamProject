@@ -58,7 +58,7 @@
                             <button @click="fnAdRequest()">광고관리</button>
                         </div>
                         <div>
-                            <button @click="fnMembership()">맴버쉽관리</button>
+                            <button @click="fnMembership()">멤버십</button>
                         </div>
                         <div>
                             <button @click="fnQandA()">Q&A</button>
@@ -80,7 +80,7 @@
                     <div>
                         <!--구역이름-->
                         <div>
-                            맴버십 관리
+                            멤버십 관리
                         </div>
                         <!--아이콘-->
                         <div></div>
@@ -101,14 +101,17 @@
                                 <th>판매자 소유 유저 아이디</th>
                                 <th>등급</th>
                                 <th>가입일</th>
-                                <th>맴버십 상태</th>
+                                <th>멤버십 상태</th>
                                 <th>월정액 요금</th>
                                 <th>종료일</th>    
                             </tr>
                             <tr v-for="membership in membershipList">
                                 <td>{{membership.membershipId}}</td>
                                 <td>{{membership.userId}}</td>
-                                <td>{{membership.membershipLevel}}</td>
+                                <td>
+                                    <span v-if="membership.membershipLevel==='S'">SILVER</span>
+                                    <span v-if="membership.membershipLevel==='G'">GOLD</span>
+                                </td>
                                 <td>{{membership.joinDate}}</td>
                                 <td>{{membership.membershipStatus}}</td>
                                 <td>{{membership.monthlyFee}}</td>
