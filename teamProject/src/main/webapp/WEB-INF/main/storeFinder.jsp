@@ -201,14 +201,14 @@
                     });
                 },
 
-                // 로그인 세션 사용자의 주소 불러오기
+                // 로그인 세션 사용자의 정보 통해 주소 불러오기
                 fnUserInfo(callback) {
                     let self = this;
                     let param = {
                         userId : self.userId
                     };
                     $.ajax({
-                        url: "/main/userAddr.dox",
+                        url: "/main/userInfo.dox",
                         dataType: "json",
                         type: "POST",
                         data: param,

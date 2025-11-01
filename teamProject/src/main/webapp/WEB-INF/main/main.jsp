@@ -114,13 +114,24 @@
                                 </div>
                             </div>
 
-                            <div class="pagination">
+                            <!-- <div class="pagination">
                                 <a href="#">&lt;</a>
                                 <a href="#" class="active">1</a>
                                 <a href="#">2</a>
                                 <a href="#">3</a>
                                 <a href="#">&gt;</a>
-                            </div>
+                            </div> -->
+
+                            <!--페이징-->                        
+                         <div class="pagination">
+                            <!-- 페이지 숫자 양옆 화살표 (fnMove) -->
+                            <a href="#" @click="fnMove(-1)" v-if="page != 1">&lt;</a>
+                            <a href="#" v-for="num in index" :key="num" @click="fnPage(num)" :class="{ active : page == num }" >
+                                {{num}} 
+                            </a>
+                            <a href="#" @click="fnMove(+1)" v-if="page != index">&gt;</a>
+                        </div>
+
                         </section>
 
                         <section class="external-ad">
@@ -158,7 +169,11 @@
                     selectedCategory: '', // 디폴트
 
                     proNo : "", // 상품번호
-                    keyword: "" // 검색 키워드 변수 추가
+                    keyword: "", // 검색 키워드 변수 추가
+
+                    pageSize : 8, // 한 페이지에 출력할 게시글 개수 (8개로 기본값)
+                    page : 1, // 현재 페이지(위치) - 최초 1페이지부터 시작 (OFFSET 다음에 오는 숫자)
+                    index : 0, // 최대 페이지 값 (표현할 페이지 개수)
 
                 };
             },
@@ -172,7 +187,9 @@
                         area: self.area,
                         order: self.order,
                         category: self.selectedCategory,
-                        keyword: self.keyword
+                        keyword: self.keyword,
+                        pageSize : self.pageSize,
+                        page : (self.page-1) * self.pageSize
                     };
                     $.ajax({
                         url: "/main/list.dox", // 상품 리스트 조회주소 넣어야함
@@ -182,7 +199,7 @@
                         success: function (data) {
                             console.log(data);
                             self.list = data.list; // data에 있는 list 값을 변수 list에 담기      
-
+                            self.index = Math.ceil(data.cnt / self.pageSize); 
                         }
                     });
                 },
@@ -215,7 +232,28 @@
                     let self = this;
                     console.log(proNo); // main 화면에서 클릭한 상품번호 출력(확인완료)
                     pageChange("/productDetail.do", { proNo : proNo });  // 상세페이지로 proNo 넘겨줌            
-                }
+                },
+
+                // 페이지 초기화
+                fnPageSizeChange: function() {
+                    let self = this;
+                    self.page = 1; // 페이지 초기화
+                    self.fnList();
+                },
+
+                // 페이지 숫자 클릭시 리스트를 페이지에 맞게 갱신   
+                fnPage : function(num){ // 파라미터로 클릭한 num 보내주기
+                    let self = this; 
+                    self.page = num; // 현재 페이지를 num의 숫자로 반영
+                    self.fnList(); // 반영 후 기준으로 리스트 재호출
+                },
+
+                // 페이지 숫자 양옆 화살표 버튼 누르면 페이지 이동
+                fnMove : function(move){
+                    let self = this; 
+                    self.page += move; // 현재 페이지를 -1 또는 +1 
+                    self.fnList();
+                },
 
             }, // methods
 

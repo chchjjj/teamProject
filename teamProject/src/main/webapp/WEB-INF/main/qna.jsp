@@ -19,11 +19,11 @@
         <style>
             /* QnA 제목 스타일 */
             .qna-title {
-                font-size: 28px;        /* 적당히 크고 눈에 띄게 */
-                font-weight: 700;       /* 진하게 */
-                color: #333;            /* 어두운 색상으로 가독성 확보 */
-                margin-top: 30px;       /* 위에 간격 */
-                margin-bottom: 25px;    /* 아래(목록 설정)와의 간격 */
+                font-size: 28px;        
+                font-weight: 700;       
+                color: #333;          
+                margin-top: 30px;       
+                margin-bottom: 25px;    
                 padding-bottom: 10px;   /* 구분선과 텍스트 사이의 간격 */
                 text-align: left;       /* 왼쪽 정렬 */
             }

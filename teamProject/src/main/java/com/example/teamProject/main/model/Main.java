@@ -7,6 +7,7 @@ public class Main {
 	private String userId;
 	private String userName;
 	private String userAddr;
+	private String role;
 	
 	// 상품 정보
 	private int proNo;

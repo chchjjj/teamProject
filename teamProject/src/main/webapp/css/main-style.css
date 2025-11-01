@@ -154,6 +154,14 @@ ul {
     vertical-align: middle;
 }
 
+.admin-notice {
+  text-align: right;
+  color: red;
+  font-weight: bold;
+  margin-right: 100px;
+  font-size: 20px;
+}
+
 /* 2. 메인 네비게이션 (메뉴바) */
 .main-nav-container {
     /* max-width를 제거하여 화면 양옆에 꽉 차도록 함 */

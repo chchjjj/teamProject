@@ -15,14 +15,15 @@ public class MainService {
 	@Autowired
 	MainMapper mainMapper;
 	
-	// 메인페이지 상품 목록 불러오기
+	// 메인페이지 상품 목록 불러오기 & 상품 개수세기 (페이징)
 	public HashMap<String, Object> getProList(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();		
 		try {
-			List<Main> list = mainMapper.selectMainProList(map);			
+			List<Main> list = mainMapper.selectMainProList(map);
+			int cnt = mainMapper.selectMainCnt(map); // 게시된 상품 개수
 			resultMap.put("list", list); 
+			resultMap.put("cnt", cnt);
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -50,7 +51,7 @@ public class MainService {
 		return resultMap;
 	}
 	
-	// '내 주변 디저트 찾기' - 로그인세션 유저 (특정값) 찾기
+	// 로그인세션 유저 (특정값) 찾기 ('내 주변 디저트 찾기' & '마이페이지')
 		public HashMap<String, Object> getUser(HashMap<String, Object> map) {
 			// TODO Auto-generated method stub
 			HashMap<String, Object> resultMap = new HashMap<String, Object>();
