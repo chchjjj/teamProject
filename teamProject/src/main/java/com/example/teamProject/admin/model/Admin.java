@@ -104,7 +104,7 @@ public class Admin {
     private int rating;
     private String uDateTime;
     private String cDateTime;
-    private String content;
+    private String reviewContent;
 
 	
     //광고

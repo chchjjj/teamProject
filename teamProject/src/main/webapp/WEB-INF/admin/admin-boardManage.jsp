@@ -44,7 +44,7 @@
                     <!---->
                     <div class="navButton">
                         <div>
-                            <button @click="fnAdinMain()">대시보드</button>
+                            <button @click="fnAdminMain()">대시보드</button>
                         </div>
                         <div>
                             <button @click="fnBuyerManage()">구매자 관리</button>
@@ -89,7 +89,7 @@
 
                 <!--1.qnAlist-->
                 <div class="userList" v-if="selectedTable==='qnA'">
-                    
+
                     <div>
                         <!--구역이름-->
                         <div>
@@ -121,17 +121,24 @@
                             <tr>
                                 <th>선택<input type="checkbox" @click="fnSelectAll"></th>
                                 <th>번호</th>
-                                <th>질문 내용</th>
                                 <th>질문자</th>
+                                <th>질문 내용</th>
+                                <th>답변자</th>
+                                <th>답변 내용</th>
                                 <th>질문 시간</th>
                                 <th>답변 시간</th>
                                 <th>답변 상태</th>
                             </tr>
                             <tr v-for="qnA in qnAList">
-                                <td><input type="checkbox" :value="questionId" v-model="selectItem"></td>
+                                <td><input type="checkbox" :value="qnA.questionId" v-model="selectItem"></td>
                                 <td>{{qnA.questionId}}</td>
-                                <td>{{qnA.questionContent}}</td>
                                 <td>{{qnA.userId}}</td>
+                                <td>{{qnA.questionContent}}</td>
+                                <td>{{qnA.storeId}}</td>
+                                <td>
+                                    <span v-if="!qnA.answerContent">-</span>
+                                    <span v-else>{{qnA.answerContent}}</span>
+                                </td>
                                 <td>{{qnA.questionDate}}</td>
                                 <td>{{qnA.answerDate}}</td>
                                 <td>
@@ -160,7 +167,7 @@
 
                 <!--2. reviewlist-->
                 <div class="userList" v-if="selectedTable==='review'">
-                    
+
                     <div>
                         <!--구역이름-->
                         <div>
@@ -200,14 +207,14 @@
                                 <th>수정시간</th>
                             </tr>
                             <tr v-for="review in reviewList">
-                                <td><input type="checkbox" :value="reviewId" v-model="selectItem"></td>
+                                <td><input type="checkbox" :value="review.reviewId" v-model="selectItem"></td>
                                 <td>{{review.reviewId}}</td>
                                 <td>{{review.orderId}}</td>
                                 <td>{{review.proNo}}</td>
                                 <td>{{review.userId}}</td>
                                 <td>{{review.storeId}}</td>
                                 <td>{{review.rating}}</td>
-                                <td>{{review.content}}</td>
+                                <td>{{review.reviewContent}}</td>
                                 <td>{{review.cDateTime}}</td>
                                 <td>{{review.uDateTime}}</td>
                             </tr>
@@ -245,7 +252,9 @@
         const app = Vue.createApp({
             watch: {
                 selectedTable(value) {
-                    if (value === "QnA") {
+                    this.selectItem = [];
+                    this.flgAllChecked = false;
+                    if (value === "qnA") {
                         this.fnQnAList();
                     } else if (value === "review") {
                         this.fnReviewList();
@@ -267,6 +276,7 @@
                     boardList: [],
                     sessionId: "${sessionId}",
                     selectedTable: "qnA",
+                    url: "",
 
 
 
@@ -357,14 +367,28 @@
                 //선택
                 fnSelectAll: function () {
                     let self = this;
-                    self.flgAllChecked = !self.flgAllChecked;
-                    if (self.flgAllChecked) {
-                        self.selectItem = [];
-                        for (let i = 0; i < self.userList.length; i++) {
-                            self.selectItem.push(self.userList[i].userId);
+                    if (self.selectedTable === "qnA") {
+                        self.flgAllChecked = !self.flgAllChecked;
+                        if (self.flgAllChecked) {
+                            self.selectItem = [];
+                            for (let i = 0; i < self.qnAList.length; i++) {
+                                self.selectItem.push(self.qnAList[i].questionId);
+                            }
+                        } else {
+                            self.selectItem = [];
                         }
-                    } else {
-                        self.selectItem = [];
+
+                    } else if (self.selectedTable === "review") {
+                        self.flgAllChecked = !self.flgAllChecked;
+                        if (self.flgAllChecked) {
+                            self.selectItem = [];
+                            for (let i = 0; i < self.reviewList.length; i++) {
+                                self.selectItem.push(self.reviewList[i].reviewId);
+                            }
+                        } else {
+                            self.selectItem = [];
+                        }
+
                     }
 
 
@@ -373,6 +397,15 @@
                 //전체 삭제
                 fnRemoveAll: function () {
                     let self = this;
+
+                    if (self.selectedTable == 'qnA') {
+                        self.url = "/adboard/qnadeleteall.dox";
+                    } else if (self.selectedTable == 'review') {
+                        self.url = "/adboard/reviewdeleteall.dox";
+                    } else {
+                        self.url = "#";
+                    }
+
 
                     if (self.selectItem.length === 0) {
                         alert("삭제할 항목을 선택해주세요");
@@ -387,7 +420,7 @@
                     let param = { selectItem: fList };
 
                     $.ajax({
-                        url: "/aduser/deleteall.dox",
+                        url: self.url,
                         dataType: "json",
                         type: "POST",
                         data: param,
@@ -395,7 +428,13 @@
                             if (data.result == "success") {
                                 alert("삭제되었습니다");
                                 self.page = 1;
-                                self.fnUserList();
+                                if (self.selectedTable === 'qnA') {
+                                    self.fnQnAList();
+                                } else if (self.selectedTable === 'review') {
+                                    self.fnReviewList();
+                                } else if (self.selectedTable === 'board') {
+                                    self.fnBoardList();
+                                }
 
                             } else {
                                 alert("오류가 발생하였습니다.")
@@ -431,28 +470,28 @@
                         self.pageRangeList.push(i);
                     }
                 },
-
                 fnChange: function (num) {
                     let self = this;
                     self.page = num;
-                    self.fnUserList();
+                    if (self.selectedTable === 'qnA') self.fnQnAList();
+                    else if (self.selectedTable === 'review') self.fnReviewList();
+                    else if (self.selectedTable === 'board') self.fnBoardList();
                 },
 
                 fnPre: function () {
                     let self = this;
-                    if (self.page > 1) {
-                        self.page--;
-                    }
-                    self.fnUserList();
+                    if (self.page > 1) self.page--;
+                    if (self.selectedTable === 'qnA') self.fnQnAList();
+                    else if (self.selectedTable === 'review') self.fnReviewList();
+                    else if (self.selectedTable === 'board') self.fnBoardList();
                 },
 
                 fnNext: function () {
                     let self = this;
-                    if (self.page < self.pageNum) {
-                        self.page++;
-                    }
-                    self.fnUserList();
-
+                    if (self.page < self.pageNum) self.page++;
+                    if (self.selectedTable === 'qnA') self.fnQnAList();
+                    else if (self.selectedTable === 'review') self.fnReviewList();
+                    else if (self.selectedTable === 'board') self.fnBoardList();
                 },
 
                 fnAdminMain: function () {

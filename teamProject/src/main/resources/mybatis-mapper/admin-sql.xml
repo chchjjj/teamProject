@@ -222,7 +222,7 @@
    		SELECT * FROM QA_TBL
    		WHERE 1=1
    		<if test="option=='all'">
-   			AND (STORE_ID LIKE '%'||#{keyWord}||'%' OR USER_ID LIKE '%'||#{keyWord}||'%' OR QUESTION_CONTENT LIKE '%'||#{keyWord}||'%' ANSWER_CONTENT LIKE '%'||#{keyWord}||'%')
+   			AND (STORE_ID LIKE '%'||#{keyWord}||'%' OR USER_ID LIKE '%'||#{keyWord}||'%' OR QUESTION_CONTENT LIKE '%'||#{keyWord}||'%' OR ANSWER_CONTENT LIKE '%'||#{keyWord}||'%')
    		</if>
    		<if test="option=='userId'">
    			AND USER_ID LIKE '%'||#{keyWord}||'%'
@@ -242,10 +242,10 @@
 	
 	
 	<select id="qnACount" parameterType="hashmap" resultType="int">
-   		SELECT * FROM QA_TBL
+   		SELECT  COUNT(*) FROM QA_TBL
    		WHERE 1=1
    		<if test="option=='all'">
-   			AND (STORE_ID LIKE '%'||#{keyWord}||'%' OR USER_ID LIKE '%'||#{keyWord}||'%' OR QUESTION_CONTENT LIKE '%'||#{keyWord}||'%' ANSWER_CONTENT LIKE '%'||#{keyWord}||'%')
+   			AND (STORE_ID LIKE '%'||#{keyWord}||'%' OR USER_ID LIKE '%'||#{keyWord}||'%' OR QUESTION_CONTENT LIKE '%'||#{keyWord}||'%' OR ANSWER_CONTENT LIKE '%'||#{keyWord}||'%')
    		</if>
    		<if test="option=='userId'">
    			AND USER_ID LIKE '%'||#{keyWord}||'%'
@@ -260,6 +260,52 @@
    			AND ANSWER_CONTENT LIKE '%'||#{keyWord}||'%'
    		</if>
 	</select>
+	
+	<delete id="qnAListDelete" parameterType="hashmap">
+		DELETE FROM QA_TBL WHERE QUESTION_ID IN
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<select id="reviewListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
+   		SELECT * FROM REVIEW_TBL
+   		WHERE 1=1
+   		<if test="option=='all'">
+   			AND (STORE_ID LIKE '%'||#{keyWord}||'%' OR USER_ID LIKE '%'||#{keyWord}||'%' )
+   		</if>
+   		<if test="option=='userId'">
+   			AND USER_ID LIKE '%'||#{keyWord}||'%'
+   		</if>
+   		<if test="option=='storeId'">
+   			AND STORE_ID LIKE '%'||#{keyWord}||'%'
+   		</if>
+		ORDER BY CDATETIME DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
+	</select>
+	
+	
+	<select id="reviewCount" parameterType="hashmap" resultType="int">
+   		SELECT COUNT(*) FROM REVIEW_TBL
+   		WHERE 1=1
+   		<if test="option=='all'">
+   			AND (STORE_ID LIKE '%'||#{keyWord}||'%' OR USER_ID LIKE '%'||#{keyWord}||'%' )
+   		</if>
+   		<if test="option=='userId'">
+   			AND USER_ID LIKE '%'||#{keyWord}||'%'
+   		</if>
+   		<if test="option=='storeId'">
+   			AND STORE_ID LIKE '%'||#{keyWord}||'%'
+   		</if>
+	</select>
+	
+	<delete id="reviewListDelete" parameterType="hashmap">
+		DELETE FROM REVIEW_TBL WHERE REVIEW_ID IN
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
 		
 	
 	
