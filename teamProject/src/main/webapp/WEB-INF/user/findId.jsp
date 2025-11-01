@@ -34,7 +34,9 @@
             <input class="phone" v-model="phone2"> -
             <input class="phone" v-model="phone3">
         </div>
-        <div v-if="!smsFlg">
+
+        <!-- 최종본에서 주석 해제할 것 여기부터 -->
+        <!-- <div v-if="!smsFlg">
             <template v-if="!sendMessageFlg">
                 <button @click="fnSendSms">인증</button>
             </template>
@@ -43,12 +45,12 @@
                 <button @click="fnSmsAuth">확인</button>
             </template>
         </div>
-        <!-- 아이디를 알려주는 출력문 -->
         <div v-else>
             {{userName}}님의 아이디는 
             {{info.userId}}
             입니다.
-        </div>
+        </div> -->
+        <!-- 여기까지 -->
     </div>
 </body>
 </html>
@@ -76,12 +78,17 @@
 
             fnSendSms: function () {
                 let self = this;
-                let param = {};
+                let phone = self.phone1 + self.phone2 + self.phone3;
+                console.log(phone);
+                let param = {
+                    phone : phone
+                };
                 $.ajax({
                     url: "/send-one",
                     dataType: "json",
                     type: "POST",
-                    data: param,
+                    data: JSON.stringify(param), //에러 잡으려고 수정함
+                    contentType: "application/json", //에러 잡으려고 추가함
                     success: function (data) {
                         console.log(data);
                         if (data.res.statusCode == "2000") {

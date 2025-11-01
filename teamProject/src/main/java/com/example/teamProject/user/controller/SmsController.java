@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
@@ -95,27 +96,28 @@ public class SmsController {
      * 단일 메시지 발송 예제
      */
     @PostMapping("/send-one")
-    public HashMap<String, Object> sendOne() {
+    public HashMap<String, Object> sendOne(@RequestBody HashMap<String, Object> map) {
         Message message = new Message();
         // 발신번호 및 수신번호는 반드시 01012345678 형태로 입력되어야 합니다.
         
         //-----------------변경 전 코드(여기부터)--------------
-        String ranStr = randomNumber();
-        message.setFrom("01046548947");
-        message.setTo("01074021766");
-        message.setText("[본인 인증] 인증번호 " + ranStr + " 를 화면에 입력해주세요.");
-
-        HashMap<String, Object> map = new HashMap<String, Object>();
+//        String ranStr = randomNumber();
+//        message.setFrom("01046548947");
+//        message.setTo("01074021766");
+//        message.setText("[본인 인증] 인증번호 " + ranStr + " 를 화면에 입력해주세요.");
+//
+//        HashMap<String, Object> map = new HashMap<String, Object>();
         //--------------------변경 전 코드(여기까지)----------------
         
         
         //-------------------변경 후 코드(여기부터)--------------
-//        HashMap<String, Object> map = new HashMap<String, Object>();
-//        
-//        String ranStr = randomNumber();
-//        message.setFrom("01046548947");
-//        message.setTo((String) map.get("phone")); //phone을 map으로 받기
-//        message.setText("[본인 인증] 인증번호 " + ranStr + " 를 화면에 입력해주세요.");
+        System.out.println("map 안에 담긴 값은 => " + map);
+        
+        String ranStr = randomNumber();
+        message.setFrom("01046548947");
+        message.setTo((String) map.get("phone")); //phone을 map으로 받기
+        message.setText("[본인 인증] 인증번호 " + ranStr + " 를 화면에 입력해주세요.");
+        //HashMap<String, Object> map = new HashMap<String, Object>();
         //--------------------변경 후 코드(여기까지)----------------
         
         

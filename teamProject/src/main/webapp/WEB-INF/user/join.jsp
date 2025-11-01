@@ -30,6 +30,7 @@
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
 
         <!-- 문자 인증 안 해도 되게끔 주석처리 -->
+        <!-- 최종본에서 주석 해제할 것은 단축키 ctrl+f 로 찾을 것 -->
         <div>
             <label>아이디 :
                 <input v-if="!userIdFlg" v-model="userId">
@@ -59,10 +60,11 @@
             <input class="phone" v-model="phone3">
         </div>
 
-        <div v-if="!smsFlg">
+        <!-- 최종본에서 주석 해제할 것 여기부터 -->
+        <!-- <div v-if="!smsFlg">
             문자인증 : <input v-model="inputNum" :placeholder="timer">
             <template v-if="!sendMessageFlg">
-                <button @click="fnSms">인증번호 전송</button>
+                <button @click="fnSendSms">인증번호 전송</button>
             </template>
             <template v-else>
                 <button @click="fnSmsAuth">인증</button>
@@ -70,7 +72,9 @@
         </div>
         <div v-else style="color : red;">
             문자인증이 완료되었습니다.
-        </div>
+        </div> -->
+        <!-- 여기까지 -->
+
 
         <div>
             <button @click="fnJoin">회원가입</button>
@@ -140,14 +144,19 @@
                 let self = this;
                 self.userAddr = roadFullAddr;
             },
-            fnSms: function () {
+            fnSendSms: function () {
                 let self = this;
-                let param = {};
+                let phone = self.phone1.trim() + self.phone2.trim() + self.phone3.trim();
+                console.log(phone);
+                let param = {
+                    phone : phone
+                };
                 $.ajax({
                     url: "/send-one",
                     dataType: "json",
                     type: "POST",
-                    data: param,
+                    data: JSON.stringify(param), //에러 잡으려고 수정함
+                    contentType: "application/json", //에러 잡으려고 추가함
                     success: function (data) {
                         console.log(data);
                         if (data.res.statusCode == "2000") {
@@ -226,6 +235,7 @@
 
                 //문자 인증이 완료되지 않으면 
                 //회원가입 불가능(안내문구 출력)
+                //최종본에서 주석 해제할 것
                 // if(!self.smsFlg){
                 //     alert("문자 인증을 진행해주세요.");
                 //     return;
