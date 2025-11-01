@@ -68,8 +68,8 @@ public class MainController {
 		return new Gson().toJson(resultMap);
 	}
 	
-	// '내 주변 디저트 찾기'에서 로그인한 고객 주소 불러오기 위해
-	@RequestMapping(value = "/main/userAddr.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	// 로그인한 고객 정보 가져오기 ('내 주변 디저트 찾기' & '마이페이지' 권한 구분)
+	@RequestMapping(value = "/main/userInfo.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String userAddr(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();

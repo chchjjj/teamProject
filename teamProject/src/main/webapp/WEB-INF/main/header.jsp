@@ -1,4 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%
+   String sessionId = (String) session.getAttribute("sessionId");
+   request.setAttribute("sessionId", sessionId);
+%>
     <!DOCTYPE html>
     <html lang="en">
 
@@ -17,8 +21,6 @@
         <link rel="stylesheet"
             href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=search" />
         
-        
-       
         <!--페이지 이동-->
         <script src="/js/page-change.js"></script>
         <style>
@@ -49,8 +51,10 @@
                             <img src="/img/찜.png" alt="찜 목록" @click="fnWishList"> <!--하트 그림-->
                             <img :src="userIcon" :alt="userAlt" @click="fnUserToggle"> <!--로그인/로그아웃-->
                         </div>
-                    </div>
+                    </div>                    
                 </div>
+                <!--관리자 로그인시 헤더에 문구 표시-->
+                <div v-if="userId === 'admin'" class="admin-notice">관리자 로그인 중</div>
             </header>
 
             <nav class="main-nav-container">
@@ -183,13 +187,35 @@
                 // '마이페이지' 메뉴 클릭 시 
                 fnMypage: function () {
                     let self = this;
+
                     if(self.userId == "" || self.userId == null){
                     alert("로그인 후 이용해주세요!");
-                    location.href="/user/login.do"; // 로그인 페이지 이동
-                } else {
-                    alert("로그인 된 상태입니다.(화면구현중)");
-                    pageChange("/user/mypage.do", { userId: self.userId }); // 임시 주소 입력해둔 상태!
-                }
+                    location.href = "/user/login.do";
+                    return;
+                    }
+
+                    // userId 정보 있을 때 
+                    $.ajax({
+                        type: "POST",
+                        url: "/main/userInfo.dox",
+                        data: { userId: self.userId },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.info.role === "C") {
+                                pageChange("/user/mypage.do", { userId: self.userId });
+                            } else if (data.info.role === "S") {
+                                pageChange("/seller/sales.do", { userId: self.userId });
+                            } else if (data.info.role === "A") {
+                                pageChange("/admin/userlist.do", { userId: self.userId });
+                                // 관리자 마이페이지는 우선 userList로 연결
+                            } else {
+                                alert("알 수 없는 권한입니다. 관리자에게 문의해주세요.");
+                            }
+                        },
+                        error: function () {
+                            alert("권한 정보를 불러오지 못했습니다.");
+                        }
+                    });
                 },
 
                 // '카테고리' 메뉴에서 각 하위 메뉴 클릭 시
