@@ -52,19 +52,35 @@ public class MainService {
 	}
 	
 	// 로그인세션 유저 (특정값) 찾기 ('내 주변 디저트 찾기' & '마이페이지')
-		public HashMap<String, Object> getUser(HashMap<String, Object> map) {
-			// TODO Auto-generated method stub
-			HashMap<String, Object> resultMap = new HashMap<String, Object>();
-			try {
-				Main main = mainMapper.selectUser(map);						
-				resultMap.put("info", main); // (키, 밸류)			
-				resultMap.put("result", "success");
-			} catch (Exception e) {
-				// TODO: handle exception
-				resultMap.put("result", "fail");
-				System.out.println(e.getMessage());
-			}			
-			return resultMap;
-		}
+	public HashMap<String, Object> getUser(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			Main main = mainMapper.selectUser(map);						
+			resultMap.put("info", main); // (키, 밸류)			
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
+		}			
+		return resultMap;
+	}
+		
+	// '내 주변 디저트 찾기'에서 가게(판매자) 목록 불러오기
+	public HashMap<String, Object> getSellerList(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();		
+		try {
+			List<Main> list = mainMapper.selectSeller(map);
+			resultMap.put("list", list); 
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
+		}				
+		return resultMap;
+	}
 
 }
