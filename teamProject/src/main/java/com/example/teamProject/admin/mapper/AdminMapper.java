@@ -74,7 +74,19 @@ public interface AdminMapper {
 		
 		
 		
-		//
+		//6.QNA & review
+		
+		//list
+		List <Admin> qnAListSelect(HashMap<String, Object> map);
+		List <Admin> reviewListSelect(HashMap<String, Object> map);
+		//count
+		int qnACount(HashMap<String, Object> map);
+		int reviewCount(HashMap<String, Object> map);
+		//deleteall
+		int qnAListDelete (HashMap<String, Object> map);
+		int reviewListDelete (HashMap<String, Object> map);
+		
+		
 
 
 }

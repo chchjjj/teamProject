@@ -202,6 +202,59 @@ public class AdminService {
 					
 		}
 		
+		//5.QnA & review
+		public HashMap<String, Object> SelectQnAList(HashMap<String, Object> map) {
+			// TODO Auto-generated method stub
+			//qnAlist 
+			HashMap<String, Object> resultMap = new HashMap<String, Object>();
+			try {
+				List <Admin> qnAList= adminMapper.qnAListSelect(map);
+				resultMap.put("qnAList",qnAList);
+				int totalRows=adminMapper.qnACount(map);
+				resultMap.put("totalRows",totalRows);
+				resultMap.put("result","success");
+			}catch(Exception e) {
+				resultMap.put("result","fail");
+				System.out.println(e.getMessage());		
+			}	
+			 return resultMap;
+					
+		}
+		
+		public HashMap<String, Object> SelectReviewList(HashMap<String, Object> map) {
+			// TODO Auto-generated method stub
+			//reviewlist 
+			HashMap<String, Object> resultMap = new HashMap<String, Object>();
+			try {
+				List <Admin> reviewList= adminMapper.reviewListSelect(map);
+				resultMap.put("reviewList",reviewList);
+				int totalRows=adminMapper.reviewCount(map);
+				resultMap.put("totalRows",totalRows);
+				resultMap.put("result","success");
+			}catch(Exception e) {
+				resultMap.put("result","fail");
+				System.out.println(e.getMessage());		
+			}	
+			 return resultMap;
+					
+		}
+		
+		public HashMap<String, Object> DeleteQnAList(HashMap<String, Object> map) {
+			// TODO Auto-generated method stub
+			HashMap<String, Object> resultMap = new HashMap<String, Object>();
+			int cnt=adminMapper.qnAListDelete(map);
+			resultMap.put("result","success");
+			return resultMap;
+		}
+		
+		public HashMap<String, Object> DeleteReviewList(HashMap<String, Object> map) {
+			// TODO Auto-generated method stub
+			HashMap<String, Object> resultMap = new HashMap<String, Object>();
+			int cnt=adminMapper.reviewListDelete(map);
+			resultMap.put("result","success");
+			return resultMap;
+		}
+		
 		
 		
 	
