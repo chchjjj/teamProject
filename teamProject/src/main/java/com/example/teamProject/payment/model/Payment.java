@@ -43,7 +43,7 @@ public class Payment {
 	private int subOptPrice;
 	private int cartQuantity;
 	private int totalPrice;
-	private String letteringText;
+	private String letteringWord;
 
 	// 장바구니 옵션
 	private int cartOptQuantity;
