@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Update;
 
 import com.example.teamProject.admin.model.Admin;
 import com.example.teamProject.user.model.User;
@@ -52,6 +53,8 @@ public interface AdminMapper {
 		
 		//판매자 상세: 월 판매량 따라 차트 구현
 		List <HashMap> salesSelect(HashMap<String, Object> map);
+		//판매자 가장 핫한 상품
+		List <Admin> sellerPopularListSelect (HashMap<String, Object> map);
 		
 		
 		
@@ -86,6 +89,19 @@ public interface AdminMapper {
 		int qnAListDelete (HashMap<String, Object> map);
 		int reviewListDelete (HashMap<String, Object> map);
 		
+		
+		//7.광고
+		//list
+		List <Admin> adListSelect(HashMap<String, Object> map);
+		int adCount (HashMap<String, Object> map);
+		
+		
+		// 8. 달말마다 수수료 정산
+//		List <Admin> monthlyFeeCalculate ();
+//		int monthlyFeeCalculateCount ();
+		int monthlyFeeUpdate();
+//		int monthlyGradeUpdate();
+	 
 		
 
 

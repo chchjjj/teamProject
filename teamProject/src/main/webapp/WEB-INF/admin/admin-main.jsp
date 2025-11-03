@@ -60,6 +60,9 @@
                             <button @click="fnMembership()">맴버쉽관리</button>
                         </div>
                         <div>
+                            <button @click="fnMembership()">정산관리</button>
+                        </div>
+                        <div>
                             <button @click="fnQandA()">Q&A</button>
                         </div>
                     </div>

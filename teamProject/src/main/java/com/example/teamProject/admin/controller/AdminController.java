@@ -45,7 +45,7 @@ public class AdminController {
 	
 	@RequestMapping("/admin/sellerchart.do")
     public String sellerchart(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{
-		request.setAttribute("storeId",map.get("storeId"));
+		request.setAttribute("storeName",map.get("storeName"));
         return "/admin/admin-sellerChart";
 	}
 	
@@ -91,6 +91,12 @@ public class AdminController {
 		request.setAttribute("storeId",map.get("storeId"));
         return "/admin/admin-sellerEdit";
 	}
+	
+	@RequestMapping("/admin/monthlyfee.do")
+	public String monthly(Model model) throws Exception{
+       return "/admin/admin-monthlyfee"; 
+   }
+	
 	
 	
 	
@@ -320,6 +326,32 @@ public class AdminController {
 		return new Gson().toJson(resultMap);
 		
 	}
+	
+	
+	//ad
+	@RequestMapping(value = "/adad/adlist.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String adList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		
+		resultMap = adminService.SelectAdList(map);
+		
+		System.out.println(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	
+	//monthly fee
+	
+	@RequestMapping(value = "/admonthlyfee/monthlyfeelist.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String monthlyList() {
+        HashMap<String, Object> resultMap = adminService.UpdateMonthlyFee();
+        return new Gson().toJson(resultMap);
+    }
 	
 
 

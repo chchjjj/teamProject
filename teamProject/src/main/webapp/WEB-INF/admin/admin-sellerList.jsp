@@ -120,7 +120,7 @@
                             <tr v-for="seller in sellerList">
                                 <td><input type="checkbox" :value="seller.storeId" v-model="selectItem"></td>
                                 <td>{{seller.storeId}}</td>
-                                <td><a href="javascript:;" @click="fnSellerInfo(seller.storeId)">{{seller.storeName}}</a></td>
+                                <td><a href="javascript:;" @click="fnSellerInfo(seller.storeName)">{{seller.storeName}}</a></td>
                                 <td>{{seller.userId}}</td>
                                 <td>{{seller.businessNo}}</td>
                                 <td>{{seller.storeAddr}}</td>
@@ -290,8 +290,8 @@
                     pageChange("/admin/selleredit.do",{storeId:storeId});
                 },
 
-                fnSellerInfo:function(storeId){
-                    pageChange("/admin/sellerchart.do",{storeId:storeId});
+                fnSellerInfo:function(storeName){
+                    pageChange("/admin/sellerchart.do",{storeName:storeName});
                 },
 
 
