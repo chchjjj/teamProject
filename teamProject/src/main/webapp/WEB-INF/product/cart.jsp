@@ -10,6 +10,8 @@
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <!--페이지 이동-->
+        <script src="/js/page-change.js"></script>
         <style>
             table,
             tr,
@@ -41,11 +43,11 @@
                             <label v-for="(group, groupIndex) in groupedCartList" :key="group.cartId"
                                 class="product-card" :class="{'selected-product': groupIndex === 0}">
 
-                                <input type="radio" name="product_option" :value="group.cartId"
-                                    :checked="groupIndex === 0">
+                                <input type="checkbox" name="product_option" :value="group.cartId" v-model="selectItem">
+
 
                                 <div class="product-card-content">
-                                    <div class="radio-button-circle"></div>
+
                                     <div class="product-details">
                                         <h3 class="store-name">🛒 {{ group.proName }} (기본가: {{
                                             formatNumber(group.defPrice) }}원)</h3>
@@ -92,10 +94,10 @@
                                 </div>
 
                                 <div class="order-button-container">
-                                    <button class="order-button" @click="fnDel">삭제하기</button>
+                                    <button class="order-button" @click="fnAllRemove">삭제하기</button>
                                 </div>
                                 <div class="order-button-container">
-                                    <button class="order-button">주문하기</button>
+                                    <button class="order-button" @click="fnBuy()">주문하기</button>
                                 </div>
                             </div>
                         </div>
@@ -114,7 +116,8 @@
                     // 변수 - (key : value)
                     userId: "${sessionId}", // 로그인 했을 시 전달 받은 아이디
                     cartList: [],
-                    groupedCartList: []
+                    groupedCartList: [],
+                    selectItem: [],
                 };
             },
             methods: {
@@ -140,54 +143,33 @@
                         }
                     });
                 },
-                fnDel: function () {
+                fnBuy: function () {
                     let self = this;
-                    // 1. 현재 선택된 라디오 버튼의 value(cartId)를 가져옵니다.
-                    const selectedCartId = $('input[name="product_option"]:checked').val();
-
-                    if (!selectedCartId) {
-                        alert("삭제할 상품을 선택해 주세요.");
+                    // 선택된 항목이 없을 경우 안내
+                    if (self.selectItem.length === 0) {
+                        alert("주문할 상품을 선택해주세요.");
                         return;
                     }
+                    pageChange("/payment/payment.do", { selectItem: JSON.stringify(self.selectItem) });  // 상세페이지로 proNo 넘겨줌  
+                },
+                fnAllRemove: function () {
+                    let self = this;
 
-                    // 2. 선택된 cartId에 해당하는 상품 그룹 전체 정보를 찾습니다.
-                    // 이 그룹에는 해당 상품의 기본 정보와 모든 옵션이 포함됩니다.
-                    const selectedGroup = self.groupedCartList.find(group => String(group.cartId) === selectedCartId);
-
-                    if (!selectedGroup) {
-                        alert("선택된 상품 정보를 찾을 수 없습니다.");
-                        return;
-                    }
-
-                    // 3. 서버로 보낼 param 구성 (필요에 따라 cartId만 보낼 수도, 전체 정보를 보낼 수도 있습니다.)
-                    // 여기서는 cartId만 보내서 DB에서 해당 항목들을 삭제하는 것이 효율적입니다.
-                    // 만약 옵션별 삭제가 필요하다면, options 배열의 정보를 추가로 가공해야 합니다.
-                    let param = {
-                        cartId: selectedGroup.cartId, // 장바구니 ID (DB의 CART_TBL을 식별하는 키)
-                        // 만약 전체 정보를 다 보내고 싶다면:
-                        // selectedItem: selectedGroup 
-                    };
-
-                    console.log("fnDel 파라미터:", param);
-
-                    // 사용자에게 삭제 확인 받기
-                    if (!confirm(`${selectedGroup.proName} 상품을 장바구니에서 삭제하시겠습니까?`)) {
-                        return;
-                    }
+                    var fList = JSON.stringify(self.selectItem);
+                    var param = { selectItem: fList };
+                    console.log(self.selectItem);
                     $.ajax({
                         url: "/product/cartDelete.dox",
                         dataType: "json",
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            if (data.result === "success") {
-                                alert("삭제 되었습니다.");
-                                self.fnCart;
-                            } else {
-                                alert("삭제에 실패했습니다.");
-                            }
+                            alert("삭제되었습니다!");
+                            self.fnCart();
+
                         }
                     });
+
                 },
                 // 숫자 포맷팅 함수 (1000 -> 1,000)
                 formatNumber: function (value) {

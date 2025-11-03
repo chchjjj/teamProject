@@ -76,7 +76,16 @@ public class ProductController {
 	@ResponseBody
 	public String cartDelete(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		String json = map.get("selectItem").toString(); 
+		ObjectMapper mapper = new ObjectMapper();
+		List<Object> list = mapper.readValue(json, new TypeReference<List<Object>>(){});
+		map.put("list", list);
+		
+		System.out.println(map);
+		
 		resultMap = ProductService.deleteCart(map);
+		
 		return new Gson().toJson(resultMap);
 	}
 	

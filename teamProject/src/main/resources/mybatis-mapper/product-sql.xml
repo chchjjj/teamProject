@@ -52,12 +52,18 @@
 <!--장바구니 삭제-->
 	<delete id="deleteCart" parameterType="hashmap">
 		DELETE FROM CART_TBL
-		WHERE CART_ID = #{cartId}
+		WHERE CART_ID IN
+		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
 	</delete>
 	
 	<delete id="deleteCartOpt" parameterType="hashmap">
 		DELETE FROM CART_OPTION_TBL
-		WHERE CART_ID = #{cartId}
+		WHERE CART_ID IN
+		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
 	</delete>
 	
 <!--장바구니 인서트-->
