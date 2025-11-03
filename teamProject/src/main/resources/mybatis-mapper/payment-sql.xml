@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.teamProject.payment.mapper.PaymentMapper">
+	<!-- 장바구니 중에서 선택한 주문 불러오기-->
+	<select id="selectPayment" parameterType="hashmap" resultType="com.example.teamProject.payment.model.Payment"> 
+		SELECT 
+		    c.CART_ID,
+		    p.PRO_NAME,
+		    P.PRICE AS DEF_PRICE,
+		    po.OPTION_NAME AS TOP_OPT,
+		    pso.VALUE_NAME AS SUB_OPT,
+		    co.CART_OPT_QUANTITY AS OPT_QTT,
+		    NVL(pso.PRICE_DIFF, 0) AS SUB_OPT_PRICE
+		FROM CART_TBL c
+		JOIN PRODUCT_TBL p 
+		    ON c.PRO_NO = p.PRO_NO
+		JOIN CART_OPTION_TBL co 
+		    ON c.CART_ID = co.CART_ID
+		JOIN PRODUCT_SUB_OPTION_TBL pso 
+		    ON co.SUB_OPTION_ID = pso.SUB_OPTION_ID
+		JOIN PRODUCT_OPTION_TBL po 
+		    ON pso.TOP_OPTION_ID = po.TOP_OPTION_ID
+		WHERE CART_ID = #{cartId}
+	</select>
+</mapper>
