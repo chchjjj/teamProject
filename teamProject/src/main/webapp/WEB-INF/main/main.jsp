@@ -17,7 +17,10 @@
         <script src="/js/page-change.js"></script>
         
         <style>
-
+            .ad{
+                width: 1000px;
+                height : 140px
+            }
         </style>
     </head>
 
@@ -135,7 +138,8 @@
                         </section>
 
                         <section class="external-ad">
-                            <p>외부 광고</p>
+                            <!-- <p>외부 광고</p> -->
+                             <a href="/main/ad-link.do" target="_blank"><img class="ad" src="/img/아래광고배너.png" alt="아래 광고 배너"></a>
                         </section>
                     </main>
                 </div>

@@ -49,6 +49,12 @@ public class MainController {
 		return "/main/storeFinder";
 	   }
 	
+	// 광고배너 클릭 시 연결페이지
+		@RequestMapping("/main/ad-link.do") 
+	    public String ad(Model model) throws Exception{
+	        return "/main/ad-link";
+	    }
+	
 	// 메인 화면 상품 리스트
 	@RequestMapping(value = "/main/list.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
