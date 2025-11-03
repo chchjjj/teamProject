@@ -337,7 +337,6 @@
 		OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
 	</select>
 	
-	
 	<select id="adCount" parameterType="hashmap" resultType="int">
    		SELECT COUNT(*) FROM AD_TBL
 	</select>
