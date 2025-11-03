@@ -1,9 +1,16 @@
 package com.example.teamProject.admin.dao;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -154,7 +161,9 @@ public class AdminService {
 			HashMap<String, Object> resultMap = new HashMap<String, Object>();
 			try {
 				List <HashMap> list= adminMapper.salesSelect(map);
+				List <Admin> productList= adminMapper.sellerPopularListSelect(map);
 				resultMap.put("list",list);
+				resultMap.put("productList",productList);
 				resultMap.put("result","success");
 			}catch(Exception e) {
 				resultMap.put("result","fail");
@@ -255,6 +264,60 @@ public class AdminService {
 			return resultMap;
 		}
 		
+		
+		public HashMap<String, Object> SelectAdList(HashMap<String, Object> map) {
+			// TODO Auto-generated method stub
+			//adlist 
+			HashMap<String, Object> resultMap = new HashMap<String, Object>();
+			try {
+				List <Admin> adList= adminMapper.adListSelect(map);
+				resultMap.put("adList",adList);
+				int totalRows=adminMapper.adCount(map);
+				resultMap.put("totalRows",totalRows);
+				resultMap.put("result","success");
+			}catch(Exception e) {
+				resultMap.put("result","fail");
+				System.out.println(e.getMessage());		
+			}	
+			 return resultMap;
+					
+		}
+		
+		
+		
+		//자동 수수료 정산
+		
+		public HashMap<String, Object> UpdateMonthlyFee() {
+		    HashMap<String, Object> resultMap = new HashMap<>();
+		    try {
+		        System.out.println("달말 수수료 정산을 시작하겠습니다.");
+		        int cnt = adminMapper.monthlyFeeUpdate();
+//		        int cnt2=adminMapper.monthlyGradeUpdate();
+		        System.out.println("test " + cnt);
+		        resultMap.put("result", "success");
+		    } catch (Exception e) {
+		        resultMap.put("result", "fail");
+		        e.printStackTrace();
+		    }
+		    return resultMap;
+		}
+
+	    // 달말 마다 23:59 에 정산
+//		@Scheduled(cron = "0 */5 * * * ?")
+		@Component
+		public class MonthlyFeeScheduler {
+
+		    @Autowired
+		    private AdminService adminService;
+		    
+		    @Transactional
+		    @Scheduled(cron = "0 * * * * ?")
+		    public void executeMonthlyFee() {
+		        adminService.UpdateMonthlyFee();
+		    }
+		}
+	    
+	  
 		
 		
 	

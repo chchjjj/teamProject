@@ -34,7 +34,39 @@
     <div id="app">
         <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
         <!-- html代码必须在id是app的tag里面进行 -->
+         <div v-for="product in productList">{{product.storeName}}</div>
          <div id="chart"></div>
+
+
+         <div>
+            <div>
+                가장 핫한 상품
+            </div>
+            <div>
+                <table>
+                    <tr>
+                        <th>
+                            상품명
+                        </th>
+                        <th>
+                            판메량
+                        </th>
+                    </tr>
+                    <tr v-for="product in productList">
+                        <td>
+                            {{product.proName}}
+                        </td>
+                        <td>
+                            {{product.totalAmount}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+         </div>
+
+         <div v-for="seller in sellerList">
+            <span>{{seller.percentile}}</span>
+         </div>
 
 
     </div>
@@ -46,7 +78,8 @@
     const app = Vue.createApp({
         data() {
             return {
-                storeId:"${storeId}",
+                storeName:"${storeName}",
+                productList:[],
                 // 변수 - (key : value)
                 options : {
                     series: [{
@@ -134,7 +167,7 @@
             fnList: function () {
                 let self = this;
                 let param = {
-                    storeId:self.storeId
+                    storeName:self.storeName
                 };
                 $.ajax({
                     url: "/adseller/sales.dox",
@@ -170,19 +203,21 @@
                             }]);
                         }
                     
-
+                        self.productList=data.productList;
                             
                     }
                 });
-            }
+            },
+
+           
         }, // methods
         mounted() {
             // 처음 시작할 때 실행되는 부분
             let self = this;
-            // 1️⃣ 先创建图表实例
+            // 先创建图表实例
     self.chart = new ApexCharts(document.querySelector("#chart"), self.options);
     
-    // 2️⃣ 渲染图表（此时显示空图表）
+    // 渲染图表（此时显示空图表）
     self.chart.render();
             self.fnList();
             

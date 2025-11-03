@@ -8,10 +8,10 @@
    		SELECT * FROM USER_TBL
    		WHERE 1=1
    		<if test="option=='all'">
-   			AND (USER_ID LIKE '%'||#{keyWord}||'%' OR USER_NAME LIKE '%'||#{keyWord}||'%')
+   			AND (USER_ID =#{keyWord} OR USER_NAME LIKE '%'||#{keyWord}||'%')
    		</if>
    		<if test="option=='userId'">
-   			AND USER_ID LIKE '%'||#{keyWord}||'%'
+   			AND USER_ID =#{keyWord}
    		</if>
    		<if test="option=='userName'">
    			AND USER_NAME LIKE '%'||#{keyWord}||'%'
@@ -32,10 +32,10 @@
    		FROM USER_TBL
    		WHERE 1=1
    		<if test="option=='all'">
-   			AND (USER_ID LIKE '%'||#{keyWord}||'%' OR USER_NAME LIKE '%'||#{keyWord}||'%')
+   			AND (USER_ID =#{keyWord} OR USER_NAME LIKE '%'||#{keyWord}||'%')
    		</if>
    		<if test="option=='userId'">
-   			AND USER_ID LIKE '%'||#{keyWord}||'%'
+   			AND USER_ID =#{keyWord}
    		</if>
    		<if test="option=='userName'">
    			AND USER_NAME LIKE '%'||#{keyWord}||'%'
@@ -60,14 +60,14 @@
 	
 	
 	<select id="sellerListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
-   		SELECT STORE_ID,STORE_NAME,U.USER_ID,BUSINESS_NO,STORE_INTRO,STORE_ADDR,STORE_PASS,JOIN_CDATE,REJECT_REASON,GRADE_CODE, MEMBERSHIP,REG_DATE FROM SELLER_INFO_TBL S
+   		SELECT STORE_ID,STORE_NAME,U.USER_ID,BUSINESS_NO,STORE_INTRO,STORE_ADDR,STORE_PASS,JOIN_CDATE,REJECT_REASON,GRADE_CODE, MEMBERSHIP,REG_DATE,STORE_MONTHLY_FEE, TO_CHAR(SYSDATE,'YYYY-MM') AS THIS_MONTH FROM SELLER_INFO_TBL S
 		LEFT JOIN USER_TBL U ON S.USER_ID=U.USER_ID
    		WHERE 1=1
    		<if test="option=='all'">
-   			AND (STORE_ID LIKE '%'||#{keyWord}||'%' OR STORE_NAME LIKE '%'||#{keyWord}||'%')
+   			AND (STORE_ID =#{keyWord} OR STORE_NAME LIKE '%'||#{keyWord}||'%')
    		</if>
    		<if test="option=='storeId'">
-   			AND STORE_ID LIKE '%'||#{keyWord}||'%'
+   			AND STORE_ID =#{keyWord}
    		</if>
    		<if test="option=='storeName'">
    			AND STORE_NAME LIKE '%'||#{keyWord}||'%'
@@ -91,10 +91,10 @@
    		FROM SELLER_INFO_TBL
    		WHERE 1=1
    		<if test="option=='all'">
-   			AND (STORE_ID LIKE '%'||#{keyWord}||'%' OR STORE_NAME LIKE '%'||#{keyWord}||'%')
+   			AND (STORE_ID =#{keyWord} OR STORE_NAME LIKE '%'||#{keyWord}||'%')
    		</if>
    		<if test="option=='storeId'">
-   			AND STORE_ID LIKE '%'||#{keyWord}||'%'
+   			AND STORE_ID =#{keyWord}
    		</if>
    		<if test="option=='storeName'">
    			AND STORE_NAME LIKE '%'||#{keyWord}||'%'
@@ -125,38 +125,53 @@
 	</update>
 	
 	<select id="salesSelect" resultType="HashMap">
-		  <![CDATA[
-		   WITH MONTHS AS (
+		  <![CDATA[ 
+			WITH MONTHS AS (
 			    SELECT LEVEL AS MONTH
 			    FROM DUAL
 			    CONNECT BY LEVEL <= 12
 			)
-		SELECT
-		    NVL(SUM(CASE WHEN M.MONTH = 1 THEN D.SUBTOTAL END),0) AS JAN,
-		    NVL(SUM(CASE WHEN M.MONTH = 2 THEN D.SUBTOTAL END),0) AS FEB,
-		    NVL(SUM(CASE WHEN M.MONTH = 3 THEN D.SUBTOTAL END),0) AS MAR,
-		    NVL(SUM(CASE WHEN M.MONTH = 4 THEN D.SUBTOTAL END),0) AS APR,
-		    NVL(SUM(CASE WHEN M.MONTH = 5 THEN D.SUBTOTAL END),0) AS MAY,
-		    NVL(SUM(CASE WHEN M.MONTH = 6 THEN D.SUBTOTAL END),0) AS JUN,
-		    NVL(SUM(CASE WHEN M.MONTH = 7 THEN D.SUBTOTAL END),0) AS JUL,
-		    NVL(SUM(CASE WHEN M.MONTH = 8 THEN D.SUBTOTAL END),0) AS AUG,
-		    NVL(SUM(CASE WHEN M.MONTH = 9 THEN D.SUBTOTAL END),0) AS SEP,
-		    NVL(SUM(CASE WHEN M.MONTH = 10 THEN D.SUBTOTAL END),0) AS OCT,
-		    NVL(SUM(CASE WHEN M.MONTH = 11 THEN D.SUBTOTAL END),0) AS NOV,
-		    NVL(SUM(CASE WHEN M.MONTH = 12 THEN D.SUBTOTAL END),0) AS DEC
-		FROM MONTHS M
-		LEFT JOIN ORDER_DETAIL_TBL D
-		       ON EXTRACT(MONTH FROM (SELECT O.ORDER_DATE FROM ORDER_TBL O WHERE O.ORDER_ID = D.ORDER_ID)) = M.MONTH
-		       AND EXTRACT(YEAR FROM (SELECT O.ORDER_DATE FROM ORDER_TBL O WHERE O.ORDER_ID = D.ORDER_ID)) = EXTRACT(YEAR FROM SYSDATE)
-		       WHERE STORE_ID=#{storeId}
+			SELECT
+			    NVL(SUM(CASE WHEN M.MONTH = 1 THEN D.MONTHLY_INCOME END),0) AS JAN,
+			    NVL(SUM(CASE WHEN M.MONTH = 2 THEN D.MONTHLY_INCOME END),0) AS FEB,
+			    NVL(SUM(CASE WHEN M.MONTH = 3 THEN D.MONTHLY_INCOME END),0) AS MAR,
+			    NVL(SUM(CASE WHEN M.MONTH = 4 THEN D.MONTHLY_INCOME END),0) AS APR,
+			    NVL(SUM(CASE WHEN M.MONTH = 5 THEN D.MONTHLY_INCOME END),0) AS MAY,
+			    NVL(SUM(CASE WHEN M.MONTH = 6 THEN D.MONTHLY_INCOME END),0) AS JUN,
+			    NVL(SUM(CASE WHEN M.MONTH = 7 THEN D.MONTHLY_INCOME END),0) AS JUL,
+			    NVL(SUM(CASE WHEN M.MONTH = 8 THEN D.MONTHLY_INCOME END),0) AS AUG,
+			    NVL(SUM(CASE WHEN M.MONTH = 9 THEN D.MONTHLY_INCOME END),0) AS SEP,
+			    NVL(SUM(CASE WHEN M.MONTH = 10 THEN D.MONTHLY_INCOME END),0) AS OCT,
+			    NVL(SUM(CASE WHEN M.MONTH = 11 THEN D.MONTHLY_INCOME END),0) AS NOV,
+			    NVL(SUM(CASE WHEN M.MONTH = 12 THEN D.MONTHLY_INCOME END),0) AS DEC
+			FROM MONTHS M
+			LEFT JOIN (
+			    SELECT 
+			        O.STORE_NAME,
+			        EXTRACT(MONTH FROM O.ORDER_DATE) AS ORDER_MONTH,
+			        EXTRACT(YEAR FROM O.ORDER_DATE) AS ORDER_YEAR,
+			        SUM(O.TOTAL_PRICE - O.DELIVERY_FEE) AS MONTHLY_INCOME
+			    FROM ORDER_TBL O
+			    WHERE O.STORE_NAME = #{storeName}
+			    GROUP BY O.STORE_NAME, EXTRACT(MONTH FROM O.ORDER_DATE), EXTRACT(YEAR FROM O.ORDER_DATE)
+			) D
+			ON D.ORDER_MONTH = M.MONTH
+			AND D.ORDER_YEAR = EXTRACT(YEAR FROM SYSDATE)
 		  ]]>
 	</select>
 	
+	<select id="sellerPopularListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
+   		SELECT O.STORE_NAME, P.PRO_NAME, SUM(QUANTITY) AS TOTAL_AMOUNT
+		FROM ORDER_DETAIL_TBL D
+		INNER JOIN ORDER_TBL O ON O.ORDER_ID = D.ORDER_ID
+		INNER JOIN PRODUCT_TBL P ON P.PRO_NO = D.PRO_NO
+		WHERE O.STORE_NAME = #{storeName}
+		GROUP BY O.STORE_NAME, P.PRO_NAME
+		ORDER BY TOTAL_AMOUNT DESC
+		FETCH FIRST 1 ROW ONLY
+	</select>
 	
-	
-	
-	
-	
+
 	
 	<select id="membershipListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
    		SELECT * FROM MEMBERSHIP_TBL
@@ -169,10 +184,7 @@
    		SELECT COUNT(*) FROM MEMBERSHIP_TBL
    		WHERE USER_ID LIKE '%'||#{keyWord}||'%'
 		ORDER BY MEMBERSHIP_ID DESC
-	</select>
-	
-	
-	
+	</select>	
 	
 	
 	<select id="orderSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
@@ -189,29 +201,37 @@
 	
 	
 	<select id="salesTrendsSelect" resultType="HashMap">
-		  <![CDATA[
-		    WITH MONTHS AS (
-		        SELECT LEVEL AS MONTH
-		        FROM DUAL
-		        CONNECT BY LEVEL <= 12
-		    )
-		    SELECT
-		        NVL(SUM(CASE WHEN M.MONTH = 1 THEN D.SUBTOTAL END),0) AS JAN,
-		        NVL(SUM(CASE WHEN M.MONTH = 2 THEN D.SUBTOTAL END),0) AS FEB,
-		        NVL(SUM(CASE WHEN M.MONTH = 3 THEN D.SUBTOTAL END),0) AS MAR,
-		        NVL(SUM(CASE WHEN M.MONTH = 4 THEN D.SUBTOTAL END),0) AS APR,
-		        NVL(SUM(CASE WHEN M.MONTH = 5 THEN D.SUBTOTAL END),0) AS MAY,
-		        NVL(SUM(CASE WHEN M.MONTH = 6 THEN D.SUBTOTAL END),0) AS JUN,
-		        NVL(SUM(CASE WHEN M.MONTH = 7 THEN D.SUBTOTAL END),0) AS JUL,
-		        NVL(SUM(CASE WHEN M.MONTH = 8 THEN D.SUBTOTAL END),0) AS AUG,
-		        NVL(SUM(CASE WHEN M.MONTH = 9 THEN D.SUBTOTAL END),0) AS SEP,
-		        NVL(SUM(CASE WHEN M.MONTH = 10 THEN D.SUBTOTAL END),0) AS OCT,
-		        NVL(SUM(CASE WHEN M.MONTH = 11 THEN D.SUBTOTAL END),0) AS NOV,
-		        NVL(SUM(CASE WHEN M.MONTH = 12 THEN D.SUBTOTAL END),0) AS DEC
-		    FROM MONTHS M
-		    LEFT JOIN ORDER_DETAIL_TBL D
-		           ON EXTRACT(MONTH FROM (SELECT O.ORDER_DATE FROM ORDER_TBL O WHERE O.ORDER_ID = D.ORDER_ID)) = M.MONTH
-		           AND EXTRACT(YEAR FROM (SELECT O.ORDER_DATE FROM ORDER_TBL O WHERE O.ORDER_ID = D.ORDER_ID)) = EXTRACT(YEAR FROM SYSDATE)
+		 <![CDATA[ 
+			WITH MONTHS AS (
+			    SELECT LEVEL AS MONTH
+			    FROM DUAL
+			    CONNECT BY LEVEL <= 12
+			)
+			SELECT
+			    NVL(SUM(CASE WHEN M.MONTH = 1 THEN D.MONTHLY_INCOME END),0) AS JAN,
+			    NVL(SUM(CASE WHEN M.MONTH = 2 THEN D.MONTHLY_INCOME END),0) AS FEB,
+			    NVL(SUM(CASE WHEN M.MONTH = 3 THEN D.MONTHLY_INCOME END),0) AS MAR,
+			    NVL(SUM(CASE WHEN M.MONTH = 4 THEN D.MONTHLY_INCOME END),0) AS APR,
+			    NVL(SUM(CASE WHEN M.MONTH = 5 THEN D.MONTHLY_INCOME END),0) AS MAY,
+			    NVL(SUM(CASE WHEN M.MONTH = 6 THEN D.MONTHLY_INCOME END),0) AS JUN,
+			    NVL(SUM(CASE WHEN M.MONTH = 7 THEN D.MONTHLY_INCOME END),0) AS JUL,
+			    NVL(SUM(CASE WHEN M.MONTH = 8 THEN D.MONTHLY_INCOME END),0) AS AUG,
+			    NVL(SUM(CASE WHEN M.MONTH = 9 THEN D.MONTHLY_INCOME END),0) AS SEP,
+			    NVL(SUM(CASE WHEN M.MONTH = 10 THEN D.MONTHLY_INCOME END),0) AS OCT,
+			    NVL(SUM(CASE WHEN M.MONTH = 11 THEN D.MONTHLY_INCOME END),0) AS NOV,
+			    NVL(SUM(CASE WHEN M.MONTH = 12 THEN D.MONTHLY_INCOME END),0) AS DEC
+			FROM MONTHS M
+			LEFT JOIN (
+			    SELECT 
+			        O.STORE_NAME,
+			        EXTRACT(MONTH FROM O.ORDER_DATE) AS ORDER_MONTH,
+			        EXTRACT(YEAR FROM O.ORDER_DATE) AS ORDER_YEAR,
+			        SUM(O.TOTAL_PRICE - O.DELIVERY_FEE) AS MONTHLY_INCOME
+			    FROM ORDER_TBL O
+			    GROUP BY O.STORE_NAME, EXTRACT(MONTH FROM O.ORDER_DATE), EXTRACT(YEAR FROM O.ORDER_DATE)
+			) D
+			ON D.ORDER_MONTH = M.MONTH
+			AND D.ORDER_YEAR = EXTRACT(YEAR FROM SYSDATE)
 		  ]]>
 	</select>
 	
@@ -306,6 +326,127 @@
 			#{item}
 		</foreach>
 	</delete>
+	
+	
+	
+	
+	
+	<select id="adListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
+   		SELECT * FROM AD_TBL
+		ORDER BY AD_ID DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
+	</select>
+	
+	
+	<select id="adCount" parameterType="hashmap" resultType="int">
+   		SELECT COUNT(*) FROM AD_TBL
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	<update id="monthlyFeeUpdate">
+	 UPDATE SELLER_INFO_TBL S
+	    SET S.STORE_MONTHLY_FEE = (
+	        SELECT G.COMMISSION_RATE * T.MONTHLY_INCOME
+	        FROM (
+	            SELECT 
+	                O.STORE_NAME,
+	                SUM(O.TOTAL_PRICE - O.DELIVERY_FEE) AS MONTHLY_INCOME
+	            FROM ORDER_TBL O
+	            WHERE TO_CHAR(O.ORDER_DATE, 'YYYYMM') = TO_CHAR(SYSDATE, 'YYYYMM')
+	            GROUP BY O.STORE_NAME
+	        ) T
+	        JOIN COMMISSION_GRADE_TBL G 
+	            ON T.MONTHLY_INCOME BETWEEN G.LOSAL AND G.HISAL
+	        WHERE S.STORE_NAME = T.STORE_NAME
+	    )
+	    WHERE EXISTS (
+	        SELECT 1
+	        FROM ORDER_TBL O
+	        WHERE O.STORE_NAME = S.STORE_NAME
+	          AND TO_CHAR(O.ORDER_DATE, 'YYYYMM') = TO_CHAR(SYSDATE, 'YYYYMM')
+	    )
+	</update>
+	
+	
+	<update id="monthlyFeeGradeUpdate">
+		UPDATE SELLER_INFO_TBL S
+		SET GRADE_CODE = (
+		    SELECT C.GRADE_NAME
+		    FROM (
+		        SELECT 
+		            O.STORE_NAME,
+		            SUM(O.TOTAL_PRICE - O.DELIVERY_FEE) AS MONTHLY_INCOME
+		        FROM ORDER_TBL O
+		        WHERE TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
+		        GROUP BY O.STORE_NAME
+		    ) T
+		    JOIN COMMISSION_GRADE_TBL C
+		      ON T.MONTHLY_INCOME BETWEEN C.LOSAL AND C.HISAL
+		    WHERE T.STORE_NAME = S.STORE_NAME
+		)
+		WHERE EXISTS (
+		    SELECT 1
+		    FROM ORDER_TBL O
+		    WHERE O.STORE_NAME = S.STORE_NAME
+		      AND TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
+		)
+	</update>
+	
+	
+	
+	<select id="monthlyFeeCalculate" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
+         SELECT 
+            TO_CHAR(SYSDATE,'YYYY-MM') AS THIS_MONTH,
+            T.STORE_NAME,
+            T.STORE_ID,
+            G.COMMISSION_RATE * T.MONTHLY_INCOME AS STORE_MONTHLY_FEE
+        FROM 
+        (
+            SELECT 
+                S.STORE_NAME,
+                S.STORE_ID,
+                SUM(O.TOTAL_PRICE - O.DELIVERY_FEE) AS MONTHLY_INCOME
+            FROM SELLER_INFO_TBL S
+            LEFT JOIN ORDER_TBL O 
+                ON S.STORE_NAME = O.STORE_NAME
+            WHERE TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
+            GROUP BY S.STORE_ID, S.STORE_NAME
+        ) T
+        LEFT JOIN COMMISSION_GRADE_TBL G
+            ON T.MONTHLY_INCOME BETWEEN G.LOSAL AND G.HISAL
+    </select>
+    
+    <select id="monthlyFeeCalculateCount" resultType="int">
+         SELECT COUNT(*) FROM
+         (SELECT
+            TO_CHAR(SYSDATE,'YYYY-MM') AS THIS_MONTH,
+            T.STORE_NAME,
+            T.STORE_ID,
+            G.COMMISSION_RATE * T.MONTHLY_INCOME AS STORE_MONTHLY_FEE
+        FROM 
+        (
+            SELECT 
+                S.STORE_NAME,
+                S.STORE_ID,
+                SUM(O.TOTAL_PRICE - O.DELIVERY_FEE) AS MONTHLY_INCOME
+            FROM SELLER_INFO_TBL S
+            LEFT JOIN ORDER_TBL O 
+                ON S.STORE_NAME = O.STORE_NAME
+            WHERE TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
+            GROUP BY S.STORE_ID, S.STORE_NAME
+        ) T
+        LEFT JOIN COMMISSION_GRADE_TBL G
+            ON T.MONTHLY_INCOME BETWEEN G.LOSAL AND G.HISAL)
+    </select>
+	
+	
+	
+	
 		
 	
 	

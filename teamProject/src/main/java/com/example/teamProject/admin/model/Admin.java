@@ -26,6 +26,8 @@ public class Admin {
     private String membership;
     private String regDate;
     private String passDate;
+    //most popular product
+    private int totalAmount;
     
 	
 	
@@ -117,6 +119,20 @@ public class Admin {
     private int clicks;
     private int clickUnitCost;
     private String adStatus;
+    
+    //수수료 정산
+    private double storeMonthlyFee;
+    private String thisMonth;
+    
+//    DROP SEQUENCE SEQ_ORDER_DETAIL_ID;
+//
+//    SELECT SEQUENCE_NAME FROM USER_SEQUENCES;
+//
+//    CREATE SEQUENCE SEQ_ORDER_DETAIL_ID
+//        START WITH 14
+//        INCREMENT BY 1
+//        NOCACHE
+//        NOCYCLE;
 	
     
 }
