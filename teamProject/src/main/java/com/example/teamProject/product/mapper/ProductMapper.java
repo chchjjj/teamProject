@@ -51,4 +51,14 @@ public interface ProductMapper {
  	
  	// 리뷰
  	List<Product> selectReviewList(HashMap<String, Object> map); 
+ 	
+ 	// 주문서
+ 	// 주문서 추가(주문서 테이블)
+ 	int insertOrder(HashMap<String, Object> map);
+ 	
+ 	// 주문서 추가(주문서 디테일 테이블)
+ 	int insertOrderDt(HashMap<String, Object> inputMap);
+ 	
+ 	// 주문서 추가(주문서 옵션 테이블)
+ 	int insertOrderOpt(HashMap<String, Object> inputMap);
 }

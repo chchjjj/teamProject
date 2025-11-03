@@ -66,7 +66,18 @@
                                     </span>
 
                                 </div>
-
+                                <div class="delivery-type-radios" style="margin-bottom: 10px;">
+                                    <label>
+                                        <input type="radio" v-model="deliveryType" value="P"> 픽업
+                                    </label>
+                                    <label :class="{ 'disabled-label': infoList.deliveryYn === 'N' }">
+                                        <input type="radio" v-model="deliveryType" value="D"
+                                            :disabled="infoList.deliveryYn === 'N'"> 배송
+                                    </label>
+                                    <span v-if="infoList.deliveryYn === 'N'" class="delivery-yn-info">
+                                        (배송 불가 상품)
+                                    </span>
+                                </div>
                                 <div class="delivery-date-selection">
                                     <input type="text" id="deliveryDateInput" class="date-input">
                                     <button class="delivery-date-btn" @click="openCalendar">
@@ -189,7 +200,8 @@
                     // 전체 상품 수량
                     totalQuantity: 1,
 
-                    isWished: ''
+                    isWished: '',
+                    deliveryType: 'P'
                 };
             },
             computed: {
@@ -220,6 +232,12 @@
                     // 3️⃣ 전체 수량 적용
                     total *= this.totalQuantity;
 
+                    // 4️⃣ 🚚 배송비 추가 (배송 유형이 'DELIVERY'이고, 배송비 정보가 있을 경우)
+                    if (this.deliveryType === 'DELIVERY' && this.infoList.deliveryFee !== undefined && this.infoList.deliveryFee !== null) {
+                        // 배송비는 전체 수량에 곱하지 않고 한 번만 추가됩니다.
+                        total += Number(this.infoList.deliveryFee);
+                    }
+
                     return total;
                 }
             },
@@ -227,12 +245,105 @@
                 // 함수(메소드) - (key : function())
                 fnBuy: function (proNo) {
                     let self = this;
+                    //유효성 검사
+                    if (!self.fnCheckRequiredSelections()) {
+                        return; // 필수 옵션 미선택 시 함수 종료
+                    }
+                    // 2선택 옵션 그룹화
+                    let subOptionList = [];
+                    for (const [topId, subOption] of Object.entries(self.selectedOptions)) {
+                        if (subOption && subOption.subOptionId) {
+                            const quantity = self.selectedQuantities[topId] || 1;
+                            subOptionList.push({
+                                topOptionId: topId,
+                                subOptionId: subOption.subOptionId,
+                                quantity: quantity,
+                                priceDiff: subOption.priceDiff
+                            });
+                        }
+                    }
+                    subOptionList = JSON.stringify(subOptionList);
                     if (self.isChatRequested === 'Y') {
-                        alert('채팅연결');
+                        alert("채팅방으로 이동합니다.")
+                        let param = {
+                            chatYn: 'N',
+                            userId: self.userId,
+                            proNo: self.proNo,
+                            storeId: self.infoList.storeId,
+                            orderQuantity: self.totalQuantity,
+                            totalPrice: self.totalPrice,
+                            totalQuantity : self.totalQuantity,
+                            deliveryType: self.deliveryType,
+                            deliveryDate: self.selectedDate,
+                            letteringWord: self.letteringText,
+                            isChatRequested: self.isChatRequested,
+                            subOptionList: subOptionList, // 옵션 리스트
+                            storeName: self.infoList.storeName, // ORDER_TBL에 저장
+                            deliveryFee: self.infoList.deliveryFee, // ORDER_TBL에 저장
+                            productPrice: self.infoList.price, // 상품 단가 정보
+                            proName: self.infoList.proName,
+                        };
+                        console.log("주문 데이터:", param);
+                        $.ajax({
+                            url: "/product/orderInsert.dox", // 서버 주문 처리 URL
+                            type: "POST",
+                            dataType: "json",
+                            data: param,
+                            success: function (data) {
+                                if (data.result === "success") {
+                                    alert("주문이 완료되었습니다!");
+                                    // 결제 페이지로 이동 또는 주문 완료 페이지 이동
+                                    // pageChange("/order/complete.do", { orderId: data.orderId });
+                                } else {
+                                    alert("주문 처리 중 오류가 발생했습니다.");
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("주문 AJAX 에러:", status, error);
+                            }
+                        });
+
                     } else {
-                        alert(self.selectedDate);
-                        console.log(proNo); // main 화면에서 클릭한 상품번호 출력(확인완료)
-                        pageChange("/payment/payment.do", { proNo: proNo });  // 상세페이지로 proNo 넘겨줌            
+                        let param = {
+                            chatYn: 'N',
+                            userId: self.userId,
+                            proNo: self.proNo,
+                            storeId: self.infoList.storeId,
+                            orderQuantity: self.totalQuantity,
+                            totalPrice: self.totalPrice,
+                            totalQuantity : self.totalQuantity,
+                            deliveryType: self.deliveryType,
+                            deliveryDate: self.selectedDate,
+                            letteringWord: self.letteringText,
+                            isChatRequested: self.isChatRequested,
+                            subOptionList: subOptionList, // 옵션 리스트
+                            storeName: self.infoList.storeName, // ORDER_TBL에 저장
+                            deliveryFee: self.infoList.deliveryFee, // ORDER_TBL에 저장
+                            productPrice: self.infoList.price, // 상품 단가 정보
+                            proName: self.infoList.proName,
+                        };
+                        console.log("주문 데이터:", param);
+                        $.ajax({
+                            url: "/product/orderInsert.dox", // 서버 주문 처리 URL
+                            type: "POST",
+                            dataType: "json",
+                            data: param,
+                            success: function (data) {
+                                if (data.result === "success") {
+                                    alert("주문이 완료되었습니다!");
+                                    // 결제 페이지로 이동 또는 주문 완료 페이지 이동
+                                    alert(data.orderId);
+                                    pageChange("/payment/payment.do", { orderId: data.orderId });
+
+                                } else {
+                                    alert("주문 처리 중 오류가 발생했습니다.");
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("주문 AJAX 에러:", status, error);
+                            }
+                        });
+
 
                     }
 
@@ -287,6 +398,48 @@
                         }
                     });
                 },
+                // 옵션 선택 유효성 검사 함수
+                fnCheckRequiredSelections: function () {
+                    let self = this;
+
+                    // 1. 모든 상위 옵션에 대해 선택된 하위 옵션이 있는지 확인
+                    const allOptionsSelected = self.groupedOptions.every(topOption => {
+                        // topOptionId를 키로 selectedOptions 객체에서 값을 확인
+                        return self.selectedOptions[topOption.topOptionId] !== null;
+                    });
+
+                    if (!allOptionsSelected) {
+                        alert("모든 필수 옵션을 선택해 주세요.");
+                        return false;
+                    }
+
+                    // 2. 픽업/배송 날짜 선택 여부 확인
+                    if (!self.selectedDate) {
+                        alert("픽업/배송 날짜 및 시간을 선택해 주세요.");
+                        return false;
+                    }
+
+                    // 모든 검사 통과
+                    return true;
+                },
+                // 장바구니 옵션 선택 유효성 검사 함수
+                fnCheckRequiredSelectionsCart: function () {
+                    let self = this;
+
+                    // 1. 모든 상위 옵션에 대해 선택된 하위 옵션이 있는지 확인
+                    const allOptionsSelected = self.groupedOptions.every(topOption => {
+                        // topOptionId를 키로 selectedOptions 객체에서 값을 확인
+                        return self.selectedOptions[topOption.topOptionId] !== null;
+                    });
+
+                    if (!allOptionsSelected) {
+                        alert("모든 필수 옵션을 선택해 주세요.");
+                        return false;
+                    }
+
+                    // 모든 검사 통과
+                    return true;
+                },
                 // 전체 수량 조절
                 increaseTotalQuantity() {
                     this.totalQuantity++;
@@ -297,6 +450,10 @@
                 fnCart: function () {
                     let self = this;
                     // 하위 옵션 선택 내역 수집
+                    //유효성 검사
+                    if (!self.fnCheckRequiredSelectionsCart()) {
+                        return; // 필수 옵션 미선택 시 함수 종료
+                    }
                     let subOptionList = [];
 
                     for (const [topId, subOption] of Object.entries(self.selectedOptions)) {

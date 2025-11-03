@@ -21,6 +21,7 @@ public class Product {
 		private int sellCount;
 		private String createdAt; // 상품등록일 
 		private String lettering;
+		private String deliveryYn;
 		
 		// 판매자 채팅 가능여부 (Y/N)
 		private String isChatEnabled;
@@ -61,4 +62,24 @@ public class Product {
 	    private int rating;
 	    private String reviewContent;
 	    private String cdatetime;
+	    
+	    // 주문서 관련
+	    
+	    private int orderDetailId; // 시퀀스 자동 생성
+	    private int orderId;       // 주문 번호 (FK)
+	    private String fullAddress; // 주소
+	    private int addOptionPrice;
+	    private String orderDate;
+	    private int quantity;     // 주문 수량
+	    private String deliveryType;
+	    private String status;
+	    private int subtotal;      // 상품 소계
+	    private String letteringWord; // 레터링 문구
+	    private String chatYn;
+	    private int totalQuantity;
+	    private int orderOptionId; // 시퀀스 자동 생성
+	 
+	    
+
+	    private int addQuantity;  // 추가 옵션 수량
 }

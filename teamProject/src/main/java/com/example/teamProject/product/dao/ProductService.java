@@ -177,4 +177,35 @@ public class ProductService {
 			}				
 			return resultMap;
 		}
+		
+	//주문서 (구매하기)
+	
+		@Transactional
+		public HashMap<String, Object> insertOrder(HashMap<String, Object> map) {
+				// TODO Auto-generated method stub
+				HashMap<String, Object> resultMap = new HashMap<String, Object>();
+				
+				// 선택한 옵션의 내용을 담은 list
+				List<HashMap<String, Object>> list = (List<HashMap<String, Object>>) map.get("list");
+				
+				
+				int cnt1 = ProductMapper.insertOrder(map); // 주문서 테이블에 인서트 
+				int cnt2 = ProductMapper.insertOrderDt(map); // 주문서 디테일 테이블에 인서트
+				System.out.println(map);
+				
+				//주문서 옵션 테이블 반복
+				for(int i=0; i<list.size(); i++) {
+					
+					HashMap<String, Object> inputMap = list.get(i);
+					inputMap.put("orderDetailId", map.get("orderDetailId"));
+					System.out.println(i+1 + "번째 맵 ==> " + inputMap);
+					ProductMapper.insertOrderOpt(inputMap);
+				}
+				
+				resultMap.put("result", "success");
+				resultMap.put("orderId", map.get("orderId"));   // 여기 추가
+			   
+				return resultMap;
+				
+			}
 }
