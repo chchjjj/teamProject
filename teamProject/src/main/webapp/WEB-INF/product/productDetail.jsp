@@ -13,6 +13,8 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
+        <!--페이지 이동-->
+        <script src="/js/page-change.js"></script>
         <style>
             .date-input {
                 display: none;
@@ -223,14 +225,17 @@
             },
             methods: {
                 // 함수(메소드) - (key : function())
-                fnBuy: function () {
+                fnBuy: function (proNo) {
                     let self = this;
                     if (self.isChatRequested === 'Y') {
-                        alert('채팅연결'); 
-                    }else{
+                        alert('채팅연결');
+                    } else {
                         alert(self.selectedDate);
+                        console.log(proNo); // main 화면에서 클릭한 상품번호 출력(확인완료)
+                        pageChange("/payment/payment.do", { proNo: proNo });  // 상세페이지로 proNo 넘겨줌            
+
                     }
-                    
+
                 },
                 fnInfo: function () {
                     let self = this;
@@ -458,6 +463,7 @@
                         });
                     }
                 }
+
 
             }, // methods
             mounted() {
