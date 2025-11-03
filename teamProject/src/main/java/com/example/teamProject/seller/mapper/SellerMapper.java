@@ -31,4 +31,24 @@ public interface SellerMapper {
 	List<HashMap<String, Object>> selectOrderList(HashMap<String, Object> map);
 	//주문 번호로 상세 보여주기
 	List<HashMap<String, Object>> selectOrderDetail(HashMap<String, Object> map);
+	
+	
+	
+	
+	//채탕창 이동허용 기능
+	List<HashMap<String, Object>> selectChatPass(String orderId);
+	
+	
+	
+	
+	//메세지 리스트 시간순
+	List<Seller> selectChatHistoryByOrderId(Long orderId);
+	//새메세지 저장
+	void insertChatMessage(Seller message);
+	//전송된 메세지 객체
+	void updateChatRoomLastMessage(Seller message);
+	//특정 채팅방의 모든 메시지를 읽음 처리 ('Y')
+	void updateMessageReadStatus(Long orderId, String readerId);
+	// 리뷰 리스트
+	List<HashMap<String, Object>>  selectReviewList(HashMap<String, Object> param);
 }

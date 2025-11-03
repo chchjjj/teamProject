@@ -99,10 +99,10 @@
                 <a href="javascript:;" onclick="location.href='/seller/salesHistory.do'">판매 내역</a>
             </li>
             <li class="<%= currentUri.contains("/seller/customer.do") ? "active" : "" %>">
-                <a href="#">고객 관리(채팅)</a>
+                <a href="javascript:;" onclick="location.href='/seller/sellerReview.do'">고객 관리(채팅)</a>
             </li>
             <li class="<%= currentUri.contains("/seller/review.do") ? "active" : "" %>">
-                <a  href="javascript:;" onclick="location.href='/seller/sellerReview.do'">리뷰 관리(임시)</a>
+                <a href="#">리뷰 관리(임시)</a>
             </li>
             <li class="<%= currentUri.contains("/seller/calendar.do") ? "active" : "" %>">
                 <a href="#">캘린더</a>

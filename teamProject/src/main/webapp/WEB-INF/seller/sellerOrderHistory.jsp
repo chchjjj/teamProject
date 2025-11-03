@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ include file="/WEB-INF/main/sellerSideBar.jsp" %>
+<%@ include file="/WEB-INF/seller/sellerSideBar.jsp" %>
 <!DOCTYPE html>
 <html lang="ko">
 
@@ -163,7 +163,11 @@
         </div>
     </div>
 
-    <script>
+   
+</body>
+
+</html>
+ <script>
         const app = Vue.createApp({
             data() {
                 return {
@@ -176,7 +180,7 @@
                 };
             },
             methods: {
-                goDetail(orderId) {
+                goDetail: function(orderId) {
                     if (!orderId) {
                         console.error("Order ID가 누락되어 상세 페이지로 이동할 수 없습니다.");
                         return;
@@ -199,7 +203,7 @@
                     form.submit();
                 },
 
-                fnList() {
+                fnList: function() {
                     if (!this.userId) {
                         console.warn("userId가 없어 판매 내역을 조회할 수 없습니다.");
                         return;
@@ -235,7 +239,7 @@
                     });
                 },
 
-                changePage(page) {
+                changePage: function(page) {
                     if (page < 1 || page > this.totalPages) return;
                     this.currentPage = page;
                     const start = (page - 1) * this.pageSize;
@@ -243,12 +247,12 @@
                     this.pagedOrderList = this.allOrders.slice(start, end);
                 },
 
-                formatDate(date) {
+                formatDate: function(date) {
                     if (window.moment && date) return moment(date).format('YYYY.MM.DD');
                     return date || '-';
                 },
 
-                formatNumber(number) {
+                formatNumber: function(number) {
                     if (number === null || number === undefined) return '0';
                     return number.toLocaleString();
                 }
@@ -261,6 +265,3 @@
 
         app.mount('#app');
     </script>
-</body>
-
-</html>
