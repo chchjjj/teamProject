@@ -68,51 +68,15 @@
 		SELECT
 		T1.USER_NAME,
 		T2.ORDER_ID,
-		T3.PRO_NAME,
-		T4.OPTION_NAME,
-		T5.VALUE_NAME,
-		T3.PRICE,
-		T6.PRICE_DIFF,
-		COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE) PICKUP_DELIVERY_DATE,
-		T10.STORE_NAME
-		FROM
-		ORDER_TBL T2
-		JOIN
-		USER_TBL T1 ON T2.USER_ID = T1.USER_ID
-		JOIN
-		ORDER_DETAIL_TBL T3 ON T2.ORDER_ID = T3.ORDER_ID
-		JOIN
-		PRODUCT_TBL T8 ON T3.PRO_NO = T8.PRO_NO
-		JOIN
-		SELLER_INFO_TBL T10 ON T8.STORE_ID = T10.STORE_ID
-		LEFT JOIN
-		ORDER_OPTION_TBL T6 ON T3.ORDER_DETAIL_ID = T6.ORDER_DETAIL_ID
-		LEFT JOIN
-		PRODUCT_OPTION_TBL T4 ON T6.TOP_OPTION_ID = T4.TOP_OPTION_ID
-		LEFT JOIN
-		PRODUCT_SUB_OPTION_TBL T5 ON T6.SUB_OPTION_ID = T5.SUB_OPTION_ID
-		LEFT JOIN
-		DELIVERY_TBL T7 ON T2.ORDER_ID = T7.ORDER_ID
-		LEFT JOIN
-		PICKUP_TBL T9 ON T2.ORDER_ID = T9.ORDER_ID
-		WHERE
-		T10.USER_ID = #{userId}
-	</select>
-
-	<select id="selectOrderDetail" parameterType="java.util.HashMap"
-		resultType="java.util.HashMap">
-		SELECT
-		T1.USER_NAME,
-		T2.ORDER_ID,
-		T3.PRO_NAME,
-		COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE),
-		T10.STORE_NAME,
-		T3.PRICE,
-		SUM(NVL(T6.PRICE_DIFF, 0)),
-		LISTAGG(T4.OPTION_NAME || ': ' || T5.VALUE_NAME, ', ') WITHIN GROUP
-		(ORDER BY T6.ORDER_OPTION_ID)
-		FROM
-		ORDER_TBL T2
+		MAX(T3.PRO_NAME) AS PRO_NAME,
+		MAX(T4.OPTION_NAME) AS OPTION_NAME,
+		MAX(T5.VALUE_NAME) AS VALUE_NAME,
+		MAX(T3.PRICE) AS PRICE,
+		MAX(T6.PRICE_DIFF) AS PRICE_DIFF,
+		COALESCE(MAX(T9.PICKUP_DATE), MAX(T2.ORDER_DATE)) AS
+		PICKUP_DELIVERY_DATE,
+		MAX(T10.STORE_NAME) AS STORE_NAME
+		FROM ORDER_TBL T2
 		JOIN USER_TBL T1 ON T2.USER_ID = T1.USER_ID
 		JOIN ORDER_DETAIL_TBL T3 ON T2.ORDER_ID = T3.ORDER_ID
 		JOIN PRODUCT_TBL T8 ON T3.PRO_NO = T8.PRO_NO
@@ -123,12 +87,144 @@
 		T5.SUB_OPTION_ID
 		LEFT JOIN DELIVERY_TBL T7 ON T2.ORDER_ID = T7.ORDER_ID
 		LEFT JOIN PICKUP_TBL T9 ON T2.ORDER_ID = T9.ORDER_ID
-		WHERE T2.ORDER_ID = #{orderId}
-		GROUP BY
-		T1.USER_NAME, T2.ORDER_ID, T3.PRO_NAME, T3.PRICE,
-		COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE), T10.STORE_NAME
+		WHERE T10.USER_ID = #{userId}
+		GROUP BY T1.USER_NAME, T2.ORDER_ID
+		ORDER BY T2.ORDER_ID
+
 	</select>
 
+	<select id="selectOrderDetail" parameterType="java.util.HashMap"
+		resultType="java.util.HashMap">
+	SELECT
+		T1.USER_NAME,
+		T2.ORDER_ID,
+		T3.PRO_NAME,
+		COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE),
+		T10.STORE_NAME,
+		T3.PRICE,
+		SUM(NVL(T6.PRICE_DIFF, 0)),
+		LISTAGG(T4.OPTION_NAME || ': ' || T5.VALUE_NAME, ', ') 
+			WITHIN GROUP (ORDER BY T6.ORDER_OPTION_ID),
+		T2.CHAT_YN
+	FROM
+		ORDER_TBL T2
+		JOIN USER_TBL T1 ON T2.USER_ID = T1.USER_ID
+		JOIN ORDER_DETAIL_TBL T3 ON T2.ORDER_ID = T3.ORDER_ID
+		JOIN PRODUCT_TBL T8 ON T3.PRO_NO = T8.PRO_NO
+		JOIN SELLER_INFO_TBL T10 ON T8.STORE_ID = T10.STORE_ID
+		LEFT JOIN ORDER_OPTION_TBL T6 ON T3.ORDER_DETAIL_ID = T6.ORDER_DETAIL_ID
+		LEFT JOIN PRODUCT_OPTION_TBL T4 ON T6.TOP_OPTION_ID = T4.TOP_OPTION_ID
+		LEFT JOIN PRODUCT_SUB_OPTION_TBL T5 ON T6.SUB_OPTION_ID = T5.SUB_OPTION_ID
+		LEFT JOIN DELIVERY_TBL T7 ON T2.ORDER_ID = T7.ORDER_ID
+		LEFT JOIN PICKUP_TBL T9 ON T2.ORDER_ID = T9.ORDER_ID
+	WHERE
+		T2.ORDER_ID = #{orderId}
+	GROUP BY
+		T1.USER_NAME,
+		T2.ORDER_ID,
+		T3.PRO_NAME,
+		T3.PRICE,
+		COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE),
+		T10.STORE_NAME,
+		T2.CHAT_YN
+	</select>
 
+	<select id="selectChatPass" parameterType="java.util.HashMap"
+		resultType="java.util.HashMap">
+		SELECT *
+		FROM ORDER_TBL
+		WHERE CHAT_YN = #{chatYN}
+		AND ORDER_ID = #{orderId}
+	</select>
+	
+	
+	 <select id="selectChatHistoryByOrderId" parameterType="java.util.HashMap"
+    resultType="java.util.HashMap">
+    SELECT
+        MSG_ID,
+        CHAT_ID,
+        ORDER_ID,
+        USER_ID,
+        STORE_ID,
+        DBMS_LOB.SUBSTR(MESSAGE, 4000, 1) AS MESSAGE, 
+        MESSAGE_TYPE,
+        SENT_AT,
+        IS_READ
+    FROM CHAT_MSG_TBL
+    WHERE ORDER_ID = #{orderId}
+    ORDER BY SENT_AT ASC
+</select>
+
+    <insert id="insertChatMessage" parameterType="java.util.HashMap">
+        <selectKey keyProperty="msgId" resultType="long" order="BEFORE">
+            SELECT CHAT_MSG_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO CHAT_MSG_TBL (
+            MSG_ID, CHAT_ID, ORDER_ID, USER_ID, STORE_ID, MESSAGE, MESSAGE_TYPE, SENT_AT, IS_READ
+        ) VALUES (
+            #{msgId},
+            (SELECT CHAT_ID FROM CHAT_TBL WHERE ORDER_ID = #{orderId}),
+            #{orderId},
+            #{userId},
+            #{storeId},
+            <![CDATA[
+            <choose>
+                <when test="messageType == 'IMAGE'">#{filePath}</when>
+                <otherwise>#{message}</otherwise>
+            </choose>
+            ]]>,
+            #{messageType},
+            SYSDATE,
+            'N'
+        )
+    </insert>
+
+    <update id="updateChatRoomLastMessage" parameterType="java.util.HashMap">
+        UPDATE CHAT_TBL
+        SET
+            LAST_MSG_AT = SYSDATE,
+            LAST_MSG = <![CDATA[
+            <choose>
+                <when test="messageType == 'IMAGE'">이미지를 보냈습니다.</when>
+                <otherwise>SUBSTR(#{message},1,200)</otherwise>
+            </choose>
+            ]]>,
+            UNREAD_COUNT = UNREAD_COUNT + 1
+        WHERE ORDER_ID = #{orderId}
+    </update>
+
+    <update id="updateMessageReadStatus" parameterType="java.util.HashMap">
+        UPDATE CHAT_MSG_TBL
+        SET IS_READ = 'Y'
+        WHERE ORDER_ID = #{orderId}
+        AND IS_READ = 'N'
+    </update>
+	
+
+     <select id="selectReviewList" parameterType="java.util.HashMap"
+    resultType="java.util.HashMap">
+   SELECT
+    R.REVIEW_ID,
+    R.ORDER_ID,
+    R.RATING,
+    R.REVIEW_CONTENT,
+    R.CDATETIME,
+    R.USER_ID,
+    S.STORE_ID,
+    S.STORE_NAME,
+    S.USER_ID AS 판매자_ID
+FROM
+    REVIEW_TBL R
+JOIN
+    SELLER_INFO_TBL S
+ON
+    R.STORE_ID = S.STORE_ID
+    
+    WHERE S.USER_ID = #{userId}
+ORDER BY
+    R.CDATETIME DESC;
+</select>
+    
+    
 </mapper>
 

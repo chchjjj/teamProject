@@ -1,6 +1,7 @@
 package com.example.teamProject.seller.model;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 import lombok.Data;
 
@@ -25,6 +26,7 @@ public class Seller {
 	    private Date regDate;           // REG_DATE
 	    private Date udate;             // UDATE
 	    private String orderId;
+	    private String chatYN;
 	    
 	    private String orderMonth;    // YYYY-MM 형식, ORDER_TBL 기준
 	    private Integer orderCount;   // 월별 주문 건수
@@ -60,5 +62,18 @@ public class Seller {
 	 		private String subOpt;
 	 		private int qptQtt;
 	 		private int subOptPrice;
+	 		
+	 		//채팅
+	 
 
+	 	    
+	 	   private Long msgId;
+	 	    private Long chatId;
+	 	 
+	 	    private String message;      // DB CLOB -> String
+	 	    private String messageType;
+	 	    private LocalDateTime sentAt;
+	 	    private String isRead;
+	 	    private String senderId;     // 발신자 구분용
+	 	    private String filePath;     // 이미지 경로
 }
