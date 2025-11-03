@@ -111,6 +111,13 @@
 		FROM USER_TBL
 		WHERE USER_ID = #{userId}
 	</select>	
+	
+	<!--'내 주변 디저트 찾기'에서 판매중인 가게 리스트 불러오기 (보완중) -->
+	<select id="selectSeller" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main"> 
+		SELECT *
+		FROM SELLER_INFO_TBL
+		WHERE STORE_PASS = 'P'
+	</select>
 
 	
 </mapper>

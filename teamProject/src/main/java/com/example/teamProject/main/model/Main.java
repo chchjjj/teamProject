@@ -1,5 +1,8 @@
 package com.example.teamProject.main.model;
 
+import lombok.Data;
+
+@Data
 public class Main {
 	// Main 모델
 	
@@ -22,7 +25,7 @@ public class Main {
 	// 판매자 채팅 가능여부 (Y/N)
 	private String isChatEnabled;
 	
-	// 판매자 정보 (QnA 관련)	
+	// 판매자 정보 (QnA, '내 주변 디저트' 관련)	
 	private int storeId;
 	private int questionId;
     private String questionContent;
@@ -30,5 +33,6 @@ public class Main {
     private String answerContent;
     private String answerDate;
     private String storeAddr;
+    private String businessNo; // 사업자번호임..
 	
 }

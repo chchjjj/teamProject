@@ -52,12 +52,18 @@
 <!--장바구니 삭제-->
 	<delete id="deleteCart" parameterType="hashmap">
 		DELETE FROM CART_TBL
-		WHERE CART_ID = #{cartId}
+		WHERE CART_ID IN
+		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
 	</delete>
 	
 	<delete id="deleteCartOpt" parameterType="hashmap">
 		DELETE FROM CART_OPTION_TBL
-		WHERE CART_ID = #{cartId}
+		WHERE CART_ID IN
+		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
 	</delete>
 	
 <!--장바구니 인서트-->
@@ -73,5 +79,92 @@
 		INSERT INTO CART_OPTION_TBL
 		VALUES(SEQ_CART_OPT_ID.NEXTVAL, #{cartId}, #{subOptionId}, #{cartOptQuantity}, #{priceDiff})
 	</insert>
+	
+	<!-- 찜 관련 -->
+	<!-- 찜 여부 체크 -->
+	<select id="checkWishlist" parameterType="hashmap" resultType="int">
+	    SELECT COUNT(*) 
+	    FROM WISHLIST_TBL
+	    WHERE USER_ID = #{userId} 
+	      AND PRO_NO = #{proNo}
+	</select>
+	
+	<!-- 찜 추가 -->
+	<insert id="addWishlist" parameterType="hashmap">
+	    INSERT INTO WISHLIST_TBL
+	    VALUES (#{userId}, #{proNo}, SYSDATE)
+	</insert>
+	
+	<!-- 찜 삭제 -->
+	<delete id="deleteWishlist" parameterType="hashmap">
+	    DELETE FROM WISHLIST_TBL
+	    WHERE USER_ID = #{userId} 
+	      AND PRO_NO = #{proNo}
+	</delete>
+	
+	<!--리뷰 불러오기-->
+	<select id="selectReviewList" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
+	    SELECT *
+	    FROM REVIEW_TBL R
+		LEFT JOIN USER_TBL U ON R.USER_ID = U.USER_ID
+		WHERE PRO_NO = #{proNo}
+	</select>
+	
+	<!-- 헤더 QnA 버튼 눌렀을 때 (QnA 전체 리스트 불러오기)  -->
+	<select id="selectQnaList" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">
+		 SELECT 
+	        Q.QUESTION_ID,
+	        Q.PRO_NO,
+	        Q.USER_ID,
+	        U.USER_NAME AS userName,   <!--질문자 이름--> 
+	        Q.QUESTION_CONTENT,
+	        TO_CHAR(Q.QUESTION_DATE, 'YYYY-MM-DD') AS QUESTION_DATE,
+	        Q.STORE_ID,
+	        S.STORE_NAME AS storeName,         <!--판매자(가게명)-->
+	        Q.ANSWER_CONTENT,
+	        TO_CHAR(Q.ANSWER_DATE, 'YYYY-MM-DD') AS ANSWER_DATE
+	    FROM QA_TBL Q
+	    LEFT JOIN USER_TBL U
+	        ON Q.USER_ID = U.USER_ID
+	    LEFT JOIN SELLER_INFO_TBL S
+	        ON Q.STORE_ID = S.STORE_ID
+	    WHERE 1=1			
+	
+		
+		<!-- 검색어가 있을 때만 조건 추가 -->
+		<if test="qnaKeyword != null and qnaKeyword != ''">
+		    <choose>
+		        <when test="searchOption == 'all'">
+		            AND (Q.QUESTION_CONTENT LIKE '%' || #{qnaKeyword} || '%' 
+		                 OR U.USER_NAME LIKE '%' || #{qnaKeyword} || '%')
+		        </when>
+		        <when test="searchOption == 'content'">
+		            AND Q.QUESTION_CONTENT LIKE '%' || #{qnaKeyword} || '%'
+		        </when>
+		        <when test="searchOption == 'id'">
+		            AND U.USER_NAME LIKE '%' || #{qnaKeyword} || '%'
+		        </when>
+		    </choose>
+		</if>
+		
+		<if test="userId != null and userId != ''">
+        AND Q.USER_ID = #{userId}
+   		</if>
+		
+		ORDER BY  
+	    CASE WHEN <!-- 미답변 건부터 위로 오게 정렬 -->
+	    	Q.ANSWER_CONTENT IS NULL THEN 0 ELSE 1 END ASC,
+	    Q.QUESTION_DATE DESC <!-- 최신순이 위로 가게 -->
+	    
+		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY <!--페이징-->
+	</select>
+	
+	
+	<!-- 페이징 처리 위해 게시글 개수 구하기 (resultType int) -->
+	<select id="selectQnaCnt" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*) AS CNT
+		FROM QA_TBL
+		WHERE 1=1			
+	</select>
 	
 </mapper>

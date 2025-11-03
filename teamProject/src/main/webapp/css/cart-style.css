@@ -226,3 +226,31 @@
     display: flex;
     justify-content: flex-end;
 }
+/* 장바구니가 비었을 때 메시지를 감싸는 컨테이너의 스타일 */
+.product-selection-section {
+    /* 부모 컨테이너의 높이를 확보하여 메시지가 중앙에 올 수 있는 기준을 제공 */
+    min-height: 400px; /* 이 값을 조정하여 원하는 높이만큼 메시지 영역 확보 */
+    display: flex; /* 자식 요소들을 유연하게 배치하기 위해 Flexbox 활성화 */
+    flex-direction: column; /* 자식 요소들을 세로로 배치 */
+    align-items: center; /* 자식 요소들을 수평 중앙 정렬 */
+    justify-content: flex-start; /* 자식 요소들을 위에서부터 배치 (메시지가 위쪽으로 가는 것을 방지) */
+    width: 100%;
+    
+}
+
+
+.empty-cart-message {
+    /* .product-selection-section의 중앙에 오도록 margin auto를 사용합니다. */
+    margin: auto; /* 상하좌우 자동 마진을 사용하여 중앙에 배치 (Flexbox 환경에서 효과적) */
+    width: 80%; /* 중앙에 올 블록의 너비 설정 */
+    min-height: 150px; 
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    padding: 20px;
+    border: 1px solid #ddd;
+    text-align: center;
+    background-color: #e6e6e6;
+    border-radius: 10px;
+}
+

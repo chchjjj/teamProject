@@ -76,7 +76,16 @@ public class ProductController {
 	@ResponseBody
 	public String cartDelete(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		String json = map.get("selectItem").toString(); 
+		ObjectMapper mapper = new ObjectMapper();
+		List<Object> list = mapper.readValue(json, new TypeReference<List<Object>>(){});
+		map.put("list", list);
+		
+		System.out.println(map);
+		
 		resultMap = ProductService.deleteCart(map);
+		
 		return new Gson().toJson(resultMap);
 	}
 	
@@ -90,6 +99,44 @@ public class ProductController {
 		List<HashMap<String, Object>> list = mapper.readValue(json, new TypeReference<List<HashMap<String, Object>>>(){});
 		map.put("list", list);
 		resultMap = ProductService.insertCart(map);
+		return new Gson().toJson(resultMap);
+	}
+	@RequestMapping(value = "/product/checkWishlist.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String checkWishlist(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    resultMap = ProductService.checkWishlist(map);
+	    return new Gson().toJson(resultMap);
+	}
+	@RequestMapping(value = "/product/WishlistAdd.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String WishlistAdd(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    resultMap = ProductService.WishlistInsert(map);
+	    return new Gson().toJson(resultMap);
+	}
+	@RequestMapping(value = "/product/WishlistDel.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String WishlistDel(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    resultMap = ProductService.WishlistDelete(map);
+	    return new Gson().toJson(resultMap);
+	}
+	@RequestMapping(value = "/product/reviewList.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String reviewList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    resultMap = ProductService.getReviewList(map);
+	    return new Gson().toJson(resultMap);
+	}
+	
+	// 헤더 QnA 버튼으로 페이지 이동 후 QnA 리스트
+	@RequestMapping(value = "/product/qna.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String qnaList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		System.out.println("Controller userId => " + map.get("userId"));
+		resultMap = ProductService.getQnaList(map);
 		return new Gson().toJson(resultMap);
 	}
 }

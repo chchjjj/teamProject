@@ -8,6 +8,7 @@ public class Product {
 		// 유저아이디
 		private String userId;
 		private String storeId;
+		private String userName;
 		
 		// 상품 정보
 		private int proNo;
@@ -47,6 +48,17 @@ public class Product {
 		
 		//장바구니 옵션
 		private int cartOptQuantity;
-
 		
+		// 판매자 정보 (QnA 관련)	
+		private int questionId;
+	    private String questionContent;
+	    private String questionDate;
+	    private String answerContent;
+	    private String answerDate;
+	    
+	    // 리뷰 관련
+	    private int reviewId;
+	    private int rating;
+	    private String reviewContent;
+	    private String cdatetime;
 }
