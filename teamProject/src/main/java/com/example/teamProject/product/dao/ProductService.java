@@ -191,7 +191,7 @@ public class ProductService {
 				
 				int cnt1 = ProductMapper.insertOrder(map); // 주문서 테이블에 인서트 
 				int cnt2 = ProductMapper.insertOrderDt(map); // 주문서 디테일 테이블에 인서트
-				System.out.println(map);
+				System.out.println(map);   
 				
 				//주문서 옵션 테이블 반복
 				for(int i=0; i<list.size(); i++) {
