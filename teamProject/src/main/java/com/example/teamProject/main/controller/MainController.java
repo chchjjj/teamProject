@@ -74,8 +74,18 @@ public class MainController {
 	public String userAddr(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		System.out.println(map);
-		resultMap = mainService.getUser(map); 		
+		resultMap = mainService.getUser(map); 
+		System.out.println("서버 최종 응답 데이터: " + resultMap);
 		return new Gson().toJson(resultMap); // 결과를 resultMap에 담음
+	}
+	
+	// '내 주변 디저트 찾기' 에서 가게 리스트 불러오기
+	@RequestMapping(value = "/main/storeList.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String sellerList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = mainService.getSellerList(map);
+		return new Gson().toJson(resultMap);
 	}
 	
 }
