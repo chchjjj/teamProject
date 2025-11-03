@@ -31,7 +31,7 @@
             <label>아이디 : <input v-model="userId"></label>
         </div>
         <div>
-            <label>비밀번호 : <input type="password" v-model="userPass"></label>
+            <label>비밀번호 : <input type="password" v-model="userPass" @keyup.enter="fnLogin"></label>
         </div>
         <div>
             <button @click="fnLogin">로그인</button> 

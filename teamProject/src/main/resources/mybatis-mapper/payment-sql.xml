@@ -3,25 +3,53 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.teamProject.payment.mapper.PaymentMapper">
-	<!-- 장바구니 중에서 선택한 주문 불러오기-->
-	<select id="selectPayment" parameterType="hashmap" resultType="com.example.teamProject.payment.model.Payment"> 
-		SELECT 
-		    c.CART_ID,
-		    p.PRO_NAME,
-		    P.PRICE AS DEF_PRICE,
-		    po.OPTION_NAME AS TOP_OPT,
-		    pso.VALUE_NAME AS SUB_OPT,
-		    co.CART_OPT_QUANTITY AS OPT_QTT,
-		    NVL(pso.PRICE_DIFF, 0) AS SUB_OPT_PRICE
-		FROM CART_TBL c
-		JOIN PRODUCT_TBL p 
-		    ON c.PRO_NO = p.PRO_NO
-		JOIN CART_OPTION_TBL co 
-		    ON c.CART_ID = co.CART_ID
-		JOIN PRODUCT_SUB_OPTION_TBL pso 
-		    ON co.SUB_OPTION_ID = pso.SUB_OPTION_ID
-		JOIN PRODUCT_OPTION_TBL po 
-		    ON pso.TOP_OPTION_ID = po.TOP_OPTION_ID
-		WHERE CART_ID = #{cartId}
+
+	<select id="selectCartList" parameterType="hashmap" resultType="com.example.teamProject.payment.model.Payment"> 
+		SELECT * 
+		FROM CART_TBL C
+		INNER JOIN CART_OPTION_TBL CO ON C.CART_ID = CO.CART_ID
+		INNER JOIN SELLER_INFO_TBL SI ON C.STORE_ID = SI.STORE_ID
+		INNER JOIN PRODUCT_TBL P ON C.PRO_NO = P.PRO_NO
+		WHERE C.CART_ID IN
+		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+			#{item} 
+		</foreach>
 	</select>
+	
+	<insert id="insertOrder" parameterType="hashmap"> 
+		<!--INSERT INTO ORDER_TBL 
+		VALUES (SEQ_ORDER_ID.NEXTVAL, #{cartList.userId}--> <!-- , #{}, #{}, #{}, #{}, #{}, , ,--> ) 
+	</insert>
+	
+	<insert id="insertOrderDetail" parameterType="hashmap"> 
+		<!--INSERT INTO ORDER_TBL 
+		VALUES (SEQ_ORDER_ID.NEXTVAL, #{cartList.userId}--> <!-- , #{}, #{}, #{}, #{}, #{}, , ,--> ) 
+	</insert>
+	
+	<insert id="insertOrderOption" parameterType="hashmap"> 
+		<!--INSERT INTO ORDER_TBL 
+		VALUES (SEQ_ORDER_ID.NEXTVAL, #{cartList.userId}--> <!-- , #{}, #{}, #{}, #{}, #{}, , ,--> ) 
+	</insert>
+	
+	<select id="selectOrderList" parameterType="hashmap" resultType="com.example.teamProject.payment.model.Payment"> 
+		SELECT * 
+		FROM ORDER_TBL O
+		<!--INNER JOIN CART_OPTION_TBL CO ON C.CART_ID = CO.CART_ID
+		INNER JOIN SELLER_INFO_TBL SI ON C.STORE_ID = SI.STORE_ID
+		WHERE C.CART_ID IN-->
+		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+			#{item} 
+		</foreach>
+	</select>
+	
+	<update id="updateDelivery" parameterType="hashmap">
+		UPDATE ORDER_TBL
+		SET DELIVERY_TYPE = #{deliveryType}
+		WHERE ORDER_ID = #{orderId}
+	</update>
+	
+	<insert id="insertPayment" parameterType="hashmap"> 
+		INSERT INTO PAYMENT_TBL 
+		VALUES (PAYMENT_SEQ.NEXTVAL, #{orderId} ) 
+	</insert>
 </mapper>
