@@ -166,5 +166,65 @@
 		FROM QA_TBL
 		WHERE 1=1			
 	</select>
-	
+
+<!--주문서 넘어가기-->
+	<!--주문서테이블 인서트-->
+	<insert id="insertOrder" parameterType="hashmap"
+		useGeneratedKeys="true" 
+		keyColumn="ORDER_ID" 
+		keyProperty="orderId">
+		INSERT INTO ORDER_TBL (
+        ORDER_ID, USER_ID, STORE_NAME, FULL_ADDRESS, ADD_OPTION_PRICE, 
+        LETTERING_WORD, DELIVERY_FEE, ORDER_DATE, TOTAL_PRICE, 
+        DELIVERY_TYPE, STATUS, CHAT_YN
+    )
+    VALUES (
+        SEQ_ORDER_ID.NEXTVAL,
+        #{userId},
+        #{storeName},
+        '주소없음',
+        0,
+        #{letteringWord},
+        #{deliveryFee},
+        SYSDATE,
+        #{totalPrice},
+        #{deliveryType},
+        'S',
+        NVL(#{chatYn}, 'N')
+    )
+	</insert>
+
+	<!--주문서디테일테이블-->
+	<insert id="insertOrderDt" parameterType="hashmap"
+		useGeneratedKeys="true" 
+		keyColumn="ORDER_DETAIL_ID" 
+		keyProperty="orderDetailId">
+		INSERT INTO ORDER_DETAIL_TBL 
+   		VALUES (
+        SEQ_ORDER_DETAIL_ID.NEXTVAL,
+        #{orderId},
+        #{proNo},
+        #{storeId},
+        #{proName},
+        #{totalQuantity},
+        #{productPrice},
+        #{totalPrice}, 
+        #{letteringWord} 
+    )
+	</insert>
+		
+	<!--주문서옵션테이블-->
+	<insert id="insertOrderOpt" parameterType="hashmap">
+	INSERT INTO ORDER_OPTION_TBL (
+    ORDER_OPTION_ID, ORDER_DETAIL_ID, TOP_OPTION_ID, SUB_OPTION_ID, PRICE_DIFF, ADD_QUANTITY
+    )
+    VALUES (
+        SEQ_ORDER_OPTION_ID.NEXTVAL,
+        #{orderDetailId}, <!--위 쿼리에서 가져옴-->
+        #{topOptionId}, <!--subOptionList리스트속에있음-->
+        #{subOptionId}, <!--subOptionList리스트속에있음-->
+        #{priceDiff}, <!--subOptionList리스트속에있음-->
+        #{quantity} <!--subOptionList리스트속에있음-->
+    )
+	</insert>
 </mapper>
