@@ -202,7 +202,7 @@
                         dataType: "json",
                         success: function (data) {
                             if (data.info.role === "C") {
-                                pageChange("/user/mypage.do", { userId: self.userId });
+                                pageChange("/user/userMyPage.do", { userId: self.userId });
                             } else if (data.info.role === "S") {
                                 pageChange("/seller/sales.do", { userId: self.userId });
                             } else if (data.info.role === "A") {
