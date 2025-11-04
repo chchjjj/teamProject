@@ -32,6 +32,8 @@ public interface AdminMapper {
 		//판매자의 롤이 바뀌는 동시에 입접승인 상태도 같이 변함
 		int sellerRoleUpdate (HashMap<String, Object> map);
 		
+		List <Admin> orderListSelect(HashMap<String, Object> map);
+		
 		
 		
 		
@@ -94,13 +96,25 @@ public interface AdminMapper {
 		//list
 		List <Admin> adListSelect(HashMap<String, Object> map);
 		int adCount (HashMap<String, Object> map);
-		
+		//광고 추가
+		int adCheck (HashMap<String, Object> map);
+		int adAdd (HashMap<String, Object> map);
+		int adImgInsert(HashMap<String, Object> map);
+		Admin adSelect (HashMap<String, Object> map);
+		int adUpdate (HashMap<String, Object> map);
+		//광고 자동 정산
+		int monthlyAdHistroyInsert ();
+		int monthlyAdHistroyUpdate ();
 		
 		// 8. 달말마다 수수료 정산
 //		List <Admin> monthlyFeeCalculate ();
 //		int monthlyFeeCalculateCount ();
 		int monthlyFeeUpdate();
 //		int monthlyGradeUpdate();
+		
+		
+		//revenue
+		Admin revenueSelect(HashMap<String, Object> map);
 	 
 		
 

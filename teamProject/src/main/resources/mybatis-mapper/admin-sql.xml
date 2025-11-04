@@ -3,7 +3,8 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.teamProject.admin.mapper.AdminMapper">
-
+<!--1.사용자 관리 부분-->
+	<!--사용자 리스트 -->
 	<select id="userListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
    		SELECT * FROM USER_TBL
    		WHERE 1=1
@@ -20,13 +21,15 @@
 		OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
 	</select>
 
+	<!--사용자 삭제 -->
 	<delete id="userListDelete" parameterType="hashmap">
 		DELETE FROM USER_TBL WHERE USER_ID IN
 		<foreach collection="list" item="item" open="(" close=")" separator=",">
 			#{item}
 		</foreach>
 	</delete>
-
+	
+	<!--사용자 전체 행수를 가져오기 -->
 	<select id="userCount" parameterType="hashmap" resultType="int">
    		SELECT COUNT(*) AS TOTAL_ROWS
    		FROM USER_TBL
@@ -42,23 +45,36 @@
    		</if>
 	</select>
 	
+	<!--사용자 개인 정보 가져오기 -->
 	<select id="userSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
 		SELECT *
 		FROM USER_TBL
 		WHERE USER_ID = #{userId}
 	</select>
 	
+	<!--사용자 개인 정보 고치기 -->
 	<update id="userUpdate" parameterType="hashmap">
 		UPDATE USER_TBL 
 		SET USER_NAME=#{userName},EMAIL=#{email},USER_ADDR=#{userAddr},PHONE=#{phone},USER_STATUS=#{userStatus},ROLE=#{role}
 		WHERE USER_ID=#{userId}
 	</update>
 	
+	<!--사용자 주문 상세 -->
+	<select id="orderListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
+   		SELECT U.USER_NAME,O.ORDER_ID,P.PRO_NO,P.PRO_NAME,P.PRO_TYPE,O.FULL_ADDRESS,O.TOTAL_PRICE 
+		FROM ORDER_TBL O
+		LEFT JOIN ORDER_DETAIL_TBL D ON O.ORDER_ID=D.ORDER_ID
+		LEFT JOIN PRODUCT_TBL P ON P.PRO_NO=D.PRO_NO
+		LEFT JOIN USER_TBL U ON U.USER_ID=O.USER_ID
+		WHERE O.USER_ID=#{userId}
+	</select>
 	
 	
 	
 	
 	
+<!--2.판매자 관리 -->	
+	<!--판매자 리스트 -->
 	<select id="sellerListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
    		SELECT STORE_ID,STORE_NAME,U.USER_ID,BUSINESS_NO,STORE_INTRO,STORE_ADDR,STORE_PASS,JOIN_CDATE,REJECT_REASON,GRADE_CODE, MEMBERSHIP,REG_DATE,STORE_MONTHLY_FEE, TO_CHAR(SYSDATE,'YYYY-MM') AS THIS_MONTH FROM SELLER_INFO_TBL S
 		LEFT JOIN USER_TBL U ON S.USER_ID=U.USER_ID
@@ -78,7 +94,8 @@
 		ORDER BY STORE_ID DESC
 		OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
 	</select>
-
+	
+	<!--판매자 삭제 -->
 	<delete id="sellerListDelete" parameterType="hashmap">
 		DELETE FROM SELLER_INFO_TBL WHERE STORE_ID IN
 		<foreach collection="list" item="item" open="(" close=")" separator=",">
@@ -86,6 +103,7 @@
 		</foreach>
 	</delete>
 
+	<!--판매자 전체 행수-->
 	<select id="sellerCount" parameterType="hashmap" resultType="int">
    		SELECT COUNT(*) AS TOTAL_ROWS
    		FROM SELLER_INFO_TBL
@@ -104,6 +122,7 @@
    		</if>
 	</select>
 	
+	<!--판매자 상세-->
 	<select id="sellerSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
 		SELECT * FROM USER_TBL U
 		LEFT JOIN
@@ -112,18 +131,29 @@
 		WHERE STORE_ID = #{storeId}
 	</select>
 	
+	<!--판매자 정보 고치기-->
 	<update id="sellerUpdate" parameterType="hashmap">
 		UPDATE SELLER_INFO_TBL 
-		SET STORE_NAME=#{storeName},STORE_ADDR=#{storeAddr},STORE_PASS=#{storePass},REJECT_REASON=#{rejectReason},MEMBERSHIP=#{membership}
+		SET 
+			STORE_NAME=#{storeName},
+			STORE_ADDR=#{storeAddr},
+			STORE_PASS=#{storePass},
+			<if test="rejectReason != '' and rejectReason != null">
+				REJECT_REASON=#{rejectReason},
+			</if>
+			MEMBERSHIP=#{membership}
 		WHERE STORE_ID=#{storeId}
 	</update>
 	
+	<!--입점 신청을 처리-->
 	<update id="sellerRoleUpdate" parameterType="hashmap">
 		UPDATE SELLER_INFO_TBL 
-		SET STORE_PASS='R'
-		WHERE USER_ID=#{userId}
+		SET STORE_PASS=#{storePass}
+		WHERE STORE_ID=#{storeId}
 	</update>
 	
+	
+	<!-- 판매자 판매 상세 정보: 월 판매량 통계 -->
 	<select id="salesSelect" resultType="HashMap">
 		  <![CDATA[ 
 			WITH MONTHS AS (
@@ -160,6 +190,7 @@
 		  ]]>
 	</select>
 	
+	<!-- 판매자 판매 상세 정보: 가장 핫한 상품 -->
 	<select id="sellerPopularListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
    		SELECT O.STORE_NAME, P.PRO_NAME, SUM(QUANTITY) AS TOTAL_AMOUNT
 		FROM ORDER_DETAIL_TBL D
@@ -173,6 +204,8 @@
 	
 
 	
+	
+<!--3.멤버십 관리-->
 	<select id="membershipListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
    		SELECT * FROM MEMBERSHIP_TBL
    		WHERE USER_ID LIKE '%'||#{keyWord}||'%'
@@ -184,22 +217,16 @@
    		SELECT COUNT(*) FROM MEMBERSHIP_TBL
    		WHERE USER_ID LIKE '%'||#{keyWord}||'%'
 		ORDER BY MEMBERSHIP_ID DESC
-	</select>	
-	
-	
-	<select id="orderSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
-   		SELECT U.USER_NAME,O.ORDER_ID,P.PRO_NO,P.PRO_NAME,P.PRO_TYPE,O.FULL_ADDRESS,O.TOTAL_PRICE 
-		FROM ORDER_TBL O
-		LEFT JOIN ORDER_DETAIL_TBL D ON O.ORDER_ID=D.ORDER_ID
-		LEFT JOIN PRODUCT_TBL P ON P.PRO_NO=D.PRO_NO
-		LEFT JOIN USER_TBL U ON U.USER_ID=O.USER_ID
-		WHERE O.USER_ID=#{userId}
 	</select>
+		
+	<!--맴버십이 자동 납부-->
+	
+
 	
 	
 	
-	
-	
+<!--4.수익 관리 부분-->
+	<!--월 판매량 트랜드-->
 	<select id="salesTrendsSelect" resultType="HashMap">
 		 <![CDATA[ 
 			WITH MONTHS AS (
@@ -235,9 +262,42 @@
 		  ]]>
 	</select>
 	
+	<!--이번달 수익 조회-->
+	<select id="revenueSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
+		SELECT
+	    (SELECT SUM(MONTHLY_FEE)
+	     FROM MEMBERSHIP_TBL
+	     WHERE TO_CHAR(JOIN_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')) AS MEMBERSHIP_FEE,
+	     
+	    (SELECT SUM(O.TOTAL_PRICE - O.DELIVERY_FEE)
+	     FROM SELLER_INFO_TBL S
+	     LEFT JOIN ORDER_TBL O ON S.STORE_NAME = O.STORE_NAME
+	     WHERE TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')) AS MONTHLY_REVENUE,
+	     
+	    (SELECT SUM(CLICKS*CLICK_UNIT_COST)
+	     FROM AD_TBL
+	     WHERE TO_CHAR(START_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')) AS MONTHLY_AD_REVENUE,
+	     
+	    (  (SELECT SUM(MONTHLY_FEE)
+	        FROM MEMBERSHIP_TBL
+	        WHERE TO_CHAR(JOIN_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM'))
+	     + (SELECT SUM(O.TOTAL_PRICE - O.DELIVERY_FEE)
+	        FROM SELLER_INFO_TBL S
+	        LEFT JOIN ORDER_TBL O ON S.STORE_NAME = O.STORE_NAME
+	        WHERE TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM'))
+	     + (SELECT SUM(CLICKS*CLICK_UNIT_COST)
+	        FROM AD_TBL
+	        WHERE TO_CHAR(END_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM'))
+	    ) AS TOTAL_MONTHLY_REVENUE
+		FROM DUAL
+	</select>
 	
 	
 	
+	
+	
+<!--5.QnA&게시판&리뷰관리-->
+	<!--QnA리스티-->	
 	<select id="qnAListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
    		SELECT * FROM QA_TBL
    		WHERE 1=1
@@ -288,7 +348,7 @@
 		</foreach>
 	</delete>
 	
-	
+	<!--리뷰리스트-->
 	<select id="reviewListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
    		SELECT * FROM REVIEW_TBL
    		WHERE 1=1
@@ -330,24 +390,126 @@
 	
 	
 	
-	
+<!--6.광고관리-->
 	<select id="adListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
    		SELECT * FROM AD_TBL
 		ORDER BY AD_ID DESC
 		OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
 	</select>
 	
-	
 	<select id="adCount" parameterType="hashmap" resultType="int">
    		SELECT COUNT(*) FROM AD_TBL
 	</select>
 	
+	<select id="adCheck" parameterType="hashmap" resultType="int">
+   		SELECT COUNT(*) FROM 
+		AD_TBL 
+		WHERE END_DATE>SYSDATE
+	</select>
+	
+	<!--광고추가-->
+	<insert id="adAdd" parameterType="hashmap">
+   		INSERT INTO AD_TBL 
+   		VALUES (
+			SEQ_AD_TBL.NEXTVAL,
+			#{adName},
+			SYSDATE,  
+        	SYSDATE+30,  
+			'BANNER',
+			#{urlLink},
+			0,
+			#{clickUnitCost},
+			'진행중'
+		)
+	</insert>
+	<!--광고 이미지를 업로드-->
+	<insert id="insertBoardImg" parameterType="hashmap">
+		INSERT INTO SYSTEM_IMAGE_TBL (
+            IMG_ID,
+            IMG_TITLE,
+            IMG_DESC,
+            FILE_NAME,
+            FILE_PATH,
+            FILE_SIZE,
+            USER_ID,
+            CREATED_AT,
+            UPDATED_AT,
+            IS_ACTIVE,
+            FILE_TYPE
+        ) VALUES (
+            SEQ_SYSTEM_IMAGE_TBL.NEXTVAL,
+            #{title},
+            #{desc},
+            #{filename},
+            #{path},
+            #{size},
+            #{userId},
+            SYSDATE,
+            SYSDATE,
+            'Y',
+            #{ext}
+        )
+	</insert>
+	<!--광고정보 가져오기-->
+	<select id="adSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
+		SELECT * FROM AD_TBL
+		WHERE AD_ID=#{adId}
+	</select>
+	
+	<!--광고수정&강제종료-->
+	<insert id="adUpdate" parameterType="hashmap">
+   		UPDATE AD_TBL 
+   		SET 
+   		AD_NAME=#{adName},
+   		LINK_URL=#{linkUrl}
+   		<if test="flgEnd == 'true'">
+		    , END_DATE = SYSDATE,
+		      STATUS = '종료'
+		</if>
+   		WHERE AD_ID=#{adId}
+	</insert>
+	
+	<!--광고비용 자동정산-->
+	<insert id="monthlyAdHistroyInsert">
+		<![CDATA[
+		    INSERT INTO AD_HISTORY_TBL (
+		        MONTHLY_PERF_ID,
+		        AD_ID,
+		        PER_MONTH,
+		        MONTHLY_CLICKS,
+		        MONTHLY_COST
+		    )
+		    SELECT
+		        SEQ_AD_HISTORY_TBL.NEXTVAL,
+		        A.AD_ID,
+		        TO_CHAR(SYSDATE, 'YYYY-MM'),
+		        A.CLICKS,
+		        A.CLICKS * A.CLICK_UNIT_COST
+		    FROM AD_TBL A
+		    WHERE A.STATUS = '진행중'
+		      AND A.START_DATE + 30 <= SYSDATE
+		  ]]>		
+	</insert>
+	<!--광고비용 자동정산 후 adtbl의 상태를 고치고 중지 시간을 지금으로 고정-->
+	<update id="monthlyAdHistroyUpdate">
+		<![CDATA[
+		    UPDATE AD_TBL
+		    SET STATUS = '종료'
+		    WHERE STATUS = '진행중'
+		    AND START_DATE + 30 <= SYSDATE
+    	]]>
+	</update>
 	
 	
 	
 	
 	
 	
+	
+	
+		
+<!--7.수수료 정산-->
+	<!--수수료 자동 정산-->
 	<update id="monthlyFeeUpdate">
 	 UPDATE SELLER_INFO_TBL S
 	    SET S.STORE_MONTHLY_FEE = (

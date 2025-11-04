@@ -94,9 +94,9 @@ public class AdminService {
 		
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
-		Admin order= adminMapper.orderSelect(map);	
+		List orderList= adminMapper.orderListSelect(map);	
 		
-		resultMap.put("order",order);
+		resultMap.put("orderList",orderList);
 		resultMap.put("result","success");
 		return resultMap;
 	}
@@ -265,6 +265,7 @@ public class AdminService {
 		}
 		
 		
+		//광고
 		public HashMap<String, Object> SelectAdList(HashMap<String, Object> map) {
 			// TODO Auto-generated method stub
 			//adlist 
@@ -282,6 +283,89 @@ public class AdminService {
 			 return resultMap;
 					
 		}
+		
+		public HashMap<String, Object> CheckAd(HashMap<String, Object> map) {
+			// TODO Auto-generated method stub
+			HashMap<String, Object> resultMap = new HashMap<String, Object>();
+			try {
+				int ad=adminMapper.adCheck(map);
+				resultMap.put("result","success");
+				resultMap.put("check", ad);
+			}catch(Exception e) {
+				resultMap.put("result","fail");
+				System.out.println(e.getMessage());		
+			}	
+			 return resultMap;
+					
+		}
+		public HashMap<String, Object> AddAd(HashMap<String, Object> map) {
+			// TODO Auto-generated method stub
+			
+			HashMap<String, Object> resultMap = new HashMap<String, Object>();
+			int cnt= adminMapper.adAdd(map);
+			resultMap.put("result","success");
+			return resultMap;
+		}
+		
+		public void InsertAdImg(HashMap<String, Object> map) {
+			// TODO Auto-generated method stub
+			int cnt= adminMapper.adImgInsert(map);
+		}
+		
+		public HashMap<String, Object> SelectAd(HashMap<String, Object> map) {
+			// TODO Auto-generated method stub
+			
+			HashMap<String, Object> resultMap = new HashMap<String, Object>();
+			
+			Admin ad= adminMapper.adSelect(map);	
+			
+			resultMap.put("ad",ad);
+			resultMap.put("result","success");
+			return resultMap;
+		}
+		
+		public HashMap<String, Object> UpdateAd(HashMap<String, Object> map) {
+			// TODO Auto-generated method stub
+			
+			HashMap<String, Object> resultMap = new HashMap<String, Object>();
+			int cnt= adminMapper.adUpdate(map);
+			resultMap.put("result","success");
+			return resultMap;
+		}
+		
+	//자동 광고 정산
+		
+		public HashMap<String, Object> InsertandUpdateAdHistroy() {
+		    HashMap<String, Object> resultMap = new HashMap<>();
+		    try {
+		        System.out.println("달말 광고료 정산을 시작하겠습니다.");
+		        int cnt1=adminMapper.monthlyAdHistroyInsert ();
+				int cnt2=adminMapper.monthlyAdHistroyUpdate ();
+		        resultMap.put("result", "success");
+		    } catch (Exception e) {
+		        resultMap.put("result", "fail");
+		        e.printStackTrace();
+		    }
+		    return resultMap;
+		}
+
+	    // 달말 마다 23:59 에 정산
+//		@Scheduled(cron = "0 */5 * * * ?")
+		@Component
+		public class MonthlyAdScheduler {
+
+		    @Autowired
+		    private AdminService adminService;
+		    
+		    @Transactional
+		    @Scheduled(cron = "0 59 23 L * ?")
+//		    @Scheduled(cron = "0 * * * * ?")
+		    public void executeMonthlyAd() {
+		        adminService.InsertandUpdateAdHistroy();
+		    }
+		}
+		
+		
 		
 		
 		
@@ -311,12 +395,27 @@ public class AdminService {
 		    private AdminService adminService;
 		    
 		    @Transactional
-		    @Scheduled(cron = "0 * * * * ?")
+		    @Scheduled(cron = "0 59 23 L * ?")
+//		    @Scheduled(cron = "0 * * * * ?")
 		    public void executeMonthlyFee() {
 		        adminService.UpdateMonthlyFee();
 		    }
 		}
-	    
+		
+		
+		
+		//수익
+		public HashMap<String, Object> SelectRevenue(HashMap<String, Object> map) {
+			// TODO Auto-generated method stub
+			
+			HashMap<String, Object> resultMap = new HashMap<String, Object>();
+			
+			Admin revenue= adminMapper.revenueSelect(map);	
+			
+			resultMap.put("revenue",revenue);
+			resultMap.put("result","success");
+			return resultMap;
+		}
 	  
 		
 		

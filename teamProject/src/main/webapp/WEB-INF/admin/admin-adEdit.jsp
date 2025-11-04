@@ -106,44 +106,37 @@
                             </tr>
                             <tr>
                                 <th>시작시간</th>
-                                <td><input type="text" v-model="phone"></td>
+                                <td>{{ad.startDate}}</td>
                             </tr>
                             <tr>
-                                <th>이메일</th>
-                                <td><input type="text" v-model="email"></td>
+                                <th>종료시간</th>
+                                <td>{{ad.endDate}}</td>
                             </tr>
                             <tr>
-                                <th>주소</th>
-                                <td><input type="text" v-model="userAddr"></td>
-                            </tr>
-                            <tr>
-                                <th>활동탈퇴여부</th>
+                                <th>링크</th>
                                 <td>
-                                    <select v-model="userStatus">
-                                        <option value="O">활동</option>
-                                        <option value="X">탈퇴</option>
-                                    </select>
+                                    <input type="text" v-model="linkUrl">
                                 </td>  
                             </tr>
                             <tr>
-                                <th>가입일자</th>
-                                <td>{{user.joinCdate}}</td>
-                            </tr>
-                            <tr>
-                                <th>권한</th>
+                                <th>클릭당 단가</th>
                                 <td>
-                                    <span v-if="user.role==='S'">판매자</span>
-                                    <span v-if="user.role==='C'">구매자</span>
-                                    <span v-if="user.role==='A'">관리자</span>
-                                </td>  
+                                    {{ad.clickUnitCost}}
+                                </td>
                             </tr>
                         </table>
                     </div>
                 </div>
 
                 <div>
-                    <button @click="fnEdit(userId)">
+                    <button @click="fnEdit(adId)">
                         수정
+                    </button>
+                </div>
+
+                <div>
+                    <button @click="fnEnd(adId)">
+                        강제종료
                     </button>
                 </div>
 
@@ -159,41 +152,30 @@
             data() {
                 return {
                     // 변수 - (key : value)
-                    userId:"${userId}",
-                    user:{},
-                    userName:"",
-                    phone:"",
-                    email:"",
-                    userAddr:"",
-                    userStatus:"",
-                    joinCdate:"",
-                    role:"", 
-                    storePass:""  
-
+                    adId:"${adId}",
+                    ad:{},
+                    adName:"",
+                    linkUrl:"",
+                    flgEnd:false
                 };
             },
             methods: {
                 // 함수(메소드) - (key : function())
-                fnUser: function () {
+                fnAd: function () {
                 let self = this;
                 let param = {
-                    userId:self.userId
+                    adId:self.adId
                 };
                 $.ajax({
-                    url: "/aduser/view.dox",
+                    url: "/adad/view.dox",
                     dataType: "json",
                     type: "POST",
                     data: param,
                     success: function (data) {
-                        self.user=data.user;
-                        self.userId=data.user.userId;
-                        self.userName=data.user.userName;
-                        self.phone=data.user.phone;
-                        self.email=data.user.email;
-                        self.userAddr=data.user.userAddr;
-                        self.userStatus=data.user.userStatus;
-                        self.joinCdate=data.user.joinCdate;
-                        self.role=data.user.role;
+                        self.ad=data.ad;
+                        self.adName=data.ad.adName;
+                        self.clickUnitCost=data.ad.clickUnitCost;
+                        self.linkUrl=data.ad.linkUrl
                         
                     }
                 });
@@ -201,18 +183,14 @@
             fnEdit: function () {
                 let self = this;
                 let param = {
-                    user:self.user,
-                    userId:self.userId,
-                    userName:self.userName,
-                    phone:self.phone,
-                    email:self.email,
-                    userAddr:self.userAddr,
-                    userStatus:self.userStatus,
-                    role:self.role, 
-                    storePass:self.storePass
+                    ad:self.ad,
+                    adId:self.adId,
+                    adName:self.adName,
+                    linkUrl:self.linkUrl,
+                    flgEnd:self.flgEnd
                 };
                 $.ajax({
-                    url: "/aduser/update.dox",
+                    url: "/adad/update.dox",
                     dataType: "json",
                     type: "POST",
                     data: param,
@@ -223,12 +201,31 @@
                 });
             },
 
-            fnBack:function(){
-                location.href="/admin/userlist.do";
+            fnEnd: function () {
+                let self = this;
+                self.flgEnd=true;
+                let param = {
+                    ad:self.ad,
+                    adId:self.adId,
+                    adName:self.adName,
+                    linkUrl:self.linkUrl,
+                    flgEnd:self.flgEnd
+                };
+                $.ajax({
+                    url: "/adad/update.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        alert("강제 종료되었습니다.");
+                        self.fnBack();
+                    }
+                });
             },
 
-
-                
+            fnBack:function(){
+                location.href="/admin/ad.do";
+            },
 
                 fnAdminMain:function(){
                     location.href = "/admin/main.do";
@@ -272,7 +269,7 @@
             mounted() {
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
-                self.fnUser();
+                self.fnAd();
 
             }
         });
