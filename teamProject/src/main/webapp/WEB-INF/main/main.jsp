@@ -23,6 +23,10 @@
                 width: 1000px;
                 height : 140px
             }
+
+            button{
+                cursor: pointer;
+            }
         </style>
     </head>
 
@@ -35,18 +39,20 @@
 
                 <div class="container">
 
-
-
-
-
                     <main class="content-container">
 
                         <div class="main-content-top">
                             <section class="banner-slider">
                                 <div class="slider-controls">
-                                    <button class="prev">〈</button>
-                                    <span>멤버십 가게 광고 배너</span>
-                                    <button class="next">〉</button>
+                                    <button class="prev" @click="fnPrevSlide">〈</button>
+                                    <!-- <span>멤버십 가게 광고 배너</span> -->
+                                    <button class="next" @click="fnNextSlide">〉</button>
+                                </div>
+                                <div class="slides-wrapper">
+                                    <div class="slide" v-for="(img, i) in memberProlist" :key="i"
+                                        :style="{ backgroundImage: 'url(' + (img.filePath + img.fileName).trim() + ')' }" 
+                                        v-show="i === currentSlide" @click="fnProDetail(img.proNo)">
+                                    </div>
                                 </div>
                             </section>
 
@@ -108,7 +114,11 @@
                             </div>
                             <div class="product-grid">
                                 <div class="product-item" v-for="item in list" @click="fnProDetail(item.proNo)">
-                                    <div class="product-image-placeholder">판매자 등록 썸네일</div>
+                                    <div class="product-image-wrapper">
+                                        <div class="product-image-placeholder">판매자 등록 썸네일</div>
+                                        <!-- 멤버쉽 Y이면 추천 딱지 표시 -->
+                                        <img v-if="item.membership === 'Y'" class="recommend-badge" src="/img/recommend.png" alt="추천 딱지">
+                                    </div>
                                     <p class="product-title">{{item.proName}}</p>
                                     <p>{{item.storeName}}</p>
                                     <p :class="{ 'chat-disabled': item.isChatEnabled !== 'Y' }">
@@ -118,14 +128,6 @@
                                     <p class="product-delivery">배송비: {{item.deliveryFee}}원</p>
                                 </div>
                             </div>
-
-                            <!-- <div class="pagination">
-                                <a href="#">&lt;</a>
-                                <a href="#" class="active">1</a>
-                                <a href="#">2</a>
-                                <a href="#">3</a>
-                                <a href="#">&gt;</a>
-                            </div> -->
 
                             <!--페이징-->                        
                          <div class="pagination">
@@ -172,6 +174,9 @@
 
                     list: [],
                     userId: "${sessionId}", // 로그인 했을 시 전달 받은 아이디
+                    memberProlist : [], // 멤버쉽 판매자 상품 사진 리스트
+                    currentSlide: 0, // 멤버쉽 홍보 : 첫 번째 슬라이드
+
                     area: "", // 디폴트 : 전체 지역 조회
                     order: 1, // 디폴트 :  조회순 정렬
                     selectedCategory: '', // 디폴트
@@ -215,6 +220,44 @@
                     });
                 },
 
+                // 멤버쉽 가입 판매자 상품 홍보 사진 리스트 가져오기
+                fnMemberProImg: function () {
+                    let self = this;
+                    $.ajax({
+                        url: "/main/memberProImg.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: {},
+                        success: function (data) {
+                            // Vue data로 넣으면 v-for가 자동 렌더링
+                            self.memberProlist = data.list;
+                        },
+                        error: function(err){
+                            console.error("fnMemberProImg Ajax 에러:", err);
+                        }
+                    });
+                },
+
+                // 멤버십 홍보사진 - 이전 슬라이드
+                fnPrevSlide() {
+                    let self = this;
+                    if (self.currentSlide > 0) {
+                        self.currentSlide--;
+                    } else {
+                        self.currentSlide = self.memberProlist.length - 1; // 마지막 슬라이드로 이동
+                    }
+                },
+
+                // 멤버십 홍보사진 - 다음 슬라이드
+                fnNextSlide() {
+                    let self = this;
+                    if (self.currentSlide < self.memberProlist.length - 1) {
+                        self.currentSlide++;
+                    } else {
+                        self.currentSlide = 0; // 첫 슬라이드로 이동
+                    }
+                },
+            
                 // 내 주변 디저트 찾기
                 fnMapDessert: function () {
                     let self = this;
@@ -224,7 +267,6 @@
                     } else {
                         pageChange("/main/storeFinder.do", { userId: self.userId }); 
                     }
-
                 },
 
                 // 장바구니 이동 
@@ -324,6 +366,12 @@
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
                 console.log("로그인 아이디 ===> " + self.userId); // 로그인한 아이디 잘 넘어오나 테스트
+
+                // Vue가 DOM 렌더링 완료 후 실행
+                self.$nextTick(() => {
+                    self.fnMemberProImg();
+                });
+
                 self.fnGetAdInfo(); // 광고 id 불러오기
                 self.fnAdPerMonth(); // 광고 perMonth 불러오기
 
@@ -362,9 +410,20 @@
                     self.fnList(); // 해당 카테고리 상품만 조회
                 });
 
-            }
-        });
+                // 자동 슬라이드
+                self.autoSlide = setInterval(() => {
+                    if (self.memberProlist.length > 0) {
+                        self.currentSlide = (self.currentSlide + 1) % self.memberProlist.length;
+                    }
+                }, 3000);                
 
+            }, // mounted 끝나고 next 옵션 시작
+
+            beforeUnmount() {
+                clearInterval(this.autoSlide);
+            } // ← Options 객체 마지막 속성이므로 쉼표 없음
+
+        });
     
 
         app.mount('#app');
