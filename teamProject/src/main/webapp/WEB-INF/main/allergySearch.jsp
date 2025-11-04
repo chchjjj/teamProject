@@ -199,7 +199,11 @@
                         <!-- 상품목록 (해당하는 상품 있을 경우) -->
                         <div v-else class="product-grid">
                                 <div class="product-item" v-for="item in proList" @click="fnProDetail(item.proNo)">
-                                    <div class="product-image-placeholder">판매자 등록 썸네일</div>
+                                    <div class="product-image-wrapper">
+                                        <div class="product-image-placeholder">판매자 등록 썸네일</div>
+                                        <!-- 멤버쉽 Y이면 추천 딱지 표시 -->
+                                        <img v-if="item.membership === 'Y'" class="recommend-badge" src="/img/recommend.png" alt="추천 딱지">
+                                    </div>
                                     <p class="product-title">{{item.proName}}</p>
                                     <p>{{item.storeName}}</p>
                                     <p :class="{ 'chat-disabled': item.isChatEnabled !== 'Y' }">

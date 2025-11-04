@@ -173,6 +173,7 @@
 	<select id="selectIngreProList" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">
 		SELECT *
 		FROM PRODUCT_TBL P
+		INNER JOIN SELLER_INFO_TBL S ON P.STORE_ID = S.STORE_ID
 		WHERE NOT EXISTS (
 		    SELECT 1 
 		    FROM PRODUCT_INGREDIENT_TBL G
