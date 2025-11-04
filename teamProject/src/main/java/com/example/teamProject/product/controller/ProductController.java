@@ -101,6 +101,13 @@ public class ProductController {
 		resultMap = ProductService.insertCart(map);
 		return new Gson().toJson(resultMap);
 	}
+	@RequestMapping(value = "/product/cartItemQuantityUpdate.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String cartUpdate(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = ProductService.updateCart(map);
+		return new Gson().toJson(resultMap);
+	}
 	@RequestMapping(value = "/product/checkWishlist.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String checkWishlist(Model model, @RequestParam HashMap<String, Object> map) throws Exception {

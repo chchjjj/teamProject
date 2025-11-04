@@ -34,6 +34,17 @@ public interface ProductMapper {
 	// 장바구니 추가(장바구니 옵션 테이블)
 	int insertCartOpt(HashMap<String, Object> inputMap);
 	
+	// 장바구니 수량 업데이트
+	int updateCartQ(HashMap<String, Object> inputMap);
+	
+	// 장바구니에서 구매
+	// 장바구니에서 주문서로
+	int insertCartToOrder(HashMap<String, Object> map);
+	// 장바구니에서 주문서 디테일로
+	int insertCartToOrderDt(HashMap<String, Object> map);
+	// 장바구니에서 주문서 옵션으로
+	int insertCartToOrderOpt(HashMap<String, Object> map);
+	
 	// 찜 여부 확인
     int checkWishlist(HashMap<String, Object> map);
 

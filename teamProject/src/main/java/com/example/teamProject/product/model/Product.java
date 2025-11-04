@@ -47,6 +47,7 @@ public class Product {
 		private int totalPrice;
 		private String letteringText;
 		
+		
 		//장바구니 옵션
 		private int cartOptQuantity;
 		

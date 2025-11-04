@@ -29,14 +29,21 @@
 	
 	<!--장바구니 불러오기-->
 	<select id="cart" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
-		SELECT 
+	SELECT 
 		    c.CART_ID,
+		    p.STORE_NAME,
 		    p.PRO_NAME,
 		    P.PRICE AS DEF_PRICE,
+            c.CART_QUANTITY,
+            c.TOTAL_PRICE,
+            c.LETTERING_WORD,
 		    po.OPTION_NAME AS TOP_OPT,
 		    pso.VALUE_NAME AS SUB_OPT,
 		    co.CART_OPT_QUANTITY AS OPT_QTT,
-		    NVL(pso.PRICE_DIFF, 0) AS SUB_OPT_PRICE
+		    NVL(pso.PRICE_DIFF, 0) AS SUB_OPT_PRICE,
+		    c.CHAT_YN,
+		    c.DELIVERY_FEE,
+		    c.CREATED_AT
 		FROM CART_TBL c
 		JOIN PRODUCT_TBL p 
 		    ON c.PRO_NO = p.PRO_NO
@@ -47,6 +54,7 @@
 		JOIN PRODUCT_OPTION_TBL po 
 		    ON pso.TOP_OPTION_ID = po.TOP_OPTION_ID
 		WHERE USER_ID = #{userId}
+		ORDER BY CREATED_AT
 	</select>
 	
 <!--장바구니 삭제-->
@@ -66,19 +74,86 @@
 		</foreach>
 	</delete>
 	
+<!--장바구니 수량 업데이트-->
+	<update id="updateCartQ" parameterType="hashmap">
+	UPDATE CART_TBL
+	SET
+		CART_QUANTITY = #{newQuantity},
+		TOTAL_PRICE = #{finalPrice}
+	WHERE CART_ID = #{cartId}
+	
+	</update>
+	
 <!--장바구니 인서트-->
 	<insert id="insertCart" parameterType="hashmap"
 		useGeneratedKeys="true" 
 		keyColumn="CART_ID" 
 		keyProperty="cartId">
 		INSERT INTO CART_TBL
-		VALUES(SEQ_CART_ID.NEXTVAL, #{userId}, #{proNo}, #{storeId}, #{cartQuantity}, #{totalPrice}, SYSDATE, SYSDATE, #{letteringText})
+		VALUES(SEQ_CART_ID.NEXTVAL, #{userId}, #{proNo}, #{storeId}, #{cartQuantity}, #{totalPrice}, SYSDATE, SYSDATE, #{letteringText}, #{chatYn}, #{deliveryFee}, #{deliveryType})
 	</insert>
 	
 	<insert id="insertCartOpt" parameterType="hashmap">
 		INSERT INTO CART_OPTION_TBL
 		VALUES(SEQ_CART_OPT_ID.NEXTVAL, #{cartId}, #{subOptionId}, #{cartOptQuantity}, #{priceDiff})
 	</insert>
+	
+<!--장바구니에서 구매하기. 주문서로 인서트-->
+<!--장바구니 주문서-->
+	<insert id="insertCartToOrder" parameterType="hashmap"
+		useGeneratedKeys="true" 
+		keyColumn="ORDER_ID" 
+		keyProperty="orderId">
+		INSERT INTO ORDER_TBL
+		VALUES (
+        SEQ_ORDER_ID.NEXTVAL,
+        #{userId},
+        #{storeName},
+        '주소없음',
+        0,
+        #{letteringWord},
+        #{deliveryFee},
+        SYSDATE,
+        #{totalPrice},
+        #{deliveryType},
+        'S',
+        NVL(#{chatYn}, 'N')
+    )
+	</insert>
+<!-- 장바구니 주문서디테일테이블-->
+	<insert id="insertCartToOrderDt" parameterType="hashmap"
+		useGeneratedKeys="true" 
+		keyColumn="ORDER_DETAIL_ID" 
+		keyProperty="orderDetailId">
+		INSERT INTO ORDER_DETAIL_TBL 
+   		VALUES (
+        SEQ_ORDER_DETAIL_ID.NEXTVAL,
+        #{orderId},
+        #{proNo},
+        #{storeId},
+        #{proName},
+        #{totalQuantity},
+        #{productPrice},
+        #{totalPrice}, 
+        #{letteringWord} 
+    )
+	</insert>
+		
+<!--장바구니 주문서옵션테이블-->
+	<insert id="insertCartToOrderOpt" parameterType="hashmap">
+	INSERT INTO ORDER_OPTION_TBL (
+    ORDER_OPTION_ID, ORDER_DETAIL_ID, TOP_OPTION_ID, SUB_OPTION_ID, PRICE_DIFF, ADD_QUANTITY
+    )
+    VALUES (
+        SEQ_ORDER_OPTION_ID.NEXTVAL,
+        #{orderDetailId}, <!--위 쿼리에서 가져옴-->
+        #{topOptionId}, <!--subOptionList리스트속에있음-->
+        #{subOptionId}, <!--subOptionList리스트속에있음-->
+        #{priceDiff}, <!--subOptionList리스트속에있음-->
+        #{quantity} <!--subOptionList리스트속에있음-->
+    )
+	</insert>
+	
 	
 	<!-- 찜 관련 -->
 	<!-- 찜 여부 체크 -->
@@ -227,4 +302,5 @@
         #{quantity} <!--subOptionList리스트속에있음-->
     )
 	</insert>
+	
 </mapper>
