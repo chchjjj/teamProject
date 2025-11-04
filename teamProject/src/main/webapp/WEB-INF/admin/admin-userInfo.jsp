@@ -79,7 +79,8 @@
                     <div>
                         <!--구역이름-->
                         <div>
-                            {{order.user_name}}
+                             <span>{{user.userName }}</span>
+                             <span>의 구매내역</span>
                         </div>
                         <!--아이콘-->
                         <div></div>
@@ -92,7 +93,7 @@
                                 <th>배달된 주소</th>
                                 <th>총가격</th>
                             </tr>
-                            <tr>
+                            <tr v-for="order in orderList">
                                 <td>{{order.proNo}}</td>
                                 <td>{{order.proName}}</td>
                                 <td>{{order.proType}}</td>
@@ -116,7 +117,8 @@
                 return {
                     // 변수 - (key : value)
                     userId:"${userId}",
-                    order:{},  
+                    orderList:[], 
+                    user:{} 
                 };
             },
             methods: {
@@ -132,7 +134,25 @@
                     type: "POST",
                     data: param,
                     success: function (data) {
-                        self.order=data.order;
+                        self.orderList=data.orderList;
+                        self.userName=data.orderList[0].userName;
+                        
+                    }
+                });
+            },
+
+            fnUserName: function () {
+                let self = this;
+                let param = {
+                    userId:self.userId
+                };
+                $.ajax({
+                    url: "/aduser/view.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        self.user=data.user;
                         
                     }
                 });
@@ -189,6 +209,7 @@
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
                 self.fnUser();
+                self.fnUserName();
 
             }
         });

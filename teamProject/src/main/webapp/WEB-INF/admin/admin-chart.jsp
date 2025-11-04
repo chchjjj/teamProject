@@ -32,10 +32,66 @@
 
 <body>
     <!--이것을 추가해야 영어외의 언어가 정상적으로 작동-->
-    <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-    <div id="app">
-        <div id="chart"></div>
-    </div>
+    <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+        <div id="app">
+
+
+            <div class="navBar">
+                <!---->
+                <div class="navButton">
+                    <div>
+                        <button @click="fnAmdinMain()">대시보드</button>
+                    </div>
+                    <div>
+                        <button @click="fnBuyerManage()">사용자 관리</button>
+                    </div>
+                    <div>
+                        <button @click="fnSellerManage()">판매자관리</button>
+                    </div>
+                    <div>
+                        <button @click="fnSalesManage()">매출관리</button>
+                    </div>
+                    <div>
+                        <button @click="fnAdRequest()">광고관리</button>
+                    </div>
+                    <div>
+                        <button @click="fnMembership()">맴버쉽관리</button>
+                    </div>
+                    <div>
+                        <button @click="fnQandA()">Q&A</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chart"></div>
+
+            <div>
+                <div>
+                    <div>이 달의 수익</div>
+                    <table>
+                        <tr>
+                            <th>
+                                판매 수익
+                            </th>
+                            <th>
+                                맴버십 수익
+                            </th>
+                            <th>
+                                광고 수익
+                            </th>
+                            <th>
+                                총합
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>{{revenue.monthlyRevenue}}</td>
+                            <td>{{revenue.membershipFee}}</td>
+                            <td>{{revenue.monthlyAdRevenue}}</td>
+                            <td>{{revenue.totalMonthlyRevenue}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
 </body>
 
 </html>
@@ -44,11 +100,12 @@
     const app = Vue.createApp({
         data() {
             return {
+                revenue: {},
                 chart: null,
                 options: {
                     series: [{
                         name: "Sales",
-                        data: []
+                        data: [],
                     }],
                     chart: {
                         height: 350,
@@ -59,7 +116,7 @@
                     },
                     dataLabels: {
                         enabled: true,
-                        
+
                     },
                     stroke: {
                         curve: 'smooth'
@@ -93,7 +150,7 @@
                         if (data.result === "success" && data.list && data.list.length > 0) {
                             // Extract the sales data object
                             let salesData = data.list[0];
-                            
+
                             // 월별 데이터를 삽입
                             let monthlyData = [
                                 salesData.JAN || 0,
@@ -109,7 +166,7 @@
                                 salesData.NOV || 0,
                                 salesData.DEC || 0
                             ];
-                            
+
                             // Update the chart with new data
                             self.chart.updateSeries([{
                                 name: "Sales",
@@ -117,21 +174,81 @@
                             }]);
                         }
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         console.error("Error fetching sales data:", error);
                     }
                 });
+            },
+
+            fnRevenue: function () {
+                let self = this;
+                let param = {
+                    userId: self.userId
+                };
+                $.ajax({
+                    url: "/adrevenue/view.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        console.log(data.revenue);
+                        self.revenue = data.revenue;
+
+                    }
+                });
+
+            },
+
+            fnAdminMain: function () {
+                location.href = "/admin/main.do";
+            },
+
+
+            fnBuyerManage: function () {
+                location.href = "/admin/userlist.do";
+            },
+
+            fnSellerManage: function () {
+                location.href = "/admin/sellerlist.do";
+            },
+
+
+            fnSalesManage: function () {
+                location.href = "/admin/chart.do";
+            },
+
+            fnAdRequest: function () {
+                location.href = "/admin/ad.do";
+            },
+
+            fnMembership: function () {
+                location.href = "/admin/membership.do";
+            },
+
+            fnQandA: function () {
+                location.href = "/admin/boardManage.do";
+            },
+
+            fnLogout: function () {
+                if (confirm("로그아웃 하시겠습니까?")) {
+                    location.href = '#';
+                }
             }
+
+
         },
+
+
         mounted() {
             let self = this;
-            
+
             // Initialize the chart and store reference
             self.chart = new ApexCharts(document.querySelector("#chart"), self.options);
             self.chart.render();
-            
+
             // Load data
             self.fnList();
+            self.fnRevenue();
         }
     });
 
