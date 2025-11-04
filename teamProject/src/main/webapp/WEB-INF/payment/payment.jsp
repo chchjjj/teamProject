@@ -43,15 +43,11 @@
                 전화번호: {{toPhone}}
             </div>
             <div>
-                테스트: {{cartList.userId}}
-            </div>
-
-            <div>
                 <button>취소하기</button>
 
                 <!-- 첫번째 줄 거는 테스트 편의용, 두번째 거가 실제 사용용 -->
-                <!-- <button @click="fnPayHistory('1', '1')">결제하기</button> -->
-                <button @click="fnPayment">결제하기</button>
+                <button @click="fnPayHistory('1', '1')">결제하기</button>
+                <!-- <button @click="fnPayment">결제하기</button> -->
 
             </div>
 
@@ -72,6 +68,7 @@
                 cartList: [], //CART_TBL + CART_OPTION_TBL
                 orderList: [], //화면에 보이는 정보, 배송 정보 확정 전 단계, ORDER_TBL + ORDER_DETAIL_TBL + ORDER_OPTION_TBL
                 deliveryType : "D", // 배송 또는 픽업 선택
+
                 
                 //order 관련 변수
                 // 1. 바로 구매 버튼을 누른 경우 order 테이블에서 사용 / 2. 장바구니 담고 나서 구매하는 경우 바로 이 페이지에서 생성한 주문번호
@@ -157,6 +154,7 @@
                         console.log("ORDER_OPTION_TBL INSERT");// 테스트용
                         console.log(data);// 테스트용
                         self.fnOrderList(); //이제야 비로소 화면 출력 가능
+                        self.fnCartDelete();
                     }
                 });
             },
@@ -177,6 +175,27 @@
                         console.log("Order 리스트 출력");// 테스트용
                         console.log(data);// 테스트용
                         self.orderList = data.list; //order 테이블 정보만 담으면 된다.
+                        
+                    }
+                });
+            },
+
+            //이 페이지 화면에 출력하게될 정보를 찾는 함수
+            fnCartDelete: function(){
+                let self = this;
+                cartIdList = JSON.stringify(self.cartIdList);
+                let param = {
+                    cartIdList : cartIdList
+                };
+                $.ajax({
+                    url: "/payment/cartRemove.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        console.log("장바구니 비우기");// 테스트용
+                        console.log(data);// 테스트용
+                       
                         
                     }
                 });
@@ -204,6 +223,8 @@
             //결제 버튼을 누르면 이 함수를 실행
             fnPayment: function(){
                 let self = this;
+                
+
                 IMP.request_pay({
 				    pg: "html5_inicis",
 				    pay_method: "card",

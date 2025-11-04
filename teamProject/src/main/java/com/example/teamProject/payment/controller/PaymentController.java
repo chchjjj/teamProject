@@ -122,6 +122,28 @@ public class PaymentController {
 
 		return new Gson().toJson(resultMap);
 	}
+	
+	@RequestMapping(value = "/payment/cartRemove.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String cartDelete(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		// 2. Controller(.dox)에서 리스트 형태로 변경 후 map에 넣기
+		String json = map.get("cartIdList").toString();
+		ObjectMapper mapper = new ObjectMapper();
+		List<Object> list = mapper.readValue(json, new TypeReference<List<Object>>() {
+		});
+
+		// List<HashMap<String, Object>> list = mapper.readValue(json, new TypeReference<List<HashMap<String, Object>>>(){});
+
+		map.put("list", list);
+
+		System.out.println(map);
+
+		resultMap = paymentService.removeCartList(map);
+
+		return new Gson().toJson(resultMap);
+	}
 
 	@RequestMapping(value = "/payment/delivery.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody

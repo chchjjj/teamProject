@@ -40,6 +40,16 @@
 		</foreach>
 	</select>
 	
+	<delete id="deleteCartList" parameterType="hashmap">
+		DELETE FROM CART_TBL
+		WHERE CART_NO IN
+		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+		
+	</delete>
+	
+	
 	<update id="updateDelivery" parameterType="hashmap">
 		UPDATE ORDER_TBL
 		SET DELIVERY_TYPE = #{deliveryType}
@@ -62,5 +72,5 @@
 	        )
 	    </foreach>
 	    SELECT * FROM DUAL
-</insert>
+	</insert>
 </mapper>

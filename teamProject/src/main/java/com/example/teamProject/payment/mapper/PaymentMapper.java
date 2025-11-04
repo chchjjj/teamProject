@@ -24,8 +24,13 @@ public interface PaymentMapper {
 	//주문 리스트 가져오기
 	List<Payment> selectOrderList(HashMap<String, Object> map);
 
+	//사용한 장바구니 삭제
+	int deleteCartList(HashMap<String, Object> map);
+	
 	//결제를 하면 결제 테이블에 내역 추가
 	int insertPayment(HashMap<String, Object> map);
+
+	
 
 
 }
