@@ -33,10 +33,8 @@
 	
 	<select id="selectOrderList" parameterType="hashmap" resultType="com.example.teamProject.payment.model.Payment"> 
 		SELECT * 
-		FROM ORDER_TBL O
-		<!--INNER JOIN CART_OPTION_TBL CO ON C.CART_ID = CO.CART_ID
-		INNER JOIN SELLER_INFO_TBL SI ON C.STORE_ID = SI.STORE_ID
-		WHERE C.CART_ID IN-->
+		FROM ORDER_TBL
+		WHERE ORDER_ID IN
 		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
 			#{item} 
 		</foreach>
@@ -48,8 +46,21 @@
 		WHERE ORDER_ID = #{orderId}
 	</update>
 	
-	<insert id="insertPayment" parameterType="hashmap"> 
-		INSERT INTO PAYMENT_TBL 
-		VALUES (PAYMENT_SEQ.NEXTVAL, #{orderId} ) 
-	</insert>
+	<insert id="insertPayment" parameterType="hashmap">
+	    INSERT ALL 
+	    <foreach collection="list" item="item">
+	        INTO PAYMENT_TBL 
+	        VALUES (
+	            PAYMENT_SEQ.NEXTVAL, 
+	            #{item.orderId}, 
+	            #{item.totalPrice}, 
+	            '1', 
+	            0, 
+	            'N', 
+	            SYSDATE, 
+	            'Y' 
+	        )
+	    </foreach>
+	    SELECT * FROM DUAL
+</insert>
 </mapper>
