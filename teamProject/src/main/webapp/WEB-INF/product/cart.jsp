@@ -51,7 +51,7 @@
                                             <ul style="list-style-type: none; padding-left: 0;">
                                                 <li v-for="(opt, optIndex) in group.options" :key="optIndex"
                                                     style="margin-bottom: 5px; font-size: 0.9em;">
-                                                    {{ opt.topOpt }} : {{ opt.subOpt }} (수량: {{ group.itemQty }}개 / 추가금:
+                                                    {{ opt.topOpt }} : {{ opt.subOpt }} (수량: {{ opt.cartOptQuantity }}개 / 추가금:
                                                     {{ formatNumber(opt.subOptPrice) }}원)
                                                 </li>
                                             </ul>
@@ -81,7 +81,14 @@
                                                         formatNumber(group.totalPrice - group.defPrice) }})+ 배송비({{
                                                         formatNumber(group.deliveryFee) }})
                                                     </p>
-
+                                                    <p class="item-delivery-type">
+                                                        배송 방식:
+                                                        <span v-if="group.deliveryType === 'D'"
+                                                            style="color: green; font-weight: bold;">배달</span>
+                                                        <span v-else-if="group.deliveryType === 'P'"
+                                                            style="color: blue; font-weight: bold;">픽업</span>
+                                                        <span v-else style="color: gray;">정보 없음</span>
+                                                    </p>
 
                                                 </div>
 
@@ -164,21 +171,23 @@
                         self.selectItem.includes(group.cartId)
                     );
 
-                    console.log("선택된 상품 데이터:", selectedItemsData);
+                    // console.log("선택된 상품 데이터:", selectedItemsData);
 
                     let param = {
                         userId: self.userId,
-                        cartItems: selectedItemsData
+                        cartItems: JSON.stringify(selectedItemsData) //문자열로 전송
                     };
+                    console.log(param)
                     $.ajax({
-                        url: "/product/cart.dox",
+                        url: "/product/cartToOrder.dox",
                         dataType: "json",
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            self.cartList = data.list;
-                            console.log(data.list);
-                            self.fnGroupCartList(self.cartList);
+                            alert("주문이 완료되었습니다!");
+                                    // 결제 페이지로 이동 또는 주문 완료 페이지 이동
+                                    alert(data.orderIdList);
+                                    pageChange("/payment/payment.do", { orderIdList: data.orderIdList });
                         },
                         error: function (xhr, status, error) {
                             console.error("장바구니 로드 실패:", status, error);
@@ -205,6 +214,7 @@
                     if (value === undefined || value === null) return '0';
                     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 },
+
                 fnGroupCartList: function (list) {
                     const grouped = {};
                     if (!Array.isArray(list) || list.length === 0) {
@@ -217,29 +227,36 @@
                         if (!cartId) return;
                         const defPrice = Number(item.defPrice || item.DEF_PRICE || 0);
                         const subOptPrice = Number(item.subOptPrice || item.SUB_OPT_PRICE || 0);
-                        const optQty = Number(item.optQtt || item.OPT_QTT || 1);
+                        const optQty = Number(item.cartOptQuantity || item.CART_OPT_QUANTITY || 1);
                         const cartQuantity = Number(item.cartQuantity || item.CART_QUANTITY || 1);
                         const deliveryFee = Number(item.deliveryFee || item.DELIVERY_FEE || 0); //배송비
+                        const deliveryType = item.deliveryType || item.DELIVERY_TYPE || "기본배송";
                         if (!grouped[cartId]) {
                             grouped[cartId] = {
                                 cartId: cartId,
                                 storeName: item.storeName,
+                                storeId : item.storeId,
+                                proNo : item.proNo,
                                 proName: item.proName || item.PRO_NAME,
                                 defPrice: defPrice,
                                 options: [],
-                                totalPrice: defPrice,
+                                totalPrice: item.defPrice,
                                 totalAddPrice: 0,
                                 itemQty: cartQuantity,
+                                cartOptQuantity : item.cartOptQuantity,
                                 letteringWord: item.letteringWord || item.LETTERING_WORD || "",
                                 chatYn: item.chatYn || item.CHAT_YN || "N",
-                                deliveryFee: deliveryFee
+                                deliveryFee: deliveryFee,
+                                deliveryType: deliveryType,
                             };
                         }
                         grouped[cartId].options.push({
                             topOpt: item.topOpt || item.TOP_OPT,
                             subOpt: item.subOpt || item.SUB_OPT,
-                            optQty: optQty,
+                            topOptionId : item.topOptionId,
+                            subOptionId : item.subOptionId,                            
                             subOptPrice: subOptPrice,
+                            cartOptQuantity: optQty,
                         });
                         if (subOptPrice > 0) {
                             const addedAmount = subOptPrice * optQty;
@@ -267,10 +284,8 @@
                         dataType: "json",
                         type: "POST",
                         data: param,
-                        success: function (data) {
-                            if (data.success) {
+                        success: function (data) {     
                                 self.fnCart();
-                            }
                         }
                     });
                     group.itemQty = newItemQty;

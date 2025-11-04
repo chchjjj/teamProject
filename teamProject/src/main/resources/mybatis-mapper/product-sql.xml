@@ -29,21 +29,26 @@
 	
 	<!--장바구니 불러오기-->
 	<select id="cart" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
-	SELECT 
+		SELECT 
 		    c.CART_ID,
-		    p.STORE_NAME,
+            p.STORE_ID,
+            p.STORE_NAME,
+            p.PRO_NO,
 		    p.PRO_NAME,
+            c.LETTERING_WORD,
 		    P.PRICE AS DEF_PRICE,
             c.CART_QUANTITY,
             c.TOTAL_PRICE,
-            c.LETTERING_WORD,
+            po.TOP_OPTION_ID,
 		    po.OPTION_NAME AS TOP_OPT,
+            pso.SUB_OPTION_ID,
 		    pso.VALUE_NAME AS SUB_OPT,
-		    co.CART_OPT_QUANTITY AS OPT_QTT,
+		    co.CART_OPT_QUANTITY, 
 		    NVL(pso.PRICE_DIFF, 0) AS SUB_OPT_PRICE,
-		    c.CHAT_YN,
-		    c.DELIVERY_FEE,
-		    c.CREATED_AT
+            c.CHAT_YN,
+            c.DELIVERY_FEE,
+            c.DELIVERY_TYPE,
+            c.CREATED_AT
 		FROM CART_TBL c
 		JOIN PRODUCT_TBL p 
 		    ON c.PRO_NO = p.PRO_NO
@@ -54,7 +59,7 @@
 		JOIN PRODUCT_OPTION_TBL po 
 		    ON pso.TOP_OPTION_ID = po.TOP_OPTION_ID
 		WHERE USER_ID = #{userId}
-		ORDER BY CREATED_AT
+        ORDER BY CREATED_AT
 	</select>
 	
 <!--장바구니 삭제-->
@@ -84,7 +89,7 @@
 	
 	</update>
 	
-<!--장바구니 인서트-->
+<!--장바구니로 인서트-->
 	<insert id="insertCart" parameterType="hashmap"
 		useGeneratedKeys="true" 
 		keyColumn="CART_ID" 
@@ -132,8 +137,8 @@
         #{proNo},
         #{storeId},
         #{proName},
-        #{totalQuantity},
-        #{productPrice},
+        #{itemQty},
+        #{defPrice},
         #{totalPrice}, 
         #{letteringWord} 
     )
@@ -146,11 +151,11 @@
     )
     VALUES (
         SEQ_ORDER_OPTION_ID.NEXTVAL,
-        #{orderDetailId}, <!--위 쿼리에서 가져옴-->
+        #{orderDetailId}, <!---->
         #{topOptionId}, <!--subOptionList리스트속에있음-->
         #{subOptionId}, <!--subOptionList리스트속에있음-->
         #{priceDiff}, <!--subOptionList리스트속에있음-->
-        #{quantity} <!--subOptionList리스트속에있음-->
+        #{cartOptQuantity} <!--subOptionList리스트속에있음-->
     )
 	</insert>
 	
