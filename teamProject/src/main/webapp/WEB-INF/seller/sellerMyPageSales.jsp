@@ -104,7 +104,7 @@
 
         <!-- 사이드바 -->
         <div class="sidebar">
-            <%@ include file="/WEB-INF/main/sellerSideBar.jsp" %>
+            <%@ include file="/WEB-INF/seller/sellerSideBar.jsp" %>
         </div>
 
         <!-- 메인 콘텐츠 영역 (Vue 앱) -->

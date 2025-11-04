@@ -51,4 +51,11 @@ public interface SellerMapper {
 	void updateMessageReadStatus(Long orderId, String readerId);
 	// 리뷰 리스트
 	List<HashMap<String, Object>>  selectReviewList(HashMap<String, Object> param);
+	
+	// 가게 소개글 수정
+	int updateOrderOptions(Map<String,Object> storeMap);
+	//캘린더
+	List<Map<String, Object>> selectPickupSchedule(Map<String, Object> paramMap);
+	
+	
 }
