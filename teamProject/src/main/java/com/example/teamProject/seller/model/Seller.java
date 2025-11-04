@@ -76,4 +76,13 @@ public class Seller {
 	 	    private String isRead;
 	 	    private String senderId;     // 발신자 구분용
 	 	    private String filePath;     // 이미지 경로
+	 	    
+	 	   private Long questionId;        // 1. 질문 고유 ID (QUESTION_ID) - PK
+	 	  
+	 	   
+	 	  private String questionContent; // 4. 질문내용 (QUESTION_CONTENT)
+	 	  private String questionDate;    // 5. 작성일 (QUESTION_DATE) - TO_CHAR로 받기 위해 String 사용
+	 	 
+	 	  private String answerContent;   // 7. 답변내용 (ANSWER_CONTENT)
+	 	  private String answerDate;      // 8. 답변일 (ANSWER_DATE) - TO_CHAR로 받기 위해 String 사용
 }

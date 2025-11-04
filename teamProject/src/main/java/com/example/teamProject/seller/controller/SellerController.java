@@ -88,10 +88,27 @@ public class SellerController {
 	
 	@RequestMapping("/seller/order/calendarView.do") 
     public String calendarView(Model model) throws Exception{
-
+		
         return "/seller/calendarView";
     }
 	
+	@RequestMapping("/seller/userUpdateInfo.do") 
+    public String updateInfo(Model model) throws Exception{
+		
+        return "/seller/sellerUpdateInfo";
+    }
+	
+	@RequestMapping("/seller/storeInfoupdateInfo.do") 
+    public String storeInfo(Model model) throws Exception{
+		
+        return "/seller/storeUpdateInfo";
+    }
+	
+	@RequestMapping("/seller/sellerViewQnA.do") 
+    public String QnA(Model model) throws Exception{
+		
+        return "/seller/sellerViewQnA";
+    }
 	@RequestMapping(value = "/seller/orderList.dox",  method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String orderList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
@@ -187,10 +204,7 @@ public class SellerController {
         }
     }
 
-    /**
-     * [새로운 메시지 전송]
-     * POST /api/seller/chat/message
-     */
+  
     @PostMapping("/api/seller/chat/message")
     @ResponseBody
     public ResponseEntity<String> sendMessage(@RequestBody Seller message) {
@@ -218,10 +232,7 @@ public class SellerController {
         }
     }
 
-    /**
-     * [채팅 메시지 읽음 처리]
-     * PATCH /api/seller/chat/{orderId}/read?readerId={readerId}
-     */
+
     @PatchMapping("/api/seller/chat/{orderId}/read")
     @ResponseBody
     public ResponseEntity<String> markMessagesAsRead(
@@ -308,11 +319,11 @@ public class SellerController {
     }
     
     @RequestMapping(value = "/seller/calendar.dox", method = RequestMethod.POST)
-    @ResponseBody 
+    @ResponseBody
     public List<Map<String, Object>> getPickupSchedule(
-        @RequestParam("userId") String userId,
-        @RequestParam("start") String start, 
-        @RequestParam("end") String end) {
+            @RequestParam("userId") String userId,
+            @RequestParam("start") String start,
+            @RequestParam("end") String end) {
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("userId", userId);
@@ -321,14 +332,97 @@ public class SellerController {
 
         try {
             List<Map<String, Object>> pickupList = sellerService.selectPickupSchedule(paramMap);
-            System.out.println("픽업 일정 조회 성공. 데이터 개수: " + pickupList.size()); 
+
+            // 🔎 디버깅용 로그 — 데이터 구조 확인
+            for (Map<String, Object> map : pickupList) {
+                System.out.println(">>> ORDER_ID=" + map.get("ORDER_ID")
+                    + " / START=" + map.get("PICKUP_START_DATE")
+                    + " / END=" + map.get("PICKUP_END_DATE"));
+            }
+
+            System.out.println("픽업 일정 조회 성공 (userId: " + userId + ", 건수: " + pickupList.size() + ")");
             return pickupList;
-            
         } catch (Exception e) {
-            System.err.println("픽업 일정 조회 실패: " + e.getMessage());
-            e.printStackTrace(); 
-            
+            System.err.println("픽업 일정 조회 실패 (userId: " + userId + ")");
+            e.printStackTrace();
             return Collections.emptyList();
         }
     }
+
+ 
+    @RequestMapping(value = "/seller/info.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String getSellerInfo(@RequestParam HashMap<String, Object> map) throws Exception {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        try {
+      
+            System.out.println("📥 [INFO] 요청 파라미터: " + map);
+
+            resultMap = sellerService.getSellerInfo(map);
+
+   
+            System.out.println("📤 [INFO] 조회 결과: " + resultMap);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultMap.put("result", "error");
+            resultMap.put("message", "판매자 정보 조회 중 오류 발생: " + e.getMessage());
+            System.out.println("❌ [ERROR] 판매자 정보 조회 실패: " + e.getMessage());
+        }
+        return new Gson().toJson(resultMap);
+    }
+    
+    @RequestMapping(value = "/store/storeinfo.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String getStoreInfo(@RequestParam HashMap<String, Object> map) throws Exception {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        try {
+      
+            System.out.println("📥 [INFO] 요청 파라미터: " + map);
+
+            resultMap = sellerService.getStoreInfo(map);
+
+   
+            System.out.println("📤 [INFO] 조회 결과: " + resultMap);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultMap.put("result", "error");
+            resultMap.put("message", "판매자 정보 조회 중 오류 발생: " + e.getMessage());
+            System.out.println("❌ [ERROR] 판매자 정보 조회 실패: " + e.getMessage());
+        }
+        return new Gson().toJson(resultMap);
+    }
+    // ✅ 판매자 정보 수정
+    @RequestMapping(value = "/seller/updateInfo.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String updateSellerInfo(@RequestParam HashMap<String, Object> map) throws Exception {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        try {
+            resultMap = sellerService.updateSellerInfo(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultMap.put("result", "error");
+            resultMap.put("message", "판매자 정보 수정 중 오류 발생: " + e.getMessage());
+        }
+        return new Gson().toJson(resultMap);
+    }
+    
+    @RequestMapping(value = "/seller/qnaList.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String qnAListByProNo(@RequestParam HashMap<String, Object> map) throws Exception {
+        HashMap<String, Object> resultMap = new HashMap<String, Object>();
+        
+        try {
+            resultMap = sellerService.getQnAListByProNo(map);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultMap.put("result", "error");
+            resultMap.put("message", "QnA 목록 조회 중 오류 발생: " + e.getMessage());
+        }
+        
+        return new Gson().toJson(resultMap);
+    }
+
 }

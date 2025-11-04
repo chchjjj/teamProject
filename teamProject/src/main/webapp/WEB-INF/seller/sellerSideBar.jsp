@@ -107,8 +107,11 @@
             <li class="<%= currentUri.contains("/seller/order/calendarView.do") ? "active" : "" %>">
                 <a href="javascript:;" onclick="location.href='/seller/order/calendarView.do'">캘린더</a>
             </li>
-            <li class="<%= currentUri.contains("/seller/edit.do") ? "active" : "" %>">
-                <a href="#">정보 수정</a>
+            <li class="<%= currentUri.contains("/seller/userUpdateInfo.do") ? "active" : "" %>">
+                <a href="javascript:;" onclick="location.href='/seller/userUpdateInfo.do'">정보 수정</a>
+            </li>
+             <li class="<%= currentUri.contains("/seller/sellerViewQnA.do") ? "active" : "" %>">
+                <a href="javascript:;" onclick="location.href='/seller/sellerViewQnA.do'">Q&A 게시판</a>
             </li>
             <li class="<%= currentUri.contains("/seller/delete.do") ? "active" : "" %>">
                 <a href="#">회원탈퇴</a>
