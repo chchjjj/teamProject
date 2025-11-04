@@ -37,6 +37,12 @@ public class MainController {
         return "/main/footer";
     }
 	
+	// 헤더메뉴 '알레르기 프리'
+	@RequestMapping("/main/allergyFree.do") 
+    public String allergy(Model model) throws Exception{
+        return "/main/allergySearch";
+    }
+	
 	// 헤더메뉴 QnA
 	@RequestMapping("/main/qna.do") 
     public String qna(Model model) throws Exception{
@@ -61,6 +67,24 @@ public class MainController {
 	public String proList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap = mainService.getProList(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	// '알레르기 프리' 원재료 리스트
+	@RequestMapping(value = "/main/ingre-list.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String ingreList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = mainService.getIngreList(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	// '알레르기 프리' 원재료 미포함 상품 리스트
+	@RequestMapping(value = "/main/ingre-pro-list.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String ingreProList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = mainService.getIngreProList(map);
 		return new Gson().toJson(resultMap);
 	}
 	

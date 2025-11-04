@@ -41,5 +41,11 @@ public interface MainMapper {
 	// 광고배너 클릭시 AD_HISTORY_TBL 클릭수 & 총발생비용 증가
 	int updateAdHistory(HashMap<String, Object> map);
 	
+	// 알레르기 원재료 목록
+	List<Main> selectIngreList(HashMap<String, Object> map);
+	
+	// 원재료 '미포함' 상품 목록
+	List<Main> selectIngreProList(HashMap<String, Object> map);
+	
 	
 }
