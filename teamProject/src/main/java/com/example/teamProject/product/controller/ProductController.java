@@ -155,7 +155,19 @@ public class ProductController {
 		ObjectMapper mapper = new ObjectMapper();
 		List<HashMap<String, Object>> list = mapper.readValue(json, new TypeReference<List<HashMap<String, Object>>>(){});
 		map.put("list", list); //리스트에 옵션에 대한 정보가 담김
-		resultMap = ProductService.insertOrder(map);
+		resultMap = ProductService.insertOrder(map);  
 		return new Gson().toJson(resultMap);
 	}
+	
+//	@RequestMapping(value = "/product/cartToOrder.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+//	@ResponseBody
+//	public String cartToOrder(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+//		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+//		String json = map.get("subOptionList").toString(); //제이슨형태로 바꾸기 
+//		ObjectMapper mapper = new ObjectMapper();
+//		List<HashMap<String, Object>> list = mapper.readValue(json, new TypeReference<List<HashMap<String, Object>>>(){});
+//		map.put("list", list); //리스트에 옵션에 대한 정보가 담김
+//		resultMap = ProductService.insertOrder(map);
+//		return new Gson().toJson(resultMap);
+//	}
 }
