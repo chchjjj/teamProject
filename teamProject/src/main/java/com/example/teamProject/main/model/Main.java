@@ -34,6 +34,7 @@ public class Main {
     private String answerDate;
     private String storeAddr;
     private String businessNo; // 사업자번호임..
+    private String membership;
     
     // 광고 관련
     private int adId;
@@ -43,5 +44,11 @@ public class Main {
     // 알레르기 프리 관련
     private String ingredientName;
     private String  ingredientDescription;
+    
+    // 메인페이지 멤버쉽 판매자 상품 이미지 홍보사진
+    private String filePath;
+    private String fileName;
+    
+    
 	
 }

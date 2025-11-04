@@ -299,28 +299,62 @@ ul {
 .main-content-top {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 20px;
+    /*align-items: flex-start;
+    margin-bottom: 20px;*/
+	align-items: stretch; /* 자식 높이를 동일하게 */
     gap: 20px;
     /* 배너와 버튼 사이 간격 */
 }
 
-/* 3-1. 배너 슬라이더 (수정됨) */
+/* 배너 전체 컨테이너 */
 .banner-slider {
-    flex-grow: 1;
-    width: 65%;
-    /* 전체의 약 65% 사용 */
-    border-radius: 12px;
-    background-color: #e0e0e0;
-    height: 180px;
+    flex: 1;
+    position: relative; /* 절대 위치 버튼 기준 */
+    border-radius: 8px;
+    overflow: hidden;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    font-weight: bold;
-    color: #555;
+    flex-direction: column;
+}
 
-    height: 250px;
+.banner-slider .slides-wrapper {
+    flex: 1; /* 부모 높이와 동일하게 */
+    display: flex;
+	transition: transform 0.5s ease-in-out; /* 이동 애니메이션 */
+	width: 100%;
+	cursor: pointer;
+}
+
+.banner-slider .slide {
+    min-width: 100%;
+    flex: 1; /* 부모 높이에 맞게 늘어나도록 */
+    background-size: cover;
+    background-position: center;
+	flex-shrink: 0;
+}
+
+/* 슬라이드 버튼 컨트롤 */
+.banner-slider .slider-controls {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;    
+	padding-left: 45px;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.banner-slider .slider-controls button {
+    pointer-events: all;
+    background: rgba(0,0,0,0.3);
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .slider-controls {
@@ -344,6 +378,7 @@ ul {
 .slider-controls button:hover {
     opacity: 1;
 }
+
 
 /* 3-2. 액션 버튼 영역 (수정됨) */
 .location-btn {
@@ -674,6 +709,23 @@ display: block;
     margin-bottom: 10px;
     color: #aaa;
     font-size: 12px;
+}
+
+/*메인페이지 상품 섬네일 & 추천배지 감싸는 클래스*/
+.product-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 150px; /* 썸네일 높이에 맞춰서 조정 */
+	overflow: hidden; /* 딱지 제외, 썸네일만 영역 내로 */
+}
+
+/* 추천 뱃지 */
+.recommend-badge {
+    position: absolute;
+    top: 5px;      /* 상단 여백 */
+    right: 5px;    /* 우측 여백 */
+    width: 50px;   /* 딱지 크기 */
+    height: 50px;
 }
 
 .product-title {

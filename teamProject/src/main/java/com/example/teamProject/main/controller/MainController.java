@@ -149,4 +149,13 @@ public class MainController {
 		return new Gson().toJson(resultMap);
 	}
 	
+	// 메인페이지 - 멤버쉽 가입 판매자 상품 이미지 목록 목록
+	@RequestMapping(value = "/main/memberProImg.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String memberProImgList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = mainService.getMemberProImgList(map);
+		return new Gson().toJson(resultMap);
+	}
+	
 }

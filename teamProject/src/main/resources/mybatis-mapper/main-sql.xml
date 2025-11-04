@@ -29,17 +29,22 @@
         AND PRO_TYPE = #{category} 
     	</if>
 		
-		<if test="order == 1"> 
-			ORDER BY P.CNT DESC <!--조회순 정렬-->
-		</if>
-		
-		<if test="order == 2">
-			ORDER BY P.SELL_COUNT DESC <!--판매순 정렬-->
-		</if>		
-		
-		<if test="order == 3">
-			ORDER BY CREATED_AT DESC <!--최신순 정렬-->
-		</if>		
+		ORDER BY
+        CASE WHEN S.MEMBERSHIP = 'Y' THEN 0 ELSE 1 END, <!-- 멤버십 상품 우선 -->
+        <choose>
+            <when test="order == 1">
+                P.CNT DESC <!-- 조회순 -->
+            </when>
+            <when test="order == 2">
+                P.SELL_COUNT DESC <!-- 판매순 -->
+            </when>
+            <when test="order == 3">
+                P.CREATED_AT DESC <!-- 최신순 -->
+            </when>
+            <otherwise>
+                P.CREATED_AT DESC
+            </otherwise>
+        </choose>	
 	</select>
 	
 	<!-- 메인화면 페이징 처리 위해 게시글 개수 구하기 (resultType int) -->
@@ -156,8 +161,7 @@
         	MONTHLY_COST = MONTHLY_COST + #{clickUnitCost}  
         WHERE AD_ID = #{adId}
       	AND PER_MONTH = TO_DATE(#{currentMonth}, 'YYYY-MM-DD HH24:MI:SS')
-	</update>
-	
+	</update>	
 	
 	<!-- 알레르기 원재료 리스트 -->
 	<select id="selectIngreList" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">
@@ -187,5 +191,16 @@
 	        </choose>
 		)		
 	</select>
+	
+	
+	<!-- 멤버쉽 가입 판매자 상품 이미지 (FILEUSE 컬럼 : T(상위이미지)) -->
+	<select id="selectMemberProImg" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">
+		SELECT I.FILEPATH, I.FILENAME, S.STORE_NAME, S.MEMBERSHIP, P.PRO_NO
+		FROM PRODUCT_IMG_TBL I
+		INNER JOIN PRODUCT_TBL P ON I.PRO_NO = P.PRO_NO
+		INNER JOIN SELLER_INFO_TBL S ON P.STORE_ID = S.STORE_ID
+		WHERE S.MEMBERSHIP = 'Y'AND I.FILEUSE = 'T'
+	</select>
+	
 	
 </mapper>
