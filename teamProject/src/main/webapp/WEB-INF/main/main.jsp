@@ -313,7 +313,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            alert("클릭 및 카운트");
+                            //alert("클릭 및 카운트");
                         }
                     });
                 },
