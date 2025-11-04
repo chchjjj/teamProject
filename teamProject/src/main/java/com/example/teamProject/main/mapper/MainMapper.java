@@ -26,5 +26,20 @@ public interface MainMapper {
 	// '내 주변 디저트찾기'에서 가게(판매자) 목록 불러오기
 	List<Main> selectSeller(HashMap<String, Object> map);
 	
+	// 광고배너 AD_ID 불러오기 ('진행중' 상태인 유일값 1개) / AD_TBL
+	Main selectAdInfo(HashMap<String, Object> map);
+	
+	// 광고배너 PER_MONTH 불러오기 / AD_HISTORY_TBL
+	Main selectAdHistory(HashMap<String, Object> map);
+	
+	// 광고배너의 단가 불러오기
+	Main selectAdUnitCost(HashMap<String, Object> map);
+	
+	// 광고배너 클릭시 AD_TBL 클릭수 증가
+	int updateAdClick(HashMap<String, Object> map);
+		
+	// 광고배너 클릭시 AD_HISTORY_TBL 클릭수 & 총발생비용 증가
+	int updateAdHistory(HashMap<String, Object> map);
+	
 	
 }

@@ -16,6 +16,8 @@
         <!--페이지 이동-->
         <script src="/js/page-change.js"></script>
         
+        <link rel="icon" href="data:,">
+
         <style>
             .ad{
                 width: 1000px;
@@ -139,7 +141,9 @@
 
                         <section class="external-ad">
                             <!-- <p>외부 광고</p> -->
-                             <a href="/main/ad-link.do" target="_blank"><img class="ad" src="/img/아래광고배너.png" alt="아래 광고 배너"></a>
+                             <a href="/main/ad-link.do" target="_blank" @click="fnAdClick">
+                                <img class="ad" src="/img/아래광고배너.png" alt="아래 광고 배너">
+                            </a>
                         </section>
                     </main>
                 </div>
@@ -178,6 +182,9 @@
                     pageSize : 8, // 한 페이지에 출력할 게시글 개수 (8개로 기본값)
                     page : 1, // 현재 페이지(위치) - 최초 1페이지부터 시작 (OFFSET 다음에 오는 숫자)
                     index : 0, // 최대 페이지 값 (표현할 페이지 개수)
+
+                    adInfo: {}, // 현재 진행 중인 배너광고(1개) 값의 전체 정보 (AD_TBL)
+                    adHistoryInfo : {}, // 배너광고의 히스토리 정보 (AD_HISTORY_TBL)
 
                 };
             },
@@ -259,12 +266,66 @@
                     self.fnList();
                 },
 
+                // 하단 광고배너 값(AD_TBL) 가져오기 (클릭시 카운팅 알맞게 들어가도록)
+                fnGetAdInfo: function(){
+                    let self = this;
+                    let param = {                        
+                    };
+                    $.ajax({
+                        url: "/main/adInfo.dox", 
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            self.adInfo = data.info;
+                            console.log("진행중 광고ID:", self.adInfo.adId); // 광고 ID 몇번인지(시퀀스)
+                        }
+                    });
+                },
+
+                // 하단 광고배너의 PER_MONTH 값 가져오기 (AD_HISTORY_TBL)
+                fnAdPerMonth: function(){
+                    let self = this;
+                    let param = {                        
+                    };
+                    $.ajax({
+                        url: "/main/adPerMonth.dox", 
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            self.adHistoryInfo = data.info;
+                            console.log("현재월:", self.adHistoryInfo.perMonth); // 광고진행월 PER_MONTH 컬럼값 찾기
+                        }
+                    });
+                },
+
+                // 하단 광고배너 클릭시 카운팅 올리기 
+                fnAdClick: function(){
+                    let self = this;
+                    let param = {     
+                        adId : self.adInfo.adId,
+                        currentMonth : self.adHistoryInfo.perMonth                  
+                    };
+                    $.ajax({
+                        url: "/main/adUpdate.dox", 
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            alert("클릭 및 카운트");
+                        }
+                    });
+                },
+
             }, // methods
 
             mounted() {
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
                 console.log("로그인 아이디 ===> " + self.userId); // 로그인한 아이디 잘 넘어오나 테스트
+                self.fnGetAdInfo(); // 광고 id 불러오기
+                self.fnAdPerMonth(); // 광고 perMonth 불러오기
 
                 // 1. URL에서 파라미터 확인 (검색키워드 or 카테고리)
                 const urlParams = new URLSearchParams(window.location.search);
