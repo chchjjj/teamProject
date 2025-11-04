@@ -56,6 +56,15 @@ public interface SellerMapper {
 	int updateOrderOptions(Map<String,Object> storeMap);
 	//캘린더
 	List<Map<String, Object>> selectPickupSchedule(Map<String, Object> paramMap);
+	// 판매자 정보 조회
+	HashMap<String, Object> selectSellerInfo(HashMap<String, Object> map);
+	// 판매자 가게정보 조회
+	HashMap<String, Object> selectStoreInfoByUserId(HashMap<String, Object> map);
+
+	// 판매자 정보 수정
+	int updateSellerInfo(HashMap<String, Object> map);
 	
+	// Q&A 조회
+	HashMap<String, Object> selectQnA(HashMap<String, Object> map);
 	
 }

@@ -249,4 +249,103 @@ public List<Map<String, Object>> selectPickupSchedule(Map<String, Object> paramM
     
     return pickupList;
 }
+
+public HashMap<String, Object> getSellerInfo(HashMap<String, Object> map) {
+    HashMap<String, Object> resultMap = new HashMap<>();
+    try {
+        System.out.println("📥 getSellerInfo() 호출됨 - 전달된 map: " + map);
+        HashMap<String, Object> info = sellerMapper.selectSellerInfo(map);
+        System.out.println("📤 selectSellerInfo 결과: " + info);
+
+        if (info != null) {
+            resultMap.put("info", info);
+            resultMap.put("result", "success");
+            System.out.println("✅ 판매자 정보 조회 성공");
+        } else {
+            resultMap.put("result", "not_found");
+            System.out.println("⚠️ 판매자 정보 없음");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        resultMap.put("result", "error");
+        resultMap.put("message", "판매자 정보 조회 중 오류 발생: " + e.getMessage());
+        System.out.println("❌ 판매자 정보 조회 중 오류: " + e.getMessage());
+    }
+    return resultMap;
+}
+
+public HashMap<String, Object> getStoreInfo(HashMap<String, Object> map) {
+    HashMap<String, Object> resultMap = new HashMap<>();
+    try {
+        System.out.println("📥 getSellerInfo() 호출됨 - 전달된 map: " + map);
+        HashMap<String, Object> info = sellerMapper.selectStoreInfoByUserId(map);
+        System.out.println("📤 selectSellerInfo 결과: " + info);
+
+        if (info != null) {
+            resultMap.put("info", info);
+            resultMap.put("result", "success");
+            System.out.println("✅ 판매자 정보 조회 성공");
+        } else {
+            resultMap.put("result", "not_found");
+            System.out.println("⚠️ 판매자 정보 없음");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        resultMap.put("result", "error");
+        resultMap.put("message", "판매자 정보 조회 중 오류 발생: " + e.getMessage());
+        System.out.println("❌ 판매자 정보 조회 중 오류: " + e.getMessage());
+    }
+    return resultMap;
+}
+
+
+//판매자 정보 수정
+@Transactional
+public HashMap<String, Object> updateSellerInfo(HashMap<String, Object> map) {
+ HashMap<String, Object> resultMap = new HashMap<>();
+ try {
+     int result = sellerMapper.updateSellerInfo(map);
+
+     if (result > 0) {
+         resultMap.put("result", "success");
+     } else {
+         resultMap.put("result", "fail");
+         resultMap.put("message", "수정할 데이터가 없습니다.");
+     }
+ } catch (Exception e) {
+     e.printStackTrace();
+     resultMap.put("result", "error");
+     resultMap.put("message", "판매자 정보 수정 중 오류 발생: " + e.getMessage());
+ }
+ return resultMap;
+}
+
+public HashMap<String, Object> getQnAListByProNo(HashMap<String, Object> map) {
+    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+    try {
+        // 1. Mapper 호출 (이름: selectQnAListByProNo 또는 selectQnAList)
+        // XML 매퍼 이름이 'selectQnAList'라고 가정하고 호출합니다.
+        HashMap<String, Object> list = sellerMapper.selectQnA(map); 
+
+        // 2. 결과 처리
+        if (list != null) {
+            resultMap.put("list", list);
+            resultMap.put("result", "success");
+            System.out.println("✅ QnA 목록 조회 성공. 건수: " + list.size());
+        } else {
+            resultMap.put("list", new ArrayList<>());
+            resultMap.put("result", "success"); // 결과가 없더라도 성공으로 처리
+            System.out.println("⚠️ QnA 목록 조회 결과 없음");
+        }
+    } catch (Exception e) {
+        // 3. 예외 처리
+        resultMap.put("result", "fail");
+        resultMap.put("message", "QnA 목록 조회 중 오류 발생: " + e.getMessage());
+        System.err.println("❌ QnA 목록 조회 중 오류: " + e.getMessage());
+        e.printStackTrace();
+    }
+
+    return resultMap;
+}
+
 }
