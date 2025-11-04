@@ -34,5 +34,10 @@ public class Main {
     private String answerDate;
     private String storeAddr;
     private String businessNo; // 사업자번호임..
+    
+    // 광고 관련
+    private int adId;
+    private int clickUnitCost;
+    private String perMonth;
 	
 }
