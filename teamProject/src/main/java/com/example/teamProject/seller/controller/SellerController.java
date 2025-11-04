@@ -1,8 +1,11 @@
 package com.example.teamProject.seller.controller;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -77,6 +80,17 @@ public class SellerController {
         return "/seller/sellerReview";
     }
 	
+	@RequestMapping("/seller/order/addOption.do") 
+    public String addOption(Model model) throws Exception{
+
+        return "/seller/orderOptionAdd";
+    }
+	
+	@RequestMapping("/seller/order/calendarView.do") 
+    public String calendarView(Model model) throws Exception{
+
+        return "/seller/calendarView";
+    }
 	
 	@RequestMapping(value = "/seller/orderList.dox",  method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
@@ -259,4 +273,62 @@ public class SellerController {
         return resultMap; // Map 객체를 JSON으로 변환하여 Vue.js에 응답합니다.
     }
     
+    
+    @RequestMapping("/seller/optionAdd.dox")
+    @ResponseBody
+    public Map<String, Object> optionAdd(
+        @RequestParam("orderId") String orderId,
+        @RequestParam("addOptionPrice") int addOptionPrice,
+        @RequestParam(value = "letteringWord", defaultValue = "문구없음") String letteringWord) {
+        
+        Map<String, Object> resultMap = new HashMap<>();
+        Map<String, Object> paramMap = new HashMap<>();
+        
+        paramMap.put("orderId", orderId);
+        paramMap.put("addOptionPrice", addOptionPrice);
+        paramMap.put("letteringWord", letteringWord);
+
+        try {
+            boolean success = sellerService.addOrderOptions(paramMap);
+
+            if (success) {
+                resultMap.put("status", "success");
+                resultMap.put("message", "옵션 정보가 성공적으로 업데이트되었습니다.");
+            } else {
+                resultMap.put("status", "fail");
+                resultMap.put("message", "옵션 정보 업데이트에 실패했습니다. (DB 오류 또는 대상 없음)");
+            }
+        } catch (Exception e) {
+            resultMap.put("status", "error");
+            resultMap.put("message", "서버 처리 중 예외가 발생했습니다: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return resultMap;
+    }
+    
+    @RequestMapping(value = "/seller/calendar.dox", method = RequestMethod.POST)
+    @ResponseBody 
+    public List<Map<String, Object>> getPickupSchedule(
+        @RequestParam("userId") String userId,
+        @RequestParam("start") String start, 
+        @RequestParam("end") String end) {
+
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("userId", userId);
+        paramMap.put("start", start);
+        paramMap.put("end", end);
+
+        try {
+            List<Map<String, Object>> pickupList = sellerService.selectPickupSchedule(paramMap);
+            System.out.println("픽업 일정 조회 성공. 데이터 개수: " + pickupList.size()); 
+            return pickupList;
+            
+        } catch (Exception e) {
+            System.err.println("픽업 일정 조회 실패: " + e.getMessage());
+            e.printStackTrace(); 
+            
+            return Collections.emptyList();
+        }
+    }
 }

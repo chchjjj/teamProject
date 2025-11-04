@@ -37,6 +37,12 @@ public class MainController {
         return "/main/footer";
     }
 	
+	// 헤더메뉴 '알레르기 프리'
+	@RequestMapping("/main/allergyFree.do") 
+    public String allergy(Model model) throws Exception{
+        return "/main/allergySearch";
+    }
+	
 	// 헤더메뉴 QnA
 	@RequestMapping("/main/qna.do") 
     public String qna(Model model) throws Exception{
@@ -61,6 +67,24 @@ public class MainController {
 	public String proList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap = mainService.getProList(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	// '알레르기 프리' 원재료 리스트
+	@RequestMapping(value = "/main/ingre-list.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String ingreList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = mainService.getIngreList(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	// '알레르기 프리' 원재료 미포함 상품 리스트
+	@RequestMapping(value = "/main/ingre-pro-list.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String ingreProList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = mainService.getIngreProList(map);
 		return new Gson().toJson(resultMap);
 	}
 	
@@ -91,6 +115,37 @@ public class MainController {
 	public String sellerList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap = mainService.getSellerList(map);
+		return new Gson().toJson(resultMap);
+	}
+	
+	// 광고 배너 정보 (AD_ID) 불러오기
+	@RequestMapping(value = "/main/adInfo.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String adInfo(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		System.out.println(map);
+		resultMap = mainService.getAdInfo(map); 
+		System.out.println("서버 최종 응답 데이터: " + resultMap);
+		return new Gson().toJson(resultMap); // 결과를 resultMap에 담음
+	}
+	
+	// 광고 배너 히스토리 불러오기
+	@RequestMapping(value = "/main/adPerMonth.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String adHistory(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		System.out.println(map);
+		resultMap = mainService.getAdHistory(map); 
+		System.out.println("서버 최종 응답 데이터: " + resultMap);
+		return new Gson().toJson(resultMap); // 결과를 resultMap에 담음
+	}
+	
+	// 광고배너 클릭시 클릭수 & 총비용 증가
+	@RequestMapping(value = "/main/adUpdate.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String updateAd(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = mainService.updateAdClick(map);
 		return new Gson().toJson(resultMap);
 	}
 	

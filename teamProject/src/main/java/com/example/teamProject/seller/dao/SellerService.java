@@ -1,8 +1,10 @@
 package com.example.teamProject.seller.dao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -182,25 +184,69 @@ public class SellerService {
 	            e.printStackTrace();
 	        }
 	    }
-	    
-	    public HashMap<String, Object> selectReviewList(HashMap<String, Object> param) {
+public HashMap<String, Object> selectReviewList(HashMap<String, Object> param) {
 	        
 	        HashMap<String, Object> resultMap = new HashMap<>();
 	        
 	        try {
-	            // MyBatis Mapper의 selectReviewList를 호출합니다.
-	            // 쿼리 결과는 List<HashMap<String, Object>> 형태입니다.
-	            resultMap.put("list", sellerMapper.selectReviewList(param));
+               
+                System.out.println("SERVICE 요청 파라미터 (selectReviewList): " + param);
+              
+	            List<HashMap<String, Object>> reviewList = sellerMapper.selectReviewList(param);
+                
+	            resultMap.put("list", reviewList);
+                
+          
+                if (reviewList != null) {
+                    System.out.println("SERVICE 리뷰 목록 조회 성공. 건수: " + reviewList.size());
+                } else {
+                    System.out.println("SERVICE 리뷰 목록 조회 결과: NULL");
+                }
 	            
 	        } catch (Exception e) {
-	            System.err.println("리뷰 목록 조회 서비스 에러: " + e.getMessage());
-	            // 에러 발생 시 빈 목록을 반환하거나, 에러 처리를 할 수 있습니다.
+	      
+	            System.err.println("SERVICE 리뷰 목록 조회 중 에러 발생: " + e.getMessage());
+	            e.printStackTrace(); // 상세 스택 트레이스 출력
+	            
 	            resultMap.put("list", null); 
 	            resultMap.put("result", "error");
 	        }
 	        
 	        return resultMap;
 	    }
-	    
-	    
+@Transactional
+public boolean addOrderOptions(Map<String, Object> paramMap) {
+    try {
+        int result = sellerMapper.updateOrderOptions(paramMap);
+        
+        if (result > 0) {
+            return true;
+        } else {
+            System.err.println("옵션 업데이트 실패: 주문 ID를 찾을 수 없습니다. (ORDER_ID: " + paramMap.get("orderId") + ")");
+            return false;
+        }
+    } catch (Exception e) {
+        System.err.println("옵션 업데이트 중 데이터베이스 오류 발생: " + e.getMessage());
+        e.printStackTrace();
+        
+        return false;
+    }
+}
+	 
+
+
+public List<Map<String, Object>> selectPickupSchedule(Map<String, Object> paramMap) {
+    List<Map<String, Object>> pickupList = Collections.emptyList();
+    
+    try {
+        pickupList = sellerMapper.selectPickupSchedule(paramMap);
+        
+    } catch (Exception e) {
+    	System.err.println("옵션 업데이트 중 데이터베이스 오류 발생: " + e.getMessage());
+        e.printStackTrace();
+      
+    }
+    
+    return pickupList;
+}
 }

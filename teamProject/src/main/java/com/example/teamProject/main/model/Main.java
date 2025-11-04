@@ -34,5 +34,14 @@ public class Main {
     private String answerDate;
     private String storeAddr;
     private String businessNo; // 사업자번호임..
+    
+    // 광고 관련
+    private int adId;
+    private int clickUnitCost;
+    private String perMonth;
+    
+    // 알레르기 프리 관련
+    private String ingredientName;
+    private String  ingredientDescription;
 	
 }

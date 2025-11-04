@@ -2,6 +2,8 @@
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <% String currentUri = request.getRequestURI(); %>
+
+<!-- seller -->
 <!DOCTYPE html>
 <html lang="ko">
 
@@ -15,7 +17,7 @@
             margin: 0;
             padding: 0;
         }
-
+/* seller */
         .sidebar {
             width: 250px;
             height: 100vh;
@@ -98,14 +100,12 @@
             <li class="<%= currentUri.contains("/seller/salesHistory.do") ? "active" : "" %>">
                 <a href="javascript:;" onclick="location.href='/seller/salesHistory.do'">판매 내역</a>
             </li>
-            <li class="<%= currentUri.contains("/seller/customer.do") ? "active" : "" %>">
-                <a href="javascript:;" onclick="location.href='/seller/sellerReview.do'">고객 관리(채팅)</a>
+           
+            <li class="<%= currentUri.contains("/seller/sellerReview.do") ? "active" : "" %>">
+                <a href="javascript:;" onclick="location.href='/seller/sellerReview.do'">리뷰 관리(임시)</a>
             </li>
-            <li class="<%= currentUri.contains("/seller/review.do") ? "active" : "" %>">
-                <a href="#">리뷰 관리(임시)</a>
-            </li>
-            <li class="<%= currentUri.contains("/seller/calendar.do") ? "active" : "" %>">
-                <a href="#">캘린더</a>
+            <li class="<%= currentUri.contains("/seller/order/calendarView.do") ? "active" : "" %>">
+                <a href="javascript:;" onclick="location.href='/seller/order/calendarView.do'">캘린더</a>
             </li>
             <li class="<%= currentUri.contains("/seller/edit.do") ? "active" : "" %>">
                 <a href="#">정보 수정</a>
@@ -119,3 +119,4 @@
 </body>
 
 </html>
+
