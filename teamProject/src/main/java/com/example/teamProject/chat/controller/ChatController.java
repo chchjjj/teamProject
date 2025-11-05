@@ -12,10 +12,18 @@ public class ChatController {
 	@Autowired
 	ChatService chatService;
 	
+	// 판매자 기준 채팅방
 	@RequestMapping("/chat/chatSeller.do") 
-    public String wish(Model model) throws Exception{
+    public String chatSeller(Model model) throws Exception{
 
         return "/chat/chatSeller";
+    }
+	
+	// 구매자 기준 채팅방
+	@RequestMapping("/chat/chatBuyer.do") 
+    public String chatBuyer(Model model) throws Exception{
+
+        return "/chat/chatBuyer";
     }
 	
 	
