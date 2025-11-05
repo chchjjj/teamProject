@@ -60,6 +60,9 @@
                         <div>
                             <button @click="fnMembership()">멤버십</button>
                         </div>
+                         <div>
+                            <button @click="fnMonthlyFee()">판매자 월 정산결과 조회</button>
+                        </div>
                         <div>
                             <button @click="fnQandA()">Q&A</button>
                         </div>
@@ -258,6 +261,10 @@
 
                 fnMembership: function () {
                     location.href = "/admin/membership.do";
+                },
+
+                 fnMonthlyFee: function () {
+                    location.href = "/admin/monthlyfee.do";
                 },
 
                 fnQandA: function () {

@@ -69,6 +69,9 @@
                             <button @click="fnMembership()">맴버쉽관리</button>
                         </div>
                         <div>
+                            <button @click="fnMonthlyFee()">판매자 월 정산결과 조회</button>
+                        </div>
+                        <div>
                             <button @click="fnQandA()">Q&A</button>
                         </div>
                     </div>
@@ -258,6 +261,9 @@
 
                 fnQandA: function () {
                     location.href = "/admin/boardManage.do";
+                },
+                fnMonthlyFee: function () {
+                    location.href = "/admin/monthlyfee.do";
                 },
 
                 fnLogout: function () {

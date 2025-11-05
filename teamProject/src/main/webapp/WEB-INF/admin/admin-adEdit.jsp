@@ -4,13 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>사용자관리</title>
+    <title>광고 정보 수정</title>
     <!-- 관리자 스타일시트 -->
     <link rel="stylesheet" href="/css/admin-style.css">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.js" 
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" 
@@ -48,11 +44,12 @@
 
                 <!--외쪽측 네이버바-->
                 <div class="navBar">
-                    <!---->
+                    <!-- Logo -->
+                    <div class="logo">
+                        <img src="/images/logo.png" alt="Dessert Lab" style="max-width: 150px;">
+                        <p>Admin Panel</p>
+                    </div>
                     <div class="navButton">
-                        <div>
-                            <button @click="fnAmdinMain()">대시보드</button>
-                        </div>
                         <div>
                             <button @click="fnBuyerManage()">사용자 관리</button>
                         </div>
@@ -69,7 +66,10 @@
                             <button @click="fnMembership()">맴버쉽관리</button>
                         </div>
                         <div>
-                            <button @click="fnQandA()">Q&A</button>
+                            <button @click="fnMonthlyFee()">판매자 월 정산결과 조회</button>
+                        </div>
+                        <div>
+                            <button @click="fnQandA()">Q&A/리뷰</button>
                         </div>
                     </div>
 
@@ -126,9 +126,7 @@
                             </tr>
                         </table>
                     </div>
-                </div>
-
-                <div>
+                    <div>
                     <button @click="fnEdit(adId)">
                         수정
                     </button>
@@ -138,6 +136,7 @@
                     <button @click="fnEnd(adId)">
                         강제종료
                     </button>
+                </div>
                 </div>
 
             </div>
@@ -227,11 +226,6 @@
                 location.href="/admin/ad.do";
             },
 
-                fnAdminMain:function(){
-                    location.href = "/admin/main.do";
-                },
-
-
                 fnBuyerManage: function () {
                     location.href = "/admin/userlist.do";
                 },
@@ -239,7 +233,6 @@
                 fnSellerManage: function () {
                     location.href = "/admin/sellerlist.do";
                 },
-
 
                 fnSalesManage: function () {
                     location.href = "/admin/chart.do";
@@ -253,9 +246,14 @@
                     location.href = "/admin/membership.do";
                 },
 
+                fnMonthlyFee: function () {
+                    location.href = "/admin/monthlyfee.do";
+                },
+
                 fnQandA: function () {
                     location.href = "/admin/boardManage.do";
                 },
+
 
                 fnLogout: function () {
 
