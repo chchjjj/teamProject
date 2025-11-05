@@ -9,9 +9,9 @@ public class Chat {
 	
 	// DB 관련 
 	private String userId;
-	private String orderId;
-	private String chatId;
-	private String storeId;		
+	private int orderId;
+	private int chatId;
+	private int storeId;		
 	private String orderDetailId; // 이건 혹시몰라서
 	private String orderOptionId; // 이건 혹시몰라서
 	

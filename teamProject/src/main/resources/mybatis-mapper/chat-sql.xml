@@ -18,6 +18,22 @@
 	        'N'
 	    )
 	</insert>
+	
+	<!-- 채팅방 chatId 기준으로 메시지 리스트 조회 (일단 xml까지만 작성됨) -->
+	<select id="selectMsgByChatId" resultType="com.example.teamProject.chat.model.Chat">
+	    SELECT 
+	        MSG_ID,
+	        CHAT_ID,
+	        ORDER_ID,
+	        USER_ID,
+	        STORE_ID,
+	        MESSAGE AS content,
+	        SENT_AT,
+	        IS_READ
+	    FROM CHAT_MSG_TBL
+	    WHERE CHAT_ID = #{chatId}
+	    ORDER BY SENT_AT ASC
+	</select>
 
 
 
