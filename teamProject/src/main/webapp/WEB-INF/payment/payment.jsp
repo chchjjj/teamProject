@@ -62,107 +62,25 @@
         data() {
             return {
                 // 변수 - (key : value)
-                cartIdList : "${cartIdList}", //장바구니에서 주문하기 버튼 누르는 경우 필요
                 toName: "${sessionName}", //받을 사람
                 toPhone: "${sessionPhone}", //받을 사람의 휴대폰 번호
-                cartList: [], //CART_TBL + CART_OPTION_TBL
                 orderList: [], //화면에 보이는 정보, 배송 정보 확정 전 단계, ORDER_TBL + ORDER_DETAIL_TBL + ORDER_OPTION_TBL
                 deliveryType : "D", // 배송 또는 픽업 선택
-
                 
                 //order 관련 변수
                 // 1. 바로 구매 버튼을 누른 경우 order 테이블에서 사용 / 2. 장바구니 담고 나서 구매하는 경우 바로 이 페이지에서 생성한 주문번호
                 orderId : "${orderId}", //이전 페이지에서 orderId로 받을 때
-                orderIdList : []//"${orderIdList}" //이 페이지에서 order 관련 테이블의 데이터에 접근할 때 사용
+                orderIdList : []//이 페이지에서 order 관련 테이블의 데이터에 접근할 때 사용
             };
         },
         methods: {
             // 함수(메소드) - (key : function())
+
             
-            //CART에서 선택한 주문들을 여기서 보여주는 함수
-            fnCartList: function () {
-                let self = this;
-                let param = {
-                    cartIdList : self.cartIdList
-                };
-                $.ajax({
-                    url: "/payment/cartList.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-                        console.log(data);// 테스트용
-                        self.cartList = data.list;
-                    }
-                });
-            },
-
-            //ORDER TBL 에 INSERT
-            fnAddOrder: function () {
-                let self = this;
-                let param = {
-                    cartList : self.cartList
-                };
-                $.ajax({
-                    url: "/payment/addOrder.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-                        console.log("ORDER_TBL INSERT");// 테스트용
-                        console.log(data);// 테스트용
-
-                        //생성된 order 테이블의 id들을 가져오기
-                        //self.orderIdList = ;
-
-                        self.fnAddOrderDetail();
-                    }
-                });
-            },
-
-            //ORDER_DETAIL_TBL 에 INSERT
-            fnAddOrderDetail: function(){
-                let self = this;
-                let param = {
-                    cartList : self.cartList
-                };
-                $.ajax({
-                    url: "/payment/addOrderDetail.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-                        console.log("ORDER_DETAIL_TBL INSERT");// 테스트용
-                        console.log(data);// 테스트용
-                        self.fnAddOrderOption();
-                    }
-                });
-            },
-
-            //ORDER_OPTION_TBL 에 INSERT
-            fnAddOrderOption: function(){
-                let self = this;
-                let param = {
-                    cartList : self.cartList
-                };
-                $.ajax({
-                    url: "/payment/addOrderOption.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-                        console.log("ORDER_OPTION_TBL INSERT");// 테스트용
-                        console.log(data);// 테스트용
-                        self.fnOrderList(); //이제야 비로소 화면 출력 가능
-                        self.fnCartDelete();
-                    }
-                });
-            },
-
-            //이 페이지 화면에 출력하게될 정보를 찾는 함수
             fnOrderList: function(){
                 let self = this;
-                orderIdList = JSON.stringify(self.orderIdList);
+                console.log(self.orderIdList);
+                let orderIdList = JSON.stringify(self.orderIdList);
                 let param = {
                     orderIdList : orderIdList
                 };
@@ -180,7 +98,7 @@
                 });
             },
 
-            //이 페이지 화면에 출력하게될 정보를 찾는 함수
+            //결제 성공까지 했을 때 필요 없어진 장바구니 목록을 지우는 함수
             fnCartDelete: function(){
                 let self = this;
                 cartIdList = JSON.stringify(self.cartIdList);
@@ -223,8 +141,6 @@
             //결제 버튼을 누르면 이 함수를 실행
             fnPayment: function(){
                 let self = this;
-                
-
                 IMP.request_pay({
 				    pg: "html5_inicis",
 				    pay_method: "card",
@@ -248,11 +164,10 @@
             //PAYMENT_TBL에 결제내역을 추가하는 쿼리문
             fnPayHistory: function(uid, amount){
                 let self = this;
-                orderList = JSON.stringify(self.orderList);
                 let param = {
                     uid: uid,
                     amount: amount,
-                    orderList: orderList
+                    orderList: JSON.stringify(self.orderList)
                     // 그 외 기타 등등
                 };
                 $.ajax({
@@ -273,23 +188,25 @@
         mounted() {
             // 처음 시작할 때 실행되는 부분
             let self = this;
+            let orderId = self.orderId.trim(); // 혹시 모를 공백 제거
 
-            //주문번호를 받은 경우
-            if("${orderId}") {
-                self.orderIdList.push(self.orderId);
-                self.fnOrderList();
-                console.log("self.fnOrderList(); 실행중");
-                console.log("orderId 값은 => " + self.orderId);
-                console.log("orderIdList 값은 => " + self.orderIdList);
+            //주문번호를 장바구니에서 받지 않은 경우
+            if(orderId && orderId.length > 0) {
+                console.log("orderId 값이 존재하며 orderId 값은 => " + self.orderId);
+                self.orderIdList.push(orderId);
+            } 
+            
+            //주문번호를 장바구니에서 받는 경우
+            else {
+                let str = "${orderIdList}";
+                self.orderIdList = JSON.parse(str); //파싱을 해줘야 문자열을 리스트로 바꿀 수 있다.
+                
             }
 
-            //장바구니 번호를 받은 경우
-            else if("${cartIdList}"){
-                self.fnCartList();
-                self.fnAddOrder();
-                console.log("cartIdList ===> " + self.cartIdList); // 테스트용
-                console.log("self.cartList.proName ===> " + self.cartList.proName); // 테스트용
-            }
+            console.log("최종적으로 사용할 orderIdList 값은 => " + self.orderIdList);
+            self.fnOrderList();
+
+           
             
         }
     });
