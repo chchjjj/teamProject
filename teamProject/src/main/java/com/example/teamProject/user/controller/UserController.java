@@ -38,10 +38,10 @@ public class UserController {
 		return "/user/jusoPopup";
 	}
 	
-	@RequestMapping("/user/wishList.do")
-	public String wishList(Model model) throws Exception {
-		return "/user/wishList";
-	}
+//	@RequestMapping("/product/wishlist.do")
+//	public String wishList(Model model) throws Exception {
+//		return "/product/wishList";
+//	}
 	
 	@RequestMapping("/user/userMyPage.do")
 	public String userMyPage(Model model) throws Exception {
@@ -57,6 +57,29 @@ public class UserController {
 	public String newPwd(Model model) throws Exception {
 		return "/user/newPwd";
 	}
+	
+	@RequestMapping("/user/chatList.do")
+	public String chatHistory(Model model) throws Exception {
+		return "/user/chatList";
+	}
+	
+	@RequestMapping("/user/orderHistory.do")
+	public String orderHistory(Model model) throws Exception {
+		return "/user/orderHistory";
+	}
+	
+	@RequestMapping("/user/review.do")
+	public String review(Model model) throws Exception {
+		return "/user/review";
+	}
+	
+	@RequestMapping("/user/qnA.do")
+	public String qnA(Model model) throws Exception {
+		return "/user/qnA";
+	}
+	
+	
+	
 	
 	@RequestMapping(value = "/user/login.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
