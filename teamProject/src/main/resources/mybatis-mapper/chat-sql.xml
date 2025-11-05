@@ -2,7 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.teamProject.chat.mapper.ChatMapper">
+	
+	<!-- 구매자 발송 채팅 인서트 (우선 메세지타입은 text로 하드코딩) -->
+	<insert id="insertBuyerChatMsg" parameterType="com.example.teamProject.chat.model.Chat">
+	   INSERT INTO CHAT_MSG_TBL 
+	    VALUES (
+			CHAT_MSG_SEQ.NEXTVAL,
+	        #{chatId},
+	        #{orderId},
+	        #{sender},
+	        #{storeId},
+	        #{content},
+	        'TEXT',
+	        SYSDATE,
+	        'N'
+	    )
+	</insert>
 
 
 
-   </mapper> 
+</mapper> 
