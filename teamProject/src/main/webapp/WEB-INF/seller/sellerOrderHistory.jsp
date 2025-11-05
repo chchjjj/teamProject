@@ -191,7 +191,7 @@
 
                     const form = document.createElement('form');
                     form.setAttribute('method', 'post');
-                    form.setAttribute('action', '/seller/OrderHistoryViewDetails.do');
+                    form.setAttribute('action', '/seller/OrderHistoryViewDetail.do');
 
                     const hiddenField = document.createElement('input');
                     hiddenField.setAttribute('type', 'hidden');

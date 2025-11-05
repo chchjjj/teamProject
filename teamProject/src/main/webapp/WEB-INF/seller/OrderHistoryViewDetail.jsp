@@ -223,7 +223,7 @@
             data() {
                 return {
                     // ⭐ 수정된 initialOrderId 변수 사용
-                    orderId: initialOrderId, 
+                    orderId: "${orderId}", 
                     orderDetail: null,
                     loading: true
                 };

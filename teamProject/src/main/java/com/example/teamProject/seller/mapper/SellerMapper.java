@@ -65,6 +65,6 @@ public interface SellerMapper {
 	int updateSellerInfo(HashMap<String, Object> map);
 	
 	// Q&A 조회
-	HashMap<String, Object> selectQnA(HashMap<String, Object> map);
+	List<HashMap<String, Object>> selectQnA(HashMap<String, Object> map);
 	
 }

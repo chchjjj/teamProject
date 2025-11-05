@@ -323,11 +323,10 @@ public HashMap<String, Object> updateSellerInfo(HashMap<String, Object> map) {
 public HashMap<String, Object> getQnAListByProNo(HashMap<String, Object> map) {
     HashMap<String, Object> resultMap = new HashMap<String, Object>();
     try {
-        // 1. Mapper 호출 (이름: selectQnAListByProNo 또는 selectQnAList)
-        // XML 매퍼 이름이 'selectQnAList'라고 가정하고 호출합니다.
-        HashMap<String, Object> list = sellerMapper.selectQnA(map); 
+      
+        List<HashMap<String, Object>> list = sellerMapper.selectQnA(map); 
 
-        // 2. 결과 처리
+  
         if (list != null) {
             resultMap.put("list", list);
             resultMap.put("result", "success");
@@ -338,7 +337,7 @@ public HashMap<String, Object> getQnAListByProNo(HashMap<String, Object> map) {
             System.out.println("⚠️ QnA 목록 조회 결과 없음");
         }
     } catch (Exception e) {
-        // 3. 예외 처리
+   
         resultMap.put("result", "fail");
         resultMap.put("message", "QnA 목록 조회 중 오류 발생: " + e.getMessage());
         System.err.println("❌ QnA 목록 조회 중 오류: " + e.getMessage());

@@ -57,14 +57,22 @@ public class SellerController {
         return "seller/sellerOrderHistory";
     }
 	
-	@RequestMapping("/seller/OrderHistoryViewDetails.do")
-	public String view(@RequestParam(value="orderId", required=false) String orderId, Model model) {
-	    if(orderId != null && !orderId.isEmpty()) {
-	        model.addAttribute("orderId", orderId);
-	    } else {
-	        model.addAttribute("error", "주문 ID가 없습니다.");
+	@RequestMapping("/seller/OrderHistoryViewDetail.do")
+	public String viewOrderHistory(
+	    // orderId가 필수(required=true)가 아니며, 기본값(defaultValue)을 설정하여 null 체크를 간소화합니다.
+	    @RequestParam(value="orderId", required=false, defaultValue="") String orderId, 
+	    Model model) {
+	    
+	    // 만약 orderId가 비어있다면, 목록 페이지로 돌려보내는 것이 안전합니다.
+	    if (orderId.isEmpty()) {
+	        System.err.println("[ERROR] Order ID가 누락되어 상세 페이지 로드에 실패했습니다.");
+	        // 상세 페이지가 아닌, 판매 내역 목록 페이지로 리다이렉트하는 것이 자연스럽습니다.
+	        return "redirect:/seller/salesHistory.do"; 
 	    }
-	    return "seller/OrderHistoryViewDetails";
+	    
+	    model.addAttribute("orderId", orderId);
+	    // orderId가 정상적으로 있다면, OrderHistoryViewDetail.jsp로 이동합니다.
+	    return "seller/OrderHistoryViewDetail"; 
 	}
 	
 	@RequestMapping("/seller/sellerChat.do") 
