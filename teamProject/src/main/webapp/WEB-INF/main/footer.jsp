@@ -15,7 +15,6 @@ footer {
     background-color: #3E2723; 
     color: #f0f0f0; /* 텍스트 색상을 밝게 */
     padding: 5px 0;
-
     height: 230px;
 }
 
@@ -49,6 +48,40 @@ footer {
 .company-name {
     font-weight: bold;
     margin-bottom: 5px;
+}
+
+html, body {
+    margin: 0; /* 기본 마진 제거 */
+    padding: 0; /* 기본 패딩 제거 */
+    height: 100%; /* 필수: 뷰포트 높이만큼 늘어나도록 설정 */
+}
+
+body {
+    display: flex; /* body를 Flex 컨테이너로 설정 */
+    flex-direction: column; /* 세로 정렬 */
+    /* height: 100%; 대신 min-height: 100vh; 를 사용해도 됩니다. */
+    min-height: 100vh; /* 뷰포트 전체 높이만큼 최소 높이 지정 (100% 대신 100vh 권장) */
+}
+
+/* 헤더, 본문, 푸터가 다음과 같은 HTML 구조를 가진다고 가정 */
+/* <header>...</header> */
+/* <main>...</main> */
+/* <footer>...</footer> */
+
+main {
+    flex-grow: 1; /* 본문 컨텐츠 영역이 남은 공간을 모두 차지하도록 확장 */
+    /* main 영역이 footer를 밀어내는 역할을 합니다. */
+}
+
+/* ⚠️ 핵심: Vue 앱 래퍼 요소(#app)가 남은 공간을 모두 차지하도록 설정 */
+#app {
+    flex-grow: 1; /* 남은 공간을 모두 차지하도록 확장 */
+}
+
+/* 푸터의 높이를 고정해야 한다면 flex-shrink: 0;도 추가할 수 있습니다. */
+footer {
+    flex-shrink: 0; /* 푸터는 줄어들지 않고 고정 높이 유지 */
+    /* (기존 푸터 CSS 유지) */
 }
 
 
