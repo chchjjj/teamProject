@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ include file="/WEB-INF/main/sellerSideBar.jsp" %>
+<%@ include file="/WEB-INF/seller/sellerSideBar.jsp" %>
 <!DOCTYPE html>
 <html lang="ko">
 

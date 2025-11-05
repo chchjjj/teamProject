@@ -1,8 +1,10 @@
 package com.example.teamProject.seller.dao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -182,25 +184,168 @@ public class SellerService {
 	            e.printStackTrace();
 	        }
 	    }
-	    
-	    public HashMap<String, Object> selectReviewList(HashMap<String, Object> param) {
+public HashMap<String, Object> selectReviewList(HashMap<String, Object> param) {
 	        
 	        HashMap<String, Object> resultMap = new HashMap<>();
 	        
 	        try {
-	            // MyBatis Mapper의 selectReviewList를 호출합니다.
-	            // 쿼리 결과는 List<HashMap<String, Object>> 형태입니다.
-	            resultMap.put("list", sellerMapper.selectReviewList(param));
+               
+                System.out.println("SERVICE 요청 파라미터 (selectReviewList): " + param);
+              
+	            List<HashMap<String, Object>> reviewList = sellerMapper.selectReviewList(param);
+                
+	            resultMap.put("list", reviewList);
+                
+          
+                if (reviewList != null) {
+                    System.out.println("SERVICE 리뷰 목록 조회 성공. 건수: " + reviewList.size());
+                } else {
+                    System.out.println("SERVICE 리뷰 목록 조회 결과: NULL");
+                }
 	            
 	        } catch (Exception e) {
-	            System.err.println("리뷰 목록 조회 서비스 에러: " + e.getMessage());
-	            // 에러 발생 시 빈 목록을 반환하거나, 에러 처리를 할 수 있습니다.
+	      
+	            System.err.println("SERVICE 리뷰 목록 조회 중 에러 발생: " + e.getMessage());
+	            e.printStackTrace(); // 상세 스택 트레이스 출력
+	            
 	            resultMap.put("list", null); 
 	            resultMap.put("result", "error");
 	        }
 	        
 	        return resultMap;
 	    }
-	    
-	    
+@Transactional
+public boolean addOrderOptions(Map<String, Object> paramMap) {
+    try {
+        int result = sellerMapper.updateOrderOptions(paramMap);
+        
+        if (result > 0) {
+            return true;
+        } else {
+            System.err.println("옵션 업데이트 실패: 주문 ID를 찾을 수 없습니다. (ORDER_ID: " + paramMap.get("orderId") + ")");
+            return false;
+        }
+    } catch (Exception e) {
+        System.err.println("옵션 업데이트 중 데이터베이스 오류 발생: " + e.getMessage());
+        e.printStackTrace();
+        
+        return false;
+    }
+}
+	 
+
+
+public List<Map<String, Object>> selectPickupSchedule(Map<String, Object> paramMap) {
+    List<Map<String, Object>> pickupList = Collections.emptyList();
+    
+    try {
+        pickupList = sellerMapper.selectPickupSchedule(paramMap);
+        
+    } catch (Exception e) {
+    	System.err.println("옵션 업데이트 중 데이터베이스 오류 발생: " + e.getMessage());
+        e.printStackTrace();
+      
+    }
+    
+    return pickupList;
+}
+
+public HashMap<String, Object> getSellerInfo(HashMap<String, Object> map) {
+    HashMap<String, Object> resultMap = new HashMap<>();
+    try {
+        System.out.println("📥 getSellerInfo() 호출됨 - 전달된 map: " + map);
+        HashMap<String, Object> info = sellerMapper.selectSellerInfo(map);
+        System.out.println("📤 selectSellerInfo 결과: " + info);
+
+        if (info != null) {
+            resultMap.put("info", info);
+            resultMap.put("result", "success");
+            System.out.println("✅ 판매자 정보 조회 성공");
+        } else {
+            resultMap.put("result", "not_found");
+            System.out.println("⚠️ 판매자 정보 없음");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        resultMap.put("result", "error");
+        resultMap.put("message", "판매자 정보 조회 중 오류 발생: " + e.getMessage());
+        System.out.println("❌ 판매자 정보 조회 중 오류: " + e.getMessage());
+    }
+    return resultMap;
+}
+
+public HashMap<String, Object> getStoreInfo(HashMap<String, Object> map) {
+    HashMap<String, Object> resultMap = new HashMap<>();
+    try {
+        System.out.println("📥 getSellerInfo() 호출됨 - 전달된 map: " + map);
+        HashMap<String, Object> info = sellerMapper.selectStoreInfoByUserId(map);
+        System.out.println("📤 selectSellerInfo 결과: " + info);
+
+        if (info != null) {
+            resultMap.put("info", info);
+            resultMap.put("result", "success");
+            System.out.println("✅ 판매자 정보 조회 성공");
+        } else {
+            resultMap.put("result", "not_found");
+            System.out.println("⚠️ 판매자 정보 없음");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        resultMap.put("result", "error");
+        resultMap.put("message", "판매자 정보 조회 중 오류 발생: " + e.getMessage());
+        System.out.println("❌ 판매자 정보 조회 중 오류: " + e.getMessage());
+    }
+    return resultMap;
+}
+
+
+//판매자 정보 수정
+@Transactional
+public HashMap<String, Object> updateSellerInfo(HashMap<String, Object> map) {
+ HashMap<String, Object> resultMap = new HashMap<>();
+ try {
+     int result = sellerMapper.updateSellerInfo(map);
+
+     if (result > 0) {
+         resultMap.put("result", "success");
+     } else {
+         resultMap.put("result", "fail");
+         resultMap.put("message", "수정할 데이터가 없습니다.");
+     }
+ } catch (Exception e) {
+     e.printStackTrace();
+     resultMap.put("result", "error");
+     resultMap.put("message", "판매자 정보 수정 중 오류 발생: " + e.getMessage());
+ }
+ return resultMap;
+}
+
+public HashMap<String, Object> getQnAListByProNo(HashMap<String, Object> map) {
+    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+    try {
+        // 1. Mapper 호출 (이름: selectQnAListByProNo 또는 selectQnAList)
+        // XML 매퍼 이름이 'selectQnAList'라고 가정하고 호출합니다.
+        HashMap<String, Object> list = sellerMapper.selectQnA(map); 
+
+        // 2. 결과 처리
+        if (list != null) {
+            resultMap.put("list", list);
+            resultMap.put("result", "success");
+            System.out.println("✅ QnA 목록 조회 성공. 건수: " + list.size());
+        } else {
+            resultMap.put("list", new ArrayList<>());
+            resultMap.put("result", "success"); // 결과가 없더라도 성공으로 처리
+            System.out.println("⚠️ QnA 목록 조회 결과 없음");
+        }
+    } catch (Exception e) {
+        // 3. 예외 처리
+        resultMap.put("result", "fail");
+        resultMap.put("message", "QnA 목록 조회 중 오류 발생: " + e.getMessage());
+        System.err.println("❌ QnA 목록 조회 중 오류: " + e.getMessage());
+        e.printStackTrace();
+    }
+
+    return resultMap;
+}
+
 }

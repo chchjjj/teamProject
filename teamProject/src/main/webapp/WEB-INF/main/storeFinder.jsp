@@ -105,7 +105,7 @@
                 <h1 class="title">내 주변 디저트 지점 찾기</h1>
                 <hr class="divider">
 
-                <div>※ 현재 고객님의 마이페이지 주소를 기반으로 한 주변 디저트 지점 정보입니다. </div>
+                <div>※ 현재 고객님의 마이페이지 주소를 기반으로 한 5Km 이내 디저트 지점 정보입니다. </div>
                 <div class="myAddr">
                     내 주소 : {{info.userAddr}}
                 </div>

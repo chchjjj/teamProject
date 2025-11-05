@@ -202,7 +202,7 @@
                         dataType: "json",
                         success: function (data) {
                             if (data.info.role === "C") {
-                                pageChange("/user/mypage.do", { userId: self.userId });
+                                pageChange("/user/userMyPage.do", { userId: self.userId });
                             } else if (data.info.role === "S") {
                                 pageChange("/seller/sales.do", { userId: self.userId });
                             } else if (data.info.role === "A") {
@@ -245,10 +245,7 @@
                 // '알레르기 프리' 메뉴 (userId 보내야할까? 거기서 구매로 이어진다면?)
                 fnAllergyFree: function () {
                     let self = this;
-                    //pageChange("/allergyFree.do"); // 알레르기프리 검색 페이지 (안됨 ㅠㅠ)
-                    // **임시 테스트 코드:**
-                    console.log("알레르기 프리 클릭됨!"); // 클릭 확인용
-                    location.href = "/allergyFree.do"; // 일반적인 페이지 이동 (이건 됨)
+                    location.href = "/main/allergyFree.do"; 
                 },
 
                 // '입점하기' 메뉴 

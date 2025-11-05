@@ -12,7 +12,6 @@
 .product-info-area {
     display: flex;
     justify-content: space-between;
-    padding-bottom: 50px;
 }
 
 /* --- 상품 선택 섹션 스타일 --- */

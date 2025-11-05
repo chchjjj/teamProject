@@ -64,7 +64,6 @@
                             <button @click="fnQandA()">Q&A</button>
                         </div>
                     </div>
-
                     <!--logout button-->
                     <div class="logOut">
                         <div>
@@ -74,35 +73,27 @@
                 </div>
 
                 <div>
+                    <div>광고관리</div>
                     <div>
                         <div>광고추가</div>
 
                         <div>
                             <table>
                                 <tr>
-                                    <th>광고번호</th>
                                     <th>광고이름</th>
-                                    <th>(예정)시작시간</th>
-                                    <th>(예정)종료시간</th>
                                     <th>링크</th>
                                     <th>클릭당 비용(원)</th>
-                                    <th>진행상태</th>
                                 </tr>
                                 <tr>
-                                    <td><input type="text" v-model="adId"></td>
                                     <td><input type="text" v-model="adName"></td>
-                                    <td><input type="text" v-model="startDate"></td>
-                                    <td><input type="text" v-model="endDate"></td>
                                     <td><input type="text" v-model="urlLink"></td>
                                     <td><input type="text" v-model="clickUnitCost"></td>
-                                    <td><input type="text" v-model="status"></td>
                                 </tr>
                             </table>
                         </div>
                         <div><button @click="fnAdAdd()">추가</button></div>
                     </div>
                     <div>
-                        <div>광고관리</div>
                         <div>
                             <div>광고 리스트</div>
                             <div>
@@ -110,8 +101,8 @@
                                     <tr>
                                         <th>광고번호</th>
                                         <th>광고이름</th>
-                                        <th>(예정)시작시간</th>
-                                        <th>(예정)종료시간</th>
+                                        <th>시작시간</th>
+                                        <th>종료시간</th>
                                         <th>링크</th>
                                         <th>클릭</th>
                                         <th>클릭당 비용(원)</th>
@@ -150,6 +141,7 @@
                 </div>
 
             </div>
+        </div>
     </body>
 
     </html>
@@ -168,7 +160,7 @@
                     startDate: "",
                     endDate: "",
                     urlLink: "",
-                    clickUnitCost: "",
+                    clickUnitCost: 0,
                     status: "",
 
                     //전에 진행중인 광고(시간이 만료되었을 때 만 새로운 추가가)
@@ -212,32 +204,64 @@
                 fnAdAdd: function () {
                     let self = this;
                     let param = {
-                        option: self.option,
-                        keyWord: self.keyWord,
-                        offset: (self.page - 1) * self.pageSize,
-                        fetchRows: self.pageSize,
+                        adName: self.adName,
+                        urlLink: self.urlLink,
+                        clickUnitCost: self.clickUnitCost,
                     };
-                    $.ajax({
-                        url: "/adad/adad.dox",
-                        dataType: "json",
-                        type: "POST",
-                        data: param,
-                        success: function (data) {
-                            self.adList = ad.sellerList;
-                            self.totalRows = data.totalRows;
-                            self.pageNum = Math.ceil(self.totalRows / self.pageSize);
-                            self.fnpageRange();
-                        }
-                    });
+                    self.fnCheck()
+                        .then(function () {
+                            //검사에 통과하면 집행
+                            $.ajax({
+                                url: "/adad/adadd.dox",
+                                dataType: "json",
+                                type: "POST",
+                                data: param,
+                                success: function (data) {
+                                    alert("광고가 추가되었습니다.");
+                                }
+                            });
+                        })
+                        .catch(function () {
+                            //검사에 통과하지 않으면 집행x
+                            console.log("업로드 중단됨");
+                        });
+
+                },
+
+
+                fnCheck: function () {
+                    //promise:먼저fnCheck를 집행하고 다음을 집행
+                    return new Promise(function (resolve, reject) {
+                        let self = this;
+                        let param = {
+
+                        };
+                        $.ajax({
+                            url: "/adad/adcheck.dox",
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                if (data.check > 0) {
+                                    alert("진행 중인 광고가 있습니다. 스케줄을 확인하시기 바람니다.");
+                                    reject();
+                                } else {
+                                    resolve();
+                                }
+                            }
+                        });
+                    })
                 },
 
 
 
 
                 //수정 페이지로 이동
-                // fnEdit: function (adId) {
-                //     pageChange("/admin/adedit.do", { adId: adId });
-                // },
+                fnEdit: function (adId) {
+                    pageChange("/admin/adedit.do", { adId: adId });
+                },
+
+
 
 
                 //페이징 메소드:모든 수량의 페이징을 처리
@@ -278,6 +302,8 @@
                     self.fnAdList();
 
                 },
+
+
 
                 fnAdminMain: function () {
                     location.href = "/admin/main.do";

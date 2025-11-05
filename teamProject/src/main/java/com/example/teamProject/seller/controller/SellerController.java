@@ -1,8 +1,11 @@
 package com.example.teamProject.seller.controller;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -77,7 +80,35 @@ public class SellerController {
         return "/seller/sellerReview";
     }
 	
+	@RequestMapping("/seller/order/addOption.do") 
+    public String addOption(Model model) throws Exception{
+
+        return "/seller/orderOptionAdd";
+    }
 	
+	@RequestMapping("/seller/order/calendarView.do") 
+    public String calendarView(Model model) throws Exception{
+		
+        return "/seller/calendarView";
+    }
+	
+	@RequestMapping("/seller/userUpdateInfo.do") 
+    public String updateInfo(Model model) throws Exception{
+		
+        return "/seller/sellerUpdateInfo";
+    }
+	
+	@RequestMapping("/seller/storeInfoupdateInfo.do") 
+    public String storeInfo(Model model) throws Exception{
+		
+        return "/seller/storeUpdateInfo";
+    }
+	
+	@RequestMapping("/seller/sellerViewQnA.do") 
+    public String QnA(Model model) throws Exception{
+		
+        return "/seller/sellerViewQnA";
+    }
 	@RequestMapping(value = "/seller/orderList.dox",  method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String orderList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
@@ -173,10 +204,7 @@ public class SellerController {
         }
     }
 
-    /**
-     * [새로운 메시지 전송]
-     * POST /api/seller/chat/message
-     */
+  
     @PostMapping("/api/seller/chat/message")
     @ResponseBody
     public ResponseEntity<String> sendMessage(@RequestBody Seller message) {
@@ -204,10 +232,7 @@ public class SellerController {
         }
     }
 
-    /**
-     * [채팅 메시지 읽음 처리]
-     * PATCH /api/seller/chat/{orderId}/read?readerId={readerId}
-     */
+
     @PatchMapping("/api/seller/chat/{orderId}/read")
     @ResponseBody
     public ResponseEntity<String> markMessagesAsRead(
@@ -259,4 +284,145 @@ public class SellerController {
         return resultMap; // Map 객체를 JSON으로 변환하여 Vue.js에 응답합니다.
     }
     
+    
+    @RequestMapping("/seller/optionAdd.dox")
+    @ResponseBody
+    public Map<String, Object> optionAdd(
+        @RequestParam("orderId") String orderId,
+        @RequestParam("addOptionPrice") int addOptionPrice,
+        @RequestParam(value = "letteringWord", defaultValue = "문구없음") String letteringWord) {
+        
+        Map<String, Object> resultMap = new HashMap<>();
+        Map<String, Object> paramMap = new HashMap<>();
+        
+        paramMap.put("orderId", orderId);
+        paramMap.put("addOptionPrice", addOptionPrice);
+        paramMap.put("letteringWord", letteringWord);
+
+        try {
+            boolean success = sellerService.addOrderOptions(paramMap);
+
+            if (success) {
+                resultMap.put("status", "success");
+                resultMap.put("message", "옵션 정보가 성공적으로 업데이트되었습니다.");
+            } else {
+                resultMap.put("status", "fail");
+                resultMap.put("message", "옵션 정보 업데이트에 실패했습니다. (DB 오류 또는 대상 없음)");
+            }
+        } catch (Exception e) {
+            resultMap.put("status", "error");
+            resultMap.put("message", "서버 처리 중 예외가 발생했습니다: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return resultMap;
+    }
+    
+    @RequestMapping(value = "/seller/calendar.dox", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Map<String, Object>> getPickupSchedule(
+            @RequestParam("userId") String userId,
+            @RequestParam("start") String start,
+            @RequestParam("end") String end) {
+
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("userId", userId);
+        paramMap.put("start", start);
+        paramMap.put("end", end);
+
+        try {
+            List<Map<String, Object>> pickupList = sellerService.selectPickupSchedule(paramMap);
+
+            // 🔎 디버깅용 로그 — 데이터 구조 확인
+            for (Map<String, Object> map : pickupList) {
+                System.out.println(">>> ORDER_ID=" + map.get("ORDER_ID")
+                    + " / START=" + map.get("PICKUP_START_DATE")
+                    + " / END=" + map.get("PICKUP_END_DATE"));
+            }
+
+            System.out.println("픽업 일정 조회 성공 (userId: " + userId + ", 건수: " + pickupList.size() + ")");
+            return pickupList;
+        } catch (Exception e) {
+            System.err.println("픽업 일정 조회 실패 (userId: " + userId + ")");
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+ 
+    @RequestMapping(value = "/seller/info.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String getSellerInfo(@RequestParam HashMap<String, Object> map) throws Exception {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        try {
+      
+            System.out.println("📥 [INFO] 요청 파라미터: " + map);
+
+            resultMap = sellerService.getSellerInfo(map);
+
+   
+            System.out.println("📤 [INFO] 조회 결과: " + resultMap);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultMap.put("result", "error");
+            resultMap.put("message", "판매자 정보 조회 중 오류 발생: " + e.getMessage());
+            System.out.println("❌ [ERROR] 판매자 정보 조회 실패: " + e.getMessage());
+        }
+        return new Gson().toJson(resultMap);
+    }
+    
+    @RequestMapping(value = "/store/storeinfo.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String getStoreInfo(@RequestParam HashMap<String, Object> map) throws Exception {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        try {
+      
+            System.out.println("📥 [INFO] 요청 파라미터: " + map);
+
+            resultMap = sellerService.getStoreInfo(map);
+
+   
+            System.out.println("📤 [INFO] 조회 결과: " + resultMap);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultMap.put("result", "error");
+            resultMap.put("message", "판매자 정보 조회 중 오류 발생: " + e.getMessage());
+            System.out.println("❌ [ERROR] 판매자 정보 조회 실패: " + e.getMessage());
+        }
+        return new Gson().toJson(resultMap);
+    }
+    // ✅ 판매자 정보 수정
+    @RequestMapping(value = "/seller/updateInfo.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String updateSellerInfo(@RequestParam HashMap<String, Object> map) throws Exception {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        try {
+            resultMap = sellerService.updateSellerInfo(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultMap.put("result", "error");
+            resultMap.put("message", "판매자 정보 수정 중 오류 발생: " + e.getMessage());
+        }
+        return new Gson().toJson(resultMap);
+    }
+    
+    @RequestMapping(value = "/seller/qnaList.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String qnAListByProNo(@RequestParam HashMap<String, Object> map) throws Exception {
+        HashMap<String, Object> resultMap = new HashMap<String, Object>();
+        
+        try {
+            resultMap = sellerService.getQnAListByProNo(map);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultMap.put("result", "error");
+            resultMap.put("message", "QnA 목록 조회 중 오류 발생: " + e.getMessage());
+        }
+        
+        return new Gson().toJson(resultMap);
+    }
+
 }

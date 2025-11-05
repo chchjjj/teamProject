@@ -87,7 +87,15 @@ public class ProductService {
 		return resultMap;
 		
 	}
-	
+	// 장바구니 수량업뎃
+	public HashMap<String, Object> updateCart(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		int cnt2 = ProductMapper.updateCartQ(map);
+		resultMap.put("result", "success");
+		return resultMap;
+			
+	}
 	//장바구니 추가
 	@Transactional
 	public HashMap<String, Object> insertCart(HashMap<String, Object> map) {
@@ -208,4 +216,6 @@ public class ProductService {
 				return resultMap;
 				
 			}
+		
+		
 }

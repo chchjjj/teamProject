@@ -175,28 +175,28 @@
             methods: {
                 // 함수(메소드) - (key : function())
                 fnUser: function () {
-                let self = this;
-                let param = {
-                    userId:self.userId
-                };
-                $.ajax({
-                    url: "/aduser/view.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-                        self.user=data.user;
-                        self.userId=data.user.userId;
-                        self.userName=data.user.userName;
-                        self.phone=data.user.phone;
-                        self.email=data.user.email;
-                        self.userAddr=data.user.userAddr;
-                        self.userStatus=data.user.userStatus;
-                        self.joinCdate=data.user.joinCdate;
-                        self.role=data.user.role;
-                        
-                    }
-                });
+                    let self = this;
+                    let param = {
+                        userId:self.userId
+                    };
+                    $.ajax({
+                        url: "/aduser/view.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            self.user=data.user;
+                            self.userId=data.user.userId;
+                            self.userName=data.user.userName;
+                            self.phone=data.user.phone;
+                            self.email=data.user.email;
+                            self.userAddr=data.user.userAddr;
+                            self.userStatus=data.user.userStatus;
+                            self.joinCdate=data.user.joinCdate;
+                            self.role=data.user.role;
+                            
+                        }
+                    });
             },
             fnEdit: function () {
                 let self = this;

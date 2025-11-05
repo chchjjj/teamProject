@@ -1,5 +1,7 @@
 package com.example.teamProject.admin.controller;
 
+import java.io.File;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.teamProject.admin.dao.AdminService;
 import com.example.teamProject.user.dao.UserService;
@@ -69,6 +72,12 @@ public class AdminController {
        return "/admin/admin-ad"; 
    }
 	
+	@RequestMapping("/admin/adedit.do")
+    public String ad(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{
+		request.setAttribute("adId",map.get("adId"));
+        return "/admin/admin-adEdit";
+	}
+	
 	@RequestMapping("/admin/boardManage.do")
 	public String board(Model model) throws Exception{
        return "/admin/admin-boardManage"; 
@@ -96,6 +105,7 @@ public class AdminController {
 	public String monthly(Model model) throws Exception{
        return "/admin/admin-monthlyfee"; 
    }
+	
 	
 	
 	
@@ -343,6 +353,115 @@ public class AdminController {
 		return new Gson().toJson(resultMap);
 	}
 	
+	@RequestMapping(value = "/adad/adcheck.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String adcheck(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		
+		resultMap = adminService.CheckAd(map);
+		System.out.println(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/adad/adadd.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String adadd(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = adminService.AddAd(map);
+		
+		System.out.println(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	//광고 이미지
+	@RequestMapping("/admin/systemimageupload.dox")
+	@ResponseBody
+	public String result(@RequestParam("ad") MultipartFile multi){
+		
+		try {
+			//String uploadpath = request.getServletContext().getRealPath(path);
+			String originFilename = multi.getOriginalFilename();
+			String extName = originFilename.substring(originFilename.lastIndexOf("."),originFilename.length());
+			long size = multi.getSize();
+			String saveFileName = genSaveFileName(extName);
+			
+//			System.out.println("uploadpath : " + uploadpath);
+			System.out.println("originFilename : " + originFilename);
+			System.out.println("extensionName : " + extName);
+			System.out.println("size : " + size);
+			System.out.println("saveFileName : " + saveFileName);
+			String path2 = System.getProperty("user.dir");
+			System.out.println("Working Directory = " + path2 + "\\src\\webapp\\img");
+			if(!multi.isEmpty())
+			{
+				File file = new File(path2 + "\\src\\main\\webapp\\img", saveFileName);
+				multi.transferTo(file);
+				
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("filename", saveFileName);
+				map.put("path", "/img/" + saveFileName);
+				map.put("orgName", originFilename);
+				map.put("size", size);
+				map.put("ext", extName);
+				
+				// insert 쿼리 실행
+				adminService.InsertAdImg(map);
+			   // testService.addBoardImg(map);
+				
+				return "success";
+			}
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return "fail";
+		
+	}
+	    
+	// 현재 시간을 기준으로 파일 이름 생성
+	private String genSaveFileName(String extName) {
+		String fileName = "";
+		
+		Calendar calendar = Calendar.getInstance();
+		fileName += calendar.get(Calendar.YEAR);
+		fileName += calendar.get(Calendar.MONTH);
+		fileName += calendar.get(Calendar.DATE);
+		fileName += calendar.get(Calendar.HOUR);
+		fileName += calendar.get(Calendar.MINUTE);
+		fileName += calendar.get(Calendar.SECOND);
+		fileName += calendar.get(Calendar.MILLISECOND);
+		fileName += extName;
+		
+		return fileName;
+	}
+	
+	
+	@RequestMapping(value = "/adad/view.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String adview(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = adminService.SelectAd(map);
+		
+		System.out.println(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	
+	@RequestMapping(value = "/adad/update.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String adupdate(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = adminService.UpdateAd(map);
+		
+		System.out.println(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
 	
 	//monthly fee
 	
@@ -353,6 +472,18 @@ public class AdminController {
         return new Gson().toJson(resultMap);
     }
 	
+	
+	//revenue
+	@RequestMapping(value = "/adrevenue/view.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String revenueview(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = adminService.SelectRevenue(map);
+		
+		System.out.println(map);
+		
+		return new Gson().toJson(resultMap);
+	}
 
 
 

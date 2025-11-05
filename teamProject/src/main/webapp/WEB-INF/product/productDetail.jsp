@@ -67,9 +67,7 @@
 
                                 </div>
                                 <div class="delivery-type-radios" style="margin-bottom: 10px;">
-                                    <label>
-                                        <input type="radio" v-model="deliveryType" value="P"> 픽업
-                                    </label>
+                                    
                                     <label :class="{ 'disabled-label': infoList.deliveryYn === 'N' }">
                                         <input type="radio" v-model="deliveryType" value="D"
                                             :disabled="infoList.deliveryYn === 'N'"> 배송
@@ -77,12 +75,16 @@
                                     <span v-if="infoList.deliveryYn === 'N'" class="delivery-yn-info">
                                         (배송 불가 상품)
                                     </span>
+                                    <label>
+                                        <input type="radio" v-model="deliveryType" value="P"> 픽업(장바구니에 담을시 날짜선택은 최종 결제단계에서 진행됩니다.)
+                                    </label>
                                 </div>
                                 <div class="delivery-date-selection">
                                     <input type="text" id="deliveryDateInput" class="date-input">
                                     <button class="delivery-date-btn" @click="openCalendar">
                                         {{ selectedDateDisplay }}
                                     </button>
+                                    
                                 </div>
 
                                 <div class="option-selectors">
@@ -233,11 +235,11 @@
                     total *= this.totalQuantity;
 
                     // 4️⃣ 🚚 배송비 추가 (배송 유형이 'DELIVERY'이고, 배송비 정보가 있을 경우)
-                    if (this.deliveryType === 'DELIVERY' && this.infoList.deliveryFee !== undefined && this.infoList.deliveryFee !== null) {
+                    if (this.deliveryType === 'D' && this.infoList.deliveryFee !== undefined && this.infoList.deliveryFee !== null) {
+                        // 'DELIVERY' 대신 'D'로 변경
                         // 배송비는 전체 수량에 곱하지 않고 한 번만 추가됩니다.
                         total += Number(this.infoList.deliveryFee);
                     }
-
                     return total;
                 }
             },
@@ -264,15 +266,15 @@
                     }
                     subOptionList = JSON.stringify(subOptionList);
                     if (self.isChatRequested === 'Y') {
-                        alert("채팅방으로 이동합니다.")
+                        alert("채팅방이 개설되었습니다. 마이페이지에서 확인해주세요.")
                         let param = {
-                            chatYn: 'N',
+                            chatYn: 'Y',
                             userId: self.userId,
                             proNo: self.proNo,
                             storeId: self.infoList.storeId,
                             orderQuantity: self.totalQuantity,
                             totalPrice: self.totalPrice,
-                            totalQuantity : self.totalQuantity,
+                            totalQuantity: self.totalQuantity,
                             deliveryType: self.deliveryType,
                             deliveryDate: self.selectedDate,
                             letteringWord: self.letteringText,
@@ -311,7 +313,7 @@
                             storeId: self.infoList.storeId,
                             orderQuantity: self.totalQuantity,
                             totalPrice: self.totalPrice,
-                            totalQuantity : self.totalQuantity,
+                            totalQuantity: self.totalQuantity,
                             deliveryType: self.deliveryType,
                             deliveryDate: self.selectedDate,
                             letteringWord: self.letteringText,
@@ -467,27 +469,57 @@
                         }
                     }
                     subOptionList = JSON.stringify(subOptionList); // 백앤드로 리스트를 넘기는게 안되므로 리스트를 제이슨형태로 변환 후 파람으로 넘겨줘야함
-
-                    let param = {
-                        userId: self.userId,
-                        proNo: self.proNo,
-                        storeId: self.infoList.storeId,
-                        cartQuantity: self.totalQuantity,
-                        totalPrice: self.totalPrice,
-                        letteringText: self.letteringText,
-                        subOptionList: subOptionList // 옵션 리스트
-                    };
-                    console.log("장바구니 전송 데이터:", param);
-                    console.log("subOptionList", subOptionList);
-                    $.ajax({
-                        url: "/product/cartInsert.dox",
-                        dataType: "json",
-                        type: "POST",
-                        data: param,
-                        success: function (data) {
-                            alert("장바구니에 추가되었습니다.")
-                        }
-                    });
+                    if (self.isChatRequested === 'Y') {
+                        let param = {
+                            chatYn: 'Y',
+                            userId: self.userId,
+                            proNo: self.proNo,
+                            storeId: self.infoList.storeId,
+                            cartQuantity: self.totalQuantity,
+                            totalPrice: self.totalPrice,
+                            letteringText: self.letteringText,
+                            subOptionList: subOptionList, // 옵션 리스트
+                            isChatRequested: self.isChatRequested, // 채팅여부
+                            deliveryFee: self.infoList.deliveryFee, //배송비
+                            deliveryType: self.deliveryType // 픽업 배송
+                        };
+                        console.log("장바구니 전송 데이터:", param);
+                        console.log("subOptionList", subOptionList);
+                        $.ajax({
+                            url: "/product/cartInsert.dox",
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                alert("장바구니에 추가되었습니다.")
+                            }
+                        });
+                    } else {
+                        let param = {
+                            chatYn: 'N',
+                            userId: self.userId,
+                            proNo: self.proNo,
+                            storeId: self.infoList.storeId,
+                            cartQuantity: self.totalQuantity,
+                            totalPrice: self.totalPrice,
+                            letteringText: self.letteringText,
+                            subOptionList: subOptionList, // 옵션 리스트
+                            isChatRequested: self.isChatRequested, // 채팅여부
+                            deliveryFee: self.infoList.deliveryFee, //배송비
+                            deliveryType: self.deliveryType // 픽업 배송
+                        };
+                        console.log("장바구니 전송 데이터:", param);
+                        console.log("subOptionList", subOptionList);
+                        $.ajax({
+                            url: "/product/cartInsert.dox",
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                alert("장바구니에 추가되었습니다.")
+                            }
+                        });
+                    }
                 },
                 // 그룹화 함수
                 groupOptions() {
