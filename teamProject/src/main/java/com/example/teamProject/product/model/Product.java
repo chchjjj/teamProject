@@ -9,6 +9,14 @@ public class Product {
 		private String userId;
 		private String storeId;
 		private String userName;
+		private String userAddr;
+		private String phone;
+		
+		// 스토어 정보
+		private String storeIntro;
+		private String chatStart;
+		private String chatEnd;
+		private String storeArea;
 		
 		// 상품 정보
 		private int proNo;
@@ -22,6 +30,7 @@ public class Product {
 		private String createdAt; // 상품등록일 
 		private String lettering;
 		private String deliveryYn;
+		private String storeAddr;
 		
 		// 판매자 채팅 가능여부 (Y/N)
 		private String isChatEnabled;
@@ -46,6 +55,8 @@ public class Product {
 		private int cartQuantity;
 		private int totalPrice;
 		private String letteringText;
+		
+		private String wishAt;
 		
 		
 		//장바구니 옵션

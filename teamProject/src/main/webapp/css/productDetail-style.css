@@ -77,9 +77,16 @@ body {
 }
 
 .store-name {
-    color: #666;
+    color: #616161; /* 기본 링크색 (파란색) */
     font-size: 20px;
     margin-bottom: 5px;
+    cursor: pointer; /* 마우스 커서를 손가락 모양으로 */
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.store-name:hover {
+    color: #006bdd; /* hover 시 더 진한 파란색 */
+    
 }
 
 .price-and-action {

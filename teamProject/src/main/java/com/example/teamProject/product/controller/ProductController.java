@@ -16,6 +16,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 public class ProductController {
 
@@ -39,7 +41,19 @@ public class ProductController {
 
         return "/product/wishList";
     }
+	@RequestMapping("/product/sellerStore.do") 
+    public String sellerStore(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{
+		request.setAttribute("storeId", map.get("storeId"));
+        return "/product/sellerStorePage";
+    }
 	
+	@RequestMapping(value = "/product/userInfo.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String userInfo(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = ProductService.getUserInfo(map);
+		return new Gson().toJson(resultMap);
+	}
 	@RequestMapping(value = "/product/info.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String info(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
@@ -47,7 +61,13 @@ public class ProductController {
 		resultMap = ProductService.getProInfo(map);
 		return new Gson().toJson(resultMap);
 	}
-	
+	@RequestMapping(value = "/product/sellerInfo.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String sellerInfo(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = ProductService.getStoreInfo(map);
+		return new Gson().toJson(resultMap);
+	}
 	@RequestMapping(value = "/product/TopOptlist.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String TopOptlist(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
@@ -71,7 +91,13 @@ public class ProductController {
 		resultMap = ProductService.getCartList(map);
 		return new Gson().toJson(resultMap);
 	}
-	
+	@RequestMapping(value = "/product/wishList.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String wishList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = ProductService.Wishlist(map);
+		return new Gson().toJson(resultMap);
+	}
 	@RequestMapping(value = "/product/cartDelete.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String cartDelete(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
@@ -176,7 +202,7 @@ public class ProductController {
 	    // cartList를 서비스에 전달하기 위해 map에 담기
 	    map.put("cartList", cartList);
 	    map.put("userId", userId);
-	    System.out.println(map);
+	    System.out.println("1맵"+map);
 	
 	    resultMap = ProductService.insertCartToOrder(map);
 

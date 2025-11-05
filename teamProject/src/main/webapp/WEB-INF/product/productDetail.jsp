@@ -51,7 +51,7 @@
 
                             <div class="option-section">
                                 <h2 class="product-name">{{infoList.proName}}</h2>
-                                <p class="store-name">{{infoList.storeName}}</p>
+                                <p class="store-name" @click="fnSeller(infoList.storeId)">{{infoList.storeName}}</p>
                                 <div>{{infoList.proInfo}}</div>
                                 <div class="price-and-action">
                                     <p class="price">{{infoList.price}} 원~</p>
@@ -67,7 +67,7 @@
 
                                 </div>
                                 <div class="delivery-type-radios" style="margin-bottom: 10px;">
-                                    
+
                                     <label :class="{ 'disabled-label': infoList.deliveryYn === 'N' }">
                                         <input type="radio" v-model="deliveryType" value="D"
                                             :disabled="infoList.deliveryYn === 'N'"> 배송
@@ -76,7 +76,8 @@
                                         (배송 불가 상품)
                                     </span>
                                     <label>
-                                        <input type="radio" v-model="deliveryType" value="P"> 픽업(장바구니에 담을시 날짜선택은 최종 결제단계에서 진행됩니다.)
+                                        <input type="radio" v-model="deliveryType" value="P"> 픽업(장바구니에 담을시 날짜선택은 최종
+                                        결제단계에서 진행됩니다.)
                                     </label>
                                 </div>
                                 <div class="delivery-date-selection">
@@ -84,7 +85,7 @@
                                     <button class="delivery-date-btn" @click="openCalendar">
                                         {{ selectedDateDisplay }}
                                     </button>
-                                    
+
                                 </div>
 
                                 <div class="option-selectors">
@@ -171,6 +172,7 @@
                     // 변수 - (key : value)
                     proNo: "${proNo}",
                     userId: "${sessionId}", // 로그인 했을 시 전달 받은 아이디
+                    userInfo: {},
                     infoList: {},
                     topList: [],
                     allOptList: [],
@@ -270,7 +272,7 @@
                         // 'D' (배송)일 경우에만 실제 배송비를 사용합니다.
                         finalDeliveryFee = self.infoList.deliveryFee;
                     }
-                    if (self.isChatRequested === 'Y') {
+                    if (self.isChatRequested === 'Y') { // 채팅신청한 경우
                         alert("채팅방이 개설되었습니다. 마이페이지에서 확인해주세요.")
                         let param = {
                             chatYn: 'Y',
@@ -281,7 +283,6 @@
                             totalPrice: self.totalPrice,
                             totalQuantity: self.totalQuantity,
                             deliveryType: self.deliveryType,
-                            deliveryDate: self.selectedDate,
                             letteringWord: self.letteringText,
                             isChatRequested: self.isChatRequested,
                             subOptionList: subOptionList, // 옵션 리스트
@@ -289,6 +290,15 @@
                             deliveryFee: finalDeliveryFee, // ORDER_TBL에 저장
                             productPrice: self.infoList.price, // 상품 단가 정보
                             proName: self.infoList.proName,
+
+                            // 배송 테이블에 넣을 것
+                            userName: self.userInfo.userName,
+                            phone: self.userInfo.phone,
+                            address: self.userInfo.address,
+                            deliveryDate: self.selectedDate,
+
+                            // 픽업 테이블에 넣을 것
+                            storeAddr : self.infoList.storeAddr,
                         };
                         console.log("주문 데이터:", param);
                         $.ajax({
@@ -310,7 +320,7 @@
                             }
                         });
 
-                    } else {
+                    } else { // 채팅신청 안한 경우
                         let param = {
                             chatYn: 'N',
                             userId: self.userId,
@@ -328,6 +338,17 @@
                             deliveryFee: finalDeliveryFee, // ORDER_TBL에 저장
                             productPrice: self.infoList.price, // 상품 단가 정보
                             proName: self.infoList.proName,
+
+                            // 배송 테이블에 넣을 것
+                            userName: self.userInfo.userName,
+                            phone: self.userInfo.phone,
+                            address: self.userInfo.userAddr,
+
+                            // 픽업 테이블에 넣을 것
+                            storeAddr : self.infoList.storeAddr,
+
+
+                            deliveryDate: self.selectedDate
                         };
                         console.log("주문 데이터:", param);
                         $.ajax({
@@ -368,7 +389,6 @@
                         success: function (data) {
                             console.log(data.info);
                             self.infoList = data.info;
-
                         }
                     });
                 },
@@ -491,7 +511,15 @@
                             subOptionList: subOptionList, // 옵션 리스트
                             isChatRequested: self.isChatRequested, // 채팅여부
                             deliveryFee: finalDeliveryFee, //배송비
-                            deliveryType: self.deliveryType // 픽업 배송
+                            deliveryType: self.deliveryType, // 픽업 배송
+                            // 배송 테이블에 넣을 것
+                            userName: self.userInfo.userName,
+                            phone: self.userInfo.phone,
+                            address: self.userInfo.address,
+                            deliveryDate: self.selectedDate,
+
+                            // 픽업 테이블에 넣을 것
+                            storeAddr : self.infoList.storeAddr,
                         };
                         console.log("장바구니 전송 데이터:", param);
                         console.log("subOptionList", subOptionList);
@@ -516,7 +544,16 @@
                             subOptionList: subOptionList, // 옵션 리스트
                             isChatRequested: self.isChatRequested, // 채팅여부
                             deliveryFee: finalDeliveryFee, //배송비
-                            deliveryType: self.deliveryType // 픽업 배송
+                            deliveryType: self.deliveryType, // 픽업 배송
+
+                            // 배송 테이블에 넣을 것
+                            userName: self.userInfo.userName,
+                            phone: self.userInfo.phone,
+                            address: self.userInfo.address,
+                            deliveryDate: self.selectedDate,
+
+                            // 픽업 테이블에 넣을 것
+                            storeAddr : self.infoList.storeAddr,
                         };
                         console.log("장바구니 전송 데이터:", param);
                         console.log("subOptionList", subOptionList);
@@ -595,7 +632,12 @@
                         inline: false,
                         minDate: "today",
                         disable: self.disabledDates,
-
+                        positionElement: document.querySelector(".delivery-date-btn"),
+                        onChange(selectedDates, dateStr) {
+                            if (selectedDates.length > 0) {
+                                self.selectedDate = dateStr;
+                            }
+                        },
                         onChange: function (selectedDates, dateStr, instance) {
                             if (selectedDates.length > 0) {
                                 // 선택된 날짜+시간 문자열을 Vue data에 저장
@@ -661,6 +703,26 @@
                             }
                         });
                     }
+                },
+                fnUserInfo: function () {
+                    let self = this;
+                    let param = {
+                        userId: "${sessionId}",
+                    };
+                    $.ajax({
+                        url: "/product/userInfo.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            console.log(data.info);
+                            self.userInfo = data.info;
+                        }
+                    });
+                },
+                fnSeller : function (storeId) {
+                    let self = this;
+                    pageChange("/product/sellerStore.do", { storeId: storeId });
                 }
 
 
@@ -673,7 +735,7 @@
                 self.fnTopOpt();
                 self.fnAllOpt();
                 self.fnCheckWish();
-
+                self.fnUserInfo();
                 // 임시로, 모든 데이터가 로드될 시간을 주고 그룹화 함수 실행 (비동기 이슈 발생 가능)
                 setTimeout(() => {
                     self.groupOptions();
