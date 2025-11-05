@@ -28,10 +28,14 @@
     
     <%@ include file="/WEB-INF/main/header.jsp" %>
         <div id="app">
-            <div>
-                <label>픽업: <input type="radio" v-model="deliveryType" value="P"></label>
-                <br>
-                <label>배송: <input type="radio" v-model="deliveryType" value="D"></label>
+            <div v-for="item in orderList">
+                <div>
+                    상품명: {{item.proName}}
+                </div>
+                <div>
+                    배송 선택: {{item.deliveryType}}
+                </div>
+                <hr>
             </div>
             <div>
                 배송지: <button>배송지선택</button>
@@ -42,6 +46,8 @@
             <div>
                 전화번호: {{toPhone}}
             </div>
+            
+
             <div>
                 <button>취소하기</button>
 
@@ -65,7 +71,7 @@
                 toName: "${sessionName}", //받을 사람
                 toPhone: "${sessionPhone}", //받을 사람의 휴대폰 번호
                 orderList: [], //화면에 보이는 정보, 배송 정보 확정 전 단계, ORDER_TBL + ORDER_DETAIL_TBL + ORDER_OPTION_TBL
-                deliveryType : "D", // 배송 또는 픽업 선택
+                
                 
                 //order 관련 변수
                 // 1. 바로 구매 버튼을 누른 경우 order 테이블에서 사용 / 2. 장바구니 담고 나서 구매하는 경우 바로 이 페이지에서 생성한 주문번호
@@ -123,8 +129,6 @@
             fnDelivery: function(){
                 let self = this;
                 let param = {
-                    //일단은 배송/픽업 선택 바뀌는지만 보도록 하겠음
-                    deliveryType : self.deliveryType,
                     orderId : self.orderId
                 };
                 $.ajax({

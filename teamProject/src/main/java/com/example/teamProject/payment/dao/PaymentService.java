@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class PaymentService {
 
 	@Autowired
-	PaymentMapper paymentMapper;
+	PaymentMapper paymentMapper; 
 	
 	public HashMap<String, Object> getOrderList(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();

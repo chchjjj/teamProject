@@ -38,17 +38,17 @@ public class PaymentController {
 		String selectItemJson = (String) map.get("orderIdList");
 
 		// JSON → List 변환 (Gson 사용)
-		List<String> cartIdList = new ArrayList<>();
+		List<String> orderIdList = new ArrayList<>();
 		if (selectItemJson != null && !selectItemJson.isEmpty()) {
 			Gson gson = new Gson();
-			cartIdList = gson.fromJson(selectItemJson, new TypeToken<List<String>>() {
+			orderIdList = gson.fromJson(selectItemJson, new TypeToken<List<String>>() {
 			}.getType());
 		}
 
 		// JSP에서 쓸 수 있도록 model에 담기
-		model.addAttribute("orderIdList", cartIdList);
+		model.addAttribute("orderIdList", orderIdList);
 
-		System.out.println("cart.do에서 넘어온 orderIdList 목록: " + cartIdList);
+		System.out.println("cart.do에서 넘어온 orderIdList 목록: " + orderIdList);
 
 		// 결제 페이지로 이동
 		return "/payment/payment";
