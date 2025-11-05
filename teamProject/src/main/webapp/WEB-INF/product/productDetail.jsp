@@ -265,6 +265,11 @@
                         }
                     }
                     subOptionList = JSON.stringify(subOptionList);
+                    let finalDeliveryFee = 0;
+                    if (self.deliveryType === 'D') {
+                        // 'D' (배송)일 경우에만 실제 배송비를 사용합니다.
+                        finalDeliveryFee = self.infoList.deliveryFee;
+                    }
                     if (self.isChatRequested === 'Y') {
                         alert("채팅방이 개설되었습니다. 마이페이지에서 확인해주세요.")
                         let param = {
@@ -281,7 +286,7 @@
                             isChatRequested: self.isChatRequested,
                             subOptionList: subOptionList, // 옵션 리스트
                             storeName: self.infoList.storeName, // ORDER_TBL에 저장
-                            deliveryFee: self.infoList.deliveryFee, // ORDER_TBL에 저장
+                            deliveryFee: finalDeliveryFee, // ORDER_TBL에 저장
                             productPrice: self.infoList.price, // 상품 단가 정보
                             proName: self.infoList.proName,
                         };
@@ -320,7 +325,7 @@
                             isChatRequested: self.isChatRequested,
                             subOptionList: subOptionList, // 옵션 리스트
                             storeName: self.infoList.storeName, // ORDER_TBL에 저장
-                            deliveryFee: self.infoList.deliveryFee, // ORDER_TBL에 저장
+                            deliveryFee: finalDeliveryFee, // ORDER_TBL에 저장
                             productPrice: self.infoList.price, // 상품 단가 정보
                             proName: self.infoList.proName,
                         };
@@ -469,6 +474,11 @@
                         }
                     }
                     subOptionList = JSON.stringify(subOptionList); // 백앤드로 리스트를 넘기는게 안되므로 리스트를 제이슨형태로 변환 후 파람으로 넘겨줘야함
+                    let finalDeliveryFee = 0;
+                    if (self.deliveryType === 'D') {
+                        // 'D' (배송)일 경우에만 실제 배송비를 사용합니다.
+                        finalDeliveryFee = self.infoList.deliveryFee;
+                    }
                     if (self.isChatRequested === 'Y') {
                         let param = {
                             chatYn: 'Y',
@@ -480,7 +490,7 @@
                             letteringText: self.letteringText,
                             subOptionList: subOptionList, // 옵션 리스트
                             isChatRequested: self.isChatRequested, // 채팅여부
-                            deliveryFee: self.infoList.deliveryFee, //배송비
+                            deliveryFee: finalDeliveryFee, //배송비
                             deliveryType: self.deliveryType // 픽업 배송
                         };
                         console.log("장바구니 전송 데이터:", param);
@@ -505,7 +515,7 @@
                             letteringText: self.letteringText,
                             subOptionList: subOptionList, // 옵션 리스트
                             isChatRequested: self.isChatRequested, // 채팅여부
-                            deliveryFee: self.infoList.deliveryFee, //배송비
+                            deliveryFee: finalDeliveryFee, //배송비
                             deliveryType: self.deliveryType // 픽업 배송
                         };
                         console.log("장바구니 전송 데이터:", param);

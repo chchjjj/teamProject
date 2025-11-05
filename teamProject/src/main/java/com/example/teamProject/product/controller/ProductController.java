@@ -159,15 +159,27 @@ public class ProductController {
 		return new Gson().toJson(resultMap);
 	}
 	
-//	@RequestMapping(value = "/product/cartToOrder.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//	@ResponseBody
-//	public String cartToOrder(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
-//		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-//		String json = map.get("subOptionList").toString(); //제이슨형태로 바꾸기 
-//		ObjectMapper mapper = new ObjectMapper();
-//		List<HashMap<String, Object>> list = mapper.readValue(json, new TypeReference<List<HashMap<String, Object>>>(){});
-//		map.put("list", list); //리스트에 옵션에 대한 정보가 담김
-//		resultMap = ProductService.insertOrder(map);
-//		return new Gson().toJson(resultMap);
-//	}
+	@RequestMapping(value = "/product/cartToOrder.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String cartToOrder(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    ObjectMapper mapper = new ObjectMapper();
+
+	    String userId = (String) map.get("userId");
+	    
+	    // JSON 문자열을 자바 객체로 변환
+	    String json = (String) map.get("cartItems");
+	    List<HashMap<String, Object>> cartList = mapper.readValue(
+	        json, new TypeReference<List<HashMap<String, Object>>>() {}
+	    );
+	 
+	    // cartList를 서비스에 전달하기 위해 map에 담기
+	    map.put("cartList", cartList);
+	    map.put("userId", userId);
+	    System.out.println(map);
+	
+	    resultMap = ProductService.insertCartToOrder(map);
+
+	    return new ObjectMapper().writeValueAsString(resultMap);
+	}
 }

@@ -1,5 +1,6 @@
 package com.example.teamProject.product.dao;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -10,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.teamProject.main.model.Main;
 import com.example.teamProject.product.mapper.ProductMapper;
 import com.example.teamProject.product.model.Product;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class ProductService {
@@ -66,6 +69,7 @@ public class ProductService {
 		
 		try {
 			List<Product> list = ProductMapper.cart(map);			
+			System.out.println(list);;
 			resultMap.put("list", list); 
 			resultMap.put("result", "success");
 		} catch (Exception e) {
@@ -217,5 +221,90 @@ public class ProductService {
 				
 			}
 		
+		@Transactional
+	    public HashMap<String, Object> insertCartToOrder(HashMap<String, Object> map) {
+			HashMap<String, Object> resultMap = new HashMap<>();
+
+	        List<HashMap<String, Object>> cartList = 
+	            (List<HashMap<String, Object>>) map.get("cartList");
+	        System.out.println("맵=>" +map);
+	        System.out.println("카트리스트=>" +cartList);
+	        if (cartList == null || cartList.isEmpty()) {
+	            resultMap.put("result", "fail");
+	            resultMap.put("message", "주문할 상품이 없습니다.");
+	            return resultMap;
+	        }
+
+	        List<Object> orderIdList = new ArrayList<>();
+	        for (int i = 0; i < cartList.size(); i++) {
+	            HashMap<String, Object> cart = cartList.get(i);
+	            // 공통 데이터
+	            String userId = (String) map.get("userId");
+	            String storeName = (String) cart.get("storeName");
+	            String letteringWord = (String) cart.get("letteringWord");
+	            int deliveryFee = Integer.parseInt(cart.get("deliveryFee").toString());
+	            int totalPrice = Integer.parseInt(cart.get("totalPrice").toString());
+	            String deliveryType = (String) cart.get("deliveryType");
+	            String chatYn = (String) cart.get("chatYn");
+
+	            // order_tbl로 넘길 데이터 구성
+	            HashMap<String, Object> orderMap = new HashMap<>();
+	            orderMap.put("userId", userId);
+	            orderMap.put("storeName", storeName);
+	            orderMap.put("letteringWord", letteringWord);
+	            orderMap.put("deliveryFee", deliveryFee);
+	            orderMap.put("totalPrice", totalPrice);
+	            orderMap.put("deliveryType", deliveryType);
+	            orderMap.put("chatYn", chatYn);
+
+// 실제 주문 order_tbl 인서트 호출
+	            ProductMapper.insertCartToOrder(orderMap);
+	            
+	            Object orderId = orderMap.get("orderId");
+	            orderIdList.add(orderId); // 리스트에 추가
+	            
+	           // 상세 데이터 insert (ORDER_DETAIL_TBL)
+	            HashMap<String, Object> detailMap = new HashMap<>();
+	    
+	            detailMap.put("proNo", cart.get("proNo"));
+	            detailMap.put("storeId", cart.get("storeId"));
+	            detailMap.put("proName", cart.get("proName"));
+	            detailMap.put("itemQty", cart.get("itemQty")); // 총수량
+	            detailMap.put("defPrice", cart.get("defPrice")); //개당가격
+	            detailMap.put("totalPrice", totalPrice); // 총 가격
+	            detailMap.put("letteringWord", letteringWord);
+	            System.out.println("디테일맵=>" +detailMap);
+	            
+//	            HashMap<String, Object> inputMap = detailMap;
+//				inputMap.put("orderDetailId", map.get("orderDetailId"));
+				detailMap.put("orderDetailId", map.get("orderDetailId"));
+				detailMap.put("orderId", orderMap.get("orderId"));
+				System.out.println("test 번째 맵 ==> " + detailMap);
+				ProductMapper.insertCartToOrderDt(detailMap);
+	            
+				
+				
+	            // 옵션 insert (ORDER_OPTION_TBL)
+	            ObjectMapper mapper = new ObjectMapper();
+	            List<HashMap<String, Object>> optionList = mapper.convertValue(
+	                cart.get("options"), new TypeReference<List<HashMap<String, Object>>>() {}
+	            );
+
+	            for (HashMap<String, Object> opt : optionList) {
+	                HashMap<String, Object> optMap = new HashMap<>();
+	                optMap.put("orderDetailId", detailMap.get("orderDetailId"));
+	                System.out.println("optMap ==> " + optMap);
+	                optMap.put("topOptionId", opt.get("topOptionId"));
+	                optMap.put("subOptionId", opt.get("subOptionId"));
+	                optMap.put("priceDiff", opt.get("subOptPrice"));
+	                optMap.put("cartOptQuantity", opt.get("cartOptQuantity"));
+	                ProductMapper.insertCartToOrderOpt(optMap);
+	            }
+	        }
+	        resultMap.put("orderIdList", orderIdList);
+	        resultMap.put("result", "success");
+	        
+	        return resultMap;
+	    }
 		
 }
