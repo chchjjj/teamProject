@@ -342,23 +342,32 @@ WHERE
         WHERE USER_ID = #{userId}
     </update>
 
-<select id="selectQnAList" parameterType="string" resultType="hashmap">
-  SELECT 
-            QUESTION_ID,
-            PRO_NO,
-            USER_ID,
-            QUESTION_CONTENT,
-            TO_CHAR(QUESTION_DATE, 'YYYY-MM-DD') AS QUESTION_DATE,
-            STORE_ID,
-            ANSWER_CONTENT,
-            TO_CHAR(ANSWER_DATE, 'YYYY-MM-DD') AS ANSWER_DATE,
-            CASE WHEN ANSWER_CONTENT IS NULL OR ANSWER_CONTENT = '답변이 등록되지않았습니다.' THEN 'N' ELSE 'Y' END AS IS_ANSWERED
-        FROM 
-            QA_TBL
-        WHERE 
-            PRO_NO = #{proNo} 
-        ORDER BY 
-            QUESTION_DATE DESC
+<select id="selectQnA" parameterType="string" resultType="hashmap">
+  SELECT
+    p.PRO_NO,                  -- 상품 번호
+    p.PRO_NAME,                -- 상품명
+    p.PRO_TYPE,                -- 상품 종류
+    p.PRICE,                   -- 가격
+    p.STATUS,                  -- 현재 상태
+    q.QUESTION_ID,             -- 질문 ID
+    q.QUESTION_CONTENT,        -- 질문 내용
+    q.QUESTION_DATE,           -- 질문 작성일
+    q.ANSWER_CONTENT,          -- 답변 내용
+    q.ANSWER_DATE,             -- 답변일
+    s.STORE_NAME,              -- 가게 이름
+    s.STORE_ADDR               -- 가게 주소
+FROM
+    QA_TBL q
+JOIN
+    PRODUCT_TBL p ON q.PRO_NO = p.PRO_NO
+JOIN
+    SELLER_INFO_TBL s ON p.STORE_ID = s.STORE_ID
+WHERE
+    s.USER_ID = #{userId}           -- 로그인한 사용자 ID
+    AND p.STORE_NAME = s.STORE_NAME    -- 해당 상품이 로그인한 유저의 가게에 속하는지 확인
+          -- 스윗디저트 가게의 소유자가 로그인한 유저인지 확인
+ORDER BY
+    q.QUESTION_DATE DESC         -- 질문 작성일 기준 내림차순 정렬
 </select>
 
 </mapper>

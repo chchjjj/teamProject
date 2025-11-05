@@ -7,11 +7,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상품 QnA 게시판</title>
-    <script src="https://code.jquery.com/jquery-3.7.1.js" 
-        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" 
-        crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> 
-    
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
     <style>
         /* (CSS 코드는 이전과 동일합니다. 생략) */
         body { margin: 0; font-family: 'Malgun Gothic', sans-serif; background-color: #f4f4f4; }
@@ -57,36 +56,6 @@
             max-width: 500px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
-
-        /* 검색 영역 스타일 추가 */
-        .search-area {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            background-color: #f9f9f9;
-            align-items: center;
-        }
-        .search-area input[type="text"] {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 200px;
-        }
-        .search-button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .search-button:hover {
-            background-color: #1e7e34;
-        }
     </style>
 </head>
 
@@ -96,13 +65,8 @@
         <div class="main-wrapper">
             <div class="content-area">
                 <h1 class="page-title">상품 QnA 게시판</h1>
-                
-                <div class="search-area">
-                    <label for="proNo-input" style="font-weight: bold;">상품 번호 검색:</label>
-                    <input type="text" id="proNo-input" v-model="searchProNo" placeholder="상품 번호를 입력하세요" @keyup.enter="searchQnA">
-                    <button class="search-button" @click="searchQnA">검색</button>
-                </div>
-                <p>현재 조회 중인 상품 번호: **{{ proNo }}**</p>
+
+                <p>현재 조회 중인 가게: **{{ storeName }}**</p>
 
                 <table class="qna-table">
                     <thead>
@@ -125,23 +89,24 @@
                         <tr v-for="(qna, index) in qnaList" :key="qna.questionId">
                             <td>{{ qnaList.length - index }}</td>
                             <td class="content-col">{{ qna.questionContent }}</td>
-                            <td>{{ qna.userId }}</td>
+                            <td>{{ qna.userId }}</td> 
                             <td>{{ qna.questionDate }}</td>
-                            <td :class="qna.isAnswered === 'Y' ? 'status-Y' : 'status-N'">
-                                {{ qna.isAnswered === 'Y' ? '완료' : '미답변' }}
+                            
+                            <td :class="qna.answerContent && qna.answerContent.trim() !== '' ? 'status-Y' : 'status-N'">
+                                {{ qna.answerContent && qna.answerContent.trim() !== '' ? '완료' : '미답변' }}
                             </td>
                             <td>
                                 <button class="action-button" @click="showAnswerModal(qna)">
-                                    {{ qna.isAnswered === 'Y' ? '답변 수정' : '답변 등록' }}
+                                    {{ qna.answerContent && qna.answerContent.trim() !== '' ? '답변 수정' : '답변 등록' }}
                                 </button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                
+
                 <div v-if="isModalOpen" class="modal-backdrop">
                     <div class="modal-content">
-                        <h2>{{ currentQnA.isAnswered === 'Y' ? '답변 수정' : '답변 등록' }}</h2>
+                        <h2>{{ currentQnA.answerContent && currentQnA.answerContent.trim() !== '' ? '답변 수정' : '답변 등록' }}</h2>
                         <p>질문: {{ currentQnA.questionContent }}</p>
                         <textarea v-model="answerText" rows="5" style="width: 100%; margin-bottom: 10px;"></textarea>
                         <div style="display: flex; justify-content: flex-end; gap: 10px;">
@@ -160,53 +125,42 @@
 
         const qnaApp = createApp({
             data() {
-                // 페이지 로드 시 URL 파라미터에서 상품 번호를 가져옵니다.
-                const initialProNo = '<%= request.getParameter("proNo") != null ? request.getParameter("proNo") : "" %>';
+                // 현재 로그인된 사용자의 가게 이름을 서버로부터 받아옵니다.
+                const storeNameFromServer = '<%= request.getAttribute("storeName") != null ? request.getAttribute("storeName") : "" %>';
+                // 세션에서 userId를 가져옵니다. (JSP EL을 사용하려면 ${sessionId} 대신 이렇게 쓰는 것이 안전합니다.)
+                const userIdFromSession = '<%= session.getAttribute("userId") != null ? session.getAttribute("userId") : "" %>'; 
 
                 return {
-                    // **현재 화면에 표시되는 QnA 목록의 상품 번호**
-                    proNo: initialProNo || '1', 
-                    // **검색 입력 필드에 바인딩할 변수**
-                    searchProNo: initialProNo, 
+                    storeName: storeNameFromServer || '스윗디저트',  // 로그인된 사용자의 가게 이름
                     qnaList: [],
                     loading: true,
                     isModalOpen: false,
                     currentQnA: null,
                     answerText: '',
+                    // ⚠️ 세션 값을 가져오는 방식 통일: JSP EL 대신 스크립틀릿이나 위에서 정의한 변수 사용
+                    userId: "${sessionId}",  
                 };
             },
             methods: {
-                // 검색 버튼 클릭 시 호출
-                searchQnA() {
-                    // 1. 입력된 상품 번호로 현재 조회 상품 번호를 업데이트합니다.
-                    if (this.searchProNo.trim()) {
-                        this.proNo = this.searchProNo.trim();
-                        // 2. 새로운 상품 번호로 목록을 다시 불러옵니다.
-                        this.fetchQnAList();
-                    } else {
-                        alert("검색할 상품 번호를 입력해주세요.");
-                    }
-                },
-                
                 // 서버에서 QnA 목록을 불러오는 AJAX 통신 로직
                 fetchQnAList() {
                     this.loading = true;
                     this.qnaList = [];
 
-                    const targetProNo = this.proNo; // 현재 조회 중인 proNo를 사용
+                    const targetStoreName = this.storeName;
 
-                    if (!targetProNo || targetProNo === 'null' || targetProNo.trim() === '') {
-                        console.warn("상품 번호가 없어 목록을 조회하지 않습니다.");
+                    if (!targetStoreName || targetStoreName.trim() === '') {
+                        console.warn("가게 이름이 없어 목록을 조회하지 않습니다.");
                         this.loading = false;
                         return;
                     }
 
                     $.ajax({
-                        url: "/seller/qnaList.dox", 
+                        url: "/seller/qnaList.dox",
                         method: "POST",
                         dataType: "json",
                         data: {
-                            proNo: targetProNo // 현재 proNo 값을 서버에 보냅니다.
+                            userId: this.userId, // 로그인된 사용자 ID를 서버로 전송
                         },
                         success: (res) => {
                             if (res.result === 'success' && res.list) {
@@ -226,12 +180,14 @@
                         }
                     });
                 },
-                
+
                 // 답변 등록/수정 모달을 여는 메서드
                 showAnswerModal(qna) {
                     this.currentQnA = qna;
-                    // 기존 답변이 있으면 텍스트 영역에 채워넣음
-                    this.answerText = qna.answerContent && qna.answerContent !== '답변이 등록되지않았습니다.' ? qna.answerContent : '';
+                    // Model 필드명: answerContent를 사용하여 기존 답변을 채워넣음
+                    // 서버에서 "답변이 등록되지않았습니다." 와 같은 문자열을 보내는 경우를 처리
+                    const answer = qna.answerContent;
+                    this.answerText = (answer && answer.trim() !== '' && answer !== '답변이 등록되지않았습니다.') ? answer : '';
                     this.isModalOpen = true;
                 },
 
@@ -242,17 +198,23 @@
                         return;
                     }
 
-                    // 🚨 [TODO] 답변 등록/수정 AJAX 통신 로직 추가 필요
-                    alert("[임시] 답변 제출: Question ID=" + this.currentQnA.questionId + ", 상품 번호=" + this.proNo);
-                    
+                    // 🚨 [TODO] 답변 등록/수정 AJAX 통신 로직을 여기에 추가해야 합니다.
+                    console.log("답변 제출 데이터:", {
+                        questionId: this.currentQnA.questionId,
+                        answerContent: this.answerText,
+                        // ... 기타 필요한 데이터 (예: 판매자 ID)
+                    });
+
+                    alert("[임시] 답변 제출: Question ID=" + this.currentQnA.questionId + " (실제 통신 로직 구현 필요)");
+
                     // 성공했다고 가정하고 모달 닫고 목록 새로고침
                     this.isModalOpen = false;
-                    this.fetchQnAList(); 
+                    this.fetchQnAList();
                 }
             },
             mounted() {
-                // 페이지 로드 시 초기 상품 번호로 목록을 불러옵니다.
-                if (this.proNo) {
+                // 페이지 로드 시 초기 가게 이름으로 목록을 불러옵니다.
+                if (this.storeName) {
                     this.fetchQnAList();
                 }
             }
