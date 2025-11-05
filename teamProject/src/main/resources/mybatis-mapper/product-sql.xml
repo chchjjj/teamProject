@@ -4,6 +4,13 @@
 
 <mapper namespace="com.example.teamProject.product.mapper.ProductMapper">
 	
+	<!--유저 정보-->
+	<select id="userInfo" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
+		SELECT *			
+		FROM USER_TBL
+		WHERE USER_ID = #{userId}
+	</select>
+	
 	<select id="proInfo" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
 		SELECT *			
 		FROM PRODUCT_TBL P
@@ -11,7 +18,13 @@
 		ON P.STORE_ID = S.STORE_ID
 		WHERE PRO_NO = #{proNo}
 	</select>
-	
+	<!--클릭시 조회수 업-->
+	<update id="updateCnt" parameterType="hashmap">
+		UPDATE PRODUCT_TBL
+		SET
+			CNT = CNT + 1
+		WHERE PRO_NO = #{proNo}
+	</update>
 	<!--옵션 관리-->
 	<!--상위옵션-->
 	<select id="topOptList" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
@@ -29,7 +42,7 @@
 	
 	<!--장바구니 불러오기-->
 	<select id="cart" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
-		SELECT 
+	SELECT 
 		    c.CART_ID,
             p.STORE_ID,
             p.STORE_NAME,
@@ -48,7 +61,12 @@
             c.CHAT_YN,
             c.DELIVERY_FEE,
             c.DELIVERY_TYPE,
-            c.CREATED_AT
+            c.CREATED_AT,
+            c.CHAT_YN,
+            USER_ADDR,
+            PHONE,
+            USER_NAME,
+            STORE_ADDR
 		FROM CART_TBL c
 		JOIN PRODUCT_TBL p 
 		    ON c.PRO_NO = p.PRO_NO
@@ -58,7 +76,11 @@
 		    ON co.SUB_OPTION_ID = pso.SUB_OPTION_ID
 		JOIN PRODUCT_OPTION_TBL po 
 		    ON pso.TOP_OPTION_ID = po.TOP_OPTION_ID
-		WHERE USER_ID = #{userId}
+        JOIN USER_TBL U
+            ON U.USER_ID = C.USER_ID
+        JOIN SELLER_INFO_TBL S
+            ON C.STORE_ID = S.STORE_ID
+		WHERE C.USER_ID = 'user01'
         ORDER BY CREATED_AT
 	</select>
 	
@@ -86,6 +108,14 @@
 		CART_QUANTITY = #{newQuantity},
 		TOTAL_PRICE = #{finalPrice}
 	WHERE CART_ID = #{cartId}
+	
+	</update>
+	
+	<update id="updateCartCnt" parameterType="hashmap">
+		UPDATE CART_OPTION_TBL
+		SET
+			CART_OPT_QUANTITY = #{newQuantity}
+		WHERE CART_ID = #{cartId}
 	
 	</update>
 	
@@ -181,7 +211,16 @@
 	    WHERE USER_ID = #{userId} 
 	      AND PRO_NO = #{proNo}
 	</delete>
-	
+	<!--찜 목록 불러오기-->
+	<select id="Wishlist" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product">
+	   SELECT W.USER_ID, U.USER_NAME, W.PRO_NO, W.WISH_AT, P.PRO_NAME, P.PRO_TYPE, P.STORE_NAME, P.PRICE, P.DELIVERY_FEE, P.PRO_INFO, P.LETTERING, S.IS_CHAT_ENABLED
+		FROM WISHLIST_TBL W
+		INNER JOIN PRODUCT_TBL P ON W.PRO_NO = P.PRO_NO
+		INNER JOIN SELLER_INFO_TBL S ON P.STORE_ID = S.STORE_ID
+        INNER JOIN USER_TBL U ON W.USER_ID = U.USER_ID
+	    WHERE W.USER_ID = #{userId}
+	</select>
+
 	<!--리뷰 불러오기-->
 	<select id="selectReviewList" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
 	    SELECT *
@@ -307,5 +346,81 @@
         #{quantity} <!--subOptionList리스트속에있음-->
     )
 	</insert>
+	<!--배달 테이블에 내용 추가-->
+	<insert id="insertDeliv" parameterType="hashmap">
+	INSERT INTO DELIVERY_TBL
+	VALUES (
+		SEQ_DELI_ID.NEXTVAL,
+		#{orderId},
+		'Z',
+		#{userName},<!--배달테이블에만 있는거-->
+		#{phone},<!--배달테이블에만 있는거-->
+		#{address},<!--배달테이블에만 있는거-->
+		#{deliveryFee},
+		'판매자 지정',
+		'판매자 지정',
+		SYSDATE,
+		SYSDATE,
+		#{deliveryDate} <!--배달테이블에만 있는거-->
+	)
+	</insert>
+	<!--픽업 테이블에 내용 추가-->
+	<insert id="insertPickUp" parameterType="hashmap">
+	INSERT INTO PICKUP_TBL
+	VALUES (
+		SEQ_PICK_ID.NEXTVAL,
+		#{orderId},
+		#{storeAddr},
+		#{deliveryDate},
+		#{deliveryDate},
+		'A',
+		SYSDATE,
+		SYSDATE
+	)
+	</insert>
 	
+	<select id="sellerInfo" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
+		SELECT *			
+		FROM SELLER_INFO_TBL
+		WHERE STORE_ID = #{storeId}
+	</select>
+	
+	<insert id="insertChat" parameterType="hashmap">
+		INSERT INTO CHAT_TBL
+		VALUES (CHAT_SEQ.NEXTVAL, #{orderId}, #{userId}, #{storeId}, SYSDATE, SYSDATE, '', 0)
+	</insert>
+	
+	<!--장바구니에서 한 경우-->
+	<!--배달 테이블에 내용 추가-->
+	<insert id="insertDelivCart" parameterType="hashmap">
+	INSERT INTO DELIVERY_TBL
+	VALUES (
+		SEQ_DELI_ID.NEXTVAL,
+		#{orderId},
+		'Z',
+		#{userName},<!--배달테이블에만 있는거-->
+		#{phone},<!--배달테이블에만 있는거-->
+		#{userAddr},<!--배달테이블에만 있는거-->
+		#{deliveryFee},
+		'판매자 지정',
+		'판매자 지정',
+		SYSDATE,
+		SYSDATE,
+		''
+	)
+	</insert>
+	<!--픽업 테이블에 내용 추가-->
+	<insert id="insertPickUpCart" parameterType="hashmap">
+	INSERT INTO PICKUP_TBL
+	VALUES (
+		SEQ_PICK_ID.NEXTVAL,
+		#{orderId},
+		#{storeAddr},
+		'',
+		'',
+		'A',
+		SYSDATE,
+		SYSDATE
+	)
+	</insert>
 </mapper>
