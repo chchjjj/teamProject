@@ -6,28 +6,13 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>광고관리</title>
+        <link rel="stylesheet" href="/css/admin-style.css">
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <script src="/js/page-change.js"></script>
         <style>
-            table,
-            tr,
-            td,
-            th {
-                border: 1px solid black;
-                border-collapse: collapse;
-                padding: 5px 10px;
-                text-align: center;
-            }
-
-            th {
-                background-color: beige;
-            }
-
-            tr:nth-child(even) {
-                background-color: azure;
-            }
+            
         </style>
     </head>
 
@@ -40,11 +25,12 @@
 
                 <!--외쪽측 네이버바-->
                 <div class="navBar">
-                    <!---->
+                    <!-- Logo -->
+                    <div class="logo">
+                        <img src="/images/logo.png" alt="Dessert Lab" style="max-width: 150px;">
+                        <p>Admin Panel</p>
+                    </div>
                     <div class="navButton">
-                        <div>
-                            <button @click="fnAmdinMain()">대시보드</button>
-                        </div>
                         <div>
                             <button @click="fnBuyerManage()">사용자 관리</button>
                         </div>
@@ -61,7 +47,10 @@
                             <button @click="fnMembership()">맴버쉽관리</button>
                         </div>
                         <div>
-                            <button @click="fnQandA()">Q&A</button>
+                            <button @click="fnMonthlyFee()">판매자 월 정산결과 조회</button>
+                        </div>
+                        <div>
+                            <button @click="fnQandA()">Q&A/리뷰</button>
                         </div>
                     </div>
                     <!--logout button-->
@@ -305,11 +294,6 @@
 
 
 
-                fnAdminMain: function () {
-                    location.href = "/admin/main.do";
-                },
-
-
                 fnBuyerManage: function () {
                     location.href = "/admin/userlist.do";
                 },
@@ -317,7 +301,6 @@
                 fnSellerManage: function () {
                     location.href = "/admin/sellerlist.do";
                 },
-
 
                 fnSalesManage: function () {
                     location.href = "/admin/chart.do";
@@ -331,15 +314,18 @@
                     location.href = "/admin/membership.do";
                 },
 
+                fnMonthlyFee: function () {
+                    location.href = "/admin/monthlyfee.do";
+                },
+
                 fnQandA: function () {
                     location.href = "/admin/boardManage.do";
                 },
 
                 fnLogout: function () {
-                    if (confirm("로그아웃 하시겠습니까?")) {
-                        location.href = '#';
-                    }
-                }
+
+                },
+
 
 
 

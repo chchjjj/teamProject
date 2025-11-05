@@ -386,7 +386,7 @@ public class AdminService {
 		    return resultMap;
 		}
 
-	    // 달말 마다 23:59 에 정산
+	    // 달말 마다 23:59 에 정
 //		@Scheduled(cron = "0 */5 * * * ?")
 		@Component
 		public class MonthlyFeeScheduler {

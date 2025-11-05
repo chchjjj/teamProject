@@ -5,7 +5,9 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>사용자관리</title>
+        <title>qna관리</title>
+        <!-- 관리자 스타일시트 -->
+        <link rel="stylesheet" href="/css/admin-style.css">
         <link rel="stylesheet" href="/css/productDetail-style.css">
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
@@ -41,13 +43,14 @@
 
                 <!--외쪽측 네이버바-->
                 <div class="navBar">
-                    <!---->
+                    <!-- Logo -->
+                    <div class="logo">
+                        <img src="/images/logo.png" alt="Dessert Lab" style="max-width: 150px;">
+                        <p>Admin Panel</p>
+                    </div>
                     <div class="navButton">
                         <div>
-                            <button @click="fnAdminMain()">대시보드</button>
-                        </div>
-                        <div>
-                            <button @click="fnBuyerManage()">구매자 관리</button>
+                            <button @click="fnBuyerManage()">사용자 관리</button>
                         </div>
                         <div>
                             <button @click="fnSellerManage()">판매자관리</button>
@@ -59,13 +62,15 @@
                             <button @click="fnAdRequest()">광고관리</button>
                         </div>
                         <div>
-                            <button @click="fnMembership()">멤버십관리</button>
+                            <button @click="fnMembership()">맴버쉽관리</button>
                         </div>
                         <div>
-                            <button @click="fnQandA()">Q&A</button>
+                            <button @click="fnMonthlyFee()">판매자 월 정산결과 조회</button>
+                        </div>
+                        <div>
+                            <button @click="fnQandA()">Q&A/리뷰</button>
                         </div>
                     </div>
-
                     <!--logout button-->
                     <div class="logOut">
                         <div>
@@ -76,7 +81,13 @@
                 </div>
 
 
-                <div>
+                
+
+                <!--메인 페이지 바디 내용-->
+
+                <!--1.qnAlist-->
+                <div class="userList" v-if="selectedTable==='qnA'">
+                    <div>
                     <label><input type="radio" name="boardManage" value="qnA" v-model="selectedTable">
                         QnA</label>
                     <label><input type="radio" name="boardManage" value="review" v-model="selectedTable">
@@ -84,11 +95,6 @@
                     <label><input type="radio" name="boardManage" value="board" v-model="selectedTable">
                         게시판</label>
                 </div>
-
-                <!--메인 페이지 바디 내용-->
-
-                <!--1.qnAlist-->
-                <div class="userList" v-if="selectedTable==='qnA'">
 
                     <div>
                         <!--구역이름-->
@@ -161,6 +167,12 @@
                         <span v-if="page!=pageNum"><button @click="fnNext()">▶</button></span>
                     </div>
 
+                <div>
+                    <button @click="fnRemoveAll">
+                        선택 삭제
+                    </button>
+                </div>
+
 
                 </div>
 
@@ -232,14 +244,16 @@
                         <span v-if="page!=pageNum"><button @click="fnNext()">▶</button></span>
                     </div>
 
-
-                </div>
-
                 <div>
                     <button @click="fnRemoveAll">
                         선택 삭제
                     </button>
                 </div>
+
+
+                </div>
+
+                
 
             </div>
 
@@ -494,19 +508,13 @@
                     else if (self.selectedTable === 'board') self.fnBoardList();
                 },
 
-                fnAdminMain: function () {
-                    location.href = "/admin/main.do";
-                },
-
-
-                fnBuyerManage: function () {
+                  fnBuyerManage: function () {
                     location.href = "/admin/userlist.do";
                 },
 
                 fnSellerManage: function () {
                     location.href = "/admin/sellerlist.do";
                 },
-
 
                 fnSalesManage: function () {
                     location.href = "/admin/chart.do";
@@ -518,6 +526,10 @@
 
                 fnMembership: function () {
                     location.href = "/admin/membership.do";
+                },
+
+                fnMonthlyFee: function () {
+                    location.href = "/admin/monthlyfee.do";
                 },
 
                 fnQandA: function () {
