@@ -331,7 +331,7 @@
                 
                 goBack: function() {
                     console.log("이전 페이지로 이동");
-                    // window.history.back(); 
+                    window.history.back(); 
                 }
             },
             mounted: function() {

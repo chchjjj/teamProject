@@ -1,227 +1,349 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ include file="/WEB-INF/seller/sellerSideBar.jsp" %>
-<!DOCTYPE html>
-<html lang="ko">
+    <%@ include file="/WEB-INF/seller/sellerSideBar.jsp" %>
+        <!DOCTYPE html>
+        <html lang="ko">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>상품 QnA 게시판</title>
-    <script src="https://code.jquery.com/jquery-3.7.1.js"
-        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>상품 QnA 게시판</title>
+            <script src="https://code.jquery.com/jquery-3.7.1.js"
+                integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+            <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
-    <style>
-        /* (CSS 코드는 이전과 동일합니다. 생략) */
-        body { margin: 0; font-family: 'Malgun Gothic', sans-serif; background-color: #f4f4f4; }
-        .main-wrapper { display: flex; min-height: 100vh; }
-        .content-area { flex-grow: 1; padding: 30px; background-color: white; margin-left: 220px; box-sizing: border-box; max-width: 1200px; margin: 0 auto; padding-top: 30px; }
-        .page-title { font-size: 24px; font-weight: 700; margin-bottom: 20px; color: #333; }
-        
-        /* QnA 테이블 스타일 */
-        .qna-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
-        .qna-table th, .qna-table td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-        .qna-table th { background-color: #f8f8f8; font-weight: 600; color: #555; }
-        .qna-table td { color: #333; }
-        
-        /* 답변 상태 스타일 */
-        .status-N { color: #dc3545; font-weight: bold; } /* 미답변: 빨간색 */
-        .status-Y { color: #28a745; font-weight: bold; } /* 답변 완료: 초록색 */
+            <style>
+                /* (기존 CSS 스타일 유지) */
+                body {
+                    margin: 0;
+                    font-family: 'Malgun Gothic', sans-serif;
+                    background-color: #f4f4f4;
+                }
 
-        /* 내용 및 제목 정렬 */
-        .qna-table .content-col { text-align: left; }
-        
-        /* 버튼 스타일 */
-        .action-button { background-color: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; }
-        .action-button:hover { background-color: #0056b3; }
+                .main-wrapper {
+                    display: flex;
+                    min-height: 100vh;
+                }
 
-        /* 모달 스타일 */
-        .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-    </style>
-</head>
+                .content-area {
+                    flex-grow: 1;
+                    padding: 30px;
+                    background-color: white;
+                    margin-left: 220px;
+                    box-sizing: border-box;
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding-top: 30px;
+                }
 
-<body>
+                .page-title {
+                    font-size: 24px;
+                    font-weight: 700;
+                    margin-bottom: 20px;
+                    color: #333;
+                }
 
-    <div id="qna-app">
-        <div class="main-wrapper">
-            <div class="content-area">
-                <h1 class="page-title">상품 QnA 게시판</h1>
+                .qna-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 20px;
+                    font-size: 14px;
+                }
 
-                <p>현재 조회 중인 가게: **{{ storeName }}**</p>
+                .qna-table th,
+                .qna-table td {
+                    border: 1px solid #ddd;
+                    padding: 12px;
+                    text-align: center;
+                }
 
-                <table class="qna-table">
-                    <thead>
-                        <tr>
-                            <th width="10%">번호</th>
-                            <th width="45%">질문 내용</th>
-                            <th width="15%">작성자 ID</th>
-                            <th width="15%">작성일</th>
-                            <th width="5%">답변 상태</th>
-                            <th width="10%">관리</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-if="qnaList.length === 0">
-                            <td colspan="6" style="text-align: center; padding: 30px;">
-                                <p v-if="loading">QnA 목록을 불러오는 중입니다...</p>
-                                <p v-else>등록된 QnA가 없습니다.</p>
-                            </td>
-                        </tr>
-                        <tr v-for="(qna, index) in qnaList" :key="qna.questionId">
-                            <td>{{ qnaList.length - index }}</td>
-                            <td class="content-col">{{ qna.questionContent }}</td>
-                            <td>{{ qna.userId }}</td> 
-                            <td>{{ qna.questionDate }}</td>
-                            
-                            <td :class="qna.answerContent && qna.answerContent.trim() !== '' ? 'status-Y' : 'status-N'">
-                                {{ qna.answerContent && qna.answerContent.trim() !== '' ? '완료' : '미답변' }}
-                            </td>
-                            <td>
-                                <button class="action-button" @click="showAnswerModal(qna)">
-                                    {{ qna.answerContent && qna.answerContent.trim() !== '' ? '답변 수정' : '답변 등록' }}
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                .qna-table th {
+                    background-color: #f8f8f8;
+                    font-weight: 600;
+                    color: #555;
+                }
 
-                <div v-if="isModalOpen" class="modal-backdrop">
-                    <div class="modal-content">
-                        <h2>{{ currentQnA.answerContent && currentQnA.answerContent.trim() !== '' ? '답변 수정' : '답변 등록' }}</h2>
-                        <p>질문: {{ currentQnA.questionContent }}</p>
-                        <textarea v-model="answerText" rows="5" style="width: 100%; margin-bottom: 10px;"></textarea>
-                        <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                            <button class="action-button" @click="submitAnswer">저장</button>
-                            <button class="action-button" style="background-color: #6c757d;" @click="isModalOpen = false">닫기</button>
-                        </div>
+                .qna-table td {
+                    color: #333;
+                }
+
+                .status-cell {
+                    text-align: center;
+                }
+
+                .status-btn {
+                    padding: 5px 10px;
+                    border-radius: 4px;
+                    color: white;
+                    font-weight: bold;
+                }
+
+                .completed {
+                    background-color: #28a745;
+                }
+
+                .waiting {
+                    background-color: #dc3545;
+                }
+
+                .qna-table .content-col {
+                    text-align: left;
+                }
+
+                .action-button {
+                    background-color: #007bff;
+                    color: white;
+                    border: none;
+                    padding: 8px 15px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+                }
+
+                .action-button:hover {
+                    background-color: #0056b3;
+                }
+
+                .answer-row {
+                    background-color: #f9f9f9;
+                }
+
+                .answer-content {
+                    padding: 15px;
+                }
+
+                .answer-content strong {
+                    color: #3498db;
+                }
+
+                /* 추가된 스타일 */
+                .answer-form-area {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    margin-top: 10px;
+                }
+
+                .answer-form-area textarea {
+                    width: 100%;
+                    min-height: 100px;
+                    padding: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    box-sizing: border-box;
+                    resize: vertical;
+                }
+
+                .answer-form-area button {
+                    align-self: flex-end;
+                    /* 버튼을 오른쪽으로 정렬 */
+                    background-color: #ff9800;
+                    /* 주황색 버튼 */
+                }
+
+                .answer-form-area button:hover {
+                    background-color: #e68900;
+                }
+            </style>
+        </head>
+
+        <body>
+
+            <div id="qna-app">
+                <div class="main-wrapper">
+                    <div class="content-area">
+                        <h1 class="page-title">상품 QnA 게시판</h1>
+
+                        <p>현재 조회 중인 가게: **{{ storeName }}**</p>
+
+                        <table class="qna-table">
+                            <thead>
+                                <tr>
+                                    <th width="10%"> 질문 번호</th>
+                                    <th width="45%">질문 내용</th>
+                                    <th width="15%">작성자 ID</th>
+                                    <th width="15%">작성일</th>
+                                    <th width="10%">답변 상태</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template v-for="(item, index) in qnaList" :key="item.questionId">
+                                    <tr @click="toggleAnswer(index)" style="cursor: pointer;">
+                                        <td>{{ item.questionId }}</td>
+                                        <td>
+                                            <strong style="color: #c0392b;">Q.</strong> {{ item.questionContent }}
+                                        </td>
+                                        <td>{{ item.userId }}</td>
+                                        <td>{{ item.questionDate }}</td>
+                                        <td class="status-cell">
+                                            <span v-if="item.answerContent" class="status-btn completed">
+                                                완료
+                                            </span>
+                                            <span v-else class="status-btn waiting">
+                                                대기
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <tr v-if="activeIndex === index" class="answer-row">
+                                        <td colspan="5" style="padding: 20px 30px 20px 60px; text-align: left;">
+                                            <div class="answer-content">
+                                                <strong style="color: #3498db;">A.</strong>
+                                                <p style="margin-top: 5px; white-space: pre-wrap;">
+                                                    {{ item.answerContent || '답변이 아직 없습니다.' }}
+                                                </p>
+                                            </div>
+
+                                            <div class="answer-form-area">
+                                                <textarea v-model="item.answerInput" placeholder="답변 내용을 입력하세요.">
+                                        </textarea>
+                                                <button class="action-button" @click.stop="saveAnswer(item)">
+                                                    {{ item.answerContent ? '답변 수정' : '답변 등록' }}
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+
+                        </table>
+
                     </div>
                 </div>
-
             </div>
-        </div>
-    </div>
 
-    <script>
-        const { createApp } = Vue;
+            <script>
+                const { createApp } = Vue;
 
-        const qnaApp = createApp({
-            data() {
-                // 현재 로그인된 사용자의 가게 이름을 서버로부터 받아옵니다.
-                const storeNameFromServer = '<%= request.getAttribute("storeName") != null ? request.getAttribute("storeName") : "" %>';
-                // 세션에서 userId를 가져옵니다. (JSP EL을 사용하려면 ${sessionId} 대신 이렇게 쓰는 것이 안전합니다.)
-                const userIdFromSession = '<%= session.getAttribute("userId") != null ? session.getAttribute("userId") : "" %>'; 
+                const qnaApp = createApp({
+                    data() {
+                        return {
+                            storeName: '<%= request.getAttribute("storeName") != null ? request.getAttribute("storeName") : "" %>',
+                            qnaList: [],
+                            activeIndex: -1, // 현재 열려 있는 Q&A의 인덱스 (-1은 아무것도 열려있지 않음)
+                            loading: true,
+                            userId: "${sessionId}",
+                            proNo: "",
+                            keyword: "",
 
-                return {
-                    storeName: storeNameFromServer || '스윗디저트',  // 로그인된 사용자의 가게 이름
-                    qnaList: [],
-                    loading: true,
-                    isModalOpen: false,
-                    currentQnA: null,
-                    answerText: '',
-                    // ⚠️ 세션 값을 가져오는 방식 통일: JSP EL 대신 스크립틀릿이나 위에서 정의한 변수 사용
-                    userId: "${sessionId}",  
-                };
-            },
-            methods: {
-                // 서버에서 QnA 목록을 불러오는 AJAX 통신 로직
-                fetchQnAList() {
-                    this.loading = true;
-                    this.qnaList = [];
+                            pageSize: 10,
+                            page: 1,
+                            index: 0,
 
-                    const targetStoreName = this.storeName;
-
-                    if (!targetStoreName || targetStoreName.trim() === '') {
-                        console.warn("가게 이름이 없어 목록을 조회하지 않습니다.");
-                        this.loading = false;
-                        return;
-                    }
-
-                    $.ajax({
-                        url: "/seller/qnaList.dox",
-                        method: "POST",
-                        dataType: "json",
-                        data: {
-                            userId: this.userId, // 로그인된 사용자 ID를 서버로 전송
-                        },
-                        success: (res) => {
-                            if (res.result === 'success' && res.list) {
-                                this.qnaList = res.list;
-                                console.log("QnA 목록 조회 성공:", this.qnaList.length + "건");
-                            } else {
-                                this.qnaList = [];
-                                console.warn("QnA 목록 조회 결과 없음 또는 실패:", res.message);
+                            qnaKeyword: "",
+                        };
+                    },
+                    methods: {
+                        // 질문 클릭 시 답변을 토글하는 메서드 (하나만 열리도록 유지)
+                        toggleAnswer(index) {
+                            // 열기 전에 기존 답변 내용을 answerInput에 복사
+                            if (this.activeIndex !== index) {
+                                this.qnaList[index].answerInput = this.qnaList[index].answerContent || '';
                             }
+
+                            // 토글 로직: 이미 열려있으면 닫고, 아니면 열기
+                            this.activeIndex = this.activeIndex === index ? -1 : index;
                         },
-                        error: (xhr, status, error) => {
-                            console.error("QnA 목록 로드 실패:", error);
-                            alert("QnA 목록을 불러오는 데 실패했습니다. (HTTP " + xhr.status + ")");
+
+                        // QnA 목록을 서버에서 불러오는 메서드 (QUESTION_ID 매핑 확인)
+                        fetchQnAList() {
+                            this.loading = true;
+                            $.ajax({
+                                url: "/seller/qnaList.dox",
+                                method: "POST",
+                                dataType: "json",
+                                data: {
+                                    userId: this.userId,
+                                },
+                                success: (res) => {
+                                    if (res.result === 'success' && res.list) {
+
+                                        // ⭐ QUESTION_ID 매핑 확인 및 answerInput 필드 추가 ⭐
+                                        this.qnaList = res.list.map(item => ({
+                                            questionId: item.QUESTION_ID, // QUESTION_ID가 정확히 매핑되는지 확인
+                                            questionContent: item.QUESTION_CONTENT,
+                                            userId: item.USER_ID,
+                                            questionDate: item.QUESTION_DATE,
+                                            answerContent: item.ANSWER_CONTENT, // 실제 저장된 답변
+                                            answerInput: item.ANSWER_CONTENT || '', // 답변 입력 필드 (수정 중인 내용)
+                                            answerDate: item.ANSWER_DATE,
+                                            proType: item.PRO_TYPE,
+                                            status: item.STATUS,
+                                            price: item.PRICE,
+                                            storeName: item.STORE_NAME,
+                                            proNo: item.PRO_NO // proNo도 혹시 모를 다른 용도를 위해 유지
+                                        }));
+
+                                        console.log("매핑된 QnA 리스트:", this.qnaList);
+                                    } else {
+                                        this.qnaList = [];
+                                    }
+                                },
+                                error: (xhr, status, error) => {
+                                    alert("QnA 목록을 불러오는 데 실패했습니다.");
+                                    console.error("QnA 목록 로드 실패:", status, error);
+                                },
+                                complete: () => {
+                                    this.loading = false;
+                                }
+                            });
                         },
-                        complete: () => {
-                            this.loading = false;
+
+                        // ⭐ 답변을 등록/수정하는 메서드 (questionId를 전송하도록 수정) ⭐
+                        saveAnswer(item) {
+                            if (!item.answerInput || item.answerInput.trim() === '') {
+                                alert("답변 내용을 입력해 주세요.");
+                                return;
+                            }
+
+                            // questionId가 존재하는지 확인
+                            if (!item.questionId) {
+                                alert("질문 번호(questionId)가 없어 답변을 등록할 수 없습니다. 목록 조회에 questionId가 포함되었는지 확인하세요.");
+                                return;
+                            }
+
+                            if (confirm(`${item.answerContent ? '답변을 수정' : '답변을 등록'}하시겠습니까?`)) {
+
+                                $.ajax({
+                                    // Controller의 URL
+                                    url: "/seller/qnaSesponse.dox",
+                                    method: "POST",
+                                    dataType: "json",
+                                    data: {
+                                        // ⭐ Controller의 파라미터(questionId, answerContent)에 맞게 데이터 전송 ⭐
+                                        questionId: item.questionId,
+                                        answerContent: item.answerInput.trim(),
+                                    },
+                                    success: (res) => {
+                                        // Controller에서 반환되는 resultMap의 'result' 키를 확인
+                                        if (res.result === 'success') {
+                                            alert(`${item.answerContent ? '답변이 수정' : '답변이 등록'}되었습니다.`);
+
+                                            // 화면의 데이터 업데이트
+                                            item.answerContent = item.answerInput.trim();
+
+                                            // 답변 등록/수정 후 열려있는 답변 창을 닫음
+                                            this.activeIndex = -1;
+                                        } else {
+                                            // 백엔드에서 받은 상세 메시지를 출력할 수도 있습니다.
+                                            alert(`답변 ${item.answerContent ? '수정' : '등록'}에 실패했습니다. (서버/DB 오류)`);
+                                        }
+                                    },
+                                    error: (xhr, status, error) => {
+                                        alert("서버 통신 중 오류가 발생했습니다.");
+                                        console.error("답변 저장 실패:", status, error);
+                                    }
+                                });
+                            }
                         }
-                    });
-                },
-
-                // 답변 등록/수정 모달을 여는 메서드
-                showAnswerModal(qna) {
-                    this.currentQnA = qna;
-                    // Model 필드명: answerContent를 사용하여 기존 답변을 채워넣음
-                    // 서버에서 "답변이 등록되지않았습니다." 와 같은 문자열을 보내는 경우를 처리
-                    const answer = qna.answerContent;
-                    this.answerText = (answer && answer.trim() !== '' && answer !== '답변이 등록되지않았습니다.') ? answer : '';
-                    this.isModalOpen = true;
-                },
-
-                // 답변을 서버에 제출하는 메서드 (추후 구현 필요)
-                submitAnswer() {
-                    if (!this.answerText.trim()) {
-                        alert("답변 내용을 입력해주세요.");
-                        return;
+                    },
+                    mounted() {
+                        this.fetchQnAList(); // 페이지 로드 시 QnA 목록 불러오기
                     }
+                });
 
-                    // 🚨 [TODO] 답변 등록/수정 AJAX 통신 로직을 여기에 추가해야 합니다.
-                    console.log("답변 제출 데이터:", {
-                        questionId: this.currentQnA.questionId,
-                        answerContent: this.answerText,
-                        // ... 기타 필요한 데이터 (예: 판매자 ID)
-                    });
+                qnaApp.mount('#qna-app');
+            </script>
 
-                    alert("[임시] 답변 제출: Question ID=" + this.currentQnA.questionId + " (실제 통신 로직 구현 필요)");
+        </body>
 
-                    // 성공했다고 가정하고 모달 닫고 목록 새로고침
-                    this.isModalOpen = false;
-                    this.fetchQnAList();
-                }
-            },
-            mounted() {
-                // 페이지 로드 시 초기 가게 이름으로 목록을 불러옵니다.
-                if (this.storeName) {
-                    this.fetchQnAList();
-                }
-            }
-        });
-
-        qnaApp.mount('#qna-app');
-    </script>
-</body>
-
-</html>
+        </html>
