@@ -28,7 +28,7 @@
 
         <!-- 향후 소셜 로그인 추가 필요 -->
         <div>
-            <label>아이디 : <input v-model="userId"></label>
+            <label>아이디 : <input v-model="userId" @keyup.enter="fnLogin"></label>
         </div>
         <div>
             <label>비밀번호 : <input type="password" v-model="userPass" @keyup.enter="fnLogin"></label>

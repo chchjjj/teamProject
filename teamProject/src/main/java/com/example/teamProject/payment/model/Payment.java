@@ -15,7 +15,6 @@ public class Payment {
 	private String storeName;
 	private String proInfo;
 	private int price;
-	private int deliveryFee;
 	private int cnt;
 	private int sellCount;
 	private String createdAt; // 상품등록일
@@ -34,6 +33,27 @@ public class Payment {
 	private String valueName;
 	private int priceDiff;
 
+	// order
+	// order_tbl
+	private int orderId;
+	private String fullAddress;
+	private int addOptionPrice;
+	private String letteringWord;
+	private int deliveryFee;
+	private String orderDate;
+	private double totalPrice;
+	private String deliveryType;
+	private String status;
+
+	// order_detail_tbl
+	private int orderDetailId;
+	private int quantity;
+	private int subtotal;
+
+	// order_option_tbl
+	private int orderOptionId;
+	private int addQuantity;
+
 	// 장바구니
 	private int cartId;
 	private int defPrice;
@@ -42,8 +62,6 @@ public class Payment {
 	private int qptQtt;
 	private int subOptPrice;
 	private int cartQuantity;
-	private int totalPrice;
-	private String letteringWord;
 
 	// 장바구니 옵션
 	private int cartOptQuantity;

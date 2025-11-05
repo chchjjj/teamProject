@@ -42,10 +42,13 @@
             <div>
                 전화번호: {{toPhone}}
             </div>
-
             <div>
                 <button>취소하기</button>
-                <button @click="fnDelivery">결제하기</button> <!-- 배송비가 확정이 되야 결제가 가능, 그래서 일부러 fnDelivery를 실행 -->
+
+                <!-- 첫번째 줄 거는 테스트 편의용, 두번째 거가 실제 사용용 -->
+                <button @click="fnPayHistory('1', '1')">결제하기</button>
+                <!-- <button @click="fnPayment">결제하기</button> -->
+
             </div>
 
         </div>
@@ -65,11 +68,12 @@
                 cartList: [], //CART_TBL + CART_OPTION_TBL
                 orderList: [], //화면에 보이는 정보, 배송 정보 확정 전 단계, ORDER_TBL + ORDER_DETAIL_TBL + ORDER_OPTION_TBL
                 deliveryType : "D", // 배송 또는 픽업 선택
+
                 
                 //order 관련 변수
                 // 1. 바로 구매 버튼을 누른 경우 order 테이블에서 사용 / 2. 장바구니 담고 나서 구매하는 경우 바로 이 페이지에서 생성한 주문번호
                 orderId : "${orderId}", //이전 페이지에서 orderId로 받을 때
-                orderIdList : "${orderIdList}" //이 페이지에서 order 관련 테이블의 데이터에 접근할 때
+                orderIdList : []//"${orderIdList}" //이 페이지에서 order 관련 테이블의 데이터에 접근할 때 사용
             };
         },
         methods: {
@@ -107,6 +111,10 @@
                     success: function (data) {
                         console.log("ORDER_TBL INSERT");// 테스트용
                         console.log(data);// 테스트용
+
+                        //생성된 order 테이블의 id들을 가져오기
+                        //self.orderIdList = ;
+
                         self.fnAddOrderDetail();
                     }
                 });
@@ -146,6 +154,7 @@
                         console.log("ORDER_OPTION_TBL INSERT");// 테스트용
                         console.log(data);// 테스트용
                         self.fnOrderList(); //이제야 비로소 화면 출력 가능
+                        self.fnCartDelete();
                     }
                 });
             },
@@ -153,8 +162,9 @@
             //이 페이지 화면에 출력하게될 정보를 찾는 함수
             fnOrderList: function(){
                 let self = this;
+                orderIdList = JSON.stringify(self.orderIdList);
                 let param = {
-                    orderIdList : self.orderIdList
+                    orderIdList : orderIdList
                 };
                 $.ajax({
                     url: "/payment/orderList.dox",
@@ -164,7 +174,29 @@
                     success: function (data) {
                         console.log("Order 리스트 출력");// 테스트용
                         console.log(data);// 테스트용
-                        self.orderList = data.list;
+                        self.orderList = data.list; //order 테이블 정보만 담으면 된다.
+                        
+                    }
+                });
+            },
+
+            //이 페이지 화면에 출력하게될 정보를 찾는 함수
+            fnCartDelete: function(){
+                let self = this;
+                cartIdList = JSON.stringify(self.cartIdList);
+                let param = {
+                    cartIdList : cartIdList
+                };
+                $.ajax({
+                    url: "/payment/cartRemove.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        console.log("장바구니 비우기");// 테스트용
+                        console.log(data);// 테스트용
+                       
+                        
                     }
                 });
             },
@@ -183,7 +215,7 @@
                     type: "POST",
                     data: param,
                     success: function (data) {
-                        self.fnPayment()
+                        
                     }
                 });
             },
@@ -191,12 +223,14 @@
             //결제 버튼을 누르면 이 함수를 실행
             fnPayment: function(){
                 let self = this;
+                
+
                 IMP.request_pay({
 				    pg: "html5_inicis",
 				    pay_method: "card",
 				    merchant_uid: "merchant_" + new Date().getTime(),
 				    name: "1", //상품이름, 원래는 다음과 같은 형식이다: self.info.foodName,
-				    amount: 1, //결제금액은 1원, 원래는 self.info.totalPrice
+				    amount: 1, //실제 결제금액은 1원, 원래는 self.info.totalPrice
 				    buyer_tel: "010-0000-0000",
 				  }	, function (rsp) { // callback
 			   	      if (rsp.success) {
@@ -214,10 +248,11 @@
             //PAYMENT_TBL에 결제내역을 추가하는 쿼리문
             fnPayHistory: function(uid, amount){
                 let self = this;
+                orderList = JSON.stringify(self.orderList);
                 let param = {
                     uid: uid,
                     amount: amount,
-                    orderIdList: self.orderIdList
+                    orderList: orderList
                     // 그 외 기타 등등
                 };
                 $.ajax({
@@ -241,9 +276,11 @@
 
             //주문번호를 받은 경우
             if("${orderId}") {
+                self.orderIdList.push(self.orderId);
                 self.fnOrderList();
                 console.log("self.fnOrderList(); 실행중");
                 console.log("orderId 값은 => " + self.orderId);
+                console.log("orderIdList 값은 => " + self.orderIdList);
             }
 
             //장바구니 번호를 받은 경우
