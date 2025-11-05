@@ -66,12 +66,85 @@
             </div>
 
             <!--내용 구역-->
-            <div class="content">
-                <div>
+            <div class="orderContainer">
+                <div class="orderInfoArea">
+                    <div class="storeSection">
 
+                        <!--order层-->
+                        <!--order级别的容器，循环-->
+                        <div v-for="(order,orderIndex) in orderList" :key="order.orderId" class="orderCard">
+                            <!--order内容级别的容器-->
+                            <div class="orderCardContent">
+                                <div class="orderSingle">
+                                    <div>
+                                        <h3 class="storeName">
+                                            가게명:{{order.storeName}}
+                                        </h3>
+                                    </div>
+                                    <!--orderDetail级别的容器，循环-->
+                                    <div v-for="(orderDetail,orderDetailIndex) in order.orderDetailList"
+                                        :key="orderDetailIndex" class="orderDetailCard">
+                                        <!--orderDetail内容级别的容器-->
+                                        <div class="orderDetailCardContent">
+                                            <div>
+                                                <h3 class="proName">
+                                                    상품명:{{orderDetail.proName}}
+                                                </h3>
+                                            </div>
+                                            <!--option的容器-->
+                                            <ul>
+                                            <!--option内容容器-->
+                                               <li v-for="(option,optionIndex) in orderDetail.optionList"
+                                        :key="optionIndex" class="optionCard">{{ option.optionName }} : {{ option.valueName }} (수량: {{ option.addQuantity }}개 / 추가금:
+                                                    {{ formatNumber(option.priceDiff) }}원)</li>     
+                                            </ul>
+                                                
+                                            <div>
+                                                가격:{{orderDetail.price}}
+                                            </div>
+                                            <div>
+                                                수량:{{orderDetail.quantity}}
+                                            </div>
+                                            <div>
+                                                레터링:{{orderDetail.letteringWord}}
+                                            </div>
+                                            <div>
+                                                합계:{{orderDetail.subtotal}}
+                                            </div>
+                                        </div>
+                                        <!--orderDetail级别循环结束的地方-->
+                                    </div>
+                                    <div>
+                                        채팅추가비:{{order.addOptionPrice}}
+                                    </div>
+                                    <div>
+                                        배송방식:{{order.deliveryType}}
+                                    </div>
+                                    <div>
+                                        배송비:{{order.deliveryFee}}
+                                    </div>
+                                    <div>
+                                        주소:{{order.fullAddress}}
+                                    </div>
+                                    <div>
+                                        주문 시간:{{order.orderDate}}
+                                    </div>
+                                    <div>
+                                        <h3 class="totalPrice">
+                                            총가격:{{order.totalPrice}}
+                                        </h3>
+                                    </div>
+                                    <div>
+                                        주문 번호:{{order.orderId}}
+                                    </div>
+                                </div>
+                                <!--order容器停止的地方-->
+                            </div>
+                            <!--order循环停止的地方-->
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
     </body>
 
     </html>
@@ -81,24 +154,34 @@
             data() {
                 return {
                     // 변수 - (key : value)
+                    userId: "${sessionId}",
+                    orderList:[],
+                    orderDetailList:[],
+                    optionList:[]
                 };
             },
             methods: {
                 // 함수(메소드) - (key : function())
-                fnOrderHistory: function () {
+                 fnOrderHistory: function () {
                     let self = this;
-                    let param = {};
+                    let param = { userId: self.userId };
                     $.ajax({
-                        url: "",
+                        url: "/user/orderHistory.dox",
                         dataType: "json",
                         type: "POST",
                         data: param,
                         success: function (data) {
-
+                            self.orderList = data.orderList;
+                            console.log(data.orderList);
+                            self.fnOrderList(self.orderList);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("장바구니 로드 실패:", status, error);
                         }
                     });
                 },
 
+                
 
                 // fnBack:function(){
                 //     location.href="/user/userMyPage.do";
@@ -139,6 +222,7 @@
             mounted() {
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
+                // self.fnOrderHistory();
             }
         });
 

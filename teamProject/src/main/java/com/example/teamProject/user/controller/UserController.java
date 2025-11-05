@@ -73,11 +73,15 @@ public class UserController {
 		return "/user/review";
 	}
 	
+	@RequestMapping("/user/userEdit.do")
+	public String userEdit(Model model) throws Exception {
+		return "/user/userEdit";
+	}
+	
 	@RequestMapping("/user/qnA.do")
 	public String qnA(Model model) throws Exception {
 		return "/user/qnA";
 	}
-	
 	
 	
 	
