@@ -347,4 +347,24 @@ public HashMap<String, Object> getQnAListByProNo(HashMap<String, Object> map) {
     return resultMap;
 }
 
+public HashMap<String, Object> updateAnswerContent(int questionId, String answerContent) {
+    HashMap<String, Object> resultMap = new HashMap<>();
+    try {
+        Map<String, Object> params = new HashMap<>();
+        params.put("questionId", questionId);       // ⭐ 질문 번호 사용
+        params.put("answerContent", answerContent);  // 답변 내용
+
+        sellerMapper.updateAnswerContent(params);
+        resultMap.put("result", "success");
+        resultMap.put("message", "답변 내용이 성공적으로 업데이트되었습니다.");
+        System.out.println("답글 성공");
+    } catch (Exception e) {
+        resultMap.put("result", "fail");
+        resultMap.put("message", "답변 업데이트 중 오류가 발생했습니다: " + e.getMessage());
+        System.out.println("답글 실패");
+        
+    }
+    return resultMap;
+}
+
 }

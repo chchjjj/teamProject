@@ -7,13 +7,13 @@
     <meta charset="UTF-8">
     <title>픽업 일정 확인 캘린더</title>
 
-    <!-- jQuery / Vue / FullCalendar -->
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.css" />
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 
     <style>
+        /* (기존 CSS 스타일 유지) */
         body {
             margin: 0;
             font-family: 'Malgun Gothic', sans-serif;
@@ -48,7 +48,6 @@
             border-radius: 8px;
         }
 
-        /* ---------------------- 이벤트 스타일 ---------------------- */
         .fc-daygrid-event {
             background-color: #007bff !important;
             border: none !important;
@@ -58,6 +57,7 @@
             color: #fff !important;
             font-weight: bold;
             font-size: 13px;
+            cursor: pointer;
         }
 
         .fc-event-title {
@@ -89,88 +89,99 @@
         createApp({
             data() {
                 return {
-                    userId: "${sessionId}",
-                    calendar: null
+                    userId: "${sessionId}",  // 서버에서 세션 ID를 가져와 사용
+                    checkOrderId: "",  // 클릭된 주문 ID를 저장
+                    calendarEvents: []  // FullCalendar 이벤트 리스트
                 };
             },
             methods: {
-                /** DB 결과 → FullCalendar 이벤트로 변환 */
-                formatEvents(data) {
-                    return data.map(item => {
-                        const orderId = item.ORDER_ID || item.order_id || item.orderId || "(없음)";
-                        const startDate = item.PICKUP_START_DATE || item.pickup_start_date || item.pickupStartDate;
-                        const endDate = item.PICKUP_END_DATE || item.pickup_end_date || item.pickupEndDate;
-
-                        return {
-                            id: orderId,
-                            title: `주문 #${orderId}`, // ✅ title만 사용
-                            start: startDate,
-                            end: endDate,
-                            allDay: true,
-                            extendedProps: { orderId }
-                        };
+                // FullCalendar 초기화 및 이벤트 설정 메서드
+                initCalendar() {
+                    const calendarEl = document.getElementById('calendar');
+                    const calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'dayGridMonth',
+                        locale: 'ko',  // 한글 설정
+                        headerToolbar: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                        },
+                        // 서버에서 이벤트를 로드하는 함수
+                        events: this.fetchCalendarEvents,
+                        eventClick: (info) => {
+                            const orderId = info.event.extendedProps.orderId;
+                            
+                            if (orderId) {
+                                console.log('클릭된 주문 ID:', orderId);
+                                this.chatting(orderId);  // Vue 메서드 호출
+                            } else {
+                                alert("주문 ID가 존재하지 않는 이벤트입니다.");
+                            }
+                        },
+                        eventTimeFormat: { 
+                            hour: '2-digit', 
+                            minute: '2-digit', 
+                            meridiem: false 
+                        }
                     });
+
+                    calendar.render();
                 },
 
-                /** 서버에서 일정 데이터 불러오기 */
-                fetchPickupSchedules(fetchInfo, successCallback, failureCallback) {
-                    const startStr = fetchInfo.startStr.substring(0, 10);
-                    const endStr = fetchInfo.endStr.substring(0, 10);
-
-                    if (!this.userId || this.userId.startsWith('$')) {
-                        console.warn("userId(세션 ID)가 유효하지 않습니다.");
-                        successCallback([]);
-                        return;
-                    }
-
+                // 캘린더 이벤트를 서버에서 불러오는 AJAX 메서드
+                fetchCalendarEvents(fetchInfo, successCallback, failureCallback) {
                     $.ajax({
-                        url: "/seller/calendar.dox",
+                        url: "/seller/calendarEvents.dox", 
                         method: "POST",
                         dataType: "json",
                         data: {
                             userId: this.userId,
-                            start: startStr,
-                            end: endStr
+                            start: fetchInfo.startStr, 
+                            end: fetchInfo.endStr
                         },
-                        success: (data) => {
-                            console.log("📦 서버 응답:", data);
-                            successCallback(this.formatEvents(data));
+                        success: (res) => {
+                            if (res.result === 'success' && res.list) {
+                                const events = res.list.map(item => ({
+                                    title: `[${item.PRO_TYPE}] ${item.PICKUP_TIME}`,
+                                    start: item.PICKUP_DATE + 'T' + item.PICKUP_TIME_SLOT,
+                                    extendedProps: { orderId: item.ORDER_ID }
+                                }));
+                                successCallback(events);
+                            } else {
+                                successCallback([]); 
+                            }
                         },
                         error: (xhr, status, error) => {
-                            console.error("픽업 일정 로드 실패:", error);
-                            alert("픽업 일정을 불러오는 데 실패했습니다. (HTTP " + xhr.status + ")");
-                            failureCallback();
+                            console.error("캘린더 이벤트 로드 실패:", status, error);
+                            failureCallback(error);
                         }
                     });
                 },
 
-                /** 이벤트 클릭 시 채팅페이지 이동 */
-                handleEventClick(info) {
-                    const orderId = info.event.extendedProps.orderId || info.event.id;
-                    if (orderId && orderId !== "(없음)") {
-                        window.location.href = `/seller/sellerChat.do?orderId=${orderId}`;
+                // 주문 ID를 저장하고 채팅 페이지로 이동하는 메서드
+                chatting(id) {
+                    // 1. 클릭된 ID를 checkOrderId 변수에 저장
+                    this.checkOrderId = id;
+
+                    // 2. 저장된 checkOrderId가 유효한지 확인하고 페이지 이동
+                    if (this.checkOrderId) {
+                        // URL을 Vue 데이터(this)를 사용하여 동적으로 생성
+                        // const url = `/seller/sellerChat.do?orderId=${this.checkOrderId}`;
+                        console.log(`채팅 페이지로 이동: ${url}`);
+
+                        // 실제 페이지 이동
+                        window.location.href = url;
                     } else {
-                        alert("주문 ID를 찾을 수 없습니다.");
+                        alert("주문 번호(orderId)가 올바르게 설정되지 않았습니다.");
                     }
                 }
             },
             mounted() {
-                const calendarEl = document.getElementById('calendar');
-                this.calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'dayGridMonth',
-                    locale: 'ko',
-                    headerToolbar: {
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                    },
-                    events: this.fetchPickupSchedules,
-                    eventClick: this.handleEventClick,
-                    displayEventTime: false
-                });
-                this.calendar.render();
+                this.initCalendar();  // 캘린더 초기화
             }
         }).mount('#calendar-app');
     </script>
+
 </body>
+
 </html>

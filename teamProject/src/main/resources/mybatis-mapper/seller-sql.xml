@@ -227,148 +227,150 @@
 		ORDER_ID = #{orderId}
 	</update>
 
-	<select id="selectPickupSchedule" 
-        parameterType="java.util.HashMap"
+	<select id="selectPickupSchedule"
+		parameterType="java.util.HashMap"
 		resultType="java.util.HashMap">
 		SELECT
-    P.ORDER_ID,
-    TO_CHAR(P.PICKUP_DATE, 'YYYY-MM-DD') AS PICKUP_START_DATE,
-    TO_CHAR(P.PICKUP_DATE, 'YYYY-MM-DD') AS PICKUP_END_DATE
-FROM
-    PICKUP_TBL P
-JOIN
-    SELLER_INFO_TBL S ON P.STORE_ADDR = S.STORE_ADDR
-WHERE
-    S.USER_ID = #{userId}
-</select>
+		P.ORDER_ID,
+		TO_CHAR(P.PICKUP_DATE, 'YYYY-MM-DD') AS PICKUP_START_DATE,
+		TO_CHAR(P.PICKUP_DATE, 'YYYY-MM-DD') AS PICKUP_END_DATE
+		FROM
+		PICKUP_TBL P
+		JOIN
+		SELLER_INFO_TBL S ON P.STORE_ADDR = S.STORE_ADDR
+		WHERE
+		S.USER_ID = #{userId}
+	</select>
 
- <select id="selectSellerInfo" parameterType="hashmap" resultType="hashmap">
-        SELECT 
-            U.USER_ID,
-            U.USER_NAME,
-            U.EMAIL,
-            U.USER_ADDR,
-            U.PHONE,
-            U.ROLE,
-            U.USER_STATUS,
-            U.JOIN_CDATE,
-            U.UDATE,
-            S.STORE_ID,
-            S.STORE_NAME,
-            S.BUSINESS_NO,
-            S.STORE_INTRO,
-            S.DELIVERY_YN,
-            S.IS_CHAT_ENABLED,
-            S.CHAT_START,
-            S.CHAT_END,
-            S.STORE_ADDR,
-            S.MEMBERSHIP
-        FROM USER_TBL U
-        JOIN SELLER_INFO_TBL S ON U.USER_ID = S.USER_ID
-        WHERE U.USER_ID = #{userId}
-    </select>
-    
-  <select id="selectStoreInfoByUserId" parameterType="string" resultType="hashmap">
-      SELECT 
-            U.USER_ID,
-            U.USER_NAME,
-            U.EMAIL,
-            U.USER_ADDR,
-            U.PHONE,
-            U.ROLE,
-            U.USER_STATUS,
-            U.JOIN_CDATE,
-            U.UDATE,
-            S.STORE_ID,
-            S.STORE_NAME,
-            S.BUSINESS_NO,
-            S.STORE_INTRO,
-            S.DELIVERY_YN,
-            S.IS_CHAT_ENABLED,
-            S.CHAT_START,
-            S.CHAT_END,
-            S.STORE_ADDR,
-            S.MEMBERSHIP
-        FROM USER_TBL U
-        JOIN SELLER_INFO_TBL S ON U.USER_ID = S.USER_ID
-        WHERE U.USER_ID = #{userId}
-</select>
+	<select id="selectSellerInfo" parameterType="hashmap" resultType="hashmap">
+		SELECT
+		U.USER_ID,
+		U.USER_NAME,
+		U.EMAIL,
+		U.USER_ADDR,
+		U.PHONE,
+		U.ROLE,
+		U.USER_STATUS,
+		U.JOIN_CDATE,
+		U.UDATE,
+		S.STORE_ID,
+		S.STORE_NAME,
+		S.BUSINESS_NO,
+		S.STORE_INTRO,
+		S.DELIVERY_YN,
+		S.IS_CHAT_ENABLED,
+		S.CHAT_START,
+		S.CHAT_END,
+		S.STORE_ADDR,
+		S.MEMBERSHIP
+		FROM USER_TBL U
+		JOIN SELLER_INFO_TBL S ON U.USER_ID = S.USER_ID
+		WHERE U.USER_ID = #{userId}
+	</select>
+
+	<select id="selectStoreInfoByUserId" parameterType="string"
+		resultType="hashmap">
+		SELECT
+		U.USER_ID,
+		U.USER_NAME,
+		U.EMAIL,
+		U.USER_ADDR,
+		U.PHONE,
+		U.ROLE,
+		U.USER_STATUS,
+		U.JOIN_CDATE,
+		U.UDATE,
+		S.STORE_ID,
+		S.STORE_NAME,
+		S.BUSINESS_NO,
+		S.STORE_INTRO,
+		S.DELIVERY_YN,
+		S.IS_CHAT_ENABLED,
+		S.CHAT_START,
+		S.CHAT_END,
+		S.STORE_ADDR,
+		S.MEMBERSHIP
+		FROM USER_TBL U
+		JOIN SELLER_INFO_TBL S ON U.USER_ID = S.USER_ID
+		WHERE U.USER_ID = #{userId}
+	</select>
 
 
-    <!-- 사용자 정보 수정 -->
-    <update id="updateUserInfo" parameterType="hashmap">
-        UPDATE USER_TBL
-        <set>
-            <if test="userPass != null and userPass != ''">
-                USER_PASS = #{userPass},
-            </if>
-            <if test="userName != null and userName != ''">
-                USER_NAME = #{userName},
-            </if>
-            <if test="email != null and email != ''">
-                EMAIL = #{email},
-            </if>
-            <if test="userAddr != null and userAddr != ''">
-                USER_ADDR = #{userAddr},
-            </if>
-            <if test="phone != null and phone != ''">
-                PHONE = #{phone},
-            </if>
-            UDATE = SYSDATE
-        </set>
-        WHERE USER_ID = #{userId}
-    </update>
+	<!-- 사용자 정보 수정 -->
+	<update id="updateUserInfo" parameterType="hashmap"> UPDATE USER_TBL <set>
+			<if test="userPass != null and userPass != ''">
+				USER_PASS = #{userPass},
+			</if>
+            <if
+				test="userName != null and userName != ''">
+				USER_NAME = #{userName},
+			</if>
+            <if
+				test="email != null and email != ''">
+				EMAIL = #{email},
+			</if>
+            <if
+				test="userAddr != null and userAddr != ''">
+				USER_ADDR = #{userAddr},
+			</if>
+            <if
+				test="phone != null and phone != ''">
+				PHONE = #{phone},
+			</if> UDATE =
+		SYSDATE </set> WHERE USER_ID = #{userId} </update>
 
-    <!-- 판매자 정보 수정 -->
-    <update id="updateSellerInfo" parameterType="hashmap">
-        UPDATE SELLER_INFO_TBL
-        <set>
-            <if test="storeName != null and storeName != ''">
-                STORE_NAME = #{storeName},
-            </if>
-            <if test="storeIntro != null and storeIntro != ''">
-                STORE_INTRO = #{storeIntro},
-            </if>
-            <if test="storeAddr != null and storeAddr != ''">
-                STORE_ADDR = #{storeAddr},
-            </if>
-            DELIVERY_YN = #{deliveryYN},
-            IS_CHAT_ENABLED = #{isChatEnabled},
-            CHAT_START = #{chatStart},
-            CHAT_END = #{chatEnd},
-            MEMBERSHIP = #{membership},
-            UDATE = SYSDATE
-        </set>
-        WHERE USER_ID = #{userId}
-    </update>
+	<!-- 판매자 정보 수정 -->
+	<update id="updateSellerInfo" parameterType="hashmap"> UPDATE
+		SELLER_INFO_TBL <set>
+			<if test="storeName != null and storeName != ''">
+				STORE_NAME = #{storeName},
+			</if>
+            <if
+				test="storeIntro != null and storeIntro != ''">
+				STORE_INTRO = #{storeIntro},
+			</if>
+            <if
+				test="storeAddr != null and storeAddr != ''">
+				STORE_ADDR = #{storeAddr},
+			</if>
+		DELIVERY_YN = #{deliveryYN}, IS_CHAT_ENABLED = #{isChatEnabled},
+		CHAT_START = #{chatStart}, CHAT_END = #{chatEnd}, MEMBERSHIP =
+		#{membership}, UDATE = SYSDATE </set> WHERE USER_ID = #{userId} </update>
 
-<select id="selectQnA" parameterType="string" resultType="hashmap">
-  SELECT
-    p.PRO_NO,                  -- 상품 번호
-    p.PRO_NAME,                -- 상품명
-    p.PRO_TYPE,                -- 상품 종류
-    p.PRICE,                   -- 가격
-    p.STATUS,                  -- 현재 상태
-    q.QUESTION_ID,             -- 질문 ID
-    q.QUESTION_CONTENT,        -- 질문 내용
-    q.QUESTION_DATE,           -- 질문 작성일
-    q.ANSWER_CONTENT,          -- 답변 내용
-    q.ANSWER_DATE,             -- 답변일
-    s.STORE_NAME,              -- 가게 이름
-    s.STORE_ADDR               -- 가게 주소
-FROM
-    QA_TBL q
-JOIN
-    PRODUCT_TBL p ON q.PRO_NO = p.PRO_NO
-JOIN
-    SELLER_INFO_TBL s ON p.STORE_ID = s.STORE_ID
-WHERE
-    s.USER_ID = #{userId}           -- 로그인한 사용자 ID
-    AND p.STORE_NAME = s.STORE_NAME    -- 해당 상품이 로그인한 유저의 가게에 속하는지 확인
-          -- 스윗디저트 가게의 소유자가 로그인한 유저인지 확인
-ORDER BY
-    q.QUESTION_DATE DESC         -- 질문 작성일 기준 내림차순 정렬
-</select>
+	<select id="selectQnA" parameterType="string" resultType="hashmap">
+		SELECT
+		p.PRO_NO, -- 상품 번호
+		p.PRO_NAME, -- 상품명
+		p.PRO_TYPE, -- 상품 종류
+		p.PRICE, -- 가격
+		p.STATUS, -- 현재 상태
+		q.QUESTION_ID, -- 질문 ID
+		q.QUESTION_CONTENT, -- 질문 내용
+		q.QUESTION_DATE, -- 질문 작성일
+		q.ANSWER_CONTENT, -- 답변 내용
+		q.ANSWER_DATE, -- 답변일
+		s.STORE_NAME, -- 가게 이름
+		s.STORE_ADDR -- 가게 주소
+		FROM
+		QA_TBL q
+		JOIN
+		PRODUCT_TBL p ON q.PRO_NO = p.PRO_NO
+		JOIN
+		SELLER_INFO_TBL s ON p.STORE_ID = s.STORE_ID
+		WHERE
+		s.USER_ID = #{userId} -- 로그인한 사용자 ID
+		AND p.STORE_NAME = s.STORE_NAME -- 해당 상품이 로그인한 유저의 가게에 속하는지 확인
+		-- 스윗디저트 가게의 소유자가 로그인한 유저인지 확인
+		ORDER BY
+		q.QUESTION_DATE DESC -- 질문 작성일 기준 내림차순 정렬
+	</select>
+
+	<update id="updateAnswerContent" parameterType="hashmap">
+		UPDATE QA_TBL
+		SET
+		ANSWER_CONTENT = #{answerContent}, ANSWER_DATE = SYSDATE WHERE
+		QUESTION_ID = #{questionId} </update>
+
 
 </mapper>
 

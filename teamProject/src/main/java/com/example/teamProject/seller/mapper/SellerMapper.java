@@ -66,5 +66,7 @@ public interface SellerMapper {
 	
 	// Q&A 조회
 	List<HashMap<String, Object>> selectQnA(HashMap<String, Object> map);
+	//Q&A 답글 업데이트
+	void updateAnswerContent(Map<String, Object> params);
 	
 }

@@ -432,5 +432,24 @@ public class SellerController {
         
         return new Gson().toJson(resultMap);
     }
+    
+    @RequestMapping(value = "/seller/qnaSesponse.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String updateAnswerContent(
+        @RequestParam int questionId, // ⭐ proNo 대신 questionId를 받거나
+        @RequestParam String answerContent) {
+        	
+        HashMap<String, Object> resultMap = new HashMap<String, Object>();
+        try {
+            // Service에 questionId를 넘기도록 수정
+            resultMap = sellerService.updateAnswerContent(questionId, answerContent);
+           
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultMap.put("result", "error");
+        }
+        
+        return new Gson().toJson(resultMap);
+    }
 
 }
