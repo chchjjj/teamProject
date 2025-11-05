@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.teamProject.seller.model.Seller;
 
@@ -68,5 +69,54 @@ public interface SellerMapper {
 	List<HashMap<String, Object>> selectQnA(HashMap<String, Object> map);
 	//Q&A 답글 업데이트
 	void updateAnswerContent(Map<String, Object> params);
+	//가게 정보 가져오기
+	Map<String, Object> selectStoreInfo(String userId);
+	//가게 정보 업데이트
+	boolean updateStoreInfo(Map<String, String> params);
+	
+	
+	//  제품 등록
+    void registerProduct(Seller seller, MultipartFile thumbnailFile, List<MultipartFile> detailFiles, MultipartFile longFile) throws Exception;
+
+    //  제품 수정
+    void updateProduct(Seller seller, MultipartFile thumbnailFile, List<MultipartFile> detailFiles, MultipartFile longFile) throws Exception;
+    
+    //  제품 수정 데이터 로드 (다음 섹션)
+    Map<String, Object> getProductDataForEdit(int proNo);
+    
+ // SellerMapper.java 파일 내에 추가할 내용
+
+ 	// 상품 기본 정보 등록 (proNo는 객체에 자동으로 담김)
+ 	void insertProduct(Seller seller);
+
+ 	// 상품 기본 정보 수정
+ 	void updateProduct(Seller seller);
+
+ 	// 상위 옵션 등록 (topOptionId는 객체에 자동으로 담김)
+ 	void insertTopOption(Seller topOpt);
+
+ 	// 하위 옵션 등록 (subOptionId는 객체에 자동으로 담김)
+ 	void insertSubOption(Seller subOpt);
+ 	
+ 	// 특정 상품의 모든 옵션 삭제
+ 	void deleteProductOptions(int proNo);
+
+ 	// 불가 날짜 등록
+ 	void insertDisabledDate(int proNo, String date);
+
+ 	// 특정 상품의 모든 불가 날짜 삭제
+ 	void deleteDisabledDates(int proNo);
+
+ 	// proNo를 통해 상품 기본 정보 조회 (수정용)
+ 	Seller selectProductByProNo(int proNo);
+ 	
+ 	// proNo를 통해 상품 파일 정보 조회 (수정용)
+ 	List<Map<String, Object>> selectProductFiles(int proNo);
+
+ 	// proNo를 통해 상품 옵션 정보 조회 (수정용)
+ 	List<Seller> selectProductOptions(int proNo);
+
+ 	// proNo를 통해 상품 불가 날짜 조회 (수정용)
+ 	List<String> selectDisabledDates(int proNo);
 	
 }

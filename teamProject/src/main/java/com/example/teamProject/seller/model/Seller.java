@@ -2,6 +2,7 @@ package com.example.teamProject.seller.model;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.Data;
 
@@ -85,4 +86,45 @@ public class Seller {
 	 	 
 	 	  private String answerContent;   // 7. 답변내용 (ANSWER_CONTENT)
 	 	  private String answerDate;      // 8. 답변일 (ANSWER_DATE) - TO_CHAR로 받기 위해 String 사용
+	 	  
+	 	  
+	 	// 1. PRODUCT_TBL (디저트 상품) 매핑
+	 	  
+	 	    private String proType;              // 상품 종류 (PRO_TYPE) -> 카테고리(category) 대신 사용
+	 	   
+	 	    // (추가) ServiceImpl에서 임시로 사용할 판매자 번호
+	 	    private Integer sellerNo;
+	 	    
+	 	    // 2. 픽업/배송 불가 날짜 처리 (TBL_DISABLED_DATE 매핑에 사용)
+	 	    private String disabledDatesStr;     // 클라이언트로부터 받은 콤마로 구분된 문자열
+	 	    private List<String> disabledDates;  // 파싱 후 사용할 날짜 리스트
+
+	 	    // 3. 옵션 데이터 (JSON 파싱 후 저장)
+	 	    // Controller에서 JSON을 파싱하여 이 리스트에 담아 Service로 전달합니다.
+	 	    private List<Seller> options;
+	 	    
+	 	  
+	 	    
+	 	   
+	 	    private String isQuantitySelectable;    // 수량 정할수있는지 여부
+	 	    
+	 	    // 클라이언트에서 넘어오는 임시 ID (새 옵션 구분을 위해)
+	 	    private String id; 
+
+	 
+	 	    
+	 	// ⭐⭐⭐ 이 필드가 누락되어 Controller에서 getOptionsJson() 오류가 발생했습니다. ⭐⭐⭐
+	 		private String optionsJson; // 클라이언트에서 옵션 정보를 JSON 문자열로 받기 위한 필드
+	 		
+	 		// 2. 픽업/배송 불가 날짜 처리 (TBL_DISABLED_DATE 매핑에 사용)
+	 		
+	
+	 	
+	 		
+	 	
+	 	 	
+	 	 	// PRODUCT_SUB_OPTION_TBL (하위 옵션 목록)
+	 		private List<Seller> subOptions;
+	
+	 	
 }

@@ -367,4 +367,97 @@ public HashMap<String, Object> updateAnswerContent(int questionId, String answer
     return resultMap;
 }
 
+public Map<String, Object> getStoreInfo(String userId) {
+    return sellerMapper.selectStoreInfo(userId); // userId를 통해 DB에서 가게 정보를 조회
+}
+
+// 가게 정보 수정
+public boolean updateStoreInfo(String userId, String storeName, String storeZipcode, 
+        String storeAddrMain, String storeAddrDetail, String storeIntro, String deliveryYn, String chatYn) {
+    // 서비스 로직 수행 (DB에 업데이트)
+    Map<String, String> params = new HashMap<>();
+    params.put("userId", userId);
+    params.put("storeName", storeName);
+    params.put("storeZipcode", storeZipcode);
+    params.put("storeAddrMain", storeAddrMain);
+    params.put("storeAddrDetail", storeAddrDetail);
+    params.put("storeIntro", storeIntro);
+    params.put("deliveryYn", deliveryYn);
+    params.put("chatYn", chatYn);
+
+    return sellerMapper.updateStoreInfo(params);
+}
+
+//SellerService.java 파일 내에 추가할 내용
+
+@Transactional
+public void registerProduct(Seller seller) throws Exception {
+    
+    sellerMapper.insertProduct(seller); 
+    int proNo = seller.getProNo(); 
+
+    insertOptions(proNo, seller.getOptions());
+    
+    if (seller.getDisabledDates() != null && !seller.getDisabledDates().isEmpty()) {
+        for(String date : seller.getDisabledDates()) {
+            sellerMapper.insertDisabledDate(proNo, date);
+        }
+    }
+}
+
+@Transactional
+public void updateProduct(Seller seller) throws Exception {
+    
+    int proNo = seller.getProNo();
+    
+    sellerMapper.updateProduct(seller);
+    
+    sellerMapper.deleteProductOptions(proNo);
+    insertOptions(proNo, seller.getOptions());
+
+    sellerMapper.deleteDisabledDates(proNo);
+    if (seller.getDisabledDates() != null && !seller.getDisabledDates().isEmpty()) {
+        for(String date : seller.getDisabledDates()) {
+            sellerMapper.insertDisabledDate(proNo, date);
+        }
+    }
+}
+
+private void insertOptions(int proNo, List<Seller> options) {
+    if (options == null || options.isEmpty()) return;
+
+    for (Seller topOpt : options) {
+        topOpt.setProNo(proNo); 
+        sellerMapper.insertTopOption(topOpt); 
+        int topOptionId = topOpt.getTopOptionId();
+        
+        if (topOpt.getSubOptions() != null) {
+            for (Seller subOpt : topOpt.getSubOptions()) { 
+                subOpt.setTopOptionId(topOptionId); 
+                sellerMapper.insertSubOption(subOpt);
+            }
+        }
+    }
+}
+
+public Map<String, Object> getProductDataForEdit(int proNo) {
+    
+    Seller product = sellerMapper.selectProductByProNo(proNo); 
+    if (product == null) return null;
+
+    List<Map<String, Object>> files = sellerMapper.selectProductFiles(proNo);
+
+    List<Seller> options = sellerMapper.selectProductOptions(proNo); 
+    
+    List<String> disabledDates = sellerMapper.selectDisabledDates(proNo);
+
+    Map<String, Object> result = new HashMap<>();
+    result.put("product", product);
+    result.put("files", files);
+    result.put("options", options);
+    result.put("disabledDates", disabledDates);
+    
+    return result;
+}
+
 }
