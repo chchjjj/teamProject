@@ -77,8 +77,10 @@
                     try {
                         const res = await axios.get(`/api/chat/findChatId/${orderId}`);
                         if (res.data) {
-                            this.chatId = res.data;
+                            this.chatId = res.data.chatId;
+                            this.storeId = res.data.storeId;
                             console.log("조회된 chatId: " + this.chatId);
+                            console.log("조회된 storeId: " + this.storeId);
 
                             // chatId를 얻은 뒤 기존 메시지 로드
                             this.loadMessages();
@@ -86,7 +88,7 @@
                             console.warn("채팅방이 존재하지 않습니다. chatId: null");
                         }
                     } catch (error) {
-                        console.error("chatId 조회 실패: ", error);
+                        console.error("조회 실패: ", error);
                     }
                 },
 
@@ -162,6 +164,7 @@
                 console.log("로그인 아이디 ==> " + this.userId); // 로그인한 아이디 잘 넘어오나 테스트
                 console.log("주문번호 ==> " + this.orderId); // 주문번호 잘 넘어오나 테스트
                 console.log("채팅방 id ==> " + this.chatId); // 채팅방번호 잘 넘어오나 테스트
+                console.log("가게 id ==> " + this.storeId); // 채팅방번호 잘 넘어오나 테스트
 
                 //this.loadMessages();         // [추가] 기존 메시지 로드
             },
