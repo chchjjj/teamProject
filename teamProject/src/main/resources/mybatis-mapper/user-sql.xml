@@ -42,33 +42,42 @@
 	</select>
 	
 	<!--주문내역 가져오기-->
-	<select id="selectOrderHistory" parameterType="hashmap" resultType="com.example.teamProject.user.model.User"> 
-		SELECT 
-		    O.STORE_NAME,
-		    P.PRO_NAME,              
-		    T.OPTION_NAME,
-		    S.VALUE_NAME,
-		    OPT.ADD_QUANTITY,
-		    OPT.PRICE_DIFF,
-		    D.PRICE,
-		    D.QUANTITY,
-		    D.LETTERING_WORD,
-		    D.SUBTOTAL,
-		    O.ADD_OPTION_PRICE,
-		    O.DELIVERY_FEE,
-		    O.DELIVERY_TYPE,        
-		    O.FULL_ADDRESS,
-		    O.ORDER_DATE,
-		    O.TOTAL_PRICE,
-		    O.ORDER_ID
-		FROM ORDER_TBL O
-		LEFT JOIN ORDER_DETAIL_TBL D ON O.ORDER_ID = D.ORDER_ID
-		LEFT JOIN ORDER_OPTION_TBL OPT ON OPT.ORDER_DETAIL_ID = D.ORDER_DETAIL_ID
-		LEFT JOIN PRODUCT_TBL P ON D.PRO_NO = P.PRO_NO
-		LEFT JOIN PRODUCT_OPTION_TBL T ON T.TOP_OPTION_ID = OPT.TOP_OPTION_ID      
-		LEFT JOIN PRODUCT_SUB_OPTION_TBL S ON S.SUB_OPTION_ID = OPT.SUB_OPTION_ID  
-		WHERE O.USER_ID = #{userId}  
-		ORDER BY O.ORDER_DATE DESC 
+	<!---->
+	<select id="selectOrderList" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
+	      SELECT
+	    	SE.STORE_ID,
+	        O.STORE_NAME,
+	        P.PRO_NAME,
+	        T.OPTION_NAME,
+	        S.VALUE_NAME,
+	        OPT.ADD_QUANTITY,
+	        OPT.PRICE_DIFF,
+	        D.PRICE,
+	        D.QUANTITY,
+	        D.LETTERING_WORD,
+	        D.SUBTOTAL,
+	        O.ADD_OPTION_PRICE,
+	        O.DELIVERY_FEE,
+	        O.DELIVERY_TYPE,
+	        O.FULL_ADDRESS,
+            O.CHAT_YN,
+	        O.ORDER_DATE,
+	        O.TOTAL_PRICE,
+            C.CHAT_ID,
+	        O.ORDER_ID,
+	        D.ORDER_DETAIL_ID,
+	        OPT.ORDER_OPTION_ID
+	    FROM ORDER_TBL O
+	    LEFT JOIN ORDER_DETAIL_TBL D ON O.ORDER_ID = D.ORDER_ID
+	    LEFT JOIN ORDER_OPTION_TBL OPT ON OPT.ORDER_DETAIL_ID = D.ORDER_DETAIL_ID
+	    LEFT JOIN PRODUCT_TBL P ON D.PRO_NO = P.PRO_NO
+	    LEFT JOIN PRODUCT_OPTION_TBL T ON T.TOP_OPTION_ID = OPT.TOP_OPTION_ID
+	    LEFT JOIN PRODUCT_SUB_OPTION_TBL S ON S.SUB_OPTION_ID = OPT.SUB_OPTION_ID
+	    LEFT JOIN SELLER_INFO_TBL SE ON SE.STORE_NAME=O.STORE_NAME
+	    LEFT JOIN USER_TBL U ON U.USER_ID=O.USER_ID
+        LEFT JOIN CHAT_TBL C ON C.ORDER_ID=O.ORDER_ID
+	    WHERE O.USER_ID = #{userId}
+    	ORDER BY O.ORDER_DATE DESC
 	</select>
 	
 	
