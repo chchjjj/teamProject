@@ -35,15 +35,6 @@ public class ChatController {
         return "/chat/chatBuyer";
     }
 	
-	// 카페글 내용 추가 & WebSocket 메시지 수신 및 DB 저장
-//	@MessageMapping("/sendMessage") 
-//	// 클라이언트에서 "/app/sendMessage"로 요청 시 실행
-//    @SendTo("/topic/public") 
-//	// 메시지를 "/topic/public"을 구독하는 모든 사용자에게 전송
-//    public String sendMessage(String message) {
-//        System.out.println("Received message: " + message); // 로그 확인
-//        return message;
-//    }
 	
 	// WebSocket 메시지 수신 및 DB 저장
 	@MessageMapping("/sendMessage")
@@ -52,15 +43,15 @@ public class ChatController {
         System.out.println("웹소켓 수신 메시지: " + message);
         // 1. DB 저장
         try {
-            chatService.insertBuyerChatMsg(message);
-            System.out.println("메시지 DB 저장 완료: " + message.getContent());
+            chatService.insertChatMsg(message);
+            System.out.println("구매자 메시지 DB 저장 완료: " + message.getContent());
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("메시지 DB 저장 실패");
+            System.err.println("구매자 메시지 DB 저장 실패");
         }
         // 2. 클라이언트로 메시지 전달
         return message;
-    }
+    }	
 	
 	
 	// [추가] 채팅방 ID로 메시지 목록을 가져오는 REST API

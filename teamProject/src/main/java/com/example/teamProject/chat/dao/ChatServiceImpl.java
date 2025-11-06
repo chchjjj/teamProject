@@ -14,11 +14,11 @@ public class ChatServiceImpl implements ChatService {
 	@Autowired
 	ChatMapper chatMapper;
 	
-	// 구매자 말풍선 내용 인서트
+	// 구매자,판매자 각 말풍선 내용 인서트
 	@Override
-    public void insertBuyerChatMsg(Chat message) {
-        chatMapper.insertBuyerChatMsg(message);
-    }
+    public void insertChatMsg(Chat message) {
+        chatMapper.insertChatMsg(message);
+    }	
 	
 	// 기존 채팅내용 가져오기
 	@Override
