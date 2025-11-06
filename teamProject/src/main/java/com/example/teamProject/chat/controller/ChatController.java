@@ -26,8 +26,12 @@ public class ChatController {
 	
 	// 판매자 기준 채팅방
 	@RequestMapping("/chat/chatSeller.do") 
-    public String chatSeller(Model model) throws Exception{
-
+    public String chatSeller(
+    		@RequestParam(value="orderId", required=false) String orderId,
+    		Model model) throws Exception{		
+		model.addAttribute("orderId", orderId);
+	    System.out.println("판매자 화면에서 받은 orderId: " + orderId);
+	    
         return "/chat/chatSeller";
     }
 	
@@ -38,7 +42,7 @@ public class ChatController {
     	    Model model) throws Exception{			
 		
 		model.addAttribute("orderId", orderId);
-	    System.out.println("받은 orderId: " + orderId);
+	    System.out.println("구매자 화면에서 받은 orderId: " + orderId);
 	    
         return "/chat/chatBuyer";
     }
