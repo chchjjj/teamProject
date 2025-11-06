@@ -155,6 +155,13 @@ public class ProductController {
 	    resultMap = ProductService.WishlistDelete(map);
 	    return new Gson().toJson(resultMap);
 	}
+	@RequestMapping(value = "/product/qnaInsert.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String qnaInsert(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    resultMap = ProductService.qnaInsert(map);
+	    return new Gson().toJson(resultMap);
+	}
 	@RequestMapping(value = "/product/reviewList.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String reviewList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {

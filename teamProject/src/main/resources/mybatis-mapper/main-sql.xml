@@ -7,13 +7,13 @@
 	<!-- 메인페이지 / 상품리스트 조회 -->
 	<select id="selectMainProList" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">
 		SELECT *
-		FROM PRODUCT_TBL P
-		INNER JOIN SELLER_INFO_TBL S
-		ON P.STORE_ID = S.STORE_ID
-		INNER JOIN PRODUCT_IMG_TBL PI
-		ON P.PRO_NO = PI.PRO_NO
-		WHERE PI.FILEUSE = 'T'
-		
+FROM PRODUCT_TBL P
+LEFT JOIN SELLER_INFO_TBL S
+    ON P.STORE_ID = S.STORE_ID
+LEFT JOIN PRODUCT_IMG_TBL PI
+    ON P.PRO_NO = PI.PRO_NO
+   AND PI.FILEUSE = 'T'
+   WHERE 1=1
 		<!-- 판매자 페이지 이동 내용도 같이 사용-->
 		<if test="sellerPage == 23 and storeId != null">
 		      AND P.STORE_ID = #{storeId}

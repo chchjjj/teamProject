@@ -103,4 +103,6 @@ public interface ProductMapper {
  	// 채팅방 개설
  	int insertChat(HashMap<String, Object> map);
  	
+ 	// 큐앤에이 등록
+ 	int insertQnA(HashMap<String, Object> map);
 }
