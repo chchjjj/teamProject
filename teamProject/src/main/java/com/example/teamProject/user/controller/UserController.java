@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.example.teamProject.user.dao.UserService;
 import com.google.gson.Gson;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 public class UserController {
 	
@@ -38,10 +40,10 @@ public class UserController {
 		return "/user/jusoPopup";
 	}
 	
-//	@RequestMapping("/product/wishlist.do")
-//	public String wishList(Model model) throws Exception {
-//		return "/product/wishList";
-//	}
+	@RequestMapping("/product/wishlist.do")
+	public String wishList(Model model) throws Exception {
+		return "/product/wishList";
+	}
 	
 	@RequestMapping("/user/userMyPage.do")
 	public String userMyPage(Model model) throws Exception {
@@ -81,6 +83,12 @@ public class UserController {
 	@RequestMapping("/user/qnA.do")
 	public String qnA(Model model) throws Exception {
 		return "/user/qnA";
+	}
+	
+	@RequestMapping("/user/orderStatus.do")
+    public String orderStatus(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{
+		request.setAttribute("orderId",map.get("orderId"));
+        return "/user/orderStatus";
 	}
 	
 	
@@ -160,5 +168,6 @@ public class UserController {
 	    resultMap = userService.SelectOrderList(map);
 	    return new Gson().toJson(resultMap);
 	}
+	
 	
 }

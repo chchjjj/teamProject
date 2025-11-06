@@ -76,7 +76,11 @@
                             <div class="orderCardContent">
                                 <div class="orderSingle">
                                     <div>
-                                        <h3 class="storeName">가게명: {{ order.storeName }}/{{order.status}}</h3>
+                                        <h3 class="storeName">가게명: {{ order.storeName }}/
+                                            <span v-if="order.status==='P'">결제 완료</span>
+                                            <span v-if="order.status==='C'">결제 수락</span>
+                                            <span v-if="order.status==='S'">결제 대기</span>
+                                        </h3>
                                     </div>
 
                                     <!--orderDetail级别循环（groupedDetails是对象，需要Object.values转换成数组）-->
@@ -87,14 +91,24 @@
                                                 <h3 class="proName">상품명: {{ orderDetail.proName }}</h3>
                                             </div>
 
+                                            <div>
+                                                <span v-if="order.deliveryType==='D'">
+                                                    {{order.wishDeli}}
+                                                    예약배송
+                                                </span>
+                                                <span v-if="order.deliveryType==='P'">
+                                                    {{order.pickTime}}
+                                                    픽업
+                                                </span>
+                                            </div>
+
                                             <!--option循环-->
                                             <ul>
                                                 <li v-for="(option, optionIndex) in orderDetail.options"
                                                     :key="optionIndex" class="optionCard">
                                                     <!--这里假设optionName和valueName有对应值，如果没有可以用subOptionId/topOptionId-->
-                                                    옵션: {{ option.optionName }} / {{ option.optionValue}}
-                                                    (수량: {{ option.addQuantity }}개 / 추가금: {{
-                                                    formatNumber(option.priceDiff) }}원)
+                                                    옵션: {{ option.optionName }} / {{ option.valueName}}X{{option.priceDiff}}원
+                                                    (수량: {{ option.addQuantity }}개 / 추가금: {{option.optionTotal}}원)
                                                 </li>
                                             </ul>
 
@@ -118,10 +132,10 @@
                                 </div>
                             </div>
                             <div v-if="order.chatYn==='Y'">
-                                <button @click="fnChat(order.orderId,order.chatId)">채팅방으로</button>
+                                <button @click="fnChat(order.orderId,order.storeId)">채팅방으로</button>
                             </div>
                             <div>
-                                <button @click="fnDelivery(order.orderId,order.deliveryType)">주문상태 자세히</button>
+                                <button @click="fnOrderStatus(order.orderId)">주문현황</button>
                             </div>
                         </div>
 
@@ -192,6 +206,8 @@
                         const deliveryFee = Number(order.deliveryFee || 0);
                         const totalPrice = Number(order.totalPrice || 0);
                         const addOptionPrice = Number(order.addOptionPrice || 0);
+                        const wishDeli = order.wishDeli || "시간 미지정";
+                        const pickTime=order.pickTime||"시간 미지정";
                         //1.假如groupedOrders[orderId]不存在（就是以前没有添加过，就添加）
                         if (!groupedOrders[orderId]) {
                             groupedOrders[orderId] = {
@@ -206,6 +222,9 @@
                                 //添加完立刻再添加一个装details的map
                                 addOptionPrice: addOptionPrice,
                                 status:order.status,
+                                wishDeli:wishDeli,
+                                pickTime:pickTime,
+                                storeId:order.storeId,
                                 groupedDetails: {}
                             };
 
@@ -231,7 +250,9 @@
 
                         //3.因为option是最后添加的东西，用list
                         const addQuantity = Number(order.addQuantity || 0);
-                        const optionName = order.optionName || "옵션 미선택"
+                        const optionName = order.optionName || "옵션 미선택";
+                        const priceDiff = Number(order.priceDiff || 0);
+                        const optionTotal = Number(order.optionTotal || 0);
                         // groupedOrders[orderId].groupedDetails[orderDetailId].options = groupedOrders[orderId].groupedDetails[orderDetailId].options || [];可以省略
                         groupedOrders[orderId].groupedDetails[orderDetailId].options.push({
                             topOptionId: order.topOptionId,
@@ -239,7 +260,8 @@
                             optionName: optionName,
                             valueName: order.valueName,
                             priceDiff: order.priceDiff,
-                            addQuantity: addQuantity
+                            addQuantity: addQuantity,
+                            optionTotal:optionTotal
                         });
 
 
@@ -291,8 +313,12 @@
 
                 },
 
-                fnChat:function(orderId,chatId){
-                    pageChange("/chat/chatBuyer.do",{orderId:orderId,chatId:chatId});
+                fnChat:function(orderId,storeId){
+                    pageChange("/chat/chatBuyer.do",{orderId:orderId,storeId:storeId});
+                },
+
+                fnOrderStatus:function(orderId){
+                    pageChange("/user/orderStatus.do",{orderId:orderId});
                 }
             }, // methods
 
