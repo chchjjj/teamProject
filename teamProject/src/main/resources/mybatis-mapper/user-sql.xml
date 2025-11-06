@@ -43,7 +43,7 @@
 	
 	<!--주문내역 가져오기-->
 	<select id="selectOrderList" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
-	     SELECT
+	      SELECT
 	    	SE.STORE_ID,
 	        O.STORE_NAME,
 	        P.PRO_NAME,
@@ -59,6 +59,7 @@
 	        O.DELIVERY_FEE,
 	        O.DELIVERY_TYPE,
 	        O.FULL_ADDRESS,
+            O.CHAT_YN,
 	        O.ORDER_DATE,
 	        O.TOTAL_PRICE,
             C.CHAT_ID,

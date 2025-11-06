@@ -120,7 +120,7 @@
                                 <button @click="fnChat(order.oderId,order.chatId)">채팅방으로</button>
                             </div>
                             <div>
-                                <button @click="fnDelivery(order.orderId)">주문상태 자세히</button>
+                                <button @click="fnDelivery(order.orderId,order.deliveryType)">주문상태 자세히</button>
                             </div>
                         </div>
 
