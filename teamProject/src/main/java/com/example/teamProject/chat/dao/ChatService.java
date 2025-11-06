@@ -9,6 +9,8 @@ public interface ChatService {
 	// 구매자,판매자 각 말풍선 내용 인서트
 	void insertChatMsg(Chat message);
 	
+	// 채팅방 가져오기
+	String selectChatIdByOrderId(String orderId) throws Exception;	
 	
 	// 채팅내용 가져오기 
 	List<Chat> selectMsgByChatId(int chatId);	

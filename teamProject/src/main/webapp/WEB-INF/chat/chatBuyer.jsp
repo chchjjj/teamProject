@@ -59,19 +59,38 @@
                 newMessage: "",
                 messages: [], 
                 userId: "${sessionId}",
-                // 단일 테스트 위해 막아둠
-                // chatId: "${chatId}",
-                // orderId: "${orderId}",
+                chatId: "${chatId}",
+                orderId: "${orderId}",
+                storeId: "${storeId}", 
                 // orderDetailId: "${orderDetailId}",
                 // orderOptionId: "${orderOptionId}"
 
-                chatId: 1001,   // 임시 chatId
-                orderId: 2001, // 임시 orderId
-                storeId: 3001, // DB 컬럼에 값이 필요하면
+                //chatId: 1001,   // 임시 chatId
+                //orderId: 2001, // 임시 orderId
+                
 
                 };
             },
             methods: {
+                // orderId로 채팅방 찾아오기
+                async loadChatId() {
+                    try {
+                        const res = await axios.get(`/api/chat/findChatId/${orderId}`);
+                        if (res.data) {
+                            this.chatId = res.data;
+                            console.log("조회된 chatId: " + this.chatId);
+
+                            // chatId를 얻은 뒤 기존 메시지 로드
+                            this.loadMessages();
+                        } else {
+                            console.warn("채팅방이 존재하지 않습니다. chatId: null");
+                        }
+                    } catch (error) {
+                        console.error("chatId 조회 실패: ", error);
+                    }
+                },
+
+                // 웹소켓 연결
                 connect() {
                     const socket = new SockJS('/ws-chat');
                     this.stompClient = Stomp.over(socket);
@@ -133,12 +152,18 @@
                         chatBox.scrollTop = chatBox.scrollHeight;
                     }
                 },
+            
 
             },
-            mounted() {
+            async mounted() {
                 this.connect();               //  WebSocket 연결
-                this.loadMessages();         // [추가] 기존 메시지 로드
+                await this.loadChatId(); // ✅ chatId를 먼저 조회
+                
                 console.log("로그인 아이디 ==> " + this.userId); // 로그인한 아이디 잘 넘어오나 테스트
+                console.log("주문번호 ==> " + this.orderId); // 주문번호 잘 넘어오나 테스트
+                console.log("채팅방 id ==> " + this.chatId); // 채팅방번호 잘 넘어오나 테스트
+
+                //this.loadMessages();         // [추가] 기존 메시지 로드
             },
             beforeUnmount() {
                 if (this.stompClient) {
