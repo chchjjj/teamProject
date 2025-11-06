@@ -68,14 +68,14 @@
                                 <li><a href="#" @click="fnCategory('초콜렛')">초콜릿/사탕</a></li>
                             </ul>
                         </li>
-                        <li class="menu-item dropdown">
+                        <!-- <li class="menu-item dropdown">
                             <a href="#">베스트</a>
                             <ul class="submenu">
                                 <li><a href="#" @click="fnBestItem(1)">인기 상품 1위</a></li>
                                 <li><a href="#" @click="fnBestItem(2)">인기 상품 2위</a></li>
                                 <li><a href="#" @click="fnBestItem(3)">인기 상품 3위</a></li>
                             </ul>
-                        </li>
+                        </li> -->
                         <li class="menu-item"><a href="#" @click="fnAllergyFree">알레르기 프리</a></li>
                         <li class="menu-item"><a href="#" @click="fnApplyStore">입점하기</a></li>
                         <li class="menu-item"><a href="#" @click="fnMypage">마이페이지</a></li>

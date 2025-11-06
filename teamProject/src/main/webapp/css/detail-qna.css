@@ -249,3 +249,35 @@ table .status-btn.completed {
     font-weight: bold;
     margin-left: 5px;
 }
+.qna-write-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin: 25px 0 10px 0;
+}
+
+.qna-write-btn {
+    background-color: #3E2723; /* 딥브라운 (기존 버튼 톤과 통일) */
+    color: #fff;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+}
+
+.qna-write-btn:hover {
+    background-color: #5D4037; /* 호버 시 밝은 브라운 */
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+}
+
+.qna-write-btn:active {
+    background-color: #2C1B18;
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+

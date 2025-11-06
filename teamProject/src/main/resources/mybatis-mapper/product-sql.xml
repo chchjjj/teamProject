@@ -222,12 +222,33 @@ SELECT
 	</delete>
 	<!--찜 목록 불러오기-->
 	<select id="Wishlist" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product">
-	   SELECT W.USER_ID, U.USER_NAME, W.PRO_NO, W.WISH_AT, P.PRO_NAME, P.PRO_TYPE, P.STORE_NAME, P.PRICE, P.DELIVERY_FEE, P.PRO_INFO, P.LETTERING, S.IS_CHAT_ENABLED
-		FROM WISHLIST_TBL W
-		INNER JOIN PRODUCT_TBL P ON W.PRO_NO = P.PRO_NO
-		INNER JOIN SELLER_INFO_TBL S ON P.STORE_ID = S.STORE_ID
-        INNER JOIN USER_TBL U ON W.USER_ID = U.USER_ID
+SELECT 
+    W.USER_ID,
+    U.USER_NAME,
+    W.PRO_NO,
+    W.WISH_AT,
+    P.PRO_NAME,
+    P.PRO_TYPE,
+    P.STORE_NAME,
+    P.PRICE,
+    P.DELIVERY_FEE,
+    P.PRO_INFO,
+    P.LETTERING,
+    S.IS_CHAT_ENABLED,
+    I.FILEPATH,
+    I.FILENAME
+FROM WISHLIST_TBL W
+INNER JOIN PRODUCT_TBL P 
+    ON W.PRO_NO = P.PRO_NO
+INNER JOIN SELLER_INFO_TBL S 
+    ON P.STORE_ID = S.STORE_ID
+INNER JOIN USER_TBL U 
+    ON W.USER_ID = U.USER_ID
+LEFT JOIN PRODUCT_IMG_TBL I 
+    ON P.PRO_NO = I.PRO_NO 
+   AND I.FILEUSE = 'T' 
 	    WHERE W.USER_ID = #{userId}
+ORDER BY W.WISH_AT DESC
 	</select>
 
 	<!--리뷰 불러오기-->
@@ -406,6 +427,20 @@ OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 		'A',
 		SYSDATE,
 		SYSDATE
+	)
+	</insert>
+	<!--큐엔에이 등록하기-->
+	<insert id="insertQnA" parameterType="hashmap">
+	INSERT INTO QA_TBL
+	VALUES (
+		SEQ_QUESTION_ID.NEXTVAL,
+		#{proNo},
+		#{userId},
+		#{qnaContents},
+		SYSDATE,
+		#{storeId},
+		'',
+		''
 	)
 	</insert>
 </mapper>

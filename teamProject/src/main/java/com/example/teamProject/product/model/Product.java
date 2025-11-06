@@ -74,7 +74,7 @@ public class Product {
 	    private int rating;
 	    private String reviewContent;
 	    private String cdatetime;
-	    
+	    private String qnaContents;
 	    // 주문서 관련
 	    
 	    private int orderDetailId; // 시퀀스 자동 생성

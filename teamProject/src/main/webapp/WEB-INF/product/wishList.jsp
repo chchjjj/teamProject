@@ -11,6 +11,35 @@
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <style>
+            /* ✅ 이미지 placeholder (기본 텍스트 박스용) */
+            .item-image-placeholder {
+                width: 140px;
+                height: 140px;
+                flex-shrink: 0;
+                border-radius: 10px;
+                background-color: #f0f0f0;
+                background-size: cover;
+                background-position: center;
+                object-fit: cover;
+                overflow: hidden;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: #777;
+                font-size: 13px;
+            }
+
+            /* ✅ 실제 이미지 태그일 때 */
+            img.item-image-placeholder {
+                width: 140px;
+                height: 140px;
+                border-radius: 10px;
+                object-fit: cover;
+                /* 비율 유지하면서 꽉 채움 */
+                background-color: #f9f9f9;
+                transition: transform 0.25s ease;
+            }
+
             .product-detail-container {
 
 
@@ -86,19 +115,7 @@
                 /* 위쪽 정렬 */
             }
 
-            .item-image-placeholder {
-                width: 150px;
-                /* 이미지 너비 */
-                flex-shrink: 0;
-                height: auto;
-                /* 이미지 높이 */
-                background-color: #e0e0e0;
-                /* 회색 배경으로 플레이스홀더 */
-                border-radius: 8px;
-                background-size: cover;
-                /* 이미지 크기 맞춤 */
-                background-position: center;
-            }
+
 
             .item-text h3.store-name {
                 font-size: 18px;
@@ -259,13 +276,16 @@
                         <p>관심 있는 상품을 한눈에 확인해보세요.</p>
                     </div>
 
-                    <!-- ✅ 2개씩 카드 보이게 -->
+                    <!-- 2개씩 카드 보이게 -->
                     <div class="wishlist-grid" v-if="paginatedList.length > 0">
                         <label class="product-card" v-for="item in paginatedList" :key="item.cartId"
                             @click="fnProDt(item.proNo)">
                             <div class="item-left">
-                                <div class="item-image-placeholder"
-                                    :style="{ 'background-image': 'url(' + item.proImgUrl + ')' }"></div>
+                                <div class="item-image-placeholder" v-if="!item.filePath || !item.fileName">
+                                    판매자 등록 썸네일
+                                </div>
+                                <img class="item-image-placeholder" v-else :src="(item.filePath + item.fileName).trim()"
+                                    alt="상품 이미지" class="product-image">
                                 <div class="item-text">
                                     <h3 class="store-name">{{ item.proName }} ({{ item.price.toLocaleString() }}원)</h3>
                                     <p class="store-name">{{ item.storeName }}</p>
