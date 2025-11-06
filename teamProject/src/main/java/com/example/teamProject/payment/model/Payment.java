@@ -8,6 +8,7 @@ public class Payment {
 	// 유저아이디
 	private String userId;
 	private String storeId;
+	private String phone;
 
 	// 상품 정보
 	private int proNo;
@@ -65,4 +66,9 @@ public class Payment {
 
 	// 장바구니 옵션
 	private int cartOptQuantity;
+	
+	//USER_ADDRESS (배송지 테이블)
+	private int addressId;
+	private String cdateTimeAt;
+	private String udateTimeAt;
 }

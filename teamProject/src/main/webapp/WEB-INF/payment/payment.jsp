@@ -38,7 +38,7 @@
                 <hr>
             </div>
             <div>
-                배송지: <button>배송지선택</button>
+                배송지: <button @click="fnDelivery">배송지선택</button>
             </div>
             <div>
                 주문고객: {{toName}}
@@ -127,19 +127,7 @@
 
             //ORDER_TBL의 배송지, 배송비, 총 결제금액, 배송/픽업 선택 업데이트
             fnDelivery: function(){
-                let self = this;
-                let param = {
-                    orderId : self.orderId
-                };
-                $.ajax({
-                    url: "/payment/delivery.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-                        
-                    }
-                });
+                 window.open("/payment/addressPopUp.do", "addressPopUp", "width=700, height=500, top=100, left=100");
             },
 
             //결제 버튼을 누르면 이 함수를 실행
@@ -187,7 +175,9 @@
                         }
                     }
                 });
-            }
+            },
+
+           
         }, // methods
         mounted() {
             // 처음 시작할 때 실행되는 부분

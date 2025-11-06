@@ -106,6 +106,59 @@ public class PaymentService {
 		return resultMap;
 	}
 
+	public HashMap<String, Object> addAddress(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			paymentMapper.insertAddress(map);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage()); //개발자가 확인할 로그 기록
+		}
+		
+		return resultMap;
+	}
+
+	public HashMap<String, Object> addressList(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			List<Payment> list = paymentMapper.selectUserAddress(map);
+			resultMap.put("list", list); 
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage()); //개발자가 확인할 로그 기록
+		}
+		
+		return resultMap;
+	}
+
+	public HashMap<String, Object> removeAddress(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			paymentMapper.deleteUserAddress(map);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage()); //개발자가 확인할 로그 기록
+		}
+		
+		return resultMap;
+	}
+
+	public HashMap<String, Object> useAddress(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			paymentMapper.updateOrderAddress(map);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage()); //개발자가 확인할 로그 기록
+		}
+		
+		return resultMap;
+	}
+
 	
 
 	

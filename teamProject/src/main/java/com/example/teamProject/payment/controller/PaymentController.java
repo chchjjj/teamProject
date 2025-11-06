@@ -53,6 +53,12 @@ public class PaymentController {
 		// 결제 페이지로 이동
 		return "/payment/payment";
 	}
+	
+	@RequestMapping("/payment/addressPopUp.do")
+	public String login(Model model) throws Exception {
+		
+		return "/payment/addressPopUp";
+	}
 
 	@RequestMapping(value = "/payment/orderList.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
@@ -126,5 +132,40 @@ public class PaymentController {
 
 		return new Gson().toJson(resultMap);
 	}
-
+	
+	@RequestMapping(value = "/payment/addAddress.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String addAddress(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = paymentService.addAddress(map);
+ 
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/payment/addressList.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String addressList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = paymentService.addressList(map);
+ 
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/payment/removeAddress.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String removeAddress(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = paymentService.removeAddress(map);
+ 
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/payment/useAddress.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String useAddress(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = paymentService.useAddress(map);
+ 
+		return new Gson().toJson(resultMap);
+	}
 }
