@@ -52,10 +52,10 @@
 			PAYMENT_SEQ.NEXTVAL, 
 			#{orderId},
 			#{totalPrice},
-			'1', 
+			NULL, 
 	         0, 
 	        'N', 
-	         SYSDATE, 
+	         SYSDATE,
 	         'Y' 
 		)
 	</insert>
