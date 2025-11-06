@@ -6,28 +6,91 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>사용자관리</title>
-        <link rel="stylesheet" href="/css/productDetail-style.css">
+        <link rel="stylesheet" href="/css/admin-style.css">
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <script src="/js/page-change.js"></script>
         <style>
-            table,
-            tr,
-            td,
-            th {
-                border: 1px solid black;
+            /* ===== 관리자 테이블 공통 스타일 ===== */
+            table {
+                width: 100%;
                 border-collapse: collapse;
-                padding: 5px 10px;
+                font-family: 'Arial', sans-serif;
+                margin-top: 10px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+
+            th,
+            td {
+                padding: 10px 15px;
                 text-align: center;
+                border-bottom: 1px solid #ddd;
             }
 
             th {
-                background-color: beige;
+                background-color: #3E2723;
+                /* ESPRESSO 색상 */
+                color: #FFEDAC;
+                /* BUTTER 색상 */
+                font-weight: bold;
             }
 
             tr:nth-child(even) {
-                background-color: azure;
+                background-color: #f9f9f9;
+            }
+
+            tr:hover {
+                background-color: #F4C9D6;
+                /* PEONY 색상 */
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            td {
+                color: #333;
+            }
+
+            select,
+            input[type="text"] {
+                padding: 5px 8px;
+                margin: 5px 0;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            button {
+                padding: 6px 12px;
+                background-color: #3E2723;
+                color: #FFEDAC;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            button:hover {
+                background-color: #5D4037;
+            }
+
+            /* 페이징 버튼 */
+            .paging a,
+            .paging button {
+                display: inline-block;
+                margin: 0 3px;
+                padding: 5px 10px;
+                text-decoration: none;
+                color: #3E2723;
+                border: 1px solid #3E2723;
+                border-radius: 4px;
+                transition: all 0.2s ease;
+            }
+
+            .paging a.active,
+            .paging button:hover {
+                background-color: #3E2723;
+                color: #FFEDAC;
+                border-color: #3E2723;
             }
         </style>
     </head>
@@ -41,31 +104,35 @@
 
                 <!--외쪽측 네이버바-->
                 <div class="navBar">
-                    <!---->
+                    <!-- Logo -->
+                    <div class="logo">
+                        <a href="javascript:;" onclick="location.href='/main.do'">
+                            <!--로고 클릭시 홈페이지 새로고침 -->
+                            <img src="/img/로고.png" alt="쇼핑몰 로고">
+                        </a>
+                    </div>
                     <div class="navButton">
                         <div>
-                            <button @click="fnAdinMain()">대시보드</button>
+                            <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">전체 유저 관리</button>
                         </div>
                         <div>
-                            <button @click="fnBuyerManage()">구매자 관리</button>
+                            <button @click="fnSellerManage()" :class="{active: currentMenu==='seller'}">판매자관리</button>
                         </div>
                         <div>
-                            <button @click="fnSellerManage()">판매자관리</button>
+                            <button @click="fnSalesManage()" :class="{active: currentMenu==='money'}">매출관리</button>
                         </div>
                         <div>
-                            <button @click="fnSalesManage()">매출관리</button>
+                            <button @click="fnAdRequest()" :class="{active: currentMenu==='ad'}">광고관리</button>
                         </div>
                         <div>
-                            <button @click="fnAdRequest()">광고관리</button>
+                            <button @click="fnMembership()" :class="{active: currentMenu==='membership'}">맴버쉽관리</button>
                         </div>
                         <div>
-                            <button @click="fnMembership()">맴버쉽관리</button>
-                        </div>
-                         <div>
-                            <button @click="fnMonthlyFee()">판매자 월 정산결과 조회</button>
+                            <button @click="fnMonthlyFee()" :class="{active: currentMenu==='month'}">판매자 월 정산결과
+                                조회</button>
                         </div>
                         <div>
-                            <button @click="fnQandA()">Q&A</button>
+                            <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">Q&A</button>
                         </div>
                     </div>
 
@@ -84,7 +151,7 @@
                     <div>
                         <!--구역이름-->
                         <div>
-                            사용자관리
+                            전체 유저 관리
                         </div>
                         <!--아이콘-->
                         <div></div>
@@ -115,7 +182,7 @@
                                 <th>활동탈퇴여부</th>
                                 <th>가입일자</th>
                                 <th>권한</th>
-                                <th>수정</th>  
+                                <th>수정</th>
                             </tr>
                             <tr v-for="user in userList">
                                 <td><input type="checkbox" :value="user.userId" v-model="selectItem"></td>
@@ -133,10 +200,15 @@
                                     <span v-if="user.role==='S'">판매자</span>
                                     <span v-if="user.role==='C'">구매자</span>
                                     <span v-if="user.role==='A'">관리자</span>
-                                </td> 
-                                <td><button @click="fnEdit(user.userId)">수정</button></td> 
+                                </td>
+                                <td><button @click="fnEdit(user.userId)">수정</button></td>
                             </tr>
                         </table>
+                        <div>
+                            <button @click="fnRemoveAll">
+                                선택 삭제
+                            </button>
+                        </div>
                     </div>
 
 
@@ -153,11 +225,7 @@
 
                 </div>
 
-                <div>
-                    <button @click="fnRemoveAll">
-                        선택 삭제
-                    </button>
-                </div>
+
 
             </div>
 
@@ -173,8 +241,8 @@
                     // 변수 - (key : value)
                     userList: [],
                     sessionId: "${sessionId}",
-                
-                    
+
+                    currentMenu: "buyer",
 
                     //선택
                     selectItem: [],
@@ -273,11 +341,11 @@
 
                 //수정으로로 이동
                 fnEdit: function (userId) {
-                    pageChange("/admin/useredit.do",{userId:userId});
+                    pageChange("/admin/useredit.do", { userId: userId });
                 },
 
-                fnUserInfo:function(userId){
-                    pageChange("/admin/userinfo.do",{userId:userId});
+                fnUserInfo: function (userId) {
+                    pageChange("/admin/userinfo.do", { userId: userId });
                 },
 
 
@@ -320,7 +388,7 @@
 
                 },
 
-                fnAdminMain:function(){
+                fnAdminMain: function () {
                     location.href = "/admin/main.do";
                 },
 
@@ -355,8 +423,18 @@
                 },
 
                 fnLogout: function () {
+                    param = {}
                     if (confirm("로그아웃 하시겠습니까?")) {
-                        location.href = '#';
+                        $.ajax({
+                            url: "/user/logout.dox", // 로그아웃 url 주소
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                alert(data.msg);
+                                location.href = "/main.do";
+                            }
+                        });
                     }
                 }
 

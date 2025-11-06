@@ -26,32 +26,33 @@
 
                 <!--외쪽측 네이버바-->
                 <div class="navBar">
-                    <!-- Logo -->
-                    <div class="logo">
-                        <img src="/images/logo.png" alt="Dessert Lab" style="max-width: 150px;">
-                        <p>Admin Panel</p>
+                   <div class="logo">
+                        <a href="javascript:;" onclick="location.href='/main.do'">
+                            <!--로고 클릭시 홈페이지 새로고침 -->
+                            <img src="/img/로고.png" alt="쇼핑몰 로고">
+                        </a>
                     </div>
                     <div class="navButton">
                         <div>
-                            <button @click="fnBuyerManage()">사용자 관리</button>
+                            <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">구매자 관리</button>
                         </div>
                         <div>
-                            <button @click="fnSellerManage()">판매자관리</button>
+                            <button @click="fnSellerManage()":class="{active: currentMenu==='seller'}">판매자관리</button>
                         </div>
                         <div>
-                            <button @click="fnSalesManage()">매출관리</button>
+                            <button @click="fnSalesManage()":class="{active: currentMenu==='money'}">매출관리</button>
                         </div>
                         <div>
-                            <button @click="fnAdRequest()">광고관리</button>
+                            <button @click="fnAdRequest()":class="{active: currentMenu==='ad'}">광고관리</button>
+                        </div>  
+                        <div>
+                            <button @click="fnMembership()":class="{active: currentMenu==='membership'}">맴버쉽관리</button>
+                        </div>
+                         <div>
+                            <button @click="fnMonthlyFee()":class="{active: currentMenu==='month'}">판매자 월 정산결과 조회</button>
                         </div>
                         <div>
-                            <button @click="fnMembership()">맴버쉽관리</button>
-                        </div>
-                        <div>
-                            <button @click="fnMonthlyFee()">판매자 월 정산결과 조회</button>
-                        </div>
-                        <div>
-                            <button @click="fnQandA()">Q&A/리뷰</button>
+                            <button @click="fnQandA()":class="{active: currentMenu==='qna'}">Q&A</button>
                         </div>
                     </div>
 
@@ -149,7 +150,7 @@
                     sellerList: [],
                     sessionId: "${sessionId}",
 
-
+                    currentMenu: "month",
 
                     //선택
                     selectItem: [],
@@ -325,7 +326,19 @@
                 },
 
                 fnLogout: function () {
-
+                  param = {}
+                    if (confirm("로그아웃 하시겠습니까?")) {
+                        $.ajax({
+                            url: "/user/logout.dox", // 로그아웃 url 주소
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                alert(data.msg);
+                                location.href = "/main.do";
+                            }
+                        });
+                    }
                 }
 
 

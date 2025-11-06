@@ -12,125 +12,169 @@
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <script src="/js/page-change.js"></script>
         <style>
-            
+            /* 페이징 버튼 CSS */
+            .paging {
+                margin-top: 20px;
+                text-align: center;
+                font-family: Arial, sans-serif;
+            }
+
+            .paging button {
+                background-color: #3E2723;
+                /* ESPRESSO 색상 */
+                color: #FFEDAC;
+                /* 글자 색상 */
+                border: none;
+                padding: 5px 10px;
+                margin: 0 3px;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .paging button:hover {
+                background-color: #5D4037;
+                /* hover 시 조금 밝게 */
+            }
+
+            .paging a {
+                display: inline-block;
+                padding: 5px 10px;
+                margin: 0 2px;
+                border-radius: 5px;
+                text-decoration: none;
+                color: #3E2723;
+                /* ESPRESSO */
+                background-color: #FFEDAC;
+                /* BUTTER 배경 */
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .paging a:hover {
+                background-color: #F4C9D6;
+                /* PEONY 색상으로 hover */
+                color: #3E2723;
+            }
+
+            .paging a.active {
+                background-color: #3E2723;
+                /* 선택된 페이지 */
+                color: #FFEDAC;
+                font-weight: bold;
+            }
         </style>
     </head>
 
     <body>
         <div id="app">
-            <!-- html 코드는 id가 app인 태그 안에서 작업 -->
-
-            <!--관리자 마이 페이지의 컨데너 입니다-->
+            <!-- 관리자 페이지 컨테이너 -->
             <div class="mainPageContainer">
 
-                <!--외쪽측 네이버바-->
+                <!-- 왼쪽 네비게이션 바 -->
                 <div class="navBar">
-                    <!-- Logo -->
                     <div class="logo">
-                        <img src="/images/logo.png" alt="Dessert Lab" style="max-width: 150px;">
-                        <p>Admin Panel</p>
+                        <a href="javascript:;" onclick="location.href='/main.do'">
+                            <img src="/img/로고.png" alt="쇼핑몰 로고">
+                        </a>
                     </div>
                     <div class="navButton">
-                        <div>
-                            <button @click="fnBuyerManage()">사용자 관리</button>
+                        <div><button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">구매자 관리</button>
                         </div>
-                        <div>
-                            <button @click="fnSellerManage()">판매자관리</button>
+                        <div><button @click="fnSellerManage()" :class="{active: currentMenu==='seller'}">판매자 관리</button>
                         </div>
-                        <div>
-                            <button @click="fnSalesManage()">매출관리</button>
+                        <div><button @click="fnSalesManage()" :class="{active: currentMenu==='money'}">매출관리</button>
                         </div>
-                        <div>
-                            <button @click="fnAdRequest()">광고관리</button>
-                        </div>
-                        <div>
-                            <button @click="fnMembership()">맴버쉽관리</button>
-                        </div>
-                        <div>
-                            <button @click="fnMonthlyFee()">판매자 월 정산결과 조회</button>
-                        </div>
-                        <div>
-                            <button @click="fnQandA()">Q&A/리뷰</button>
-                        </div>
+                        <div><button @click="fnAdRequest()" :class="{active: currentMenu==='ad'}">광고관리</button></div>
+                        <div><button @click="fnMembership()"
+                                :class="{active: currentMenu==='membership'}">맴버쉽관리</button></div>
+                        <div><button @click="fnMonthlyFee()" :class="{active: currentMenu==='month'}">판매자 월 정산결과
+                                조회</button></div>
+                        <div><button @click="fnQandA()" :class="{active: currentMenu==='qna'}">Q&A</button></div>
                     </div>
-                    <!--logout button-->
                     <div class="logOut">
-                        <div>
-                            <button @click="fnLogout()">Logout</button>
-                        </div>
+                        <button @click="fnLogout()">Logout</button>
                     </div>
                 </div>
 
-                <div>
-                    <div>광고관리</div>
-                    <div>
-                        <div>광고추가</div>
+                <!-- 광고 관리 영역 -->
+                <div class="adManagement">
+                    <h2>광고관리</h2>
 
-                        <div>
-                            <table>
+                    <!-- 광고 추가 폼 -->
+                    <div class="adAdd">
+                        <h3>광고 추가</h3>
+                        <table>
+                            <tr>
+                                <th>광고이름</th>
+                                <th>링크</th>
+                                <th>클릭당 비용(원)</th>
+                            </tr>
+                            <tr>
+                                <td><input type="text" v-model="adName"></td>
+                                <td><input type="text" v-model="urlLink"></td>
+                                <td><input type="text" v-model="clickUnitCost"></td>
+                            </tr>
+                        </table>
+                        <button @click="fnAdAdd()" style="margin-top:10px;">추가</button>
+                    </div>
+
+                    <!-- 광고 리스트 -->
+                    <div class="adList" style="margin-top:20px;">
+                        <h3>광고 리스트</h3>
+                        <table>
+                            <thead>
                                 <tr>
+                                    <th>광고번호</th>
                                     <th>광고이름</th>
+                                    <th>시작시간</th>
+                                    <th>종료시간</th>
                                     <th>링크</th>
+                                    <th>클릭</th>
                                     <th>클릭당 비용(원)</th>
+                                    <th>진행상태</th>
+                                    <th>수정</th>
                                 </tr>
-                                <tr>
-                                    <td><input type="text" v-model="adName"></td>
-                                    <td><input type="text" v-model="urlLink"></td>
-                                    <td><input type="text" v-model="clickUnitCost"></td>
+                            </thead>
+                            <tbody>
+                                <tr v-for="ad in adList" :key="ad.adId">
+                                    <td>{{ad.adId}}</td>
+                                    <td>{{ad.adName}}</td>
+                                    <td>{{ad.startDate}}</td>
+                                    <td>{{ad.endDate}}</td>
+                                    <td>{{ad.linkUrl}}</td>
+                                    <td>{{ad.clicks}}</td>
+                                    <td>{{ad.clickUnitCost}}</td>
+                                    <td>{{ad.status}}</td>
+                                    <td>
+                                        <span v-if="ad.status==='진행중'||ad.status==='예정'">
+                                            <button @click="fnEdit(ad.adId)">수정</button>
+                                        </span>
+                                        <span v-else>-</span>
+                                    </td>
                                 </tr>
-                            </table>
-                        </div>
-                        <div><button @click="fnAdAdd()">추가</button></div>
-                    </div>
-                    <div>
-                        <div>
-                            <div>광고 리스트</div>
-                            <div>
-                                <table>
-                                    <tr>
-                                        <th>광고번호</th>
-                                        <th>광고이름</th>
-                                        <th>시작시간</th>
-                                        <th>종료시간</th>
-                                        <th>링크</th>
-                                        <th>클릭</th>
-                                        <th>클릭당 비용(원)</th>
-                                        <th>진행상태</th>
-                                        <th>수정</th>
-                                    </tr>
-                                    <tr v-for="ad in adList">
-                                        <td>{{ad.adId}}</td>
-                                        <td>{{ad.adName}}</td>
-                                        <td>{{ad.startDate}}</td>
-                                        <td>{{ad.endDate}}</td>
-                                        <td>{{ad.linkUrl}}</td>
-                                        <td>{{ad.clicks}}</td>
-                                        <td>{{ad.clickUnitCost}}</td>
-                                        <td>{{ad.status}}</td>
-                                        <td>
-                                            <span v-if="ad.status==='진행중'||ad.status==='예정'"><button
-                                                    @click="fnEdit(ad.adId)">수정</button></span>
-                                            <span v-else>-</span>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                            <!--페이징 구역-->
-                            <div>
-                                <span v-if="page>1">
-                                    <button @click="fnPre()">◀</button>
-                                </span>
-                                <a href="javascript:;" v-for="num in pageRangeList" @click="fnChange(num)"
-                                    :class="{active:page == num}">{{num}}</a>
-                                <span v-if="page!=pageNum"><button @click="fnNext()">▶</button></span>
-                            </div>
+                            </tbody>
+                        </table>
+
+                        <!-- 페이징 버튼 -->
+                        <div class="paging" style="margin-top: 15px; text-align: center;">
+                            <span v-if="page>1">
+                                <button @click="fnPre()">◀</button>
+                            </span>
+                            <span v-for="num in pageRangeList" :key="num" style="margin:0 5px;">
+                                <a href="javascript:;" @click="fnChange(num)" :class="{active: page == num}">{{num}}</a>
+                            </span>
+                            <span v-if="page < pageNum">
+                                <button @click="fnNext()">▶</button>
+                            </span>
                         </div>
                     </div>
 
                 </div>
-
             </div>
         </div>
+
     </body>
 
     </html>
@@ -142,6 +186,8 @@
                     sessionId: "${sessionId}",
                     // 변수 - (key : value)
                     adList: [],
+
+                    currentMenu: "ad",
 
                     //새 광고 삽입 시
                     adId: "",
@@ -323,7 +369,19 @@
                 },
 
                 fnLogout: function () {
-
+                    param = {}
+                    if (confirm("로그아웃 하시겠습니까?")) {
+                        $.ajax({
+                            url: "/user/logout.dox", // 로그아웃 url 주소
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                alert(data.msg);
+                                location.href = "/main.do";
+                            }
+                        });
+                    }
                 },
 
 
