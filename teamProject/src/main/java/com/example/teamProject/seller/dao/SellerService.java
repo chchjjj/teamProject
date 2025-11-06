@@ -34,6 +34,23 @@ public class SellerService {
 
 		return resultMap;
 	}
+	
+	// 판매자 가게 리스트 불러오기
+		public HashMap<String, Object> getProductList(HashMap<String, Object> map) {
+			HashMap<String, Object> resultMap = new HashMap<String, Object>();
+			try {
+				List<Seller> list = sellerMapper.selectProductList(map);
+				resultMap.put("list", list);
+				resultMap.put("result", "success");
+				System.out.println(resultMap);
+			} catch (Exception e) {
+				// TODO: handle exception
+				resultMap.put("result", "fail");
+				System.out.println(e.getMessage());
+			}
+
+			return resultMap;
+		}
 
 	// 월별 판매 리스트 불러오기
 	public HashMap<String, Object> getSellesChart(HashMap<String, Object> map) {
