@@ -72,17 +72,6 @@
                             <h1 class="qna-title">Q&A</h1>
                             <hr class="divider">
 
-                            <!-- 게시글 페이징 (N개씩 보기) -->
-                            <select v-model="pageSize" @change="fnPageSizeChange" class="pageSelect">
-                                <!-- 바꿀때마다 페이지 초기화 -->
-                                <option value="5">:: 5개씩 ::</option>
-                                <option value="10">:: 10개씩 ::</option>
-                                <option value="20">:: 20개씩 ::</option>
-                            </select>
-                            <input type="checkbox" class="myQna" v-model="myQnaOnly" @change="fnQnaList1">
-                            나의 질문
-
-                            <span class="info">※ '나의 질문' 기능은 로그인 시에만 이용 가능합니다.</span>
 
                             <table>
                                 <colgroup>
@@ -144,16 +133,6 @@
                                 <a href="#" @click="fnMove(+1)" v-if="page != index">&gt;</a>
                             </div>
 
-                            <!-- 검색기능 -->
-                            <div class="search-area">
-                                <select v-model="searchOption">
-                                    <option value="all">:: 전체 :: ▼</option>
-                                    <option value="content">:: 내용 ::</option>
-                                    <option value="id">:: 작성자 ::</option>
-                                </select>
-                                <input v-model="qnaKeyword" @keyup.enter="fnQnaList1" placeholder="검색어를 입력해주세요.">
-                                <button @click="fnQnaList1">검색</button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -224,7 +203,7 @@
                 // 리뷰 목록 불러오기
                 fnReviewList() {
                     let self = this;
-
+                    
                     let param = {
                         proNo: self.proNo
                     };

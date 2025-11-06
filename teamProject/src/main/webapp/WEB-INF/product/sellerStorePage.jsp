@@ -337,7 +337,7 @@
         <%@ include file="/WEB-INF/main/header.jsp" %>
             <div id="app">
                 <!-- html 코드는 id가 app인 태그 안에서 작업 -->
-                <<div class="page-container">
+                <div class="page-container">
 
                     <div class="store-banner">
                         가게 헤더 이미지 공간
@@ -386,7 +386,7 @@
 
                         </div>
                     </div>
-
+                </div>
             </div>
             <%@ include file="/WEB-INF/main/footer.jsp" %>
     </body>
