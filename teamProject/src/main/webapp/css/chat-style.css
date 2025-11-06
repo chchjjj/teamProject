@@ -3,15 +3,14 @@
 
         /* 채팅방 컨테이너 */
         .chat-room-container {
-            max-width: 600px;
+            max-width: 550px;
             /*height: 100vh; /* 화면 전체 높이 사용 */
-			height: 800px;
-            margin: 0 auto;
+			height: 700px;
+            margin: 30px auto;
             background-color: #ffffff;
             display: flex;
             flex-direction: column;
-            border-left: 1px solid #ddd;
-            border-right: 1px solid #ddd;
+            border: 1px solid #ddd;
         }
 
         /* 채팅방 헤더 */
@@ -110,4 +109,5 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
+			
         }
