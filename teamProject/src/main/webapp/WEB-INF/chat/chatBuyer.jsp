@@ -29,7 +29,7 @@
               <div id="app">
                 <div class="chat-room-container">
                 <header class="chat-header">
-                    <h3>🛒 주문번호 : {{ orderId }} 채팅방</h3>
+                    <h3>🛒 주문번호 : {{ orderId }} 채팅방 - 구매자</h3>
                 </header>
 
                 <div class="messages-area" id="chatBox">
