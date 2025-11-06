@@ -71,80 +71,65 @@
                     <div class="storeSection">
 
                         <!--order层-->
-                        <!--order级别的容器，循环-->
-                        <div v-for="(order,orderIndex) in orderList" :key="order.orderId" class="orderCard">
-                            <!--order内容级别的容器-->
+                        <div v-for="(order, orderIndex) in groupedOrdersList" :key="order.orderId" class="orderCard">
                             <div class="orderCardContent">
                                 <div class="orderSingle">
                                     <div>
-                                        <h3 class="storeName">
-                                            가게명:{{order.storeName}}
-                                        </h3>
+                                        <h3 class="storeName">가게명: {{ order.storeName }}</h3>
                                     </div>
-                                    <!--orderDetail级别的容器，循环-->
-                                    <div v-for="(orderDetail,orderDetailIndex) in order.orderDetailList"
+
+                                    <!--orderDetail级别循环（groupedDetails是对象，需要Object.values转换成数组）-->
+                                    <div v-for="(orderDetail, orderDetailIndex) in Object.values(order.groupedDetails)"
                                         :key="orderDetailIndex" class="orderDetailCard">
-                                        <!--orderDetail内容级别的容器-->
                                         <div class="orderDetailCardContent">
                                             <div>
-                                                <h3 class="proName">
-                                                    상품명:{{orderDetail.proName}}
-                                                </h3>
+                                                <h3 class="proName">상품명: {{ orderDetail.proName }}</h3>
                                             </div>
-                                            <!--option的容器-->
+
+                                            <!--option循环-->
                                             <ul>
-                                            <!--option内容容器-->
-                                               <li v-for="(option,optionIndex) in orderDetail.optionList"
-                                        :key="optionIndex" class="optionCard">{{ option.optionName }} : {{ option.valueName }} (수량: {{ option.addQuantity }}개 / 추가금:
-                                                    {{ formatNumber(option.priceDiff) }}원)</li>     
+                                                <li v-for="(option, optionIndex) in orderDetail.options"
+                                                    :key="optionIndex" class="optionCard">
+                                                    <!--这里假设optionName和valueName有对应值，如果没有可以用subOptionId/topOptionId-->
+                                                    옵션: {{ option.optionName }} / {{ option.optionValue}}
+                                                    (수량: {{ option.addQuantity }}개 / 추가금: {{
+                                                    formatNumber(option.priceDiff) }}원)
+                                                </li>
                                             </ul>
-                                                
-                                            <div>
-                                                가격:{{orderDetail.price}}
-                                            </div>
-                                            <div>
-                                                수량:{{orderDetail.quantity}}
-                                            </div>
-                                            <div>
-                                                레터링:{{orderDetail.letteringWord}}
-                                            </div>
-                                            <div>
-                                                합계:{{orderDetail.subtotal}}
-                                            </div>
+
+                                            <div>가격: {{ orderDetail.price }}</div>
+                                            <div>수량: {{ orderDetail.quantity || 1 }}</div>
+                                            <div>레터링: {{ orderDetail.letteringWord }}</div>
+                                            <div>합계: {{ orderDetail.subtotal }}</div>
                                         </div>
-                                        <!--orderDetail级别循环结束的地方-->
+
                                     </div>
+                                    <div>채팅유무(Y/N):{{ order.chatYn }}</div>
+                                    <div>채팅추가비: {{ order.addOptionPrice || 0 }}</div>
+                                    <div>배송방식: {{ order.deliveryType }}</div>
+                                    <div>배송비: {{ order.deliveryFee }}</div>
+                                    <div>주소: {{ order.fullAddress }}</div>
+                                    <div>주문 시간: {{ order.orderDate }}</div>
                                     <div>
-                                        채팅추가비:{{order.addOptionPrice}}
+                                        <h3 class="totalPrice">총가격: {{ order.totalPrice }}</h3>
                                     </div>
-                                    <div>
-                                        배송방식:{{order.deliveryType}}
-                                    </div>
-                                    <div>
-                                        배송비:{{order.deliveryFee}}
-                                    </div>
-                                    <div>
-                                        주소:{{order.fullAddress}}
-                                    </div>
-                                    <div>
-                                        주문 시간:{{order.orderDate}}
-                                    </div>
-                                    <div>
-                                        <h3 class="totalPrice">
-                                            총가격:{{order.totalPrice}}
-                                        </h3>
-                                    </div>
-                                    <div>
-                                        주문 번호:{{order.orderId}}
-                                    </div>
+                                    <div>주문 번호: {{ order.orderId }}</div>
                                 </div>
-                                <!--order容器停止的地方-->
                             </div>
-                            <!--order循环停止的地方-->
+                            <div v-if="order.chatYn==='Y'">
+                                <button @click="fnChat(order.oderId,order.chatId)">채팅방으로</button>
+                            </div>
+                            <div>
+                                <button @click="fnDelivery(order.orderId)">주문상태 자세히</button>
+                            </div>
                         </div>
+
+
+                        <!--order循环结束-->
                     </div>
                 </div>
             </div>
+        </div>
     </body>
 
     </html>
@@ -155,14 +140,14 @@
                 return {
                     // 변수 - (key : value)
                     userId: "${sessionId}",
-                    orderList:[],
-                    orderDetailList:[],
-                    optionList:[]
+                    orderList: [],
+                    groupedOrdersList: [],
+                    optionList: []
                 };
             },
             methods: {
                 // 함수(메소드) - (key : function())
-                 fnOrderHistory: function () {
+                fnOrderList: function () {
                     let self = this;
                     let param = { userId: self.userId };
                     $.ajax({
@@ -171,9 +156,9 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            self.orderList = data.orderList;
-                            console.log(data.orderList);
-                            self.fnOrderList(self.orderList);
+                            self.orderList = data.list;
+                            console.log(data.list);
+                            self.fnGroupOrderList(self.orderList);
                         },
                         error: function (xhr, status, error) {
                             console.error("장바구니 로드 실패:", status, error);
@@ -181,7 +166,94 @@
                     });
                 },
 
-                
+                fnGroupOrderList: function (list) {
+                    //groupedOrdersList里面的每个order就是groupedOrders
+                    //为什么包着订单的是map，而包着detail的是数组：因为订单是唯一的可以方便查找，一个订单里可能有多件商品，每个商品是一个明细
+                    const groupedOrders = {};
+
+                    //处理list是假值的情况
+                    if (!Array.isArray(list) || list.length === 0) {
+                        this.groupedOrdersList = [];
+                        console.log("장바구니 목록이 비어 있거나 올바르지 않아 그룹화하지 않습니다.");
+                        return;
+                    }
+
+                    //循环list中的每一个order
+                    list.forEach(order => {
+                        //每个orderId依次装进const orderId里面
+                        const orderId = order.orderId;
+                        //如果orderId不存在或是假值直接返回，不再继续执行代码
+                        if (!orderId) return;
+
+
+                        //处理带数字的万一没有值的情况
+                        const deliveryType = order.deliveryType || "기본배송종류";
+                        const deliveryFee = Number(order.deliveryFee || 0);
+                        const totalPrice = Number(order.totalPrice || 0);
+                        const addOptionPrice = Number(order.addOptionPrice || 0);
+                        //1.假如groupedOrders[orderId]不存在（就是以前没有添加过，就添加）
+                        if (!groupedOrders[orderId]) {
+                            groupedOrders[orderId] = {
+                                orderId: order.orderId,
+                                storeName: order.storeName,
+                                fullAddress: order.fullAddress,
+                                orderDate: order.orderDate,
+                                deliveryType: deliveryType,
+                                deliveryFee: deliveryFee,
+                                totalPrice: totalPrice,
+                                chatYn: order.chatYn,
+                                //添加完立刻再添加一个装details的map
+                                addOptionPrice: addOptionPrice,
+                                groupedDetails: {}
+                            };
+
+                        }
+
+                        //2.装details
+                        const orderDetailId = order.orderDetailId;
+
+                        const quantity = Number(order.quantity || 0);
+                        const subtotal = Number(order.subtotal || 0);
+                        const price = Number(order.price || 0);
+                        if (!groupedOrders[orderId].groupedDetails[orderDetailId]) {
+                            groupedOrders[orderId].groupedDetails[orderDetailId] = {
+                                proName: order.proName,
+                                subtotal: subtotal,
+                                price: price,
+                                letteringWord: order.letteringWord || "",
+                                quantity: quantity,
+                                //添加完立刻加一个list装option
+                                options: []
+                            }
+                        }
+
+                        //3.因为option是最后添加的东西，用list
+                        const addQuantity = Number(order.addQuantity || 0);
+                        const optionName = order.optionName || "옵션 미선택"
+                        // groupedOrders[orderId].groupedDetails[orderDetailId].options = groupedOrders[orderId].groupedDetails[orderDetailId].options || [];可以省略
+                        groupedOrders[orderId].groupedDetails[orderDetailId].options.push({
+                            topOptionId: order.topOptionId,
+                            subOptionId: order.subOptionId,
+                            optionName: optionName,
+                            valueName: order.valueName,
+                            priceDiff: order.priceDiff,
+                            addQuantity: addQuantity
+                        });
+
+
+                    });
+
+                    this.groupedOrdersList = Object.values(groupedOrders);
+                },
+
+
+                // formatNumber 함수 추가
+                formatNumber: function (num) {
+                    if (!num) return '0';
+                    return Number(num).toLocaleString('ko-KR');
+                },
+
+
 
                 // fnBack:function(){
                 //     location.href="/user/userMyPage.do";
@@ -215,6 +287,10 @@
 
                 fnLogout: function () {
 
+                },
+
+                fnChat:function(orderId,chatId){
+                    pageChange("/chat/chatBuyer.do",{orderId:orderId,chatId:chatId});
                 }
             }, // methods
 
@@ -222,7 +298,7 @@
             mounted() {
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
-                // self.fnOrderHistory();
+                self.fnOrderList();
             }
         });
 

@@ -1,6 +1,8 @@
 package com.example.teamProject.user.mapper;
 
 import java.util.HashMap;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import com.example.teamProject.user.model.User;
 
@@ -24,5 +26,9 @@ public interface UserMapper {
 	
 	//비밀번호 수정
 	int updateUserPass(HashMap<String, Object> map);
+	
+	//마이페이지
+	//주문내역 가져요기
+	List <User> selectOrderList (HashMap<String, Object> map);
 	
 }

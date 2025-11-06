@@ -151,4 +151,14 @@ public class UserController {
 
 		return new Gson().toJson(resultMap);
 	}
+	
+	
+	@RequestMapping(value = "/user/orderHistory.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String orderHistory(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    resultMap = userService.SelectOrderList(map);
+	    return new Gson().toJson(resultMap);
+	}
+	
 }
