@@ -14,250 +14,319 @@
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <script src="/js/page-change.js"></script>
         <style>
-            table,
-            tr,
-            td,
-            th {
-                border: 1px solid black;
+            /* ===== 관리자 테이블 공통 스타일 ===== */
+            table {
+                width: 100%;
                 border-collapse: collapse;
-                padding: 5px 10px;
+                font-family: 'Arial', sans-serif;
+                margin-top: 10px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+
+            th,
+            td {
+                padding: 10px 15px;
                 text-align: center;
+                border-bottom: 1px solid #ddd;
             }
 
             th {
-                background-color: beige;
+                background-color: #3E2723;
+                /* ESPRESSO 색상 */
+                color: #FFEDAC;
+                /* BUTTER 색상 */
+                font-weight: bold;
             }
 
             tr:nth-child(even) {
-                background-color: azure;
+                background-color: #f9f9f9;
+            }
+
+            tr:hover {
+                background-color: #F4C9D6;
+                /* PEONY 색상 */
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            td {
+                color: #333;
+            }
+
+            select,
+            input[type="text"] {
+                padding: 5px 8px;
+                margin: 5px 0;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            button {
+                padding: 6px 12px;
+                background-color: #3E2723;
+                color: #FFEDAC;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            button:hover {
+                background-color: #5D4037;
+            }
+
+            /* 페이징 버튼 */
+            .paging a,
+            .paging button {
+                display: inline-block;
+                margin: 0 3px;
+                padding: 5px 10px;
+                text-decoration: none;
+                color: #3E2723;
+                border: 1px solid #3E2723;
+                border-radius: 4px;
+                transition: all 0.2s ease;
+            }
+
+            .paging a.active,
+            .paging button:hover {
+                background-color: #3E2723;
+                color: #FFEDAC;
+                border-color: #3E2723;
+            }
+
+            /* userList 안 라디오 버튼 그룹 */
+            .userList>div:first-child {
+                margin-bottom: 15px;
+                /* 위쪽 컨텐츠와 간격 */
+                display: flex;
+                gap: 20px;
+                /* 버튼 간 간격 */
+                align-items: center;
+            }
+
+            /* 라디오 버튼 숨기고 라벨을 커스텀 스타일로 */
+            .userList input[type="radio"] {
+                display: none;
+            }
+
+            /* 라벨 스타일 */
+            .userList label {
+                position: relative;
+                padding-left: 25px;
+                /* 라디오 대체 원 공간 */
+                cursor: pointer;
+                font-weight: 500;
+                color: #3E2723;
+                /* ESPRESSO 색상 */
+                user-select: none;
+                transition: color 0.2s ease;
+            }
+
+            /* 라디오 대체 원 */
+            .userList label::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 16px;
+                height: 16px;
+                border: 2px solid #3E2723;
+                border-radius: 50%;
+                background-color: #fff;
+                transition: all 0.2s ease;
+            }
+
+            /* 선택된 라디오 표시 */
+            .userList input[type="radio"]:checked+label::before {
+                background-color: #FFEDAC;
+                /* BUTTER 색상 */
+                border-color: #3E2723;
+            }
+
+            /* 선택된 라벨 글씨 강조 */
+            .userList input[type="radio"]:checked+label {
+                font-weight: bold;
+                color: #3E2723;
+            }
+
+            /* 호버 효과 */
+            .userList label:hover {
+                color: #5D4037;
             }
         </style>
     </head>
 
     <body>
         <div id="app">
-            <!-- html 코드는 id가 app인 태그 안에서 작업 -->
-
-            <!--관리자 마이 페이지의 컨데너 입니다-->
+            <!-- 관리자 마이 페이지의 컨테이너 -->
             <div class="mainPageContainer">
-
-                <!--외쪽측 네이버바-->
+                <!-- 왼쪽 측 네비게이션 바 -->
                 <div class="navBar">
-                    <!-- Logo -->
                     <div class="logo">
-                        <img src="/images/logo.png" alt="Dessert Lab" style="max-width: 150px;">
-                        <p>Admin Panel</p>
+                        <a href="javascript:;" onclick="location.href='/main.do'">
+                            <img src="/img/로고.png" alt="쇼핑몰 로고">
+                        </a>
                     </div>
                     <div class="navButton">
-                        <div>
-                            <button @click="fnBuyerManage()">사용자 관리</button>
+                        <div><button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">구매자 관리</button>
                         </div>
-                        <div>
-                            <button @click="fnSellerManage()">판매자관리</button>
+                        <div><button @click="fnSellerManage()" :class="{active: currentMenu==='seller'}">판매자관리</button>
                         </div>
-                        <div>
-                            <button @click="fnSalesManage()">매출관리</button>
+                        <div><button @click="fnSalesManage()" :class="{active: currentMenu==='money'}">매출관리</button>
                         </div>
-                        <div>
-                            <button @click="fnAdRequest()">광고관리</button>
-                        </div>
-                        <div>
-                            <button @click="fnMembership()">맴버쉽관리</button>
-                        </div>
-                        <div>
-                            <button @click="fnMonthlyFee()">판매자 월 정산결과 조회</button>
-                        </div>
-                        <div>
-                            <button @click="fnQandA()">Q&A/리뷰</button>
-                        </div>
+                        <div><button @click="fnAdRequest()" :class="{active: currentMenu==='ad'}">광고관리</button></div>
+                        <div><button @click="fnMembership()"
+                                :class="{active: currentMenu==='membership'}">맴버쉽관리</button></div>
+                        <div><button @click="fnMonthlyFee()" :class="{active: currentMenu==='month'}">판매자 월 정산결과
+                                조회</button></div>
+                        <div><button @click="fnQandA()" :class="{active: currentMenu==='qna'}">Q&A</button></div>
                     </div>
-                    <!--logout button-->
+                    <!-- logout button -->
                     <div class="logOut">
-                        <div>
-                            <button @click="fnLogout()">Logout</button>
-                        </div>
+                        <div><button @click="fnLogout()">Logout</button></div>
                     </div>
-
                 </div>
 
-
-                
-
-                <!--메인 페이지 바디 내용-->
-
-                <!--1.qnAlist-->
+                <!-- 메인 페이지 바디 -->
+                <!-- 1. QnA 리스트 -->
                 <div class="userList" v-if="selectedTable==='qnA'">
-                    <div>
-                    <label><input type="radio" name="boardManage" value="qnA" v-model="selectedTable">
-                        QnA</label>
-                    <label><input type="radio" name="boardManage" value="review" v-model="selectedTable">
-                        리뷰</label>
-                    <label><input type="radio" name="boardManage" value="board" v-model="selectedTable">
-                        게시판</label>
-                </div>
+                    <!-- 라디오 버튼 그룹: 테이블 바로 위 -->
+                    <div class="boardSelect">
+                        <input type="radio" id="tab-qna" name="boardManage" value="qnA" v-model="selectedTable">
+                        <label for="tab-qna">QnA</label>
 
-                    <div>
-                        <!--구역이름-->
-                        <div>
-                            QnA관리
-                        </div>
-                        <!--아이콘-->
-                        <div></div>
-                        <!--선택사항-->
-                        <div>
+                        <input type="radio" id="tab-review" name="boardManage" value="review" v-model="selectedTable">
+                        <label for="tab-review">리뷰</label>
 
-                            <select v-model="pageSize" @change="fnQnAList">
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
-                            </select>
-                            <select v-model="option">
-                                <option value="all">::전체::</option>
-                                <option value="userId">질문자</option>
-                                <option value="storeId">답변자</option>
-                                <option value="questionContent">질문 내용</option>
-                                <option value="answerContent">답변 내용</option>
-                            </select>
-                            <input type="text" v-model="keyWord">
-                            <button @click="fnQnAList">검색</button>
-                        </div>
-
-                        <!--태이블-->
-                        <table>
-                            <tr>
-                                <th>선택<input type="checkbox" @click="fnSelectAll"></th>
-                                <th>번호</th>
-                                <th>질문자</th>
-                                <th>질문 내용</th>
-                                <th>답변자</th>
-                                <th>답변 내용</th>
-                                <th>질문 시간</th>
-                                <th>답변 시간</th>
-                                <th>답변 상태</th>
-                            </tr>
-                            <tr v-for="qnA in qnAList">
-                                <td><input type="checkbox" :value="qnA.questionId" v-model="selectItem"></td>
-                                <td>{{qnA.questionId}}</td>
-                                <td>{{qnA.userId}}</td>
-                                <td>{{qnA.questionContent}}</td>
-                                <td>{{qnA.storeId}}</td>
-                                <td>
-                                    <span v-if="!qnA.answerContent">-</span>
-                                    <span v-else>{{qnA.answerContent}}</span>
-                                </td>
-                                <td>{{qnA.questionDate}}</td>
-                                <td>{{qnA.answerDate}}</td>
-                                <td>
-                                    <span v-if="qnA.answerContent">완료</span>
-                                    <span v-else>대기</span>
-                                </td>
-
-                            </tr>
-                        </table>
                     </div>
 
+                    <!-- 검색바 영역 -->
+                    <div class="searchBar">
+                        <select v-model="pageSize" @change="fnQnAList">
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                        </select>
+                        <select v-model="option">
+                            <option value="all">::전체::</option>
+                            <option value="userId">질문자</option>
+                            <option value="storeId">답변자</option>
+                            <option value="questionContent">질문 내용</option>
+                            <option value="answerContent">답변 내용</option>
+                        </select>
+                        <input type="text" v-model="keyWord">
+                        <button @click="fnQnAList">검색</button>
+                    </div>
 
-                    <!--페이징 구역-->
-                    <div>
-                        <span v-if="page>1">
-                            <button @click="fnPre()">◀</button>
-                        </span>
+                    <!-- QnA 테이블 -->
+                    <table>
+                        <tr>
+                            <th>선택<input type="checkbox" @click="fnSelectAll"></th>
+                            <th>번호</th>
+                            <th>질문자</th>
+                            <th>질문 내용</th>
+                            <th>답변자</th>
+                            <th>답변 내용</th>
+                            <th>질문 시간</th>
+                            <th>답변 시간</th>
+                            <th>답변 상태</th>
+                        </tr>
+                        <tr v-for="qnA in qnAList">
+                            <td><input type="checkbox" :value="qnA.questionId" v-model="selectItem"></td>
+                            <td>{{qnA.questionId}}</td>
+                            <td>{{qnA.userId}}</td>
+                            <td>{{qnA.questionContent}}</td>
+                            <td>{{qnA.storeId}}</td>
+                            <td><span v-if="!qnA.answerContent">-</span><span v-else>{{qnA.answerContent}}</span></td>
+                            <td>{{qnA.questionDate}}</td>
+                            <td>{{qnA.answerDate}}</td>
+                            <td><span v-if="qnA.answerContent">완료</span><span v-else>대기</span></td>
+                        </tr>
+                    </table>
+
+                    <!-- 페이징 및 선택 삭제 -->
+                    <div class="paging">
+                        <span v-if="page>1"><button @click="fnPre()">◀</button></span>
                         <a href="javascript:;" v-for="num in pageRangeList" @click="fnChange(num)"
                             :class="{active:page == num}">{{num}}</a>
                         <span v-if="page!=pageNum"><button @click="fnNext()">▶</button></span>
                     </div>
-
-                <div>
-                    <button @click="fnRemoveAll">
-                        선택 삭제
-                    </button>
+                    <div><button @click="fnRemoveAll">선택 삭제</button></div>
                 </div>
 
-
-                </div>
-
-
-                <!--2. reviewlist-->
+                <!-- 2. 리뷰 리스트 -->
                 <div class="userList" v-if="selectedTable==='review'">
+                    <!-- 라디오 버튼 그룹: 테이블 바로 위 -->
+                    <div class="boardSelect">
+                        <input type="radio" id="tab-qna" name="boardManage" value="qnA" v-model="selectedTable">
+                        <label for="tab-qna">QnA</label>
 
-                    <div>
-                        <!--구역이름-->
-                        <div>
-                            리뷰관리
-                        </div>
-                        <!--아이콘-->
-                        <div></div>
-                        <!--선택사항-->
-                        <div>
+                        <input type="radio" id="tab-review" name="boardManage" value="review" v-model="selectedTable">
+                        <label for="tab-review">리뷰</label>
 
-                            <select v-model="pageSize" @change="fnReviewList">
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
-                            </select>
-                            <select v-model="option">
-                                <option value="all">::전체::</option>
-                                <option value="userId">구매자</option>
-                                <option value="storeId">판매자</option>
-                            </select>
-                            <input type="text" v-model="keyWord">
-                            <button @click="fnReviewList">검색</button>
-                        </div>
-
-                        <!--태이블-->
-                        <table>
-                            <tr>
-                                <th>선택<input type="checkbox" @click="fnSelectAll"></th>
-                                <th>리뷰번호</th>
-                                <th>주문번호</th>
-                                <th>상품</th>
-                                <th>작성자</th>
-                                <th>판매자</th>
-                                <th>평점</th>
-                                <th>내용</th>
-                                <th>작성시간</th>
-                                <th>수정시간</th>
-                            </tr>
-                            <tr v-for="review in reviewList">
-                                <td><input type="checkbox" :value="review.reviewId" v-model="selectItem"></td>
-                                <td>{{review.reviewId}}</td>
-                                <td>{{review.orderId}}</td>
-                                <td>{{review.proNo}}</td>
-                                <td>{{review.userId}}</td>
-                                <td>{{review.storeId}}</td>
-                                <td>{{review.rating}}</td>
-                                <td>{{review.reviewContent}}</td>
-                                <td>{{review.cDateTime}}</td>
-                                <td>{{review.uDateTime}}</td>
-                            </tr>
-                        </table>
                     </div>
 
-
-                    <!--페이징 구역-->
+                    <!-- 검색바 영역 -->
                     <div>
-                        <span v-if="page>1">
-                            <button @click="fnPre()">◀</button>
-                        </span>
+                        <select v-model="pageSize" @change="fnReviewList">
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                        </select>
+                        <select v-model="option">
+                            <option value="all">::전체::</option>
+                            <option value="userId">구매자</option>
+                            <option value="storeId">판매자</option>
+                        </select>
+                        <input type="text" v-model="keyWord">
+                        <button @click="fnReviewList">검색</button>
+                    </div>
+
+                    <!-- 리뷰 테이블 -->
+                    <table>
+                        <tr>
+                            <th>선택<input type="checkbox" @click="fnSelectAll"></th>
+                            <th>리뷰번호</th>
+                            <th>주문번호</th>
+                            <th>상품</th>
+                            <th>작성자</th>
+                            <th>판매자</th>
+                            <th>평점</th>
+                            <th>내용</th>
+                            <th>작성시간</th>
+                            <th>수정시간</th>
+                        </tr>
+                        <tr v-for="review in reviewList">
+                            <td><input type="checkbox" :value="review.reviewId" v-model="selectItem"></td>
+                            <td>{{review.reviewId}}</td>
+                            <td>{{review.orderId}}</td>
+                            <td>{{review.proNo}}</td>
+                            <td>{{review.userId}}</td>
+                            <td>{{review.storeId}}</td>
+                            <td>{{review.rating}}</td>
+                            <td>{{review.reviewContent}}</td>
+                            <td>{{review.cDateTime}}</td>
+                            <td>{{review.uDateTime}}</td>
+                        </tr>
+                    </table>
+
+                    <!-- 페이징 및 선택 삭제 -->
+                    <div class="paging">
+                        <span v-if="page>1"><button @click="fnPre()">◀</button></span>
                         <a href="javascript:;" v-for="num in pageRangeList" @click="fnChange(num)"
                             :class="{active:page == num}">{{num}}</a>
                         <span v-if="page!=pageNum"><button @click="fnNext()">▶</button></span>
                     </div>
-
-                <div>
-                    <button @click="fnRemoveAll">
-                        선택 삭제
-                    </button>
+                    <div><button @click="fnRemoveAll">선택 삭제</button></div>
                 </div>
 
-
-                </div>
-
-                
-
+                <!-- 3. 게시판 리스트 (board) -->
+                <!--  -->
             </div>
-
         </div>
+
     </body>
 
     </html>
@@ -285,6 +354,9 @@
             data() {
                 return {
                     // 변수 - (key : value)
+
+                    currentMenu: "qna",
+
                     qnAList: [],
                     reviewList: [],
                     boardList: [],
@@ -508,7 +580,7 @@
                     else if (self.selectedTable === 'board') self.fnBoardList();
                 },
 
-                  fnBuyerManage: function () {
+                fnBuyerManage: function () {
                     location.href = "/admin/userlist.do";
                 },
 
@@ -537,8 +609,18 @@
                 },
 
                 fnLogout: function () {
+                                  param = {}
                     if (confirm("로그아웃 하시겠습니까?")) {
-                        location.href = '#';
+                        $.ajax({
+                            url: "/user/logout.dox", // 로그아웃 url 주소
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                alert(data.msg);
+                                location.href = "/main.do";
+                            }
+                        });
                     }
                 }
 
