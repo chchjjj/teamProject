@@ -80,10 +80,14 @@
                 userAddress: "${sessionAddress}", //사용자의 기본 주소
                 userId: "${sessionId}", //사용자 아이디
 
+                //payment.jsp에서 넘겨받기
+                orderIdList: [],
+
                 //추가할 배송지 휴대폰 번호
                 phone1: "",
                 phone2: "",
                 phone3: ""
+
             };
         },
         methods: {
@@ -168,8 +172,13 @@
 
             fnUseAddress: function(fullAddress){
                 let self = this;
+                if (self.orderIdList.length === 0) {
+                        alert("배송지를 선택할 주문서가 없습니다.");
+                        return;
+                }
                 let param = {
-                    fullAddress : fullAddress
+                    fullAddress : fullAddress,
+                    orderIdList: JSON.stringify(self.orderIdList) //문자열로 전송
                 };
                 $.ajax({
                     url: "/payment/useAddress.dox",
@@ -178,7 +187,7 @@
                     data: param,
                     success: function (data) {
                         alert("배송지가 선택되었습니다.");
-                        // 창닫기?
+                        window.close();
                     }
                 });
             }
@@ -189,8 +198,12 @@
             let self = this;
             //스크립트에서 vue 내부의 데이터 접근 (주소 api 관련)
             window.vueObj = this;
-
             self.fnAddressList(); //주소 목록 출력(기본 주소 외에 추가 입력한 것)
+            let str = "${orderIdList}";
+             self.orderIdList = JSON.parse(str); //파싱을 해줘야 문자열을 리스트로 바꿀 수 있다.
+            //self.orderIdList = JSON.parse("$orderIdList"); //파싱을 해줘야 문자열을 리스트로 바꿀 수 있다.
+            console.log("self.orderIdList: " + self.orderIdList);
+            console.log("최종적으로 사용할 orderIdList 값은 => " + self.orderIdList);
         }
     });
 

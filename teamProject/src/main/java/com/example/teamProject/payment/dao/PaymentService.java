@@ -148,8 +148,33 @@ public class PaymentService {
 
 	public HashMap<String, Object> useAddress(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
 		try {
-			paymentMapper.updateOrderAddress(map);
+			List<Object> orderIdList = (List<Object>) map.get("list");
+			System.out.println("맵=>" + map);
+	        System.out.println("주문아이디리스트=>" + orderIdList);
+         
+	        if (orderIdList == null || orderIdList.isEmpty()) {
+	            resultMap.put("result", "fail");
+	            resultMap.put("message", "주문한 게 없습니다.");
+	            return resultMap;
+	        }
+	        
+	        for (int i = 0; i < orderIdList.size(); i++) {
+	        	Object order = orderIdList.get(i);
+	        	// 공통 데이터
+	        	//String orderId = (String) map.get("orderId");
+	        	int orderId = (Integer)order;
+	        	
+	            HashMap<String, Object> paymentMap = new HashMap<>();
+	            //map.put("orderId", orderId);
+	            paymentMap.put("orderId", orderId);
+	            paymentMap.put("fullAddress", map.get("fullAddress"));
+	            
+	            System.out.println("반복문 속 paymentMap: " + paymentMap);
+	            
+	            paymentMapper.updateOrderAddress(paymentMap);
+	        }
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			resultMap.put("result", "fail");

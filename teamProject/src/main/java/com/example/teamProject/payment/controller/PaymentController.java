@@ -55,8 +55,35 @@ public class PaymentController {
 	}
 	
 	@RequestMapping("/payment/addressPopUp.do")
-	public String login(Model model) throws Exception {
+	public String addressPopUp(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+
+		//System.out.println("orderIdList == > " + request.getParameter("orderIdList"));
+		// orderIdList ',' 단위로 나눠서 리스트로 저장하고 
+		// request.setAttr--- 로 jsp로 보내기
 		
+		// 1. request에서 "orderIdList" 파라미터 값(쉼표로 구분된 문자열)을 가져옵니다.
+	    String orderIdListString = request.getParameter("orderIdList");
+	    
+	    System.out.println("문자열 orderIdList == > " + orderIdListString);
+
+	    // 2. 문자열이 null이거나 비어 있지 않은지 확인합니다.
+	    if (orderIdListString != null && !orderIdListString.isEmpty()) {
+	        
+	    // 3. String.split(",")을 사용하여 쉼표를 기준으로 배열로 분리합니다.
+	    String[] orderIdArray = orderIdListString.split(",");
+	        
+	    // 4. 배열을 List<String>으로 변환합니다. (java.util.Arrays.asList 사용)
+	    List<String> orderIdList = Arrays.asList(orderIdArray);
+
+	     // 5. 결과 확인 및 Model에 담아 뷰로 전달
+	     System.out.println("List<String>으로 변환된 orderIdList: " + orderIdList);
+	     System.out.println("리스트 첫 번째 요소: " + orderIdList.get(0));
+	        
+	     // 필요하다면 Model에 담아 뷰(/payment/addressPopUp)로 전달합니다.
+	     //model.addAttribute("orderIdList", orderIdList);	
+	     request.setAttribute("orderIdList", orderIdList);
+	        
+	    }
 		return "/payment/addressPopUp";
 	}
 
@@ -164,8 +191,19 @@ public class PaymentController {
 	@ResponseBody
 	public String useAddress(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap = paymentService.useAddress(map);
- 
-		return new Gson().toJson(resultMap);
+		System.out.println(map);
+		ObjectMapper mapper = new ObjectMapper();
+	    String json = map.get("orderIdList").toString();
+	    
+	    // JSON 배열로 변환
+	    List<Object> list = mapper.readValue(json, new TypeReference<List<Object>>() {});
+//	    List<HashMap<String, Object>> list = mapper.readValue(json, new TypeReference<List<HashMap<String, Object>>>(){});
+	    
+	    System.out.println("useAddress.dox list ==> " + list);
+	    
+	    map.put("list", list);
+	    resultMap = paymentService.useAddress(map);
+	    
+	    return new Gson().toJson(resultMap);
 	}
 }

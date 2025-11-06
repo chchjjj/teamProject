@@ -9,6 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+    <script src="/js/page-change.js"></script>
     <style>
         table, tr, td, th{
             border : 1px solid black;
@@ -127,7 +128,8 @@
 
             //ORDER_TBL의 배송지, 배송비, 총 결제금액, 배송/픽업 선택 업데이트
             fnDelivery: function(){
-                 window.open("/payment/addressPopUp.do", "addressPopUp", "width=700, height=500, top=100, left=100");
+                let self = this;
+                window.open("/payment/addressPopUp.do?orderIdList="+self.orderIdList, "addressPopUp", "width=700, height=500, top=100, left=100");
             },
 
             //결제 버튼을 누르면 이 함수를 실행
