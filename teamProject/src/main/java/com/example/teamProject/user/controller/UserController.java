@@ -40,10 +40,10 @@ public class UserController {
 		return "/user/jusoPopup";
 	}
 	
-	@RequestMapping("/product/wishlist.do")
-	public String wishList(Model model) throws Exception {
-		return "/product/wishList";
-	}
+//	@RequestMapping("/product/wishlist.do")
+//	public String wishList(Model model) throws Exception {
+//		return "/product/wishList";
+//	}
 	
 	@RequestMapping("/user/userMyPage.do")
 	public String userMyPage(Model model) throws Exception {
