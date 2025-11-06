@@ -9,6 +9,7 @@
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="/js/page-change.js"></script>
         <style>
             table,
             tr,
@@ -75,7 +76,7 @@
                             <div class="orderCardContent">
                                 <div class="orderSingle">
                                     <div>
-                                        <h3 class="storeName">가게명: {{ order.storeName }}</h3>
+                                        <h3 class="storeName">가게명: {{ order.storeName }}/{{order.status}}</h3>
                                     </div>
 
                                     <!--orderDetail级别循环（groupedDetails是对象，需要Object.values转换成数组）-->
@@ -117,7 +118,7 @@
                                 </div>
                             </div>
                             <div v-if="order.chatYn==='Y'">
-                                <button @click="fnChat(order.oderId,order.chatId)">채팅방으로</button>
+                                <button @click="fnChat(order.orderId,order.chatId)">채팅방으로</button>
                             </div>
                             <div>
                                 <button @click="fnDelivery(order.orderId,order.deliveryType)">주문상태 자세히</button>
@@ -204,6 +205,7 @@
                                 chatYn: order.chatYn,
                                 //添加完立刻再添加一个装details的map
                                 addOptionPrice: addOptionPrice,
+                                status:order.status,
                                 groupedDetails: {}
                             };
 
