@@ -62,9 +62,12 @@
 	        O.FULL_ADDRESS,
             O.CHAT_YN,
 	        O.ORDER_DATE,
-	        O.STATUS,
 	        O.TOTAL_PRICE,
+            O.STATUS,
             C.CHAT_ID,
+            OPT.PRICE_DIFF*OPT.ADD_QUANTITY AS OPTION_TOTAL,
+            PI.PICK_TIME,
+            DELI.WISH_DELI,
 	        O.ORDER_ID,
 	        D.ORDER_DETAIL_ID,
 	        OPT.ORDER_OPTION_ID
@@ -77,7 +80,13 @@
 	    LEFT JOIN SELLER_INFO_TBL SE ON SE.STORE_NAME=O.STORE_NAME
 	    LEFT JOIN USER_TBL U ON U.USER_ID=O.USER_ID
         LEFT JOIN CHAT_TBL C ON C.ORDER_ID=O.ORDER_ID
-	    WHERE O.USER_ID = #{userId}
+        LEFT JOIN DELIVERY_TBL DELI ON DELI.ORDER_ID=O.ORDER_ID
+        LEFT JOIN PICKUP_TBL PI ON PI.ORDER_ID=O.ORDER_ID
+	    WHERE 1=1 AND
+	    U.USER_ID = #{userId}
+	    <if test="orderId != null">
+	    	AND O.ORDER_ID=#{orderId}
+	    </if>
     	ORDER BY O.ORDER_DATE DESC
 	</select>
 	

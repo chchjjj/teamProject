@@ -90,7 +90,16 @@ public class User {
 
 		    private int addQuantity;  // 추가 옵션 수량
 		    
+		    private int optionTotal; //옵션 1종의 추가 금액
+		    
 		    
 		    //채팅방에 바로가기
 		    private int chatId;
+		    
+		    //배송
+		    private String wishDeli;
+		    
+		    //픽업
+		    private String pickTime;
+		    
 }

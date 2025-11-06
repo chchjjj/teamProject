@@ -135,7 +135,7 @@
                                 <button @click="fnChat(order.orderId,order.chatId)">채팅방으로</button>
                             </div>
                             <div>
-                                <button @click="fnOrderStatus(order.orderId)">주문현황</button>
+                                <button @click="fnOrderStatus(order.deliveryType)">주문현황</button>
                             </div>
                         </div>
 
@@ -155,6 +155,7 @@
                 return {
                     // 변수 - (key : value)
                     userId: "${sessionId}",
+                    orderId:"${orderId}",
                     orderList: [],
                     groupedOrdersList: [],
                     optionList: []
@@ -162,8 +163,9 @@
             },
             methods: {
                 // 함수(메소드) - (key : function())
-                fnOrderList: function () {
+                fnOrderList: function (orderId) {
                     let self = this;
+                    orderId=self.orderId;
                     let param = { userId: self.userId };
                     $.ajax({
                         url: "/user/orderHistory.dox",
@@ -317,7 +319,6 @@
                 },
 
                 fnOrderStatus:function(orderId){
-                    
                     pageChange("/user/orderStatus.do",{orderId:orderId});
                 }
             }, // methods
