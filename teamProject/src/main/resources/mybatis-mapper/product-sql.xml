@@ -231,51 +231,27 @@
 	
 	<!-- 헤더 QnA 버튼 눌렀을 때 (QnA 전체 리스트 불러오기)  -->
 	<select id="selectQnaList" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">
-		 SELECT 
-	        Q.QUESTION_ID,
-	        Q.PRO_NO,
-	        Q.USER_ID,
-	        U.USER_NAME AS userName,   <!--질문자 이름--> 
-	        Q.QUESTION_CONTENT,
-	        TO_CHAR(Q.QUESTION_DATE, 'YYYY-MM-DD') AS QUESTION_DATE,
-	        Q.STORE_ID,
-	        S.STORE_NAME AS storeName,         <!--판매자(가게명)-->
-	        Q.ANSWER_CONTENT,
-	        TO_CHAR(Q.ANSWER_DATE, 'YYYY-MM-DD') AS ANSWER_DATE
-	    FROM QA_TBL Q
-	    LEFT JOIN USER_TBL U
-	        ON Q.USER_ID = U.USER_ID
-	    LEFT JOIN SELLER_INFO_TBL S
-	        ON Q.STORE_ID = S.STORE_ID
-	    WHERE 1=1			
+SELECT 
+    Q.QUESTION_ID,
+    Q.PRO_NO,
+    Q.USER_ID,
+    U.USER_NAME AS userName,  
+    Q.QUESTION_CONTENT,
+    TO_CHAR(Q.QUESTION_DATE, 'YYYY-MM-DD') AS QUESTION_DATE,
+    Q.STORE_ID,
+    S.STORE_NAME AS storeName,         
+    Q.ANSWER_CONTENT,
+    TO_CHAR(Q.ANSWER_DATE, 'YYYY-MM-DD') AS ANSWER_DATE
+FROM QA_TBL Q
+LEFT JOIN USER_TBL U ON Q.USER_ID = U.USER_ID
+LEFT JOIN SELLER_INFO_TBL S ON Q.STORE_ID = S.STORE_ID
+INNER JOIN PRODUCT_TBL T ON Q.PRO_NO = T.PRO_NO
+WHERE T.PRO_NO = #{proNo}      
+ORDER BY  
+    CASE WHEN Q.ANSWER_CONTENT IS NULL THEN 0 ELSE 1 END ASC,
+    Q.QUESTION_DATE DESC
+OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	
-		
-		<!-- 검색어가 있을 때만 조건 추가 -->
-		<if test="qnaKeyword != null and qnaKeyword != ''">
-		    <choose>
-		        <when test="searchOption == 'all'">
-		            AND (Q.QUESTION_CONTENT LIKE '%' || #{qnaKeyword} || '%' 
-		                 OR U.USER_NAME LIKE '%' || #{qnaKeyword} || '%')
-		        </when>
-		        <when test="searchOption == 'content'">
-		            AND Q.QUESTION_CONTENT LIKE '%' || #{qnaKeyword} || '%'
-		        </when>
-		        <when test="searchOption == 'id'">
-		            AND U.USER_NAME LIKE '%' || #{qnaKeyword} || '%'
-		        </when>
-		    </choose>
-		</if>
-		
-		<if test="userId != null and userId != ''">
-        AND Q.USER_ID = #{userId}
-   		</if>
-		
-		ORDER BY  
-	    CASE WHEN <!-- 미답변 건부터 위로 오게 정렬 -->
-	    	Q.ANSWER_CONTENT IS NULL THEN 0 ELSE 1 END ASC,
-	    Q.QUESTION_DATE DESC <!-- 최신순이 위로 가게 -->
-	    
-		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY <!--페이징-->
 	</select>
 	
 	
