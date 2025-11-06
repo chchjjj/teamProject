@@ -1,6 +1,8 @@
 package com.example.teamProject.chat.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -41,22 +43,31 @@ public class ChatController {
         return "/chat/chatBuyer";
     }
 	
-	// [신규] orderId로 chatId 조회 (axios용)
+	// [신규] orderId로 chatId & storeId 조회 (axios용)
 	@GetMapping("/api/chat/findChatId/{orderId}")
 	@ResponseBody
-	public String findChatIdByOrderId(@PathVariable("orderId") String orderId) {
+	public Map<String, String> findChatIdByOrderId(@PathVariable("orderId") String orderId) {
+	    Map<String, String> result = new HashMap<>();
 	    try {
 	        String chatId = chatService.selectChatIdByOrderId(orderId);
+	        String storeId = chatService.selectStoreIdByOrderId(orderId);
+
+	        result.put("chatId", chatId != null ? chatId : "");
+	        result.put("storeId", storeId != null ? storeId : "");
+
 	        System.out.println("Axios 요청으로 조회된 chatId: " + chatId);
-	        return chatId != null ? chatId : "";
+	        System.out.println("Axios 요청으로 조회된 storeId: " + storeId);
+
+	        return result;
 	    } catch (Exception e) {
 	        e.printStackTrace();
-	        return "";
+	        result.put("chatId", "");
+	        result.put("storeId", "");
+	        return result;
 	    }
-	}
+	}       
 	
-	
-	
+		
 	// WebSocket 메시지 수신 및 DB 저장
 	@MessageMapping("/sendMessage")
     @SendTo("/topic/public")
