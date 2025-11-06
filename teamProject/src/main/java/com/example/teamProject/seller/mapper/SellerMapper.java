@@ -122,8 +122,14 @@ public interface SellerMapper {
  	// 핵심 기능 지원: STORE_ID 조회 
  	Integer getStoreIdByUserId(String userId);
  	
- 	
+ 	//스토어 아이디를 이용해서 스토어 이름 얻기
  	String getStoreNameByStoreId(@Param("storeId") String storeId);
+ 	
+ 	// 판매자 상품정보정보 조회
+ 	
+ 	List<Seller> selectProductList(HashMap<String, Object> map);
+ 	
+ 
 
 	
 	
