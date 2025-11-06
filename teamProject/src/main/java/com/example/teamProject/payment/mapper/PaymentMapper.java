@@ -25,7 +25,16 @@ public interface PaymentMapper {
 	//결제를 하면 결제 테이블에 내역 추가
 	int insertPayment(HashMap<String, Object> map);
 
-	
+	//배송지 주소 추가
+	int insertAddress(HashMap<String, Object> map);
 
+	// 배송지 목록 찾아오기
+	List<Payment> selectUserAddress(HashMap<String, Object> map);
+
+	//배송지 삭제하기
+	int deleteUserAddress(HashMap<String, Object> map);
+
+	//주문서에 배송지 정보 갱신하기
+	int updateOrderAddress(HashMap<String, Object> map);
 
 }

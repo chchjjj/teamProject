@@ -59,4 +59,36 @@
 	         'Y' 
 		)
 	</insert>
+	
+	<insert id="insertAddress" parameterType="hashmap">
+	    INSERT INTO USER_ADDRESS(ADDRESS_ID, USER_ID, FULL_ADDRESS, PHONE, CDATETIME_AT, UDATETIME_AT)
+	    VALUES (
+			SEQ_USER_ADDRESS.NEXTVAL, 
+			#{userId},
+			#{addr},
+			#{phone}, 
+	         SYSDATE,
+	         SYSDATE
+	         
+		)
+	</insert>
+	
+	<select id="selectUserAddress" parameterType="hashmap" resultType="com.example.teamProject.payment.model.Payment"> 
+		SELECT ADDRESS_ID, USER_ID, FULL_ADDRESS, PHONE, CDATETIME_AT, UDATETIME_AT
+		FROM USER_ADDRESS
+		WHERE USER_ID = #{userId}
+	</select>
+	
+	<delete id="deleteUserAddress" parameterType="hashmap">
+		DELETE FROM USER_ADDRESS
+		WHERE ADDRESS_ID = #{addressId}
+	</delete>
+	
+	<update id="updateOrderAddress" parameterType="hashmap">
+		UPDATE ORDER_TBL
+		SET FULL_ADDRESS = #{fullAddress}
+		WHERE ORDER_ID = #{orderId}
+	</update>
+	
+	
 </mapper>
