@@ -257,7 +257,7 @@ public class ProductService {
 			    } else if ("P".equals(deliveryType)) {
 			        ProductMapper.insertPickUp(map);
 			        
-			    
+			    }
 			    String isChatRequested = (String) map.get("isChatRequested");
 			    if ("Y".equals(isChatRequested)) {
 			        ProductMapper.insertChat(map);
@@ -294,7 +294,7 @@ public class ProductService {
 	        System.out.println("카트리스트=>" +cartList);
 	        if (cartList == null || cartList.isEmpty()) {
 	            resultMap.put("result", "fail");
-	            resultMap.put("message", "주문할 상품이 없습니다.");
+	            resultMap.put("message", "주문할 상품이 없습니다."); 
 	            return resultMap;
 	        }
 

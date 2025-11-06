@@ -27,7 +27,7 @@ public class PaymentService {
 			List<Payment> OrderList = paymentMapper.selectOrderList(map);
 			resultMap.put("list", OrderList); 
 			resultMap.put("result", "success");
-		} catch (Exception e) {
+		} catch (Exception e) { 
 			resultMap.put("result", "fail");
 			System.out.println(e.getMessage()); //개발자가 확인할 로그 기록
 		}
@@ -183,14 +183,6 @@ public class PaymentService {
 		
 		return resultMap;
 	}
-
-	
-
-	
-
-	
-
-	
 	
 	
 	
