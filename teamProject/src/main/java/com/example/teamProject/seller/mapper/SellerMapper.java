@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.teamProject.seller.model.Seller;
@@ -118,5 +119,14 @@ public interface SellerMapper {
 
  	// proNo를 통해 상품 불가 날짜 조회 (수정용)
  	List<String> selectDisabledDates(int proNo);
+ 	// 핵심 기능 지원: STORE_ID 조회 
+ 	Integer getStoreIdByUserId(String userId);
+ 	
+ 	
+ 	String getStoreNameByStoreId(@Param("storeId") String storeId);
+
 	
+	
+ 	
+ 	
 }

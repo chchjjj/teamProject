@@ -140,17 +140,19 @@
                         </div>
                     </div>
                     
-                    <div class="category-options">
-                        <label>카테고리:</label>
-                        <input type="radio" id="categoryCake" value="CAKE" v-model="product.category"><label for="categoryCake">케이크</label>
-                        <input type="radio" id="categoryBakery" value="BAKERY" v-model="product.category"><label for="categoryBakery">베이커리</label>
-                        <input type="radio" id="categoryChocolate" value="CHOCOLATE" v-model="product.category"><label for="categoryChocolate">초콜릿/사탕</label>
-                        <input type="radio" id="categoryOther" value="OTHER" v-model="product.category"><label for="categoryOther">기타</label>
-                        
-                        <label style="margin-left: 20px;">레터링 가능:</label>
-                        <input type="radio" id="letteringY" value="Y" v-model="product.lettering"><label for="letteringY">O</label>
-                        <input type="radio" id="letteringN" value="N" v-model="product.lettering"><label for="letteringN">X</label>
-                    </div>
+                    <div class="basic-info-section">
+    <div class="category-options">
+        <label>카테고리:</label>
+        <input type="radio" id="categoryCake" value="케이크" v-model="product.proType"><label for="categoryCake">케이크</label>
+        <input type="radio" id="categoryBakery" value="베이커리" v-model="product.proType"><label for="categoryBakery">베이커리</label>
+        <input type="radio" id="categoryChocolate" value="초콜릿/사탕" v-model="product.proType"><label for="categoryChocolate">초콜릿/사탕</label>
+        <input type="radio" id="categoryOther" value="OTHER" v-model="product.proType"><label for="categoryOther">기타</label>
+        
+        <label style="margin-left: 20px;">레터링 가능:</label>
+        <input type="radio" id="letteringY" value="Y" v-model="product.lettering"><label for="letteringY">O</label>
+        <input type="radio" id="letteringN" value="N" v-model="product.lettering"><label for="letteringN">X</label>
+    </div>
+    </div>
 
                     <%-- 3. 옵션 관리 섹션 --%>
                     <div class="option-management-section">
@@ -226,8 +228,9 @@
                     proName: '',
                     price: 0,
                     deliveryFee: 0,
-                    category: 'CAKE', // 기본값
-                    lettering: 'N'    // 기본값
+                    proType: '케이크', // 기본값 "케이크"
+                    lettering: 'N' ,   // 기본값
+                 
                 },
 
                 // 이미지 파일 관리 (서버 전송용)

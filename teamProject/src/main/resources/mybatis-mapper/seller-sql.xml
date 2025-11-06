@@ -4,31 +4,31 @@
 <mapper namespace="com.example.teamProject.seller.mapper.SellerMapper">
 
 	<select id="selectStoreList"
-    resultType="com.example.teamProject.seller.model.Seller">
-    SELECT
-    STORE_ID,
-    STORE_NAME,
-    -- 💡 수정: USER_ID 컬럼 추가
-    USER_ID,
-    BUSINESS_NO,
-    STORE_INTRO,
-    DELIVERY_YN,
-    IS_CHAT_ENABLED,
-    CHAT_START,
-    CHAT_END,
-    STORE_ADDR,
-    STORE_AREA,
-    STORE_PASS,
-    REJECT_REASON,
-    GRADE_CODE,
-    MEMBERSHIP,
-    REG_DATE,
-    UDATE
-    FROM SELLER_INFO_TBL
-    WHERE USER_ID = #{userId}
-    AND STORE_PASS = 'P'
-    ORDER BY STORE_ID
-</select>
+		resultType="com.example.teamProject.seller.model.Seller">
+		SELECT
+		STORE_ID,
+		STORE_NAME,
+		-- 💡 수정: USER_ID 컬럼 추가
+		USER_ID,
+		BUSINESS_NO,
+		STORE_INTRO,
+		DELIVERY_YN,
+		IS_CHAT_ENABLED,
+		CHAT_START,
+		CHAT_END,
+		STORE_ADDR,
+		STORE_AREA,
+		STORE_PASS,
+		REJECT_REASON,
+		GRADE_CODE,
+		MEMBERSHIP,
+		REG_DATE,
+		UDATE
+		FROM SELLER_INFO_TBL
+		WHERE USER_ID = #{userId}
+		AND STORE_PASS = 'P'
+		ORDER BY STORE_ID
+	</select>
 
 	<update id="updateStoreName">
 		UPDATE SELLER_INFO_TBL
@@ -318,8 +318,8 @@
             <if
 				test="phone != null and phone != ''">
 				PHONE = #{phone},
-			</if> UDATE =
-		SYSDATE </set> WHERE USER_ID = #{userId} </update>
+			</if> UDATE = SYSDATE </set> WHERE
+		USER_ID = #{userId} </update>
 
 	<!-- 판매자 정보 수정 -->
 	<update id="updateSellerInfo" parameterType="hashmap"> UPDATE
@@ -334,10 +334,10 @@
             <if
 				test="storeAddr != null and storeAddr != ''">
 				STORE_ADDR = #{storeAddr},
-			</if>
-		DELIVERY_YN = #{deliveryYN}, IS_CHAT_ENABLED = #{isChatEnabled},
-		CHAT_START = #{chatStart}, CHAT_END = #{chatEnd}, MEMBERSHIP =
-		#{membership}, UDATE = SYSDATE </set> WHERE USER_ID = #{userId} </update>
+			</if> DELIVERY_YN =
+		#{deliveryYN}, IS_CHAT_ENABLED = #{isChatEnabled}, CHAT_START =
+		#{chatStart}, CHAT_END = #{chatEnd}, MEMBERSHIP = #{membership}, UDATE =
+		SYSDATE </set> WHERE USER_ID = #{userId} </update>
 
 	<select id="selectQnA" parameterType="string" resultType="hashmap">
 		SELECT
@@ -372,156 +372,166 @@
 		SET
 		ANSWER_CONTENT = #{answerContent}, ANSWER_DATE = SYSDATE WHERE
 		QUESTION_ID = #{questionId} </update>
-<select id="selectStoreInfo" resultType="map">
-    SELECT 
-        SI.STORE_NAME, 
-        SI.STORE_ADDR,              SI.STORE_INTRO, 
-        SI.DELIVERY_YN, 
-        SI.IS_CHAT_ENABLED AS CHAT_YN, SI.MEMBERSHIP AS IS_MEMBERSHIP, M.MEMBERSHIP_LEVEL             FROM SELLER_INFO_TBL SI
-    LEFT JOIN MEMBERSHIP_TBL M ON SI.USER_ID = M.USER_ID
-    WHERE SI.USER_ID = #{userId}
-</select>
+	<select id="selectStoreInfo" resultType="map">
+		SELECT
+		SI.STORE_NAME,
+		SI.STORE_ADDR, SI.STORE_INTRO,
+		SI.DELIVERY_YN,
+		SI.IS_CHAT_ENABLED AS CHAT_YN, SI.MEMBERSHIP AS IS_MEMBERSHIP,
+		M.MEMBERSHIP_LEVEL FROM SELLER_INFO_TBL SI
+		LEFT JOIN MEMBERSHIP_TBL M ON SI.USER_ID = M.USER_ID
+		WHERE SI.USER_ID = #{userId}
+	</select>
 
-<update id="updateStoreInfo" parameterType="map">
-    UPDATE SELLER_INFO_TBL
-    <set>
-        <if test="storeName != null and storeName != ''">
-            STORE_NAME = #{storeName},
-        </if>
+	<update id="updateStoreInfo" parameterType="map"> UPDATE SELLER_INFO_TBL <set>
+			<if test="storeName != null and storeName != ''">
+				STORE_NAME = #{storeName},
+			</if>
         
-        <if test="storeAddrMain != null and storeAddrMain != ''">
-            STORE_ADDR = #{storeAddrMain},
-        </if>
+        <if
+				test="storeAddrMain != null and storeAddrMain != ''">
+				STORE_ADDR = #{storeAddrMain},
+			</if>
         
-        <if test="storeIntro != null and storeIntro != ''">
-            STORE_INTRO = #{storeIntro},
-        </if>
+        <if
+				test="storeIntro != null and storeIntro != ''">
+				STORE_INTRO = #{storeIntro},
+			</if>
         
-        <if test="deliveryYn != null and deliveryYn != ''">
-            DELIVERY_YN = #{deliveryYn},
-        </if>
+        <if
+				test="deliveryYn != null and deliveryYn != ''">
+				DELIVERY_YN = #{deliveryYn},
+			</if>
         
-        <if test="chatYn != null and chatYn != ''">
-            IS_CHAT_ENABLED = #{chatYn},
-        </if>
-        
-        UDATE = SYSDATE  
-    </set>
-    WHERE USER_ID = #{userId}
-</update>
+        <if
+				test="chatYn != null and chatYn != ''">
+				IS_CHAT_ENABLED = #{chatYn},
+			</if> UDATE = SYSDATE </set>
+		WHERE USER_ID = #{userId} </update>
 
-<insert id="insertProduct" parameterType="com.example.teamProject.seller.model.Seller">
-    <selectKey keyProperty="proNo" resultType="int" order="BEFORE">
-        SELECT SEQ_PRO_NO.NEXTVAL FROM DUAL
+	<insert id="insertProduct"
+		parameterType="com.example.teamProject.seller.model.Seller">
+		<selectKey keyProperty="proNo" resultType="int" order="BEFORE">
+			SELECT SEQ_PRO_NO.NEXTVAL FROM DUAL
+		</selectKey> INSERT INTO
+		PRODUCT_TBL ( PRO_NO, STORE_ID, PRO_NAME, PRO_TYPE, PRO_INFO, PRICE,
+		DELIVERY_FEE, STATUS, LETTERING, CNT, SELL_COUNT, CREATED_AT,
+		UPDATED_AT, STORE_NAME ) VALUES ( #{proNo}, #{storeId}, #{proName,
+		jdbcType=VARCHAR}, #{proType, jdbcType=VARCHAR}, #{proInfo,
+		jdbcType=VARCHAR}, #{price}, #{deliveryFee, jdbcType=NUMERIC}, #{status,
+		jdbcType=CHAR}, #{lettering, jdbcType=CHAR}, #{cnt}, #{sellCount},
+		SYSDATE, SYSDATE, #{storeName, jdbcType=VARCHAR} ) </insert>
+	<update id="updateProduct"
+		parameterType="com.example.teamProject.seller.model.Seller"> UPDATE
+		PRODUCT_TBL <set>
+			PRO_NAME = #{proName},
+			PRO_TYPE = #{proType},
+			PRO_INFO = #{proInfo},
+			PRICE = #{price},
+			STOCK_QTY = #{stockQty},
+			STATUS = #{status},
+			UDATE = SYSDATE
+		</set>
+		WHERE PRO_NO = #{proNo} AND STORE_ID = (SELECT STORE_ID FROM
+		SELLER_INFO_TBL WHERE USER_ID = #{userId}) </update>
+
+	<insert id="insertTopOption"
+		parameterType="com.example.teamProject.seller.model.Seller">
+		<selectKey keyProperty="topOptionId" resultType="int" order="BEFORE">
+		SELECT PRODUCT_OPTION_SEQ.NEXTVAL FROM DUAL
+		</selectKey> INSERT
+		INTO PRODUCT_OPTION_TBL ( TOP_OPTION_ID, PRO_NO, OPTION_NAME,
+		IS_QUANTITY_SELECTABLE ) VALUES ( #{topOptionId}, #{proNo},
+		#{optionName}, #{isQuantitySelectAble} ) </insert>
+
+	<insert id="insertSubOption"
+    parameterType="com.example.teamProject.seller.model.Seller">
+    <selectKey keyProperty="subOptionId" resultType="int" order="BEFORE">
+        SELECT SUB_OPTION_SEQ.NEXTVAL FROM DUAL
     </selectKey>
-    INSERT INTO PRODUCT_TBL (
-        PRO_NO, STORE_ID, PRO_NAME, PRO_TYPE, PRO_INFO, 
-        PRICE, STOCK_QTY, STATUS, CDATE, UDATE,
-        -- 💡 수정: 이 컬럼을 추가해야 합니다.
-        USER_ID 
-        ) VALUES (
-        #{proNo}, 
-        (SELECT STORE_ID FROM SELLER_INFO_TBL WHERE USER_ID = #{userId}), 
-        #{proName}, #{proType}, #{proInfo}, 
-        #{price}, #{stockQty}, #{status}, SYSDATE, SYSDATE,
-        -- 💡 수정: DTO에서 받은 userId 값을 저장
-        #{userId} 
+
+    INSERT INTO PRODUCT_SUB_OPTION_TBL (  
+        SUB_OPTION_ID,          
+        TOP_OPTION_ID,          
+        VALUE_NAME,             
+        PRICE_DIFF 
+    ) VALUES (
+        #{subOptionId},
+        #{topOptionId},
+        #{valueName, jdbcType=VARCHAR},
+        #{priceDiff, jdbcType=NUMERIC}
     )
 </insert>
 
-  <update id="updateProduct" parameterType="com.example.teamProject.seller.model.Seller">
-    UPDATE PRODUCT_TBL
-    <set>
-        PRO_NAME = #{proName},
-        PRO_TYPE = #{proType},
-        PRO_INFO = #{proInfo},
-        PRICE = #{price},
-        STOCK_QTY = #{stockQty},
-        STATUS = #{status},
-        UDATE = SYSDATE
-    </set>
-    WHERE PRO_NO = #{proNo}
-    AND USER_ID = #{userId} 
-</update>
+	<delete id="deleteProductOptions" parameterType="int">
+		DELETE FROM PRODUCT_SUB_OPTION_TBL WHERE TOP_OPTION_ID IN (
+		SELECT TOP_OPTION_ID FROM PRODUCT_OPTION_TBL WHERE PRO_NO = #{proNo}
+		);
+		DELETE FROM PRODUCT_OPTION_TBL WHERE PRO_NO = #{proNo};
+	</delete>
 
-    <insert id="insertTopOption" parameterType="com.example.teamProject.seller.model.Seller">
-        <selectKey keyProperty="topOptionId" resultType="int" order="BEFORE">
-            SELECT SEQ_TOP_OPTION_ID.NEXTVAL FROM DUAL
-        </selectKey>
-        INSERT INTO PRODUCT_OPTION_TBL (
-            TOP_OPTION_ID, PRO_NO, OPTION_NAME, CDATE
-        ) VALUES (
-            #{topOptionId}, #{proNo}, #{optionName}, SYSDATE
-        )
-    </insert>
+	<insert id="insertDisabledDate">
+		INSERT INTO DISABLED_DATE_TBL (
+		PRO_NO, DISABLED_DATE
+		) VALUES (
+		#{param1}, TO_DATE(#{param2}, 'YYYY-MM-DD')
+		)
+	</insert>
 
-    <insert id="insertSubOption" parameterType="com.example.teamProject.seller.model.Seller">
-        <selectKey keyProperty="subOptionId" resultType="int" order="BEFORE">
-            SELECT SEQ_SUB_OPTION_ID.NEXTVAL FROM DUAL
-        </selectKey>
-        INSERT INTO PRODUCT_SUB_OPTION_TBL (
-            SUB_OPTION_ID, TOP_OPTION_ID, VALUE_NAME, PRICE_DIFF, CDATE
-        ) VALUES (
-            #{subOptionId}, #{topOptionId}, #{valueName}, #{priceDiff}, SYSDATE
-        )
-    </insert>
-    
-    <delete id="deleteProductOptions" parameterType="int">
-        DELETE FROM PRODUCT_SUB_OPTION_TBL WHERE TOP_OPTION_ID IN (
-            SELECT TOP_OPTION_ID FROM PRODUCT_OPTION_TBL WHERE PRO_NO = #{proNo}
-        );
-        DELETE FROM PRODUCT_OPTION_TBL WHERE PRO_NO = #{proNo};
-    </delete>
+	<delete id="deleteDisabledDates" parameterType="int">
+		DELETE FROM DISABLED_DATE_TBL WHERE PRO_NO = #{proNo}
+	</delete>
 
-    <insert id="insertDisabledDate">
-        INSERT INTO DISABLED_DATE_TBL (
-            PRO_NO, DISABLED_DATE
-        ) VALUES (
-            #{param1}, TO_DATE(#{param2}, 'YYYY-MM-DD')
-        )
-    </insert>
+	<select id="selectProductByProNo" parameterType="int"
+		resultType="com.example.teamProject.seller.model.Seller">
+		SELECT
+		PRO_NO,
+		STORE_ID,
+		PRO_NAME,
+		PRO_TYPE,
+		PRO_INFO,
+		PRICE,
+		STOCK_QTY,
+		STATUS
+		-- USER_ID 컬럼이 없으므로 삭제
+		-- , USER_ID
+		FROM PRODUCT_TBL
+		WHERE PRO_NO = #{proNo}
+	</select>
 
-    <delete id="deleteDisabledDates" parameterType="int">
-        DELETE FROM DISABLED_DATE_TBL WHERE PRO_NO = #{proNo}
-    </delete>
+	<select id="selectProductFiles" parameterType="int" resultType="map">
+		SELECT FILE_PATH, FILE_TYPE
+		FROM PRODUCT_FILE_TBL
+		WHERE PRO_NO = #{proNo}
+	</select>
 
-   <select id="selectProductByProNo" parameterType="int" resultType="com.example.teamProject.seller.model.Seller">
-    SELECT 
-        PRO_NO, 
-        STORE_ID, 
-        PRO_NAME, 
-        PRO_TYPE, 
-        PRO_INFO, 
-        PRICE, 
-        STOCK_QTY, 
-        STATUS,
-        USER_ID 
-    FROM PRODUCT_TBL
-    WHERE PRO_NO = #{proNo}
-</select>
-    
-    <select id="selectProductFiles" parameterType="int" resultType="map">
-        SELECT FILE_PATH, FILE_TYPE 
-        FROM PRODUCT_FILE_TBL
-        WHERE PRO_NO = #{proNo}
-    </select>
+	<select id="selectProductOptions" parameterType="int"
+		resultType="com.example.teamProject.seller.model.Seller">
+		SELECT
+		PO.TOP_OPTION_ID, PO.PRO_NO, PO.OPTION_NAME,
+		PSO.SUB_OPTION_ID, PSO.VALUE_NAME, PSO.PRICE_DIFF
+		FROM PRODUCT_OPTION_TBL PO
+		LEFT JOIN PRODUCT_SUB_OPTION_TBL PSO ON PO.TOP_OPTION_ID =
+		PSO.TOP_OPTION_ID
+		WHERE PO.PRO_NO = #{proNo}
+		ORDER BY PO.TOP_OPTION_ID, PSO.SUB_OPTION_ID
+	</select>
 
-    <select id="selectProductOptions" parameterType="int" resultType="com.example.teamProject.seller.model.Seller">
-        SELECT 
-            PO.TOP_OPTION_ID, PO.PRO_NO, PO.OPTION_NAME, 
-            PSO.SUB_OPTION_ID, PSO.VALUE_NAME, PSO.PRICE_DIFF
-        FROM PRODUCT_OPTION_TBL PO
-        LEFT JOIN PRODUCT_SUB_OPTION_TBL PSO ON PO.TOP_OPTION_ID = PSO.TOP_OPTION_ID
-        WHERE PO.PRO_NO = #{proNo}
-        ORDER BY PO.TOP_OPTION_ID, PSO.SUB_OPTION_ID
-    </select>
+	<select id="selectDisabledDates" parameterType="int" resultType="string">
+		SELECT TO_CHAR(DISABLED_DATE, 'YYYY-MM-DD')
+		FROM DISABLED_DATE_TBL
+		WHERE PRO_NO = #{proNo}
+		ORDER BY DISABLED_DATE
+	</select>
+	<select id="getStoreIdByUserId" parameterType="string" resultType="int">
+		SELECT STORE_ID
+		FROM SELLER_INFO_TBL WHERE USER_ID = #{userId}
+	</select>
 
-    <select id="selectDisabledDates" parameterType="int" resultType="string">
-        SELECT TO_CHAR(DISABLED_DATE, 'YYYY-MM-DD')
-        FROM DISABLED_DATE_TBL
-        WHERE PRO_NO = #{proNo}
-        ORDER BY DISABLED_DATE
-    </select>
+	<select id="getStoreNameByStoreId" resultType="string">
+		SELECT STORE_NAME
+		FROM SELLER_INFO_TBL WHERE STORE_ID = #{storeId}
+	</select>
 
 </mapper>
 

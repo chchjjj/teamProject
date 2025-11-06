@@ -8,8 +8,10 @@ import lombok.Data;
 
 @Data
 public class Seller {
-
-	  private Long storeId;           // STORE_ID
+		private int subOptionId;
+		private int topOptionId;
+		
+		private String storeId;
 	    private String storeName;       // STORE_NAME
 	    private String userId;          // USER_ID
 	    private String businessNo;      // BUSINESS_NO
@@ -47,12 +49,12 @@ public class Seller {
 	 	
 	 		
 	 		// 상위옵션
-	 		private int topOptionId;
+	 		
 	 		private String optionName;
-	 		private String isQuantitySelectAble;
+	 		private String isQuantitySelectable = "N";
 	 		
 	 		// 하위옵션
-	 		private int subOptionId;
+	 		
 	 		private String valueName;
 	 		private int priceDiff;
 	 		
@@ -90,7 +92,7 @@ public class Seller {
 	 	  
 	 	// 1. PRODUCT_TBL (디저트 상품) 매핑
 	 	  
-	 	    private String proType;              // 상품 종류 (PRO_TYPE) -> 카테고리(category) 대신 사용
+	 	   
 	 	   
 	 	    // (추가) ServiceImpl에서 임시로 사용할 판매자 번호
 	 	    private Integer sellerNo;
@@ -106,7 +108,7 @@ public class Seller {
 	 	  
 	 	    
 	 	   
-	 	    private String isQuantitySelectable;    // 수량 정할수있는지 여부
+	 	     // 수량 정할수있는지 여부
 	 	    
 	 	    // 클라이언트에서 넘어오는 임시 ID (새 옵션 구분을 위해)
 	 	    private String id; 
@@ -121,10 +123,80 @@ public class Seller {
 	
 	 	
 	 		
-	 	
+	 		
 	 	 	
 	 	 	// PRODUCT_SUB_OPTION_TBL (하위 옵션 목록)
 	 		private List<Seller> subOptions;
-	
+			private String status = "N";
+	 		
+	 		public String getStoreId() {
+	 	        return storeId;
+	 	    }
+
+	 	    public void setStoreId(String storeId) { // ⭐ 이 메서드를 추가해야 오류가 해결됩니다.
+	 	        this.storeId = storeId;
+	 	    }
+	 	   public String getStatus() {
+	 		    return status;
+	 		}
+
+	 		public void setStatus(String status) {
+	 		    this.status = status;
+	 		}
 	 	
+	 		private String proType = "케이크"; 
+
+	 	    // ... (deliveryFee, proInfo, status 등 다른 필드 선언 및 초기화)
+	 	    
+	 	    // ... (Getter와 Setter 메서드)
+	 	    public String getProType() {
+	 	        return proType;
+	 	    }
+
+	 	    public void setProType(String proType) {
+	 	        this.proType = proType;
+	 	    }
+	 	// 옵션 수량 선택 가능 여부 필드 추가
+	 	    private String isQuantitySelectAble; 
+
+	 	    // 필드에 대한 Getter 추가
+	 	    public String getIsQuantitySelectAble() {
+	 	        return isQuantitySelectAble;
+	 	    }
+
+	 	    // 필드에 대한 Setter 추가 (필요한 경우)
+	 	    public void setIsQuantitySelectAble(String isQuantitySelectAble) {
+	 	        this.isQuantitySelectAble = isQuantitySelectAble;
+	 	    }
+	 	    
+	 	    
+	 	  
+	 	  
+	
+	 	 
+	 	    // Getter/Setter 및 생성자 등
+	 	    public String getIsQuantitySelectable() { // Getter가 반드시 존재해야 합니다.
+	 	        return isQuantitySelectable;
+	 	    }
+	 	    
+	 	
+	 	// 이 메서드를 클래스 내부에 명시적으로 추가합니다.
+	 	    public void setSubOptionId(int subOptionId) {
+	 	        this.subOptionId = subOptionId;
+	 	    }
+
+	 	    // (Getter도 필요하다면 추가)
+	 	    public int getSubOptionId() {
+	 	        return subOptionId;
+	 	    }
+	 	    
+	 	
+	 
+	 	    
+	 	
+	 	    
+	 	  
+	 	   
 }
+
+
