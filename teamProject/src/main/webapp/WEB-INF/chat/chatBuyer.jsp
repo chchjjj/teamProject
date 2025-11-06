@@ -21,6 +21,21 @@
          
         <style>
 
+        button {
+            padding: 8px 15px;
+            background-color: #555;
+            /* 어두운 계열 (헤더 QnA 버튼과 유사하게) */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            height: 38px;
+            display: block; /* 버튼을 블록 레벨 요소로 만듭니다 */
+            margin: 20px auto;
+        }
+
         </style>
     </head>
 
@@ -43,6 +58,8 @@
                     <button @click="sendMessage">전송</button>
                 </footer>
                 </div>
+
+                <div><button @click="fnGoBack">돌아가기</button></div>
             </div>
         <%@ include file="/WEB-INF/main/footer.jsp" %>
     </body>
@@ -82,8 +99,6 @@
                             console.log("조회된 chatId: " + this.chatId);
                             console.log("조회된 storeId: " + this.storeId);
 
-                            // chatId를 얻은 뒤 기존 메시지 로드
-                            this.loadMessages();
                         } else {
                             console.warn("채팅방이 존재하지 않습니다. chatId: null");
                         }
@@ -130,21 +145,54 @@
                 },
 
                 // 기존 메세지 로드 메소드
-                loadMessages() {
-                    const url = `/api/chat/messages/${chatId}`;
-                    axios.get(url)
-                        .then(response => {
-                            // Vue data의 messages 배열에 기존 메시지 할당
-                            this.messages = response.data; 
-                            console.log("기존 메시지 로드 성공: ", this.messages.length + "개");
-                            this.$nextTick(() => {
-                                // 메시지 로드 후 스크롤을 가장 아래로 이동
+                loadChatHistory: function() {
+                    if (!this.orderId) {
+                        this.loading = false;
+                        return;
+                    }
+
+                    this.loading = true;
+                    
+                    $.ajax({
+                        url: '/api/seller/chat/' + this.orderId + '/history',
+                        type: 'GET',
+                        dataType: 'json',
+                        context: this,
+                        success: function(response) {
+                            console.log("채팅 기록 로드 성공:", response);
+                            
+                            // 💡 화살표 함수(Arrow Function)를 사용하여 this 스코프 문제 해결
+                            this.messages = response.map((msg) => {
+                                
+                                const senderIdFromData = msg.USER_ID; 
+
+                                return {
+                                    id: msg.MSG_ID, 
+                                    content: msg.MESSAGE,
+                                    // 발신자 ID 설정
+                                    sender: senderIdFromData, 
+                                    // senderId와 currentUserId를 비교하여 이름 설정
+                                    senderName: senderIdFromData === this.currentUserId ? '사장님' : '고객', 
+                                    timestamp: msg.SENT_AT ? new Date(msg.SENT_AT) : new Date(),
+                                };
+                            });
+                            
+                            this.markMessagesAsRead(); 
+
+                            this.$nextTick(function() {
                                 this.scrollToBottom();
                             });
-                        })
-                        .catch(error => {
-                            console.error("기존 메시지 로드 실패: ", error);
-                        });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("채팅 기록 로드 실패:", error);
+                            alert("채팅 기록을 불러오는 데 실패했습니다.");
+                            this.messages = [];
+                        },
+                        complete: function() {
+                            // 💡 AJAX 호출이 끝난 후 반드시 loading 상태 해제
+                            this.loading = false; 
+                        }
+                    });
                 },
                 
                 // [추가] 스크롤 최하단 이동 메서드
@@ -154,7 +202,11 @@
                         chatBox.scrollTop = chatBox.scrollHeight;
                     }
                 },
-            
+                
+                // 뒤로가기 버튼
+                fnGoBack : function() {
+                    window.history.back(); 
+                }
 
             },
             async mounted() {
@@ -166,7 +218,9 @@
                 console.log("채팅방 id ==> " + this.chatId); // 채팅방번호 잘 넘어오나 테스트
                 console.log("가게 id ==> " + this.storeId); // 채팅방번호 잘 넘어오나 테스트
 
-                //this.loadMessages();         // [추가] 기존 메시지 로드
+                if (this.orderId) {
+                    this.loadChatHistory();
+                }
             },
             beforeUnmount() {
                 if (this.stompClient) {
