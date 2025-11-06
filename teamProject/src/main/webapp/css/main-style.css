@@ -530,7 +530,7 @@ display: block;
     background-color: #f0f0f0; /* 기본 배경색 */
     border-radius: 50%;
     font-weight: bold;
-    color: #ffffff; /* 텍스트가 보이지 않도록 color 속성 제거 (font-size: 0으로 대체) */
+    color: #FFEDAC; /* 텍스트가 보이지 않도록 color 속성 제거 (font-size: 0으로 대체) */
     
     /* 👇 통일된 움직임 효과를 위해 transition: all로 변경 */
     transition: all 0.2s ease-in-out; 
@@ -549,7 +549,7 @@ display: block;
 /* 배경색을 메뉴바 색상(진한 갈색)으로 변경 */
     background-color: #3E2723;
     /* 텍스트 색상을 흰색으로 변경 */
-    color: #ffffff; 
+    color: #FFEDAC; 
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     /* 입체감 있는 그림자 */
     transform: scale(1.05);
@@ -564,7 +564,7 @@ display: block;
 .main-category a:nth-child(1) {
     /* 텍스트를 보이게 설정 */
     font-size: 20px; 
-    color: #ffffff; /* 일반 상태 텍스트 색상 */
+    color: #FFEDAC; /* 일반 상태 텍스트 색상 */
     /* 배경 이미지 제거 */
     background-image: none; 
     background-color: #3E2723; /* 원래의 회색 배경 */
@@ -713,10 +713,22 @@ display: block;
 
 /*메인페이지 상품 섬네일 & 추천배지 감싸는 클래스*/
 .product-image-wrapper {
-    position: relative;
-    width: 100%;
-    height: 150px; /* 썸네일 높이에 맞춰서 조정 */
-	overflow: hidden; /* 딱지 제외, 썸네일만 영역 내로 */
+  position: relative;
+  width: 100%;
+  height: 180px; /* 원하는 카드 높이에 맞게 조정 */
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f5f5f5;
+}
+
+.product-image-wrapper img.product-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 핵심: 꽉 채우되 비율 유지 (잘림 허용) */
+  transform: translate(-50%, -50%); /* 중앙 정렬 */
 }
 
 /* 추천 뱃지 */
@@ -729,7 +741,8 @@ display: block;
 }
 
 .product-title {
-    font-weight: bold;
+    font-weight: 900;
+    margin-top: 5px;
     margin-bottom: 5px;
     font-size: 16px;
     color: #3E2723; /* 헤더의 진한 갈색과 통일 */

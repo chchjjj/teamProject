@@ -368,7 +368,12 @@
 
                             <div class="product-item" v-for="item in list" @click="fnProDetail(item.proNo)">
                                 <div class="product-image-wrapper">
-                                    <div class="product-image-placeholder">판매자 등록 썸네일</div>
+                                    <div class="product-image-placeholder" v-if="!item.filePath || !item.fileName">
+                                            판매자 등록 썸네일
+                                        </div>
+                                        <img v-else :src="(item.filePath + item.fileName).trim()" alt="상품 이미지"
+                                            class="product-image"
+                                            style="width: 100%; height: auto; border-radius: 10px;">
                                     <!-- 멤버쉽 Y이면 추천 딱지 표시 -->
                                     <img v-if="item.membership === 'Y'" class="recommend-badge" src="/img/recommend.png"
                                         alt="추천 딱지">
@@ -444,7 +449,7 @@
                         page: (self.page - 1) * self.pageSize,
 
 
-                        sellerPage: 'S',
+                        sellerPage: 23,
                         storeId: self.storeId
                     };
                     $.ajax({

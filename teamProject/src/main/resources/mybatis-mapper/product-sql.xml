@@ -11,12 +11,16 @@
 		WHERE USER_ID = #{userId}
 	</select>
 	
+	<!--상품 하나 정보-->
 	<select id="proInfo" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
-		SELECT *			
+		SELECT *
 		FROM PRODUCT_TBL P
 		INNER JOIN SELLER_INFO_TBL S
 		ON P.STORE_ID = S.STORE_ID
-		WHERE PRO_NO = #{proNo}
+		LEFT JOIN PRODUCT_IMG_TBL I
+		ON P.PRO_NO = I.PRO_NO
+		AND I.FILEUSE = 'T'
+		WHERE P.PRO_NO = #{proNo}
 	</select>
 	<!--클릭시 조회수 업-->
 	<update id="updateCnt" parameterType="hashmap">
@@ -42,7 +46,7 @@
 	
 	<!--장바구니 불러오기-->
 	<select id="cart" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
-	SELECT 
+SELECT 
 		    c.CART_ID,
             p.STORE_ID,
             p.STORE_NAME,
@@ -66,7 +70,9 @@
             USER_ADDR,
             PHONE,
             USER_NAME,
-            STORE_ADDR
+            STORE_ADDR,
+             pi.FILEPATH,
+    pi.FILENAME
 		FROM CART_TBL c
 		JOIN PRODUCT_TBL p 
 		    ON c.PRO_NO = p.PRO_NO
@@ -80,7 +86,10 @@
             ON U.USER_ID = C.USER_ID
         JOIN SELLER_INFO_TBL S
             ON C.STORE_ID = S.STORE_ID
-		WHERE C.USER_ID = 'user01'
+            LEFT JOIN PRODUCT_IMG_TBL pi
+    ON p.PRO_NO = pi.PRO_NO
+    AND pi.FILEUSE = 'T'
+		WHERE C.USER_ID = #{userId}
         ORDER BY CREATED_AT
 	</select>
 	
@@ -337,7 +346,7 @@ OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 		'판매자 지정',
 		SYSDATE,
 		SYSDATE,
-		#{deliveryDate} <!--배달테이블에만 있는거-->
+		TO_DATE(#{deliveryDate}, 'YYYY-MM-DD HH24:MI') <!--배달테이블에만 있는거-->
 	)
 	</insert>
 	<!--픽업 테이블에 내용 추가-->
@@ -347,8 +356,8 @@ OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 		SEQ_PICK_ID.NEXTVAL,
 		#{orderId},
 		#{storeAddr},
-		#{deliveryDate},
-		#{deliveryDate},
+		TO_DATE(#{deliveryDate}, 'YYYY-MM-DD HH24:MI'),
+		TO_DATE(#{deliveryDate}, 'YYYY-MM-DD HH24:MI'),
 		'A',
 		SYSDATE,
 		SYSDATE

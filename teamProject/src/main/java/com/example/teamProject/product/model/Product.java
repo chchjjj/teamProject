@@ -94,4 +94,10 @@ public class Product {
 	    
 
 	    private int addQuantity;  // 추가 옵션 수량
+	    
+	    //파일
+	    private String filePath;   // 파일 경로
+	    private String fileName;   // 파일 이름 
+	    private String fileUse;    // 대표 여부 (T/F)
+
 }
