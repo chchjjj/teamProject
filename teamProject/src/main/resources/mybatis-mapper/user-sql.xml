@@ -42,7 +42,7 @@
 	</select>
 	
 	<!--주문내역 가져오기-->
-	<!--머지 test용 아무의미 없음-->
+	<!--머지 test용 아무의미 없음!-->
 	<select id="selectOrderList" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
 	      SELECT
 	    	SE.STORE_ID,
@@ -62,6 +62,7 @@
 	        O.FULL_ADDRESS,
             O.CHAT_YN,
 	        O.ORDER_DATE,
+	        O.STATUS,
 	        O.TOTAL_PRICE,
             C.CHAT_ID,
 	        O.ORDER_ID,
