@@ -187,7 +187,7 @@
                             alert("주문이 완료되었습니다!");
                             // 결제 페이지로 이동 또는 주문 완료 페이지 이동
                             alert(data.orderIdList);
-                            // pageChange("/payment/payment.do", { orderIdList: data.orderIdList });
+                            pageChange("/payment/payment.do", { orderIdList: data.orderIdList });
                         },
                         error: function (xhr, status, error) {
                             console.error("장바구니 로드 실패:", status, error);
