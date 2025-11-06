@@ -40,6 +40,9 @@ public class SellerController {
 
 	@Autowired
 	FileService fileService; 
+	
+	
+  
 
 	@RequestMapping("/seller/list.do")
 	public String area(Model model) throws Exception {
@@ -506,22 +509,42 @@ public class SellerController {
 	) {
 	    Map<String, Object> result = new HashMap<>();
 
+	    // 🌟 1. 세션 USER_ID 유효성 검증 (강화)
+	    String loggedInUserId = (String) session.getAttribute("sessionId");
 	    
-	    String loggedInUserId = (String) session.getAttribute("userId"); 
-
-	    if (loggedInUserId == null || loggedInUserId.isEmpty()) {
+	    // **수정 시작: null 또는 빈 문자열 체크 및 즉시 반환**
+	    if (loggedInUserId == null || loggedInUserId.trim().isEmpty()) {
+	        System.out.println(">>> [FATAL] 세션 userId 유효성 최종 검증 실패: " + loggedInUserId);
 	        result.put("success", false);
-	        result.put("message", "세션에서 판매자 ID를 찾을 수 없습니다. 다시 로그인해 주십시오.");
-	       
-	        return result;
+	        result.put("message", "세션 로그인 정보(userId)를 찾을 수 없습니다. (재로그인 필요)");
+	        return result; 
 	    }
-	    
-	   
+	    // **수정 끝**
+
 	    seller.setUserId(loggedInUserId); 
 	    
-	  
+	    // 🌟 2. USER_ID로 STORE_ID 조회 및 설정
 	    try {
-	     
+	        // 1. Service를 통해 loggedInUserId에 해당하는 STORE_ID를 조회합니다.
+	        // *Service 메서드의 반환 타입이 int라고 가정 (조회 실패 시 0 또는 null 처리)*
+	        int storeId = sellerService.getStoreIdByUserId(loggedInUserId);
+	        
+	        // **수정 시작: STORE_ID가 0이거나 유효하지 않으면 예외 발생**
+	        // DB에 USER_ID는 있지만 STORE_ID가 0으로 조회되면 잘못된 데이터입니다.
+	        if (storeId == 0) {
+	            System.out.println(">>> [Controller Log] " + loggedInUserId + "에 대한 STORE_ID가 0으로 조회됨.");
+	            // Store ID 0 오류를 Service에서 던지게 하는 대신 Controller에서 처리하거나,
+	            // Service에서 명시적 예외를 던지도록 코드를 유지합니다.
+	            // 여기서는 Service의 예외가 Controller의 catch 블록으로 잡히도록 그대로 둡니다.
+	            // **주의: Service의 getStoreIdByUserId는 유효한 ID를 못 찾으면 예외를 던지거나 0을 반환해야 합니다.**
+	        }
+	        // **수정 끝**
+	        
+	        // 2. 조회된 STORE_ID를 Seller DTO에 설정합니다. (int -> String 변환 유지)
+	        seller.setStoreId(String.valueOf(storeId));
+	        
+	        
+	        // 3. 상품 데이터 처리
 	        processProductData(seller);
 
 	        if (seller.getProName() == null || seller.getProName().isEmpty()) {
@@ -530,10 +553,10 @@ public class SellerController {
 	            return result;
 	        }
 	        
-	        
+	        // seller DTO에는 이제 userId와 storeId가 모두 포함되어 있습니다.
 	        sellerService.registerProduct(seller); 
 	        
-	        
+	        // 4. 파일 업로드
 	        fileService.uploadProductImages(
 	            seller.getProNo(), 
 	            thumbnailFile, 
@@ -547,8 +570,15 @@ public class SellerController {
 	    } catch (Exception e) {
 	        // 상세한 오류 로그 출력
 	        e.printStackTrace(); 
+	        
+	        // 🌟 3. 오류 메시지 개선: 사용자에게 친화적인 메시지 제공
+	        String errorMessage = e.getMessage();
+	        if (errorMessage != null && errorMessage.contains("Store ID 0")) {
+	            errorMessage = "판매자 정보(STORE ID)를 찾을 수 없습니다. 관리자에게 문의하세요.";
+	        }
+	        
 	        result.put("success", false);
-	        result.put("message", "제품 등록 중 서버 오류 발생: " + e.getMessage());
+	        result.put("message", "제품 등록 중 서버 오류 발생: " + errorMessage);
 	    }
 	    return result;
 	}
@@ -560,25 +590,35 @@ public class SellerController {
 	    @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
 	    @RequestParam(value = "detailFiles", required = false) List<MultipartFile> detailFiles,
 	    @RequestParam(value = "longFile", required = false) MultipartFile longFile,
-	    // 💡 1단계: 세션 객체를 메서드 파라미터로 추가
 	    jakarta.servlet.http.HttpSession session 
 	) {
 	    Map<String, Object> result = new HashMap<>();
 	    
-	    // 💡 2단계: 세션에서 userId를 가져와 인증 체크
-	    String loggedInUserId = (String) session.getAttribute("userId"); 
-
+	    // 1. 세션에서 로그인된 사용자 ID 확인
+	    String loggedInUserId = (String) session.getAttribute("sessionId");
+	    System.out.println("DEBUG: 세션에서 가져온 loggedInUserId: " + loggedInUserId);
 	    if (loggedInUserId == null || loggedInUserId.isEmpty()) {
 	        result.put("success", false);
-	        // 클라이언트에서 보냈던 오류 메시지 그대로 반환
 	        result.put("message", "처리 실패: 세션에서 판매자 ID를 찾을 수 없습니다. 다시 로그인해 주십시오."); 
 	        return result;
 	    }
 	    
-	    // 💡 3단계: 인증된 userId를 Seller DTO에 주입 (매퍼로 전달)
+	    // 2. DTO에 userId 설정
 	    seller.setUserId(loggedInUserId); 
 	    
 	    try {
+	        // 3. 🌟 핵심: USER_ID로 STORE_ID 조회 및 설정
+	        int storeId = sellerService.getStoreIdByUserId(loggedInUserId); 
+	        seller.setStoreId(String.valueOf(storeId));
+	        
+	        // 4. 유효성 검사 (가게 정보가 없으면 수정 권한 없음)
+	        if (storeId <= 0) {
+	            result.put("success", false);
+	            result.put("message", "판매자 정보가 유효하지 않습니다. 수정 권한이 없습니다.");
+	            return result;
+	        }
+
+	        // 5. JSON 데이터 파싱 및 DTO 설정
 	        processProductData(seller);
 
 	        if (seller.getProNo() == 0) {
@@ -587,10 +627,10 @@ public class SellerController {
 	            return result;
 	        }
 
-	        // 1. 상품 DB 정보 수정 (이제 seller DTO에는 userId가 들어있습니다.)
+	        // 6. 상품 DB 정보 수정 (DTO에는 이제 userId와 storeId가 모두 들어있습니다.)
 	        sellerService.updateProduct(seller);
 	        
-	        // 2. 파일 수정/업로드 처리 (생략)
+	        // 7. 파일 수정/업로드 처리
 	        fileService.updateProductImages(
 	            seller.getProNo(), 
 	            thumbnailFile, 
