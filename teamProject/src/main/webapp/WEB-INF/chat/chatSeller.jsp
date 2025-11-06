@@ -31,8 +31,9 @@
                 cursor: pointer;
                 transition: background-color 0.3s;
                 height: 38px;
-                display: block; /* 버튼을 블록 레벨 요소로 만듭니다 */
+                display: inline-block; /* 버튼을 블록 레벨 요소로 만듭니다 */
                 margin: 20px auto;
+                margin-right: 10px;
             }
         </style>
     </head>
@@ -56,7 +57,9 @@
                     <button @click="sendMessage">전송</button>
                 </footer>
                 </div>
-                <div><button @click="fnGoBack">돌아가기</button></div>
+                <div>
+                    <button @click="fnGoBack">돌아가기</button>
+                </div>
             </div>
         <%@ include file="/WEB-INF/main/footer.jsp" %>
     </body>
@@ -96,8 +99,6 @@
                             console.log("조회된 chatId: " + this.chatId);
                             console.log("조회된 storeId: " + this.storeId);
 
-                            // chatId를 얻은 뒤 기존 메시지 로드
-                            this.loadMessages();
                         } else {
                             console.warn("채팅방이 존재하지 않습니다. chatId: null");
                         }
@@ -217,7 +218,9 @@
                 console.log("채팅방 id ==> " + this.chatId); // 채팅방번호 잘 넘어오나 테스트
                 console.log("가게 id ==> " + this.storeId); // 채팅방번호 잘 넘어오나 테스트
 
-                //this.loadMessages();         // [추가] 기존 메시지 로드
+                if (this.orderId) {
+                    this.loadChatHistory();
+                }
 
             },
             beforeUnmount() {

@@ -50,6 +50,7 @@
                 <div class="messages-area" id="chatBox">
                     <div v-for="(msg, idx) in messages" :key="idx" :class="['message-bubble', msg.sender === userId ? 'my' : 'other']">
                     <div class="message-content">{{ msg.content }}</div>
+                    <div class="message-timestamp">{{ formatTime(msg.timestamp) }}</div>
                     </div>
                 </div>
 
@@ -116,8 +117,15 @@
                         console.log("WebSocket 연결 성공: " + frame);
                         this.stompClient.subscribe('/topic/public', (message) => {
                             const msg = JSON.parse(message.body);
-                            this.messages.push(msg);
+                            // 여기서 timestamp가 없거나 잘못되었다면 현재 시각으로 대체
+                            msg.timestamp = msg.timestamp ? msg.timestamp : new Date().toISOString();
+                            
+                            // 💡 자기 메시지면 화면에 추가하지 않음
+                            if (msg.sender !== this.userId) {
+                                this.messages.push(msg);
+                            }
                             // 💡 메시지를 받은 후 DOM 업데이트를 기다린 후 스크롤 이동
+                            console.log("수신 메시지:", msg);
                             this.$nextTick(() => { 
                                 this.scrollToBottom();
                             });
@@ -136,13 +144,22 @@
                         sender: this.userId,
                         content: this.newMessage,
                         chatId: this.chatId,
-                        // 아래 2개는 우선 임시
                         orderId: this.orderId,
-                        storeId: this.storeId
+                        storeId: this.storeId,
+                        timestamp: new Date().toISOString() // ✅ 현재 시간 ISO 문자열로
                     };
                     this.stompClient.send("/app/sendMessage", {}, JSON.stringify(chatMessage));
                     this.newMessage = "";
-                },
+
+                    // 💡 바로 화면에 표시할 때도 현재 시간 사용
+                    this.messages.push({
+                        sender: this.userId,
+                        content: chatMessage.content,
+                        timestamp: new Date(), // 현재 시각
+                    });
+
+                    this.$nextTick(() => this.scrollToBottom());
+                                },
 
                 // 기존 메세지 로드 메소드
                 loadChatHistory: function() {
@@ -162,9 +179,18 @@
                             console.log("채팅 기록 로드 성공:", response);
                             
                             // 💡 화살표 함수(Arrow Function)를 사용하여 this 스코프 문제 해결
-                            this.messages = response.map((msg) => {
-                                
+                            this.messages = response.map((msg) => {                                
                                 const senderIdFromData = msg.USER_ID; 
+                                // ⭐ SENT_AT 문자열 안정적 파싱
+                let timestamp = new Date(); // 기본값: 현재 시간
+                if (msg.SENT_AT) {
+                    // "YYYY-MM-DD HH:MM:SS" → "YYYY-MM-DDTHH:MM:SS"
+                    let dateStr = msg.SENT_AT.split('.')[0].replace(' ', 'T');
+                    let parsedDate = new Date(dateStr);
+                    if (!isNaN(parsedDate.getTime())) {
+                        timestamp = parsedDate;
+                    }
+                }
 
                                 return {
                                     id: msg.MSG_ID, 
@@ -173,7 +199,9 @@
                                     sender: senderIdFromData, 
                                     // senderId와 currentUserId를 비교하여 이름 설정
                                     senderName: senderIdFromData === this.currentUserId ? '사장님' : '고객', 
-                                    timestamp: msg.SENT_AT ? new Date(msg.SENT_AT) : new Date(),
+                                    //timestamp: msg.SENT_AT ? new Date(msg.SENT_AT) : new Date(),
+                                    timestamp : timestamp,
+                                    sender: msg.USER_ID,
                                 };
                             });
                             
@@ -202,6 +230,26 @@
                         chatBox.scrollTop = chatBox.scrollHeight;
                     }
                 },
+
+                // 메세지 시간 표시 
+                formatTime(time) {
+                    let date;
+                    if (time) {
+                        date = new Date(time);
+                        if (isNaN(date.getTime())) {
+                            date = new Date(); // 유효하지 않으면 현재 시간 사용
+                        }
+                    } else {
+                        date = new Date(); // time이 없으면 현재 시간
+                    }
+
+                    return date.toLocaleTimeString('ko-KR', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                },
+
+                
                 
                 // 뒤로가기 버튼
                 fnGoBack : function() {
