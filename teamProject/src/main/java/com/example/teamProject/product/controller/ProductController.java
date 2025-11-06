@@ -155,6 +155,13 @@ public class ProductController {
 	    resultMap = ProductService.WishlistDelete(map);
 	    return new Gson().toJson(resultMap);
 	}
+	@RequestMapping(value = "/product/qnaInsert.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String qnaInsert(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    resultMap = ProductService.qnaInsert(map);
+	    return new Gson().toJson(resultMap);
+	}
 	@RequestMapping(value = "/product/reviewList.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String reviewList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
@@ -181,6 +188,9 @@ public class ProductController {
 		ObjectMapper mapper = new ObjectMapper();
 		List<HashMap<String, Object>> list = mapper.readValue(json, new TypeReference<List<HashMap<String, Object>>>(){});
 		map.put("list", list); //리스트에 옵션에 대한 정보가 담김
+		
+		System.out.println("deliveryDate 원본값 => " + map.get("deliveryDate"));
+		
 		resultMap = ProductService.insertOrder(map);  
 		return new Gson().toJson(resultMap);
 	}

@@ -18,89 +18,94 @@
                         crossorigin="anonymous"></script>
 
                         <style>
-                        /* 기본 초기화 및 폰트 */
+                        /* ===== 기본 설정 ===== */
                         body {
-                            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+                            font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif;
                             margin: 0;
                             padding: 0;
-                            background-color: #f4f4f4;
+                            background-color: #f8fafc;
                             color: #333;
                         }
 
-                        /* 1. 컨테이너: 사이드바와 콘텐츠를 가로로 배치 (수정 반영) */
+                        /* ===== 전체 레이아웃 ===== */
                         .container {
                             display: flex;
-                            gap: 20px;
+                            gap: 24px;
                             max-width: 1400px;
-                            margin: 20px auto;
-                            min-height: calc(100vh - 40px);
+                            margin: 40px auto;
+                            padding: 0 20px;
                         }
 
-                        /* 2. 사이드바 (왼쪽 메뉴) 스타일 (수정 반영) */
+                        /* ===== 사이드바 ===== */
                         .sidebar {
                             width: 250px;
-                            min-width: 250px;
-                            flex-shrink: 0;
-                            background-color: #f8f8e0;
-                            padding: 20px 0;
-                            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-                            box-sizing: border-box;
-                            border-radius: 8px;
+                            background: linear-gradient(180deg, #fdfdf0 0%, #f9f7e8 100%);
+                            padding: 25px 0;
+                            border-radius: 16px;
+                            box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.05);
                         }
 
-                        /* (사이드바 내부 메뉴 스타일은 생략) */
-
-                        /* 3. 메인 콘텐츠 스타일 (수정 반영) */
+                        /* ===== 메인 콘텐츠 ===== */
                         .content {
-                            flex-grow: 1;
-                            background-color: #fff;
-                            padding: 40px;
-                            margin: 0;
-                            border-radius: 8px;
-                            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+                            flex: 1;
+                            background: #fff;
+                            padding: 40px 50px;
+                            border-radius: 16px;
+                            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
                         }
 
                         .content h2 {
-                            margin-top: 0;
-                            border-bottom: 2px solid #007bff;
-                            padding-bottom: 10px;
+                            font-size: 1.6em;
+                            font-weight: 700;
+                            color: #222;
+                            border-left: 5px solid #007bff;
+                            padding-left: 12px;
+                            margin-bottom: 30px;
                         }
 
-                        /* 탭 스타일 */
+                        /* ===== 탭 ===== */
                         .tabs {
                             display: flex;
-                            margin-bottom: 20px;
+                            border-bottom: 2px solid #e5e7eb;
+                            margin-bottom: 25px;
                         }
 
                         .tab-button {
-                            padding: 10px 15px;
+                            padding: 10px 20px;
+                            background: none;
                             border: none;
-                            background-color: #f0f0f0;
-                            cursor: pointer;
                             font-size: 1em;
-                            margin-right: 5px;
-                            border-radius: 4px 4px 0 0;
+                            cursor: pointer;
+                            color: #6b7280;
+                            font-weight: 500;
                             border-bottom: 3px solid transparent;
-                            transition: background-color 0.2s, border-bottom 0.2s;
+                            transition: all 0.2s ease;
+                        }
+
+                        .tab-button:hover {
+                            color: #111827;
                         }
 
                         .tab-button.store-active {
-                            background-color: #fff;
+                            color: #007bff;
                             border-bottom: 3px solid #007bff;
-                            font-weight: bold;
+                            font-weight: 700;
                         }
 
-                        /* 4. 폼 스타일 */
+                        /* ===== 폼 ===== */
                         .edit-form {
                             display: flex;
                             flex-direction: column;
+                            gap: 20px;
                         }
 
                         .form-group {
                             display: flex;
+                            flex-wrap: wrap;
                             align-items: center;
-                            padding: 15px 0;
-                            border-bottom: 1px solid #eee;
+                            gap: 15px;
+                            border-bottom: 1px solid #f1f5f9;
+                            padding-bottom: 15px;
                         }
 
                         .form-group:last-of-type {
@@ -108,174 +113,127 @@
                         }
 
                         .form-group label {
-                            width: 120px;
-                            min-width: 120px;
-                            font-weight: bold;
-                            flex-shrink: 0;
-                            padding-right: 20px;
+                            width: 130px;
+                            font-weight: 600;
+                            color: #374151;
                         }
 
-                        .form-group input:not([type="button"]):not([type="submit"]):not([type="radio"]),
+                        .form-group input[type="text"],
                         .form-group textarea {
-                            flex-grow: 1;
-                            padding: 10px;
-                            margin-right: 10px;
-                            border: 1px solid #ccc;
-                            border-radius: 4px;
-                            min-width: 150px;
+                            flex: 1;
+                            padding: 10px 14px;
+                            border: 1px solid #d1d5db;
+                            border-radius: 8px;
+                            font-size: 0.95em;
+                            transition: border-color 0.2s, box-shadow 0.2s;
                         }
 
-                        /* 버튼 스타일 */
+                        .form-group input:focus,
+                        .form-group textarea:focus {
+                            border-color: #007bff;
+                            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+                            outline: none;
+                        }
+
+                        textarea {
+                            min-height: 130px;
+                            resize: vertical;
+                        }
+
+                        /* ===== 버튼 ===== */
                         .btn-action,
                         .btn-secondary,
                         .btn-primary {
-                            padding: 10px 15px;
                             border: none;
-                            border-radius: 4px;
+                            border-radius: 8px;
                             cursor: pointer;
-                            font-weight: bold;
-                            transition: background-color 0.2s;
-                        }
-
-                        .form-group .btn-action,
-                        .form-group .btn-secondary {
-                            min-width: 80px;
-                            text-align: center;
-                            flex-shrink: 0;
+                            font-weight: 600;
+                            padding: 10px 18px;
+                            font-size: 0.95em;
+                            transition: all 0.2s ease;
                         }
 
                         .btn-action {
                             background-color: #007bff;
-                            color: white;
-                        }
-
-                        .btn-secondary {
-                            background-color: #6c757d;
-                            color: white;
-                        }
-
-                        .btn-primary {
-                            background-color: #4CAF50;
-                            color: white;
-                            padding: 15px 30px;
-                            font-size: 1.1em;
+                            color: #fff;
                         }
 
                         .btn-action:hover {
-                            background-color: #0056b3;
+                            background-color: #005fcc;
+                        }
+
+                        .btn-secondary {
+                            background-color: #9ca3af;
+                            color: #fff;
                         }
 
                         .btn-secondary:hover {
-                            background-color: #5a6268;
+                            background-color: #6b7280;
+                        }
+
+                        .btn-primary {
+                            background: linear-gradient(135deg, #007bff, #0056d2);
+                            color: #fff;
+                            font-size: 1.05em;
+                            padding: 14px 32px;
+                            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.25);
                         }
 
                         .btn-primary:hover {
-                            background-color: #45a049;
+                            background: linear-gradient(135deg, #0069d9, #004bb5);
                         }
 
-                        /* 멤버십 정보 그룹 */
-                        .membership-info {
-                            flex-grow: 1;
-                            display: flex;
-                            align-items: center;
-                            gap: 10px;
-                        }
-
-                        .membership-info .btn-action {
-                            margin-right: 0;
-                        }
-
-                        /* 가게 소개 그룹 */
-                        .store-intro-group {
-                            align-items: flex-start;
-                        }
-
-                        .store-intro-group textarea {
-                            min-height: 150px;
-                            resize: vertical;
-                            margin-right: 0;
-                        }
-
-                        /* 주소 그룹 조정 */
+                        /* ===== 주소 입력 ===== */
                         .address-group {
                             flex-direction: column;
                             align-items: flex-start;
                         }
 
-                        .address-group>label {
-                            padding-bottom: 10px;
-                            margin-right: 0;
-                        }
-
                         .address-line {
                             display: flex;
-                            align-items: center;
+                            gap: 10px;
                             width: 100%;
                             margin-bottom: 10px;
-                            flex-wrap: nowrap;
-                        }
-
-                        .address-line input {
-                            margin-right: 10px;
-                        }
-
-                        .address-line input#store-zipcode {
-                            max-width: 100px;
-                            flex-grow: 0;
-                            flex-shrink: 0;
-                        }
-
-                        .address-line input#store-main-addr {
-                            flex-grow: 2;
-                        }
-
-                        .address-line.detail-addr {
-                            margin-bottom: 15px;
-                        }
-
-                        .address-line.detail-addr input {
-                            flex-grow: 1;
                         }
 
                         .address-btn {
-                            width: calc(100% - 10px);
-                            margin-top: 5px;
+                            align-self: flex-end;
                         }
 
-                        /* 운영 설정 그룹 */
-                        .operation-setup-group {
-                            border-top: 1px solid #eee;
-                            padding-top: 20px;
-                            flex-wrap: wrap;
-                        }
-
-                        .operation-setup-group>label {
-                            width: 100%;
-                            padding-bottom: 10px;
-                        }
-
-                        /* 라디오 버튼 그룹 레이아웃 */
+                        /* ===== 라디오 버튼 그룹 ===== */
                         .radio-group {
                             display: flex;
                             align-items: center;
-                            gap: 5px;
-                            margin-right: 30px;
-                        }
-
-                        .radio-group input[type="radio"] {
-                            margin-right: 5px;
-                            width: auto;
+                            gap: 12px;
+                            flex-wrap: wrap;
                         }
 
                         .radio-group label {
-                            width: auto;
-                            font-weight: normal;
-                            padding-right: 0;
+                            font-weight: 500;
                         }
 
+                        /* ===== 제출 영역 ===== */
                         .submit-area {
-                            margin-top: 30px;
                             text-align: center;
+                            margin-top: 40px;
+                        }
+
+                        .submit-area .btn-primary {
+                            min-width: 220px;
+                        }
+
+                        /* ===== 멤버십 정보 ===== */
+                        .membership-info {
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            font-size: 0.95em;
+                            color: #374151;
+                        }
+
+                        #is-membership {
+                            font-weight: 700;
+                            color: #007bff;
                         }
                     </style>
             </head>

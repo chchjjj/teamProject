@@ -39,7 +39,15 @@
                         <div class="product-info-area">
 
                             <div class="image-section">
-                                <div class="main-image-box">제품 이미지</div>
+                                <div class="main-image-box">
+                                    <div
+                                        v-if="!infoList.filePath || !infoList.fileName">
+                                        판매자 등록 썸네일
+                                    </div>
+                                    <img v-else :src="(infoList.filePath + infoList.fileName).trim()" alt="상품 이미지"
+                                        class="product-image" style="width: 100%; height: auto; border-radius: 10px;">
+                                </div>
+
                                 <div class="thumbnail-list">
                                     <div class="thumbnail-item"></div>
                                     <div class="thumbnail-item"></div>
@@ -250,6 +258,11 @@
                 fnBuy: function (proNo) {
                     let self = this;
                     //유효성 검사
+                    if (self.userId == "" || self.userId == null) {
+                        alert("로그인 후 이용해주세요!");
+                        location.href = "/user/login.do"; // 로그인 페이지 이동
+                        return;
+                    }
                     if (!self.fnCheckRequiredSelections()) {
                         return; // 필수 옵션 미선택 시 함수 종료
                     }
@@ -298,7 +311,7 @@
                             deliveryDate: self.selectedDate,
 
                             // 픽업 테이블에 넣을 것
-                            storeAddr : self.infoList.storeAddr,
+                            storeAddr: self.infoList.storeAddr,
                         };
                         console.log("주문 데이터:", param);
                         $.ajax({
@@ -345,7 +358,7 @@
                             address: self.userInfo.userAddr,
 
                             // 픽업 테이블에 넣을 것
-                            storeAddr : self.infoList.storeAddr,
+                            storeAddr: self.infoList.storeAddr,
 
 
                             deliveryDate: self.selectedDate
@@ -387,8 +400,9 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data.info);
+
                             self.infoList = data.info;
+
                         }
                     });
                 },
@@ -420,7 +434,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data.list);
+               
                             self.allOptList = data.list;
                         }
                     });
@@ -476,6 +490,11 @@
                 },
                 fnCart: function () {
                     let self = this;
+                    if (self.userId == "" || self.userId == null) {
+                        alert("로그인 후 이용해주세요!");
+                        location.href = "/user/login.do"; // 로그인 페이지 이동
+                        return;
+                    }
                     // 하위 옵션 선택 내역 수집
                     //유효성 검사
                     if (!self.fnCheckRequiredSelectionsCart()) {
@@ -519,7 +538,7 @@
                             deliveryDate: self.selectedDate,
 
                             // 픽업 테이블에 넣을 것
-                            storeAddr : self.infoList.storeAddr,
+                            storeAddr: self.infoList.storeAddr,
                         };
                         console.log("장바구니 전송 데이터:", param);
                         console.log("subOptionList", subOptionList);
@@ -553,7 +572,7 @@
                             deliveryDate: self.selectedDate,
 
                             // 픽업 테이블에 넣을 것
-                            storeAddr : self.infoList.storeAddr,
+                            storeAddr: self.infoList.storeAddr,
                         };
                         console.log("장바구니 전송 데이터:", param);
                         console.log("subOptionList", subOptionList);
@@ -671,6 +690,11 @@
                 },
                 fnwish: function () {
                     let self = this;
+                    if (self.userId == "" || self.userId == null) {
+                        alert("로그인 후 이용해주세요!");
+                        location.href = "/user/login.do"; // 로그인 페이지 이동
+                        return;
+                    }
                     if (self.isWished) {
                         let param = {
                             userId: self.userId,
@@ -715,12 +739,12 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data.info);
+                           
                             self.userInfo = data.info;
                         }
                     });
                 },
-                fnSeller : function (storeId) {
+                fnSeller: function (storeId) {
                     let self = this;
                     pageChange("/product/sellerStore.do", { storeId: storeId });
                 }

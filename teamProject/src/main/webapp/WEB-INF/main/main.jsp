@@ -11,20 +11,20 @@
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
         <!-- mitt 불러오기 (이거 먼저!)-->
-        <script src="https://unpkg.com/mitt/dist/mitt.umd.js"></script> 
+        <script src="https://unpkg.com/mitt/dist/mitt.umd.js"></script>
 
         <!--페이지 이동-->
         <script src="/js/page-change.js"></script>
-        
+
         <link rel="icon" href="data:,">
 
         <style>
-            .ad{
+            .ad {
                 width: 1000px;
-                height : 140px
+                height: 140px
             }
 
-            button{
+            button {
                 cursor: pointer;
             }
         </style>
@@ -50,7 +50,7 @@
                                 </div>
                                 <div class="slides-wrapper">
                                     <div class="slide" v-for="(img, i) in memberProlist" :key="i"
-                                        :style="{ backgroundImage: 'url(' + (img.filePath + img.fileName).trim() + ')' }" 
+                                        :style="{ backgroundImage: 'url(' + (img.filePath + img.fileName).trim() + ')' }"
                                         v-show="i === currentSlide" @click="fnProDetail(img.proNo)">
                                     </div>
                                 </div>
@@ -72,13 +72,13 @@
                                 @click.prevent="selectedCategory = ''; fnList()">전체</a>
 
                             <a href="#" class="category-btn" :class="{ active: selectedCategory === '케이크' }"
-                                @click.prevent="selectedCategory = '케이크'; fnList()">케이크</a>
+                                @click.prevent="selectedCategory = '케이크'; fnList()"></a>
 
                             <a href="#" class="category-btn" :class="{ active: selectedCategory === '쿠키' }"
-                                @click.prevent="selectedCategory = '쿠키'; fnList()">쿠키</a>
+                                @click.prevent="selectedCategory = '쿠키'; fnList()"></a>
 
                             <a href="#" class="category-btn" :class="{ active: selectedCategory === '초콜릿/사탕' }"
-                                @click.prevent="selectedCategory = '초콜렛'; fnList()">초콜릿/사탕</a>
+                                @click.prevent="selectedCategory = '초콜렛'; fnList()"></a>
                         </section>
 
                         <hr class="divider">
@@ -115,9 +115,15 @@
                             <div class="product-grid">
                                 <div class="product-item" v-for="item in list" @click="fnProDetail(item.proNo)">
                                     <div class="product-image-wrapper">
-                                        <div class="product-image-placeholder">판매자 등록 썸네일</div>
+                                        <div class="product-image-placeholder" v-if="!item.filePath || !item.fileName">
+                                            판매자 등록 썸네일
+                                        </div>
+                                        <img v-else :src="(item.filePath + item.fileName).trim()" alt="상품 이미지"
+                                            class="product-image"
+                                            style="width: 100%; height: auto; border-radius: 10px;">
                                         <!-- 멤버쉽 Y이면 추천 딱지 표시 -->
-                                        <img v-if="item.membership === 'Y'" class="recommend-badge" src="/img/recommend.png" alt="추천 딱지">
+                                        <img v-if="item.membership === 'Y'" class="recommend-badge"
+                                            src="/img/recommend.png" alt="추천 딱지">
                                     </div>
                                     <p class="product-title">{{item.proName}}</p>
                                     <p>{{item.storeName}}</p>
@@ -129,21 +135,22 @@
                                 </div>
                             </div>
 
-                            <!--페이징-->                        
-                         <div class="pagination">
-                            <!-- 페이지 숫자 양옆 화살표 (fnMove) -->
-                            <a href="#" @click="fnMove(-1)" v-if="page != 1">&lt;</a>
-                            <a href="#" v-for="num in index" :key="num" @click="fnPage(num)" :class="{ active : page == num }" >
-                                {{num}} 
-                            </a>
-                            <a href="#" @click="fnMove(+1)" v-if="page != index">&gt;</a>
-                        </div>
+                            <!--페이징-->
+                            <div class="pagination">
+                                <!-- 페이지 숫자 양옆 화살표 (fnMove) -->
+                                <a href="#" @click="fnMove(-1)" v-if="page != 1">&lt;</a>
+                                <a href="#" v-for="num in index" :key="num" @click="fnPage(num)"
+                                    :class="{ active : page == num }">
+                                    {{num}}
+                                </a>
+                                <a href="#" @click="fnMove(+1)" v-if="page != index">&gt;</a>
+                            </div>
 
                         </section>
 
                         <section class="external-ad">
                             <!-- <p>외부 광고</p> -->
-                             <a href="/main/ad-link.do" target="_blank" @click="fnAdClick">
+                            <a href="/main/ad-link.do" target="_blank" @click="fnAdClick">
                                 <img class="ad" src="/img/아래광고배너.png" alt="아래 광고 배너">
                             </a>
                         </section>
@@ -174,22 +181,22 @@
 
                     list: [],
                     userId: "${sessionId}", // 로그인 했을 시 전달 받은 아이디
-                    memberProlist : [], // 멤버쉽 판매자 상품 사진 리스트
+                    memberProlist: [], // 멤버쉽 판매자 상품 사진 리스트
                     currentSlide: 0, // 멤버쉽 홍보 : 첫 번째 슬라이드
 
                     area: "", // 디폴트 : 전체 지역 조회
                     order: 1, // 디폴트 :  조회순 정렬
                     selectedCategory: '', // 디폴트
 
-                    proNo : "", // 상품번호
+                    proNo: "", // 상품번호
                     keyword: "", // 검색 키워드 변수 추가
 
-                    pageSize : 8, // 한 페이지에 출력할 게시글 개수 (8개로 기본값)
-                    page : 1, // 현재 페이지(위치) - 최초 1페이지부터 시작 (OFFSET 다음에 오는 숫자)
-                    index : 0, // 최대 페이지 값 (표현할 페이지 개수)
+                    pageSize: 8, // 한 페이지에 출력할 게시글 개수 (8개로 기본값)
+                    page: 1, // 현재 페이지(위치) - 최초 1페이지부터 시작 (OFFSET 다음에 오는 숫자)
+                    index: 0, // 최대 페이지 값 (표현할 페이지 개수)
 
                     adInfo: {}, // 현재 진행 중인 배너광고(1개) 값의 전체 정보 (AD_TBL)
-                    adHistoryInfo : {}, // 배너광고의 히스토리 정보 (AD_HISTORY_TBL)
+                    adHistoryInfo: {}, // 배너광고의 히스토리 정보 (AD_HISTORY_TBL)
 
                 };
             },
@@ -204,8 +211,8 @@
                         order: self.order,
                         category: self.selectedCategory,
                         keyword: self.keyword,
-                        pageSize : self.pageSize,
-                        page : (self.page-1) * self.pageSize
+                        pageSize: self.pageSize,
+                        page: (self.page - 1) * self.pageSize
                     };
                     $.ajax({
                         url: "/main/list.dox", // 상품 리스트 조회주소 넣어야함
@@ -215,7 +222,7 @@
                         success: function (data) {
                             console.log(data);
                             self.list = data.list; // data에 있는 list 값을 변수 list에 담기      
-                            self.index = Math.ceil(data.cnt / self.pageSize); 
+                            self.index = Math.ceil(data.cnt / self.pageSize);
                         }
                     });
                 },
@@ -232,7 +239,7 @@
                             // Vue data로 넣으면 v-for가 자동 렌더링
                             self.memberProlist = data.list;
                         },
-                        error: function(err){
+                        error: function (err) {
                             console.error("fnMemberProImg Ajax 에러:", err);
                         }
                     });
@@ -257,7 +264,7 @@
                         self.currentSlide = 0; // 첫 슬라이드로 이동
                     }
                 },
-            
+
                 // 내 주변 디저트 찾기
                 fnMapDessert: function () {
                     let self = this;
@@ -265,7 +272,7 @@
                         alert("로그인 후 이용해주세요!");
                         location.href = "/user/login.do"; // 로그인 페이지 이동
                     } else {
-                        pageChange("/main/storeFinder.do", { userId: self.userId }); 
+                        pageChange("/main/storeFinder.do", { userId: self.userId });
                     }
                 },
 
@@ -276,7 +283,7 @@
                         alert("로그인 후 이용해주세요!");
                         location.href = "/user/login.do"; // 로그인 페이지 이동
                     } else {
-                        pageChange("/product/cart.do", { userId: self.userId }); 
+                        pageChange("/product/cart.do", { userId: self.userId });
                     }
                 },
 
@@ -284,37 +291,37 @@
                 fnProDetail: function (proNo) {
                     let self = this;
                     console.log(proNo); // main 화면에서 클릭한 상품번호 출력(확인완료)
-                    pageChange("/productDetail.do", { proNo : proNo });  // 상세페이지로 proNo 넘겨줌            
+                    pageChange("/productDetail.do", { proNo: proNo });  // 상세페이지로 proNo 넘겨줌            
                 },
 
                 // 페이지 초기화
-                fnPageSizeChange: function() {
+                fnPageSizeChange: function () {
                     let self = this;
                     self.page = 1; // 페이지 초기화
                     self.fnList();
                 },
 
                 // 페이지 숫자 클릭시 리스트를 페이지에 맞게 갱신   
-                fnPage : function(num){ // 파라미터로 클릭한 num 보내주기
-                    let self = this; 
+                fnPage: function (num) { // 파라미터로 클릭한 num 보내주기
+                    let self = this;
                     self.page = num; // 현재 페이지를 num의 숫자로 반영
                     self.fnList(); // 반영 후 기준으로 리스트 재호출
                 },
 
                 // 페이지 숫자 양옆 화살표 버튼 누르면 페이지 이동
-                fnMove : function(move){
-                    let self = this; 
+                fnMove: function (move) {
+                    let self = this;
                     self.page += move; // 현재 페이지를 -1 또는 +1 
                     self.fnList();
                 },
 
                 // 하단 광고배너 값(AD_TBL) 가져오기 (클릭시 카운팅 알맞게 들어가도록)
-                fnGetAdInfo: function(){
+                fnGetAdInfo: function () {
                     let self = this;
-                    let param = {                        
+                    let param = {
                     };
                     $.ajax({
-                        url: "/main/adInfo.dox", 
+                        url: "/main/adInfo.dox",
                         dataType: "json",
                         type: "POST",
                         data: param,
@@ -326,12 +333,12 @@
                 },
 
                 // 하단 광고배너의 PER_MONTH 값 가져오기 (AD_HISTORY_TBL)
-                fnAdPerMonth: function(){
+                fnAdPerMonth: function () {
                     let self = this;
-                    let param = {                        
+                    let param = {
                     };
                     $.ajax({
-                        url: "/main/adPerMonth.dox", 
+                        url: "/main/adPerMonth.dox",
                         dataType: "json",
                         type: "POST",
                         data: param,
@@ -343,14 +350,14 @@
                 },
 
                 // 하단 광고배너 클릭시 카운팅 올리기 
-                fnAdClick: function(){
+                fnAdClick: function () {
                     let self = this;
-                    let param = {     
-                        adId : self.adInfo.adId,
-                        currentMonth : self.adHistoryInfo.perMonth                  
+                    let param = {
+                        adId: self.adInfo.adId,
+                        currentMonth: self.adHistoryInfo.perMonth
                     };
                     $.ajax({
-                        url: "/main/adUpdate.dox", 
+                        url: "/main/adUpdate.dox",
                         dataType: "json",
                         type: "POST",
                         data: param,
@@ -378,7 +385,7 @@
                 // 1. URL에서 파라미터 확인 (검색키워드 or 카테고리)
                 const urlParams = new URLSearchParams(window.location.search);
                 const keyword = urlParams.get('keyword');
-                const category = urlParams.get('category'); 
+                const category = urlParams.get('category');
 
                 // 2. 키워드 유무에 따라 다르게 리스트 호출
                 if (keyword) {
@@ -389,11 +396,11 @@
                     console.log("URL에서 받은 category:", category);
                     self.selectedCategory = category;
                     self.fnList();
-                }                
+                }
                 else {
                     // 이도저도 아니면 기본 목록 호출
                     self.fnList();
-                }             
+                }
 
 
                 // 헤더에서 keyword (검색어) 이벤트 수신
@@ -415,7 +422,7 @@
                     if (self.memberProlist.length > 0) {
                         self.currentSlide = (self.currentSlide + 1) % self.memberProlist.length;
                     }
-                }, 3000);                
+                }, 3000);
 
             }, // mounted 끝나고 next 옵션 시작
 
@@ -424,7 +431,7 @@
             } // ← Options 객체 마지막 속성이므로 쉼표 없음
 
         });
-    
+
 
         app.mount('#app');
     </script>

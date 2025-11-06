@@ -34,6 +34,23 @@ public class SellerService {
 
 		return resultMap;
 	}
+	
+	// 판매자 가게 리스트 불러오기
+		public HashMap<String, Object> getProductList(HashMap<String, Object> map) {
+			HashMap<String, Object> resultMap = new HashMap<String, Object>();
+			try {
+				List<Seller> list = sellerMapper.selectProductList(map);
+				resultMap.put("list", list);
+				resultMap.put("result", "success");
+				System.out.println(resultMap);
+			} catch (Exception e) {
+				// TODO: handle exception
+				resultMap.put("result", "fail");
+				System.out.println(e.getMessage());
+			}
+
+			return resultMap;
+		}
 
 	// 월별 판매 리스트 불러오기
 	public HashMap<String, Object> getSellesChart(HashMap<String, Object> map) {
@@ -388,57 +405,13 @@ public boolean updateStoreInfo(String userId, String storeName, String storeZipc
     return sellerMapper.updateStoreInfo(params);
 }
 
-//SellerService.java 파일 내에 추가할 내용
 
-@Transactional
-public void registerProduct(Seller seller) throws Exception {
-    
-    sellerMapper.insertProduct(seller); 
-    int proNo = seller.getProNo(); 
 
-    insertOptions(proNo, seller.getOptions());
-    
-    if (seller.getDisabledDates() != null && !seller.getDisabledDates().isEmpty()) {
-        for(String date : seller.getDisabledDates()) {
-            sellerMapper.insertDisabledDate(proNo, date);
-        }
-    }
-}
 
-@Transactional
-public void updateProduct(Seller seller) throws Exception {
-    
-    int proNo = seller.getProNo();
-    
-    sellerMapper.updateProduct(seller);
-    
-    sellerMapper.deleteProductOptions(proNo);
-    insertOptions(proNo, seller.getOptions());
 
-    sellerMapper.deleteDisabledDates(proNo);
-    if (seller.getDisabledDates() != null && !seller.getDisabledDates().isEmpty()) {
-        for(String date : seller.getDisabledDates()) {
-            sellerMapper.insertDisabledDate(proNo, date);
-        }
-    }
-}
 
-private void insertOptions(int proNo, List<Seller> options) {
-    if (options == null || options.isEmpty()) return;
 
-    for (Seller topOpt : options) {
-        topOpt.setProNo(proNo); 
-        sellerMapper.insertTopOption(topOpt); 
-        int topOptionId = topOpt.getTopOptionId();
-        
-        if (topOpt.getSubOptions() != null) {
-            for (Seller subOpt : topOpt.getSubOptions()) { 
-                subOpt.setTopOptionId(topOptionId); 
-                sellerMapper.insertSubOption(subOpt);
-            }
-        }
-    }
-}
+
 
 public Map<String, Object> getProductDataForEdit(int proNo) {
     
@@ -458,6 +431,106 @@ public Map<String, Object> getProductDataForEdit(int proNo) {
     result.put("disabledDates", disabledDates);
     
     return result;
+}
+
+public int getStoreIdByUserId(String userId) {
+    // 💡 조회 실패 시 0을 반환하도록 되어 있다면, 이 부분이 문제의 원인입니다.
+    // 쿼리 결과가 NULL일 때 0을 반환하도록 XML이나 Service에서 설정했을 가능성이 높습니다.
+    
+    // (MyBatis Mapper 호출)
+    Integer storeId = sellerMapper.getStoreIdByUserId(userId);
+    System.out.println(">>> [Service Log] " + userId + "로 조회한 STORE_ID: " + storeId);
+    
+    // 이 코드가 0을 반환하고 있을 수 있습니다.
+    return (storeId != null) ? storeId : 0; 
+}
+
+@Transactional
+public void updateProduct(Seller seller) throws Exception {
+    // Controller에서 storeId와 userId가 이미 설정되어 넘어왔습니다.
+    
+    int proNo = seller.getProNo();
+    
+    // 1. 제품 기본 정보 수정
+    sellerMapper.updateProduct(seller);
+    
+    // 2. 기존 옵션 삭제 후 재등록
+    sellerMapper.deleteProductOptions(proNo);
+    insertOptions(proNo, seller.getOptions());
+
+    // 3. 기존 불가 날짜 삭제 후 재등록
+    sellerMapper.deleteDisabledDates(proNo);
+    if (seller.getDisabledDates() != null && !seller.getDisabledDates().isEmpty()) {
+        for(String date : seller.getDisabledDates()) {
+            sellerMapper.insertDisabledDate(proNo, date);
+        }
+    }
+}
+
+//SellerService.java
+
+@Transactional
+public void registerProduct(Seller seller) throws Exception {
+ 
+ // Controller에서 storeId가 설정되어 넘어왔다고 가정
+	String storeId = seller.getStoreId();
+ 
+ // --- ⭐ STORE_NAME 조회 및 설정 (추가) ⭐ ---
+ 
+ // sellerMapper를 사용하여 storeId를 기반으로 STORE_NAME을 조회합니다.
+ String storeName = sellerMapper.getStoreNameByStoreId(storeId);
+ 
+ if (storeName == null || storeName.isEmpty()) {
+     // 유효성 검사: 가게 이름이 없다면 예외 발생
+     throw new Exception("Store ID " + storeId + "에 해당하는 가게 이름(STORE_NAME)을 찾을 수 없습니다.");
+ }
+ 
+ // 조회된 이름을 DTO에 설정하여 MyBatis가 사용할 수 있도록 합니다.
+ seller.setStoreName(storeName); 
+ 
+ // --- (선택) 다른 NOT NULL 필드 검토 ---
+ // PRO_TYPE과 STATUS의 NULL 방지 (DTO에 기본값을 설정하지 않았다면 필요)
+ if (seller.getProType() == null || seller.getProType().isEmpty()) {
+     seller.setProType("NONE"); 
+ }
+ // STATUS도 필수값일 경우 처리
+ if (seller.getStatus() == null || seller.getStatus().isEmpty()) {
+     seller.setStatus("Y"); 
+ }
+ 
+ // 1. 제품 등록 (Mybatis에서 proNo 생성 및 모든 필수 필드 삽입)
+ sellerMapper.insertProduct(seller); 
+ int proNo = seller.getProNo(); 
+
+ // 2. 옵션 등록
+ insertOptions(proNo, seller.getOptions());
+ 
+ // 3. 불가 날짜 등록
+ if (seller.getDisabledDates() != null && !seller.getDisabledDates().isEmpty()) {
+     for(String date : seller.getDisabledDates()) {
+         sellerMapper.insertDisabledDate(proNo, date);
+     }
+ }
+}
+
+//옵션 등록을 위한 내부 유틸리티 메서드
+private void insertOptions(int proNo, List<Seller> options) {
+    if (options == null || options.isEmpty()) return;
+
+    for (Seller topOpt : options) {
+        topOpt.setProNo(proNo); 
+        // 1. 상위 옵션 등록 (topOptionId 생성)
+        sellerMapper.insertTopOption(topOpt); 
+        int topOptionId = topOpt.getTopOptionId();
+        
+        // 2. 하위 옵션 등록
+        if (topOpt.getSubOptions() != null) {
+            for (Seller subOpt : topOpt.getSubOptions()) { 
+                subOpt.setTopOptionId(topOptionId); 
+                sellerMapper.insertSubOption(subOpt);
+            }
+        }
+    }
 }
 
 }

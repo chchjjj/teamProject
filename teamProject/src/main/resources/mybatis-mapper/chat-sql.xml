@@ -3,8 +3,9 @@
 
 <mapper namespace="com.example.teamProject.chat.mapper.ChatMapper">
 	
-	<!-- 구매자 발송 채팅 인서트 (우선 메세지타입은 text로 하드코딩) -->
-	<insert id="insertBuyerChatMsg" parameterType="com.example.teamProject.chat.model.Chat">
+	<!-- 발송 채팅 인서트 (우선 메세지타입은 text로 하드코딩) -->
+	<!-- 구매자, 판매자 같이 써도 상관없음 -->
+	<insert id="insertChatMsg" parameterType="com.example.teamProject.chat.model.Chat">
 	   INSERT INTO CHAT_MSG_TBL 
 	    VALUES (
 			CHAT_MSG_SEQ.NEXTVAL,
@@ -18,6 +19,21 @@
 	        'N'
 	    )
 	</insert>
+	
+	<!-- orderId로 chatId 조회 -->
+	<select id="selectChatIdByOrderId" resultType="string">
+	    SELECT CHAT_ID
+	    FROM CHAT_TBL
+	    WHERE ORDER_ID = #{orderId}
+	</select>
+	
+	<!-- orderId로 storeId 조회 -->
+	<select id="selectStoreIdByOrderId" resultType="string">
+	    SELECT STORE_ID
+	    FROM CHAT_TBL
+	    WHERE ORDER_ID = #{orderId}
+	</select>
+	
 	
 	<!-- 채팅방 chatId 기준으로 메시지 리스트 조회 (일단 xml까지만 작성됨) -->
 	<select id="selectMsgByChatId" resultType="com.example.teamProject.chat.model.Chat">

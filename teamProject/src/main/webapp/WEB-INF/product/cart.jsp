@@ -60,7 +60,15 @@
                                         </div>
                                         <div class="item-info">
                                             <div class="item-left">
-                                                <div class="item-image-placeholder"></div>
+                                                <div class="item-image-placeholder">
+                                                    <div v-if="!group.filePath || !group.fileName">
+                                                        판매자 등록 썸네일
+                                                    </div>
+                                                    <img v-else :src="(group.filePath + group.fileName).trim()"
+                                                        alt="상품 이미지" class="product-image"
+                                                        style="width: 100%; height: auto; border-radius: 10px;">
+                                                </div>
+
                                                 <div class="item-text">
 
 
@@ -253,6 +261,9 @@
                                 chatYn: item.chatYn || item.CHAT_YN || "N",
                                 deliveryFee: deliveryFee,
                                 deliveryType: deliveryType,
+
+                                filePath: item.filePath,
+                                fileName: item.fileName
                             };
                         }
                         grouped[cartId].options.push({
@@ -269,7 +280,7 @@
                             grouped[cartId].totalPrice += addedAmount;
                             grouped[cartId].totalAddPrice += addedAmount;
                             grouped[cartId].optionPrice = grouped[cartId].totalPrice - grouped[cartId].defPrice;
-                                
+
                         }
                     });
                     this.groupedCartList = Object.values(grouped);

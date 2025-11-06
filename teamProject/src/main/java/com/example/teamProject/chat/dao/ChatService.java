@@ -6,11 +6,16 @@ import com.example.teamProject.chat.model.Chat;
 
 public interface ChatService {
 	
-	// 구매자 말풍선 내용 인서트
-	void insertBuyerChatMsg(Chat message);
+	// 구매자,판매자 각 말풍선 내용 인서트
+	void insertChatMsg(Chat message);
+	
+	// chatId 가져오기
+	String selectChatIdByOrderId(String orderId) throws Exception;	
+	
+	// storeId 가져오기
+	String selectStoreIdByOrderId(String orderId) throws Exception;	
 	
 	// 채팅내용 가져오기 
-	List<Chat> selectMsgByChatId(int chatId);
-	
+	List<Chat> selectMsgByChatId(int chatId);	
 	
 }

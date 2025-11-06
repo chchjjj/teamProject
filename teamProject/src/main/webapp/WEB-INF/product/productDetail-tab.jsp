@@ -13,8 +13,116 @@
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="/js/page-change.js"></script>
         <style>
+            /* QnA 모달(팝업) 관련 CSS */
+            .qna-modal-overlay {
+                position: fixed;
+                /* 화면 전체를 덮도록 고정 */
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                /* 반투명 검은색 배경 */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+                /* 다른 요소 위에 표시 */
+            }
 
+            .qna-modal {
+                background: #fff;
+                padding: 25px;
+                border-radius: 8px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                width: 90%;
+                max-width: 500px;
+                /* 적당한 최대 너비 설정 */
+                animation: fadeIn 0.3s ease-out;
+                /* 부드러운 등장 효과 */
+            }
+
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 15px;
+                margin-bottom: 20px;
+            }
+
+            .modal-header h3 {
+                margin: 0;
+                color: #3E2723;
+                font-size: 1.25rem;
+            }
+
+            .modal-close-btn {
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: #6c757d;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+                color: #495057;
+            }
+
+            .qna-modal input[type="text"],
+            .qna-modal textarea {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ced4da;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+
+            .modal-actions {
+                margin-top: 25px;
+                text-align: right;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                padding: 10px 15px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-weight: bold;
+                margin-left: 10px;
+            }
+
+            .btn-primary {
+                background-color: #3E2723;
+                color: white;
+            }
+
+            .btn-secondary {
+                background-color: #6c757d;
+                color: white;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: scale(0.95);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
         </style>
     </head>
 
@@ -35,131 +143,136 @@
                 </div>
 
                 <div class="tab-content">
-                    <div class="tab-content">
-                        <div v-if="currentTab === 'detail'">
-                            <p>제품 상세 설명.</p>
-                        </div>
 
-                        <div v-if="currentTab === 'review'"> <!--후기 탭-->
-                            <section class="review-list">
-                                <div class="review-block" v-for="item in reviewList">
-                                    <div class="review-photo-area">
-                                        후기사진
+                    <div v-if="currentTab === 'detail'">
+                        <p>제품 상세 설명.</p>
+                    </div>
+
+                    <div v-if="currentTab === 'review'"> <!--후기 탭-->
+                        <section class="review-list">
+                            <div class="review-block" v-for="item in reviewList">
+                                <div class="review-photo-area">
+                                    후기사진
+                                </div>
+                                <div class="review-content-area">
+                                    <div class="review-meta">
+                                        <span class="nickname">{{item.userName}}</span>
+                                        <span class="date">{{item.cdatetime}}</span>
                                     </div>
-                                    <div class="review-content-area">
-                                        <div class="review-meta">
-                                            <span class="nickname">{{item.userName}}</span>
-                                            <span class="date">{{item.cdatetime}}</span>
-                                        </div>
-                                        <p class="review-text">{{item.reviewContent}}</p>
-                                        <div class="rating">
-                                            <span class="rating-label">별점:</span>
-                                            <span class="rating-stars">
-                                                <span v-for="n in 5" :key="n">
-                                                    <i v-if="n <= item.rating" class="fas fa-star"></i>
-                                                    <i v-else class="far fa-star"></i>
-                                                </span>
+                                    <p class="review-text">{{item.reviewContent}}</p>
+                                    <div class="rating">
+                                        <span class="rating-label">별점:</span>
+                                        <span class="rating-stars">
+                                            <span v-for="n in 5" :key="n">
+                                                <i v-if="n <= item.rating" class="fas fa-star"></i>
+                                                <i v-else class="far fa-star"></i>
                                             </span>
-                                        </div>
+                                        </span>
                                     </div>
                                 </div>
-
-                            </section>
-
-                        </div>
-
-                        <div v-if="currentTab === 'qna'"> <!--큐엔에이 탭-->
-                            <h1 class="qna-title">Q&A</h1>
-                            <hr class="divider">
-
-                            <!-- 게시글 페이징 (N개씩 보기) -->
-                            <select v-model="pageSize" @change="fnPageSizeChange" class="pageSelect">
-                                <!-- 바꿀때마다 페이지 초기화 -->
-                                <option value="5">:: 5개씩 ::</option>
-                                <option value="10">:: 10개씩 ::</option>
-                                <option value="20">:: 20개씩 ::</option>
-                            </select>
-                            <input type="checkbox" class="myQna" v-model="myQnaOnly" @change="fnQnaList1">
-                            나의 질문
-
-                            <span class="info">※ '나의 질문' 기능은 로그인 시에만 이용 가능합니다.</span>
-
-                            <table>
-                                <colgroup>
-                                    <col style="width: 10%;">
-                                    <col style="width: 57%;">
-                                    <col style="width: 8%;">
-                                    <col style="width: 10%;">
-                                    <col style="width: 15%;">
-                                </colgroup>
-                                <thead>
-                                    <tr>
-                                        <th>번호</th>
-                                        <th>제목</th>
-                                        <th>작성자</th>
-                                        <th>작성일</th>
-                                        <th>답변 상태</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <template v-for="(item, index) in list" :key="item.questionId">
-                                        <tr @click="toggleAnswer(index)" style="cursor: pointer;">
-                                            <td>{{item.questionId}}</td>
-                                            <td>
-                                                <strong style="color: #c0392b;">Q.</strong> {{item.questionContent}}
-                                            </td>
-                                            <td>{{item.userName}}</td>
-                                            <td>{{item.questionDate}}</td>
-                                            <td class="status-cell">
-                                                <span v-if="item.answerContent" class="status-btn completed">
-                                                    완료
-                                                </span>
-                                                <span v-else class="status-btn waiting">
-                                                    대기
-                                                </span>
-                                            </td>
-                                        </tr>
-
-                                        <tr v-if="item.answerContent" v-show="activeIndex === index" class="answer-row">
-                                            <td colspan="5"
-                                                style="padding: 20px 30px 20px 60px; text-align: left; background-color: #f9f9f9;">
-                                                <div class="answer-content">
-                                                    <strong style="color: #3498db;">A.</strong>
-                                                    <p style="margin-top: 5px;">{{item.answerContent}}</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </template>
-                                </tbody>
-                            </table>
-
-                            <!--페이징-->
-                            <div class="pagination">
-                                <!-- 페이지 숫자 양옆 화살표 (fnMove) -->
-                                <a href="#" @click="fnMove(-1)" v-if="page != 1">&lt;</a>
-                                <a href="#" v-for="num in index" :key="num" @click="fnPage(num)"
-                                    :class="{ active : page == num }">
-                                    {{num}}
-                                </a>
-                                <a href="#" @click="fnMove(+1)" v-if="page != index">&gt;</a>
                             </div>
 
-                            <!-- 검색기능 -->
-                            <div class="search-area">
-                                <select v-model="searchOption">
-                                    <option value="all">:: 전체 :: ▼</option>
-                                    <option value="content">:: 내용 ::</option>
-                                    <option value="id">:: 작성자 ::</option>
-                                </select>
-                                <input v-model="qnaKeyword" @keyup.enter="fnQnaList1" placeholder="검색어를 입력해주세요.">
-                                <button @click="fnQnaList1">검색</button>
+                        </section>
+
+                    </div>
+
+                    <div v-if="currentTab === 'qna'"> <!--큐엔에이 탭-->
+                        <h1 class="qna-title">Q&A</h1>
+                        <hr class="divider">
+
+
+                        <table>
+                            <colgroup>
+                                <col style="width: 10%;">
+                                <col style="width: 57%;">
+                                <col style="width: 8%;">
+                                <col style="width: 10%;">
+                                <col style="width: 15%;">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>번호</th>
+                                    <th>제목</th>
+                                    <th>작성자</th>
+                                    <th>작성일</th>
+                                    <th>답변 상태</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template v-for="(item, index) in list" :key="item.questionId">
+                                    <tr @click="toggleAnswer(index)" style="cursor: pointer;">
+                                        <td>{{item.questionId}}</td>
+                                        <td>
+                                            <strong style="color: #c0392b;">Q.</strong> {{item.questionContent}}
+                                        </td>
+                                        <td>{{item.userName}}</td>
+                                        <td>{{item.questionDate}}</td>
+                                        <td class="status-cell">
+                                            <span v-if="item.answerContent" class="status-btn completed">
+                                                완료
+                                            </span>
+                                            <span v-else class="status-btn waiting">
+                                                대기
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <tr v-if="item.answerContent" v-show="activeIndex === index" class="answer-row">
+                                        <td colspan="5"
+                                            style="padding: 20px 30px 20px 60px; text-align: left; background-color: #f9f9f9;">
+                                            <div class="answer-content">
+                                                <strong style="color: #3498db;">A.</strong>
+                                                <p style="margin-top: 5px;">{{item.answerContent}}</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                        <!-- QnA 작성 버튼 -->
+                        <div class="qna-write-container">
+                            <button class="qna-write-btn" @click="fnWriteQna">Q&A 작성</button>
+                        </div>
+
+                        <!--페이징-->
+                        <div class="pagination">
+                            <!-- 페이지 숫자 양옆 화살표 (fnMove) -->
+                            <a href="#" @click="fnMove(-1)" v-if="page != 1">&lt;</a>
+                            <a href="#" v-for="num in index" :key="num" @click="fnPage(num)"
+                                :class="{ active : page == num }">
+                                {{num}}
+                            </a>
+                            <a href="#" @click="fnMove(+1)" v-if="page != index">&gt;</a>
+                        </div>
+
+                    </div>
+
+                    <div v-if="showQnaModal" class="qna-modal-overlay">
+                        <div class="qna-modal">
+                            <div class="modal-header">
+                                <h3>Q&A 질문 등록</h3>
+                                <button class="modal-close-btn" @click="closeQnaModal">&times;</button>
+                            </div>
+
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="qnaContent">내용</label>
+                                    <textarea id="qnaContent" v-model="qnaContents" rows="6"
+                                        placeholder="300자 이내로 작성하여주세요." required></textarea>
+                                </div>
+
+                                <div class="modal-actions">
+                                    <button class="btn-primary" @click="submitQna">등록하기</button>
+                                    <button class="btn-secondary" @click="closeQnaModal">취소</button>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+
                 </div>
             </div>
         </div>
-
     </body>
 
     </html>
@@ -189,25 +302,18 @@
                     qnaKeyword: "", // 화면 하단 QnA 검색 키워드
                     searchOption: "all",
 
-                    reviewList: []
+                    reviewList: [],
+
+                    showQnaModal: false, // 팝업 표시 여부
+                    qnaContents: '',
+                    infoList: {}
+
                 };
             },
             methods: {
                 // 함수(메소드) - (key : function())
-                fnList: function () {
-                    let self = this;
-                    let param = {};
-                    $.ajax({
-                        url: "",
-                        dataType: "json",
-                        type: "POST",
-                        data: param,
-                        success: function (data) {
 
-                        }
-                    });
-                },
-                // ⭐ [추가] 탭 선택 및 내용 불러오기 함수
+                //탭 선택 및 내용 불러오기 함수
                 selectTab(tabName) {
                     this.currentTab = tabName;
 
@@ -300,9 +406,24 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data);
+                            console.log(data.list);
                             self.list = data.list; // data에 있는 list 값을 변수 list에 담기      
 
+                        }
+                    });
+                },
+                fnInfo: function () {
+                    let self = this;
+                    let param = {
+                        proNo: self.proNo
+                    };
+                    $.ajax({
+                        url: "/product/info.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            self.infoList = data.info;
                         }
                     });
                 },
@@ -320,6 +441,55 @@
                     self.page += move; // 현재 페이지를 -1 또는 +1 
                     self.fnQnaList1();
                 },
+                fnWriteQna: function () {
+                    this.showQnaModal = true;
+                },
+
+                // ⭐ [추가] 팝업 닫기 함수
+                closeQnaModal: function () {
+                    this.showQnaModal = false;
+                },
+
+                // ⭐ [추가] QnA 등록 처리 함수
+                submitQna: function () {
+                    let self = this;
+                    if (self.userId == "" || self.userId == null) {
+                        alert("로그인 후 이용해주세요!");
+                        location.href = "/user/login.do"; // 로그인 페이지 이동
+                        return;
+                    }
+                    // 필수 입력 값 검증
+                    if (!self.qnaContents) {
+                        alert("내용을 입력해주세요.");
+                        return;
+                    }
+
+                    // 서버로 전송할 데이터 준비
+                    let param = {
+                        proNo: self.proNo, // 상품 번호
+                        userId: self.userId, // 작성자 ID
+                        qnaContents: self.qnaContents, // 작성 내용
+                        storeId: self.infoList.storeId
+                    };
+                    $.ajax({
+                        url: "/product/qnaInsert.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            if (data.result === 'success') {
+                                alert("질문이 등록되었습니다.");
+                                self.closeQnaModal(); // 팝업 닫기
+                                self.fnQnaList1(); // QnA 목록 새로고침
+                            } else {
+                                alert("질문 등록에 실패했습니다.");
+                            }
+                        },
+                        error: function () {
+                            alert("서버 통신 오류가 발생했습니다.");
+                        }
+                    });
+                }
             }, // methods
             mounted() {
                 // 처음 시작할 때 실행되는 부분
@@ -327,7 +497,7 @@
                 // QnA 목록 가져오기
                 self.fnQnaList1();
                 self.fnReviewList();
-
+                self.fnInfo();
                 // 헤더에서 keyword (검색어) 이벤트 수신 (주석처리해도 되네?)
                 // emitter.on('keyword', (keyword) => {
                 //     console.log("헤더에서 받은 검색어:", keyword);

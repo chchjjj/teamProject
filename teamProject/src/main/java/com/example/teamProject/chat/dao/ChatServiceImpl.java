@@ -14,17 +14,34 @@ public class ChatServiceImpl implements ChatService {
 	@Autowired
 	ChatMapper chatMapper;
 	
-	// 구매자 말풍선 내용 인서트
+	// chatId 가져오기
 	@Override
-    public void insertBuyerChatMsg(Chat message) {
-        chatMapper.insertBuyerChatMsg(message);
-    }
+	public String selectChatIdByOrderId(String orderId) throws Exception {
+	    return chatMapper.selectChatIdByOrderId(orderId);
+	}
+	
+	// storeId 가져오기
+	@Override
+	public String selectStoreIdByOrderId(String orderId) throws Exception {
+	    return chatMapper.selectStoreIdByOrderId(orderId);
+	}
+	
+	
+	// 구매자,판매자 각 말풍선 내용 인서트
+	@Override
+    public void insertChatMsg(Chat message) {
+        chatMapper.insertChatMsg(message);
+    }	
 	
 	// 기존 채팅내용 가져오기
 	@Override
     public List<Chat> selectMsgByChatId(int chatId) {
         return chatMapper.selectMsgByChatId(chatId);
     }
+
+
+
+
 	
 	
 }

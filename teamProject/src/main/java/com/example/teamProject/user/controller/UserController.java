@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.example.teamProject.user.dao.UserService;
 import com.google.gson.Gson;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 public class UserController {
 	
@@ -81,6 +83,12 @@ public class UserController {
 	@RequestMapping("/user/qnA.do")
 	public String qnA(Model model) throws Exception {
 		return "/user/qnA";
+	}
+	
+	@RequestMapping("/user/orderStatus.do")
+    public String orderStatus(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{
+		request.setAttribute("orderId",map.get("orderId"));
+        return "/user/orderStatus";
 	}
 	
 	
@@ -151,4 +159,15 @@ public class UserController {
 
 		return new Gson().toJson(resultMap);
 	}
+	
+	
+	@RequestMapping(value = "/user/orderHistory.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String orderHistory(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    resultMap = userService.SelectOrderList(map);
+	    return new Gson().toJson(resultMap);
+	}
+	
+	
 }

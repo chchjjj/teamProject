@@ -1,6 +1,8 @@
 package com.example.teamProject.user.dao;
 
 import java.util.HashMap;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -206,5 +208,24 @@ public class UserService {
 
 		return resultMap;
 	}
+	
+	
+	public HashMap<String, Object> SelectOrderList(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+			List<User> list = userMapper.selectOrderList(map);			
+			System.out.println(list);;
+			resultMap.put("list", list); 
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
+		}				
+		return resultMap;
+	}
+	
 
 }
