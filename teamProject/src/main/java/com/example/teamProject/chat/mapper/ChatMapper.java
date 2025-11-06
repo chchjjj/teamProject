@@ -12,6 +12,9 @@ public interface ChatMapper {
 	// 발송메세지 저장
 	void insertChatMsg(Chat message);
 	
+	// 주문번호로 채팅방 찾기
+    String selectChatIdByOrderId(String orderId) throws Exception;
+    	
 	
 	// 기존 채팅방(말풍선 이력) 불러오기
 	List<Chat> selectMsgByChatId(int chatId);

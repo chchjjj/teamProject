@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.teamProject.chat.dao.ChatServiceImpl;
@@ -30,10 +31,30 @@ public class ChatController {
 	
 	// 구매자 기준 채팅방
 	@RequestMapping("/chat/chatBuyer.do") 
-    public String chatBuyer(Model model) throws Exception{	
+    public String chatBuyer(
+    		@RequestParam(value="orderId", required=false) String orderId,
+    	    Model model) throws Exception{			
 		
+		model.addAttribute("orderId", orderId);
+	    System.out.println("받은 orderId: " + orderId);
+	    
         return "/chat/chatBuyer";
     }
+	
+	// [신규] orderId로 chatId 조회 (axios용)
+	@GetMapping("/api/chat/findChatId/{orderId}")
+	@ResponseBody
+	public String findChatIdByOrderId(@PathVariable("orderId") String orderId) {
+	    try {
+	        String chatId = chatService.selectChatIdByOrderId(orderId);
+	        System.out.println("Axios 요청으로 조회된 chatId: " + chatId);
+	        return chatId != null ? chatId : "";
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "";
+	    }
+	}
+	
 	
 	
 	// WebSocket 메시지 수신 및 DB 저장
