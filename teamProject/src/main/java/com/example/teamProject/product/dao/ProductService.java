@@ -256,7 +256,7 @@ public class ProductService {
 			        
 			    } else if ("P".equals(deliveryType)) {
 			        ProductMapper.insertPickUp(map);
-			        
+			    }
 			    
 			    String isChatRequested = (String) map.get("isChatRequested");
 			    if ("Y".equals(isChatRequested)) {
