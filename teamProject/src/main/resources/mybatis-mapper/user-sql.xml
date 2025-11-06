@@ -42,6 +42,7 @@
 	</select>
 	
 	<!--주문내역 가져오기-->
+	<!---->
 	<select id="selectOrderList" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
 	      SELECT
 	    	SE.STORE_ID,
