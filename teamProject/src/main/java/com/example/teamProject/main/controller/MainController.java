@@ -105,7 +105,7 @@ public class MainController {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		System.out.println(map);
 		resultMap = mainService.getUser(map); 
-		
+		System.out.println("서버 최종 응답 데이터: " + resultMap);
 		return new Gson().toJson(resultMap); // 결과를 resultMap에 담음
 	}
 	
@@ -125,7 +125,7 @@ public class MainController {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		System.out.println(map);
 		resultMap = mainService.getAdInfo(map); 
-		
+		System.out.println("서버 최종 응답 데이터: " + resultMap);
 		return new Gson().toJson(resultMap); // 결과를 resultMap에 담음
 	}
 	
@@ -136,7 +136,7 @@ public class MainController {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		System.out.println(map);
 		resultMap = mainService.getAdHistory(map); 
-		
+		System.out.println("서버 최종 응답 데이터: " + resultMap);
 		return new Gson().toJson(resultMap); // 결과를 resultMap에 담음
 	}
 	
