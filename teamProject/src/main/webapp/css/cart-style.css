@@ -112,12 +112,21 @@
 .item-image-placeholder {
     width: 100px;
     height: 100px;
-    background-color: #F0F0F0; /* 이미지 자리 회색 */
+    background-color: #F0F0F0; /* 회색 */
     border-radius: 4px;
     margin-right: 15px;
     flex-shrink: 0;
+    overflow: hidden; /* 내부 이미지가 삐져나오지 않게 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-
+.item-image-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 이미지 비율 유지하면서 정사각형 영역 꽉 채우기 */
+    border-radius: 4px; /* 모서리 둥글게 */
+}
 .item-text {
     display: flex;
     flex-direction: column;

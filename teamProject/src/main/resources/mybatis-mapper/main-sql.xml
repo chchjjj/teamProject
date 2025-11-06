@@ -6,16 +6,19 @@
 
 	<!-- 메인페이지 / 상품리스트 조회 -->
 	<select id="selectMainProList" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">
-		SELECT *			
+		SELECT *
 		FROM PRODUCT_TBL P
 		INNER JOIN SELLER_INFO_TBL S
 		ON P.STORE_ID = S.STORE_ID
-		WHERE 1=1	
+		INNER JOIN PRODUCT_IMG_TBL PI
+		ON P.PRO_NO = PI.PRO_NO
+		WHERE PI.FILEUSE = 'T'
 		
 		<!-- 판매자 페이지 이동 내용도 같이 사용-->
-		<if test="sellerPage == 'S' and storeId != null">
-     	 AND P.STORE_ID = #{storeId}
-   		</if>
+		<if test="sellerPage == 23 and storeId != null">
+		      AND P.STORE_ID = #{storeId}
+		</if>
+
 		
 		<!-- 지역 목록 -->
 		<if test="area != '' and area !=null">	<!--area가 빈값이나 null이 아닐 때-->
@@ -205,7 +208,7 @@
 		FROM PRODUCT_IMG_TBL I
 		INNER JOIN PRODUCT_TBL P ON I.PRO_NO = P.PRO_NO
 		INNER JOIN SELLER_INFO_TBL S ON P.STORE_ID = S.STORE_ID
-		WHERE S.MEMBERSHIP = 'Y'AND I.FILEUSE = 'T'
+		WHERE S.MEMBERSHIP = 'Y'AND I.FILEUSE = 'M'
 	</select>
 	
 	

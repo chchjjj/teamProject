@@ -33,6 +33,7 @@ public class ProductService {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		Product info = ProductMapper.proInfo(map);
 		int cnt = ProductMapper.updateCnt(map);
+		System.out.println("상품 상세정보맵 ==> " + info);
 		resultMap.put("info", info);
 		return resultMap;
 	}

@@ -39,7 +39,15 @@
                         <div class="product-info-area">
 
                             <div class="image-section">
-                                <div class="main-image-box">제품 이미지</div>
+                                <div class="main-image-box">
+                                    <div
+                                        v-if="!infoList.filePath || !infoList.fileName">
+                                        판매자 등록 썸네일
+                                    </div>
+                                    <img v-else :src="(infoList.filePath + infoList.fileName).trim()" alt="상품 이미지"
+                                        class="product-image" style="width: 100%; height: auto; border-radius: 10px;">
+                                </div>
+
                                 <div class="thumbnail-list">
                                     <div class="thumbnail-item"></div>
                                     <div class="thumbnail-item"></div>
@@ -298,7 +306,7 @@
                             deliveryDate: self.selectedDate,
 
                             // 픽업 테이블에 넣을 것
-                            storeAddr : self.infoList.storeAddr,
+                            storeAddr: self.infoList.storeAddr,
                         };
                         console.log("주문 데이터:", param);
                         $.ajax({
@@ -345,7 +353,7 @@
                             address: self.userInfo.userAddr,
 
                             // 픽업 테이블에 넣을 것
-                            storeAddr : self.infoList.storeAddr,
+                            storeAddr: self.infoList.storeAddr,
 
 
                             deliveryDate: self.selectedDate
@@ -387,8 +395,10 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data.info);
+
                             self.infoList = data.info;
+                            console.log("밑은 인포리스트");
+                            console.log(self.infoList);
                         }
                     });
                 },
@@ -519,7 +529,7 @@
                             deliveryDate: self.selectedDate,
 
                             // 픽업 테이블에 넣을 것
-                            storeAddr : self.infoList.storeAddr,
+                            storeAddr: self.infoList.storeAddr,
                         };
                         console.log("장바구니 전송 데이터:", param);
                         console.log("subOptionList", subOptionList);
@@ -553,7 +563,7 @@
                             deliveryDate: self.selectedDate,
 
                             // 픽업 테이블에 넣을 것
-                            storeAddr : self.infoList.storeAddr,
+                            storeAddr: self.infoList.storeAddr,
                         };
                         console.log("장바구니 전송 데이터:", param);
                         console.log("subOptionList", subOptionList);
@@ -720,7 +730,7 @@
                         }
                     });
                 },
-                fnSeller : function (storeId) {
+                fnSeller: function (storeId) {
                     let self = this;
                     pageChange("/product/sellerStore.do", { storeId: storeId });
                 }
