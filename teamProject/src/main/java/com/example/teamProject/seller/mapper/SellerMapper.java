@@ -128,6 +128,8 @@ public interface SellerMapper {
  	// 판매자 상품정보정보 조회
  	
  	List<Seller> selectProductList(HashMap<String, Object> map);
+ 	//상품삭제
+	int deleteProduct(int proNo);
  	
  
 

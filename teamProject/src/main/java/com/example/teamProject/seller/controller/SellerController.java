@@ -531,6 +531,8 @@ public class SellerController {
 	public Map<String, Object> registerProduct(
 	    Seller seller, // 상품 정보를 담은 Seller DTO
 	    @RequestParam("thumbnailFile") MultipartFile thumbnailFile,
+	    // 🌟 수정: thumbnailUse가 없어도 오류가 나지 않도록 required = false 추가
+	    @RequestParam(value = "thumbnailUse", required = false) String thumbnailUse, 
 	    @RequestParam(value = "detailFiles", required = false) List<MultipartFile> detailFiles,
 	    @RequestParam(value = "longFile", required = false) MultipartFile longFile,
 	    // 💡 세션 객체를 받아옵니다.
@@ -541,35 +543,23 @@ public class SellerController {
 	    // 🌟 1. 세션 USER_ID 유효성 검증 (강화)
 	    String loggedInUserId = (String) session.getAttribute("sessionId");
 	    
-	    // **수정 시작: null 또는 빈 문자열 체크 및 즉시 반환**
 	    if (loggedInUserId == null || loggedInUserId.trim().isEmpty()) {
 	        System.out.println(">>> [FATAL] 세션 userId 유효성 최종 검증 실패: " + loggedInUserId);
 	        result.put("success", false);
 	        result.put("message", "세션 로그인 정보(userId)를 찾을 수 없습니다. (재로그인 필요)");
 	        return result; 
 	    }
-	    // **수정 끝**
 
 	    seller.setUserId(loggedInUserId); 
 	    
 	    // 🌟 2. USER_ID로 STORE_ID 조회 및 설정
 	    try {
-	        // 1. Service를 통해 loggedInUserId에 해당하는 STORE_ID를 조회합니다.
-	        // *Service 메서드의 반환 타입이 int라고 가정 (조회 실패 시 0 또는 null 처리)*
 	        int storeId = sellerService.getStoreIdByUserId(loggedInUserId);
 	        
-	        // **수정 시작: STORE_ID가 0이거나 유효하지 않으면 예외 발생**
-	        // DB에 USER_ID는 있지만 STORE_ID가 0으로 조회되면 잘못된 데이터입니다.
 	        if (storeId == 0) {
 	            System.out.println(">>> [Controller Log] " + loggedInUserId + "에 대한 STORE_ID가 0으로 조회됨.");
-	            // Store ID 0 오류를 Service에서 던지게 하는 대신 Controller에서 처리하거나,
-	            // Service에서 명시적 예외를 던지도록 코드를 유지합니다.
-	            // 여기서는 Service의 예외가 Controller의 catch 블록으로 잡히도록 그대로 둡니다.
-	            // **주의: Service의 getStoreIdByUserId는 유효한 ID를 못 찾으면 예외를 던지거나 0을 반환해야 합니다.**
 	        }
-	        // **수정 끝**
 	        
-	        // 2. 조회된 STORE_ID를 Seller DTO에 설정합니다. (int -> String 변환 유지)
 	        seller.setStoreId(String.valueOf(storeId));
 	        
 	        
@@ -582,13 +572,14 @@ public class SellerController {
 	            return result;
 	        }
 	        
-	        // seller DTO에는 이제 userId와 storeId가 모두 포함되어 있습니다.
 	        sellerService.registerProduct(seller); 
 	        
 	        // 4. 파일 업로드
+	        // 🌟 수정: thumbnailUse 값을 fileService로 전달
 	        fileService.uploadProductImages(
 	            seller.getProNo(), 
 	            thumbnailFile, 
+	            thumbnailUse, // 전달
 	            detailFiles, 
 	            longFile
 	        );
@@ -597,10 +588,8 @@ public class SellerController {
 	        result.put("message", "제품 등록 성공");
 
 	    } catch (Exception e) {
-	        // 상세한 오류 로그 출력
 	        e.printStackTrace(); 
 	        
-	        // 🌟 3. 오류 메시지 개선: 사용자에게 친화적인 메시지 제공
 	        String errorMessage = e.getMessage();
 	        if (errorMessage != null && errorMessage.contains("Store ID 0")) {
 	            errorMessage = "판매자 정보(STORE ID)를 찾을 수 없습니다. 관리자에게 문의하세요.";
@@ -617,6 +606,8 @@ public class SellerController {
 	public Map<String, Object> updateProduct(
 	    Seller seller, // 상품 정보를 담은 Seller DTO
 	    @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
+	    // 🌟 수정: thumbnailUse가 없어도 오류가 나지 않도록 required = false 추가
+	    @RequestParam(value = "thumbnailUse", required = false) String thumbnailUse, 
 	    @RequestParam(value = "detailFiles", required = false) List<MultipartFile> detailFiles,
 	    @RequestParam(value = "longFile", required = false) MultipartFile longFile,
 	    jakarta.servlet.http.HttpSession session 
@@ -660,9 +651,11 @@ public class SellerController {
 	        sellerService.updateProduct(seller);
 	        
 	        // 7. 파일 수정/업로드 처리
+	        // 🌟 수정: thumbnailUse 값을 fileService로 전달
 	        fileService.updateProductImages(
 	            seller.getProNo(), 
 	            thumbnailFile, 
+	            thumbnailUse, // 전달
 	            detailFiles, 
 	            longFile
 	        );
@@ -677,7 +670,6 @@ public class SellerController {
 	    }
 	    return result;
 	}
-
 	private void processProductData(Seller seller) throws Exception {
 		// 1. 옵션 JSON 파싱
 		// ⭐ 이 메서드 호출이 컴파일되려면 Seller DTO에 getOptionsJson()가 있어야 합니다.
@@ -696,6 +688,38 @@ public class SellerController {
 			List<String> disabledDates = Arrays.asList(datesStr.split(","));
 			seller.setDisabledDates(disabledDates);
 		}
+	}
+	
+	
+
+	@RequestMapping(value = "/seller/productDelete.dox", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> deleteProduct(@RequestParam("proNo") int proNo) {
+	    // Vue.js의 AJAX 요청에 응답할 JSON 형태의 Map 객체 생성
+	    Map<String, Object> response = new HashMap<>();
+	    
+	    try {
+	        // 1. Service 계층을 호출하여 상품 삭제 로직 실행
+	        // (Service 내에서 이미지, 옵션 등 FK 테이블 데이터를 먼저 삭제하고 메인 상품을 삭제해야 합니다.)
+	        int result = sellerService.deleteProduct(proNo); 
+	        
+	        if (result > 0) {
+	            // 삭제 성공 (1개 이상의 행이 삭제됨)
+	            response.put("result", "success");
+	            response.put("message", proNo + "번 상품 삭제 성공");
+	        } else {
+	            // 삭제 실패 (삭제된 행이 0개, 예: 존재하지 않는 proNo 요청)
+	            response.put("result", "fail");
+	            response.put("message", proNo + "번 상품 삭제 실패: 상품 번호 불일치");
+	        }
+	    } catch (Exception e) {
+	        // DB 또는 트랜잭션 처리 중 오류 발생
+	        System.err.println("상품 삭제 서버 오류 (proNo: " + proNo + "): " + e.getMessage());
+	        response.put("result", "error");
+	        response.put("message", "서버 오류로 상품 삭제 실패");
+	    }
+	    
+	    return response;
 	}
 
 }

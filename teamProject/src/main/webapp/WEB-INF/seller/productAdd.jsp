@@ -146,7 +146,7 @@
         <input type="radio" id="categoryCake" value="케이크" v-model="product.proType"><label for="categoryCake">케이크</label>
         <input type="radio" id="categoryBakery" value="베이커리" v-model="product.proType"><label for="categoryBakery">베이커리</label>
         <input type="radio" id="categoryChocolate" value="초콜릿/사탕" v-model="product.proType"><label for="categoryChocolate">초콜릿/사탕</label>
-        <input type="radio" id="categoryOther" value="OTHER" v-model="product.proType"><label for="categoryOther">기타</label>
+     
         
         <label style="margin-left: 20px;">레터링 가능:</label>
         <input type="radio" id="letteringY" value="Y" v-model="product.lettering"><label for="letteringY">O</label>
@@ -161,7 +161,7 @@
                         <%-- 상위 옵션 목록 --%>
                         <div v-for="(topOpt, topIndex) in options" :key="topOpt.id" class="top-option-item">
                             <div class="top-option-header">
-                                <h4>상위 옵션 {{ topIndex + 1 }} : {{ topOpt.optionName || '이름 없음' }}</h4>
+                                <h4>상위 옵션 {{ topIndex + 1 }} : {{ topOpt.optionName || "이름 없음" }}</h4>
                                 <div>
                                     <label>수량 선택 가능: 
                                         <input type="checkbox" v-model="topOpt.isQuantitySelectAble" true-value="Y" false-value="N">
@@ -196,7 +196,9 @@
                 
                 <%-- 4. 등록/수정 버튼 --%>
                 <div class="main-action-buttons">
-                    <button type="submit" class="btn btn-primary">{{ proNo ? '제품 수정하기' : '제품 등록하기' }}</button>
+                   <button type="submit" class="btn btn-primary">
+    {{ proNo ? "제품 수정하기" : "제품 등록하기" }}
+</button>
                     <button type="button" class="btn btn-secondary" onclick="history.back()">목록으로</button>
                 </div>
             </form>
@@ -325,114 +327,66 @@
 
 
             // ************ 서버 전송 (등록/수정) ************
-            fnSubmitProduct() {
-                if (!this.proNo && !this.thumbnailFile) {
-                    alert('썸네일 이미지는 필수입니다.');
-                    return;
-                }
-                
-                if (this.options.length === 0) {
-                    alert('최소 1개 이상의 상위 옵션을 등록해야 합니다.');
-                    return;
-                }
+           fnSubmitProduct() {
+    if (!this.proNo && !this.thumbnailFile) {
+        alert('썸네일 이미지는 필수입니다.');
+        return;
+    }
 
-                // 1. FormData 객체 생성 (파일 전송을 위해 필수)
-                const formData = new FormData();
+    const formData = new FormData();
 
-                // 2. 기본 정보 추가
-                for (const key in this.product) {
-                    formData.append(key, this.product[key]);
-                  
-                }
-                // proNo 추가 (등록 시 null, 수정 시 값)
-                if(this.proNo) {
-                     formData.append('proNo', this.proNo);
-                }
+    // 기본 상품 정보 추가
+    for (const key in this.product) {
+        formData.append(key, this.product[key]);
+    }
+    if (this.proNo) formData.append('proNo', this.proNo);
 
-                // 3. 파일 추가
-                if (this.thumbnailFile) {
-                    formData.append('thumbnailFile', this.thumbnailFile);
-                }
-                this.detailFiles.forEach(file => {
-                    formData.append('detailFiles', file);
-                });
-                if (this.longFile) {
-                    formData.append('longFile', this.longFile);
-                }
-                
-                // 4. 옵션 데이터 추가 (JSON 문자열로 변환하여 전송)
-                // 서버에서 JSON 문자열을 받아 List<Map> 형태로 변환해야 합니다.
-                const optionsJson = JSON.stringify(this.options);
-                formData.append('optionsJson', optionsJson);
-                
-                // 5. 불가 날짜 추가 (콤마로 구분된 문자열로 전송)
-                formData.append('disabledDatesStr', this.disabledDates.join(','));
+    // ✅ 파일 구분에 따른 FILEUSE 값 추가
+    // 대표 이미지 (T)
+    if (this.thumbnailFile) {
+        formData.append('thumbnailFile', this.thumbnailFile);
+        formData.append('thumbnailUse', 'T'); // ✅ 추가
+    }
 
+    // 긴 이미지 (B)
+    if (this.longFile) {
+        formData.append('longFile', this.longFile);
+        formData.append('longUse', 'B'); // ✅ 추가
+    }
 
-                // 6. AJAX 전송
-                const url = this.proNo ? "/seller/product/update.dox" : "/seller/product/register.dox";
+    // 하위 이미지 (I)
+    this.detailFiles.forEach((file, index) => {
+        formData.append('detailFiles', file);
+        formData.append(`detailUse_${index}`, 'I'); // ✅ 추가
+    });
 
-                $.ajax({
-                    url: url,
-                    type: "POST",
-                    data: formData,
-                    processData: false, // FormData 사용 시 필수
-                    contentType: false, // FormData 사용 시 필수
-                    success: (response) => {
-                        if (response.success) { // 서버 응답 구조에 따라 변경
-                            alert(this.proNo ? "제품 정보가 성공적으로 수정되었습니다." : "제품이 성공적으로 등록되었습니다.");
-                            // 등록/수정 후 판매자 상품 목록 페이지로 이동 (예시 경로)
-                            location.href = "/seller/productList.do"; 
-                        } else {
-                            alert("처리 실패: " + (response.message || "알 수 없는 오류"));
-                        }
-                    },
-                    error: (xhr, status, error) => {
-                        console.error("서버 통신 오류:", error);
-                        alert("서버 통신 오류로 작업을 완료할 수 없습니다.");
-                    }
-                });
-            },
-            
-            // ************ 수정 모드 데이터 로드 (더미 데이터 예시) ************
-            loadProductDataForEdit() {
-                // 이 함수는 실제 서버에서 proNo를 기반으로 데이터를 로드해야 합니다.
-                if (!this.proNo) return; 
+    // 옵션, 날짜 그대로 유지
+    const optionsJson = JSON.stringify(this.options);
+    formData.append('optionsJson', optionsJson);
+    formData.append('disabledDatesStr', this.disabledDates.join(','));
 
-                console.log(`제품 번호 ${proNo}에 대한 데이터 로드 시작...`);
-                
-                // **TODO: 실제 AJAX 호출로 서버에서 데이터 로드**
+    const url = this.proNo ? "/seller/product/update.dox" : "/seller/product/register.dox";
 
-                // --- 더미 데이터 (예시) ---
-                this.product = {
-                    proName: '딸기 생크림 케이크',
-                    price: 25000,
-                    deliveryFee: 3000,
-                    category: 'CAKE', 
-                    lettering: 'Y'    
-                };
-                this.thumbnailUrl = 'https://via.placeholder.com/250x250?text=Loaded+Image'; // 기존 이미지 URL
-                this.disabledDates = ["2025-11-20", "2025-12-25"]; // 기존 불가 날짜 로드
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: (response) => {
+            if (response.success) {
+                alert(this.proNo ? "제품 정보 수정 완료" : "제품 등록 완료");
+                location.href = "/seller/productlist.do";
+            } else {
+                alert("실패: " + (response.message || "알 수 없는 오류"));
+            }
+        },
+        error: (xhr, status, error) => {
+            alert("서버 통신 오류: " + error);
+        }
+    });
+},
 
-                // 기존 옵션 로드
-                this.options = [
-                    { id: 101, optionName: '케이크 크기', isQuantitySelectAble: 'N', subOptions: [
-                        { id: 201, valueName: '미니', priceDiff: 0 },
-                        { id: 202, valueName: '1호', priceDiff: 5000 },
-                    ]},
-                    { id: 102, optionName: '촛불', isQuantitySelectAble: 'Y', subOptions: [
-                        { id: 203, valueName: '일반 촛불', priceDiff: 0 },
-                        { id: 204, valueName: '숫자 촛불', priceDiff: 1000 },
-                    ]}
-                ];
-                // 더미 데이터의 ID로 nextId 값 업데이트
-                nextTopOptionId = 103; 
-                nextSubOptionId = 205; 
-                
-                // Flatpickr에 로드된 불가 날짜 바인딩
-                this.datePicker.setDate(this.disabledDates, true); 
-                // -----------------------------
-            },
             
         },
         mounted() {

@@ -180,13 +180,37 @@
                 });
             },
             
-            /** 상품 삭제 함수 (미구현 상태) */
-            fnDeleteProduct: function (proNo) {
-                if (confirm(proNo + "번 상품을 정말로 삭제하시겠습니까?")) {
-                    // TODO: 삭제 로직 구현 (AJAX 통신)
-                    alert("삭제 기능은 현재 준비 중입니다. (상품 번호: " + proNo + ")");
-                }
-            }
+           fnDeleteProduct: function (proNo) {
+                let self = this;
+                
+                if (confirm(proNo + "번 상품을 정말로 삭제하시겠습니까?")) {
+                    
+                    let param = { proNo: proNo };
+
+                    $.ajax({
+                        // 상품 삭제를 위한 백엔드 URL
+                        url: "/seller/productDelete.dox", 
+                        dataType: "json",
+                        type: "POST", // DELETE 또는 POST 방식 사용
+                        data: param,
+                        success: function (data) {
+                            // 백엔드에서 성공 (1 또는 'success'와 같은 값)을 리턴했다고 가정
+                            if (data.result === 'success' || data.result > 0) { 
+                                alert("상품이 성공적으로 삭제되었습니다.");
+                                // 삭제 후 목록을 새로고침
+                                self.fnProductList(); 
+                            } else {
+                                // DB에서 삭제 실패 (예: 외래 키 제약 조건 등)
+                                alert("상품 삭제에 실패했습니다. (DB 오류)");
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("상품 삭제 통신 실패:", error);
+                            alert("상품 삭제 통신에 실패했습니다. 서버 로그를 확인하세요.");
+                        }
+                    });
+                }
+            },
         },
         mounted() {
             // 페이지 로드 시 상품 목록을 바로 조회
