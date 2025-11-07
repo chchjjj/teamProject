@@ -240,7 +240,12 @@
                             // 결제 페이지로 이동 또는 주문 완료 페이지 이동
                             alert(data.orderIdList);
                             self.fnAllRemove();
-                            pageChange("/payment/payment.do", { orderIdList: data.orderIdList });
+                            if (self.deliveryType === 'D') {
+                                pageChange("/payment/deliveryPayment.do", { orderId: data.orderId });
+                            } else if (self.deliveryType === 'P') {
+                                pageChange("/payment/pickUpPayment.do", { orderId: data.orderId });
+                            }
+
                         },
                         error: function (xhr, status, error) {
                             console.error("장바구니 로드 실패:", status, error);
@@ -333,7 +338,7 @@
                         this.groupedCartList[i].totalPrice = this.groupedCartList[i].totalPrice * this.groupedCartList[i].itemQty;
 
                     }
-                     this.groupedCartList = this.groupedCartList.slice().reverse();
+                    this.groupedCartList = this.groupedCartList.slice().reverse();
                     console.log("그룹화된 장바구니 ===>", this.groupedCartList);
                 },
                 fnChangeItemQuantity: function (cartId, amount) {
