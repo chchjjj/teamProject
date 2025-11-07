@@ -39,9 +39,16 @@
                 <div>
                     상품 가격: {{item.totalPrice}}
                 </div>
+                <div>
+                    수량: {{item.quantity}}
+                </div>
+                <div>
+                    판매처: {{item.storeName}}
+                </div>
+
                 <hr>
             </div>
-        
+            
             <div>
                 주문고객: {{toName}}
             </div>
@@ -54,11 +61,11 @@
             
 
             <div>
-                <button>취소하기</button>
+                <button @click="fnGoBack">취소하기</button>
 
                 <!-- 첫번째 줄 거는 테스트 편의용, 두번째 거가 실제 사용용 -->
-                <button @click="fnPayHistory('1', '1')">결제하기</button>
-                <!-- <button @click="fnPayment">결제하기</button> -->
+                <!-- <button @click="fnPayHistory('1', '1')">결제하기</button> -->
+                <button @click="fnPayment">결제하기</button>
 
             </div>
 
@@ -151,9 +158,9 @@
 				    pg: "html5_inicis",
 				    pay_method: "card",
 				    merchant_uid: "merchant_" + new Date().getTime(),
-				    name: "1", //상품이름, 원래는 다음과 같은 형식이다: self.info.foodName,
+				    name: "결제", //상품이름, 원래는 다음과 같은 형식이다: self.info.foodName,
 				    amount: 1, //실제 결제금액은 1원, 원래는 self.info.totalPrice
-				    buyer_tel: "010-0000-0000",
+				    buyer_tel: self.toPhone,
 				  }	, function (rsp) { // callback
 			   	      if (rsp.success) {
 			   	        // 결제 성공 시
@@ -190,6 +197,10 @@
                     }
                 });
             },
+
+            fnGoBack: function(){
+                window.history.back();
+            }
 
            
         }, // methods

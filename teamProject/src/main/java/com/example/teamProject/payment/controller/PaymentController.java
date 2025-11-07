@@ -25,7 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class PaymentController {
 
 	@Autowired
-	PaymentService paymentService;
+	PaymentService paymentService; 
 
 //	@RequestMapping("/payment/payment.do")
 //	public String payment(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map)

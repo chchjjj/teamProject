@@ -43,7 +43,7 @@
             <div>기본배송지</div>
             <div>휴대폰 번호: {{userPhone}}</div> <!-- 가입할 때 휴대폰 번호-->
             <div>배송지: {{userAddress}}</div> <!-- 가입할 때 주소-->
-            <div><button @click="fnUseAddress(userPhone)">선택</button></div>
+            <div><button @click="fnUseAddress(userAddress)">선택</button></div>
          </div>
          <div v-for="item in addressList">
             <hr>
@@ -166,7 +166,7 @@
                     data: param,
                     success: function (data) {
                         alert("배송지가 삭제되었습니다.");
-                        self.addressList = data.list;
+                        self.fnAddressList(); //주소 목록 출력(기본 주소 외에 추가 입력한 것)
                     }
                 });
             },
