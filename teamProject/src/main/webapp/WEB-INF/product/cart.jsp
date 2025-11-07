@@ -5,29 +5,46 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
+        <title>장바구니</title>
         <link rel="stylesheet" href="/css/cart-style.css">
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <script src="/js/page-change.js"></script>
         <style>
-            table,
-            tr,
-            td,
-            th {
-                border: 1px solid black;
-                border-collapse: collapse;
-                padding: 5px 10px;
+            .chat-filter-container {
+                margin: 20px 0;
                 text-align: center;
             }
 
-            th {
-                background-color: beige;
+
+            .chat-filter-container button {
+                background-color: #f8f8f8;
+                border: 1px solid #ccc;
+                color: #3E2723;
+                /* 진한 에스프레소색 */
+                font-weight: 600;
+                padding: 8px 18px;
+                margin: 0 8px;
+                border-radius: 25px;
+                cursor: pointer;
+                transition: all 0.2s ease-in-out;
             }
 
-            tr:nth-child(even) {
-                background-color: azure;
+
+            .chat-filter-container button:hover {
+                background-color: #FFEDAC;
+                /* butter tone */
+                color: #000;
+            }
+
+
+            .chat-filter-container button.active {
+                background-color: #3E2723;
+                /* espresso tone */
+                color: #fff;
+                border-color: #3E2723;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
             }
         </style>
     </head>
@@ -36,9 +53,16 @@
         <%@ include file="/WEB-INF/main/header.jsp" %>
             <div id="app">
                 <div class="product-detail-container">
+
+                    <div class="chat-filter-container">
+                        <button @click="fnSetFilter('N')" :class="{active: chatYnFilter === 'N'}">채팅 미신청 주문 보기</button>
+                        <button @click="fnSetFilter('Y')" :class="{active: chatYnFilter === 'Y'}">채팅 신청 주문 보기</button>
+                    </div>
+
                     <div class="product-info-area">
                         <div class="product-selection-section">
-                            <label v-for="(group, groupIndex) in groupedCartList" :key="group.cartId"
+
+                            <label v-for="(group, groupIndex) in filteredCartList" :key="group.cartId"
                                 class="product-card" :class="{'selected-product': groupIndex === 0}">
                                 <input type="checkbox" name="product_option" :value="group.cartId" v-model="selectItem">
                                 <div class="product-card-content">
@@ -147,9 +171,23 @@
                     cartList: [],
                     groupedCartList: [],
                     selectItem: [],
+                    chatYnFilter: 'N',
                 };
             },
+            computed: {
+                // ✅ 필터링된 목록 반환
+                filteredCartList() {
+                    if (this.chatYnFilter === 'ALL') {
+                        return this.groupedCartList;
+                    }
+                    return this.groupedCartList.filter(item => item.chatYn === this.chatYnFilter);
+                }
+            },
             methods: {
+                fnSetFilter: function (filterValue) {
+                    this.chatYnFilter = filterValue;
+                    this.selectItem = []; // ✅ 선택 초기화 (체크박스 해제)
+                },
                 fnCart: function () {
                     let self = this;
                     let param = { userId: self.userId };
@@ -178,7 +216,13 @@
                     const selectedItemsData = self.groupedCartList.filter(group =>
                         self.selectItem.includes(group.cartId)
                     );
+                    const hasDelivery = selectedItemsData.some(item => item.deliveryType === 'D');
+                    const hasPickup = selectedItemsData.some(item => item.deliveryType === 'P');
 
+                    if (hasDelivery && hasPickup) {
+                        alert("픽업 상품과 배달 상품은 동시에 주문할 수 없습니다.");
+                        return; // 🚫 주문 중단
+                    }
                     // console.log("선택된 상품 데이터:", selectedItemsData);
 
                     let param = {
@@ -195,6 +239,7 @@
                             alert("주문이 완료되었습니다!");
                             // 결제 페이지로 이동 또는 주문 완료 페이지 이동
                             alert(data.orderIdList);
+                            self.fnAllRemove();
                             pageChange("/payment/payment.do", { orderIdList: data.orderIdList });
                         },
                         error: function (xhr, status, error) {
@@ -288,6 +333,7 @@
                         this.groupedCartList[i].totalPrice = this.groupedCartList[i].totalPrice * this.groupedCartList[i].itemQty;
 
                     }
+                     this.groupedCartList = this.groupedCartList.slice().reverse();
                     console.log("그룹화된 장바구니 ===>", this.groupedCartList);
                 },
                 fnChangeItemQuantity: function (cartId, amount) {
