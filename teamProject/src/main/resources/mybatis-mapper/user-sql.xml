@@ -193,6 +193,11 @@
 	</update>
 	
 	
+	<select id="userNameCheck" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
+		SELECT *
+		FROM USER_TBL
+		WHERE USER_NAME = #{userName} AND PHONE = #{phone}
+	</select>
 	
 	
 	

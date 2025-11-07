@@ -173,7 +173,7 @@
                 display: flex;
                 align-items: center;
                 gap: 10px;
-                margin-top: 15px;
+                
             }
 
             .result-text {
@@ -218,12 +218,16 @@
                         <input class="small-input" v-model="phone1" maxlength="3"> -
                         <input class="small-input" v-model="phone2" maxlength="4"> -
                         <input class="small-input" v-model="phone3" maxlength="4">
+                    <span class="cert-box" v-if="!checkResult">
+                        <button @click="fnNamePhoneCheck">인증</button>
+                    </span>
                     </div>
+                    
                     <!-- 여기부터 -->
-                    <!-- <div v-if="!smsFlg">
+                    <div v-if="checkResult && !smsFlg">
                         <template v-if="!sendMessageFlg">
                             <div class="cert-box">
-                                <button @click="fnSendSms">인증</button>
+                                <button @click="fnSendSms">문자인증</button>
                             </div>
                         </template>
                         <template v-else>
@@ -234,9 +238,9 @@
                         </template>
                     </div>
 
-                    <div v-else class="result-text">
+                    <div v-else class="result-text" v-if="smsFlg">
                         {{userName}}님의 아이디는 <b>{{info.userId}}</b> 입니다.
-                    </div> -->
+                    </div>
                     <!-- 여기까지 -->
                     <div class="back-link">
                         <a href="/user/login.do">로그인으로 돌아가기</a>
@@ -263,12 +267,37 @@
                     timer: "",
                     count: 180,
                     smsFlg: false, //문자 인증 유무
-                    ranStr: "" //문자 인증 번호
+                    ranStr: "", //문자 인증 번호
+
+                    checkResult: false
                 };
             },
             methods: {
                 // 함수(메소드) - (key : function())
-
+                fnNamePhoneCheck: function () {
+                    let self = this;
+                    let phone = self.phone1 + "-" + self.phone2 + "-" + self.phone3;
+                    console.log(phone);
+                    let param = {
+                        userName: self.userName,
+                        phone: phone
+                    };
+                    $.ajax({
+                        url: "/user/NamePhonecheck.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            if (data.result === "true") { 
+                                alert("인증이 완료되었습니다.");
+                                self.checkResult = true; 
+                            } else {
+                                alert("존재하지 않는 유저정보입니다.");
+                                self.checkResult = false;
+                            }
+                        }
+                    });
+                },
                 fnSendSms: function () {
                     let self = this;
                     let phone = self.phone1 + self.phone2 + self.phone3;
