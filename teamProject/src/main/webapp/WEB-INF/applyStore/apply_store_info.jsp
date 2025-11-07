@@ -144,7 +144,7 @@
 
                     <form @submit.prevent="nextPage">
                         <div class="form-group">
-                            <label for="userId">유저 ID (테스트용):</label>
+                            <label for="userId">유저 ID :</label>
                             <input type="text" v-model="formData.userId" id="userId" required>
                         </div>
 
@@ -209,70 +209,97 @@
                 </div>
             </div>
             <%@ include file="/WEB-INF/main/footer.jsp" %>
-                <script>
-                    const app = Vue.createApp({
-                        data() {
-                            return {
-                                formData: {
-                                    userId: '',
-                                    storeName: '',
-                                    businessNo: '',
-                                    storeIntro: '',
-                                    deliveryYn: 'Y',
-                                    isChatEnabled: 'N',
-                                    chatStart: '09:00',
-                                    chatEnd: '18:00',
-                                    storeAddr: '',
-                                    storeArea: '',
-                                    storePass: 'G',
-                                    rejectReason: '(null)',
-                                    gradeCode: 'A',
-                                    membership: 'N'
-                                }
-                            };
-                        },
-                        methods: {
-                            nextPage() {
-                                const storeData = this.formData;
+              <script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                formData: {
+                    userId: "${sessionId}",
+                    // JSP Expression을 통해 URL 파라미터 값(storeName)을 안전하게 가져옵니다.
+                    storeName: '<%= request.getParameter("storeName") != null ? request.getParameter("storeName") : "" %>',
+                    businessNo: '',
+                    storeIntro: '',
+                    deliveryYn: 'Y',
+                    isChatEnabled: 'N',
+                    chatStart: '09:00',
+                    chatEnd: '18:00',
+                    storeAddr: '',
+                    storeArea: '',
+                    storePass: 'G',
+                    rejectReason: '(null)',
+                    gradeCode: 'A',
+                    membership: 'N'
+                }
+            };
+        },
+        methods: {
+            nextPage() {
+                const self = this; // AJAX 성공 시 Vue 인스턴스에 접근하기 위해 사용
+                const storeData = self.formData;
+                
+                // v-model로 바인딩된 값이 아직 반영 안 됐을 경우를 대비한 보험 코드 (유지)
+                if (!storeData.storeName || storeData.storeName.trim() === '') {
+                    storeData.storeName = document.getElementById('storeName').value.trim();
+                }
 
-                                // 필수 입력값 체크
-                                for (const [key, value] of Object.entries(storeData)) {
-                                    if (value === '' || value == null) {
-                                        alert('모든 필수 항목을 입력해주세요.');
-                                        return;
-                                    }
-                                }
+                // 필수 입력값 체크 로직 (유지)
+                for (const [key, value] of Object.entries(storeData)) {
+                    if (value === '' || value == null) {
+                        alert('모든 필수 항목을 입력해주세요.');
+                        return;
+                    }
+                }
 
-                                // 시간 포맷 보정 (HH:MM → HH:MM:SS)
-                                if (storeData.chatStart.length <= 5) storeData.chatStart += ':00';
-                                if (storeData.chatEnd.length <= 5) storeData.chatEnd += ':00';
+                console.log("AJAX 요청 전 storeName 값:", storeData.storeName);
 
-                                $.ajax({
-                                    url: '/saveStoreInfo',
-                                    type: 'POST',
-                                    contentType: "application/json",
-                                    data: JSON.stringify(storeData),
-                                    dataType: "json",
-                                    success: function (response) {
-                                        if (response.success) {
+                // 시간 포맷 보정 (유지)
+                if (storeData.chatStart.length <= 5) storeData.chatStart += ':00';
+                if (storeData.chatEnd.length <= 5) storeData.chatEnd += ':00';
 
-                                            const userId = encodeURIComponent(storeData.userId);
-
-                                            window.location.href = `/applyStore/img.do?userId=${userId}`;
-                                        } else {
-                                            alert('입력된 정보를 확인해주세요. (서버 응답 오류)');
-                                        }
-                                    },
-                                    error: function (xhr, status, error) {
-                                        alert('서버 요청 중 오류 발생: ' + error);
-                                        console.error('Ajax Error:', xhr.responseText);
-                                    }
-                                });
-                            }
+                $.ajax({
+                    url: '/saveStoreInfo',
+                    type: 'POST',
+                    contentType: "application/json",
+                    data: JSON.stringify(storeData),
+                    dataType: "json",
+                    success: (response) => {
+                        if (response.success) {
+                            // ⭐⭐⭐ 핵심 수정 부분: Hidden Form을 만들어 POST로 다음 페이지 이동 ⭐⭐⭐
+                            const currentStoreName = self.formData.storeName; 
+                            
+                            console.log("--- POST 전송 시작 ---");
+                            console.log("   - 전송할 storeName 값:", currentStoreName);
+                            
+                            // 1. Form 태그 생성
+                            const form = document.createElement('form');
+                            form.setAttribute('method', 'post'); // POST 방식 명시
+                            form.setAttribute('action', '/applyStore/img.do'); // 다음 Controller URL
+                            
+                            // 2. storeName Hidden Input 생성
+                            const hiddenField = document.createElement('input');
+                            hiddenField.setAttribute('type', 'hidden');
+                            hiddenField.setAttribute('name', 'storeName'); // Controller @RequestParam 이름과 일치
+                            hiddenField.setAttribute('value', currentStoreName); // 실제 값 (인코딩 불필요)
+                            
+                            // 3. Form 제출
+                            form.appendChild(hiddenField);
+                            document.body.appendChild(form);
+                            form.submit();
+                            
+                        } else {
+                            alert('입력된 정보를 확인해주세요. (서버 응답 오류)');
                         }
-                    });
-                    app.mount('#app');
-                </script>
+                    },
+                    error: function (xhr, status, error) {
+                        alert('서버 요청 중 오류 발생: ' + error);
+                        console.error('Ajax Error:', xhr.responseText);
+                    }
+                });
+            }
+        }
+    });
+    app.mount('#app');
+</script>
     </body>
 
     </html>
