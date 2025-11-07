@@ -113,6 +113,10 @@
                 transform: scale(1.02);
                 /* 살짝 커지게 */
             }
+
+            body{
+                background-color: #f1f1f1;
+            }
         </style>
     </head>
 
