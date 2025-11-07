@@ -10,7 +10,7 @@ import com.example.teamProject.chat.model.Chat;
 @Mapper
 public interface ChatMapper {
 	
-	// 발송메세지 저장
+	// 발송메세지 저장 (텍스트, 이미지 공통)
 	void insertChatMsg(Chat message);
 	
 	// 주문번호로 chatId 찾기
@@ -24,6 +24,7 @@ public interface ChatMapper {
 	
 	// 읽음처리
 	int updateMessagesAsRead(List<Integer> msgIds);
+	
 	
 	
 }
