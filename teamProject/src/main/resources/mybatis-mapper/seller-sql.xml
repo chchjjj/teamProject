@@ -566,6 +566,11 @@ ORDER BY T3.PRO_NAME
     ORDER BY
         P.CREATED_AT DESC
     </select>
+    
+    <delete id="deleteProduct" parameterType="int">
+    DELETE FROM PRODUCT_TBL
+    WHERE PRO_NO = #{proNo}
+</delete>
 
 </mapper>
 
