@@ -10,25 +10,175 @@
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <style>
-            table, tr, td, th {
-                border: 1px solid black;
-                border-collapse: collapse;
-                padding: 5px 10px;
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: "Pretendard", sans-serif;
+            }
+
+            body {
+                background-color: #fff;
+            }
+
+            #app {
+                display: flex;
+                height: 100vh;
+            }
+
+            /* ===== 왼쪽 영역 ===== */
+            .left-panel {
+                flex: 0.75;
+                background-color: #3E2723;
+                color: #FFEDAC;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                font-size: 30px;
+                font-weight: 600;
+                line-height: 1.8;
+                text-align: center;
+                cursor: pointer;
+            }
+
+            /* ===== 오른쪽 영역 ===== */
+            .right-panel {
+                flex: 1.25;
+                background: linear-gradient(120deg, #FFEDAC, #FFEDAC, #3E2723);
+                background-size: 300% 300%;
+                animation: gradientMove 8s ease infinite;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                /* 세로 중앙 정렬 */
+                align-items: center;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .right-panel::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -50%;
+                width: 200%;
+                height: 100%;
+                background: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.3), transparent 60%);
+                animation: shineMove 6s linear infinite;
+                pointer-events: none;
+            }
+
+            @keyframes gradientMove {
+                0% {
+                    background-position: 0% 50%;
+                }
+
+                50% {
+                    background-position: 100% 50%;
+                }
+
+                100% {
+                    background-position: 0% 50%;
+                }
+            }
+
+            @keyframes shineMove {
+                0% {
+                    transform: translateX(-20%);
+                }
+
+                50% {
+                    transform: translateX(20%);
+                }
+
+                100% {
+                    transform: translateX(-20%);
+                }
+            }
+
+            /* ===== 비밀번호 찾기 박스 ===== */
+            .find-box {
+                width: 60%;
+                max-width: 500px;
+                background-color: #fff;
+                padding: 30px;
+                border-radius: 20px;
+                box-shadow: 0 8px 20px rgba(62, 39, 35, 0.1);
+                transition: all 0.3s ease;
+            }
+
+            .find-box:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 25px rgba(62, 39, 35, 0.2);
+            }
+
+            .find-title {
+                font-size: 1.8rem;
+                font-weight: 700;
+                color: #3E2723;
+                text-align: center;
+                margin-bottom: 25px;
+            }
+
+            label {
+                display: block;
+                font-weight: 600;
+                color: #3E2723;
+                margin-top: 15px;
+                margin-bottom: 8px;
+            }
+
+            input {
+                width: 100%;
+                padding: 12px;
+                border-radius: 10px;
+                border: 1px solid #ddd;
+                background-color: #f9f9f9;
+                transition: all 0.3s ease;
+                outline: none;
+            }
+
+            input:focus {
+                border-color: #3E2723;
+            }
+
+            button {
+                background-color: #3E2723;
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                padding: 10px 15px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: 0.3s;
+                margin-top: 20px;
+                width: 100%;
+            }
+
+            button:hover {
+                background-color: #5A3E37;
+            }
+
+            .back-link {
+                margin-top: 20px;
                 text-align: center;
             }
 
-            th {
-                background-color: beige;
-            }
-
-            tr:nth-child(even) {
-                background-color: azure;
+            .back-link a {
+                color: #3E2723;
+                text-decoration: underline;
+                font-weight: 500;
             }
         </style>
     </head>
 
     <body>
         <div id="app">
+            <div class="left-panel" onclick="location.href='/main.do'">
+                디저트 연구소에<br>오신 걸 환영해요!<br>
+                /<br>Welcome to the<br>Dessert Lab!
+            </div>
             <!-- html 코드는 id가 app인 태그 안에서 작업 -->
             <!-- 아이디, 이름, 번호를 가진 사람이 db에 있으면  -->
             <!-- 문자인증 후 비밀번호 변경 페이지로 이동 -->
@@ -38,53 +188,57 @@
             <!-- 비밀번호 변경 요청 시 -->
             <!-- 내가 입력한 비밀번호랑 기존 비밀번호랑 동일하면  -->
             <!-- '비밀번호가 이전과 동일합니다.' 출력 후 업데이트 x (비교는 해시값끼리 비교) -->
-            <div v-if="!authFlg">
-                <div>
-                    <label>아이디 : <input v-model="userId"></label>
-                </div>
-                <div>
-                    <label>이름 : <input v-model="userName"></label>
-                </div>
-                <div>
-                    <label>번호 : <input v-model="phone" placeholder="-를 제외하고 입력해주세요."></label>
-                </div>
+            <div class="right-panel">
+                <div class="find-box">
+                    <div class="find-title">비밀번호 찾기</div>
 
-                <!-- 여기 밑 세 줄을 문자인증 도입하면 주석 처리 -->
+                    <!-- 인증 전 -->
+                    <div v-if="!authFlg">
+                        <label>아이디</label>
+                        <input v-model="userId" placeholder="아이디를 입력하세요">
 
-                <div>
-                    <button @click="fnAuth">인증</button>
-                </div>
+                        <label>이름</label>
+                        <input v-model="userName" placeholder="이름을 입력하세요">
 
-                <!-- 문자 인증 도입하기 전에는 밑에 줄 주석처리 여기부터 -->
-                
-                <!-- <div v-if="!smsFlg">
-                    문자인증 : <input v-model="inputNum" :placeholder="timer">
-                    <template v-if="!sendMessageFlg">
-                        <button @click="fnSendSms">인증번호 전송</button>
-                    </template>
-                    <template v-else>
-                        <button @click="fnSmsAuth">문자인증</button>
-                    </template>
-                </div>
-                <div v-else>
-                    <button @click="fnAuth">사용자인증</button>
-                </div> -->
+                        <label>전화번호</label>
+                        <input v-model="phone" placeholder="-를 제외하고 입력해주세요.">
 
-                <!-- 여기까지 -->
+                        <!-- 여기 밑 세 줄을 문자인증 도입하면 주석 처리 -->
+                        <button @click="fnAuth">인증</button>
+                    </div>
 
-            </div>
-            <div v-else>
-                <div>
-                    <label>비밀번호 : <input v-model="userPass" placeholder="영문 숫자 특수기호 조합 8자리 이상"></label>
-                </div>
-                <div>
-                    <label>비밀번호 확인 : <input v-model="userPass2"></label>
-                </div>
-                <div>
-                    <button @click="fnChangePwd">비밀번호 수정</button>
-                </div>
-            </div>
+                    <!-- 문자 인증 도입하기 전에는 밑에 줄 주석처리 여기부터 -->
+                    <!-- <div v-if="!smsFlg">
+            문자인증 : <input v-model="inputNum" :placeholder="timer">
+            <template v-if="!sendMessageFlg">
+                <button @click="fnSendSms">인증번호 전송</button>
+            </template>
+            <template v-else>
+                <button @click="fnSmsAuth">문자인증</button>
+            </template>
         </div>
+        <div v-else>
+            <button @click="fnAuth">사용자인증</button>
+        </div> -->
+                    <!-- 여기까지 -->
+
+                    <!-- 인증 후 -->
+                    <div v-else>
+                        <label>새 비밀번호</label>
+                        <input v-model="userPass" placeholder="영문, 숫자, 특수기호 조합 8자리 이상">
+
+                        <label>비밀번호 확인</label>
+                        <input v-model="userPass2" placeholder="비밀번호를 다시 입력하세요">
+
+                        <button @click="fnChangePwd">비밀번호 수정</button>
+                    </div>
+                </div>
+
+                <div class="back-link">
+                    <a href="/user/login.do">로그인으로 돌아가기</a>
+                </div>
+            </div>
+
     </body>
 
     </html>
@@ -168,7 +322,7 @@
                 fnSendSms: function () {
                     let self = this;
                     let param = {
-                        phone : self.phone
+                        phone: self.phone
                     };
                     $.ajax({
                         url: "/send-one",
@@ -208,7 +362,7 @@
                 },
                 fnSmsAuth: function () {
                     let self = this;
-                    if(!self.sendMessageFlg){
+                    if (!self.sendMessageFlg) {
                         alert("문자 인증을 진행해주세요.");
                         return;
                     }
