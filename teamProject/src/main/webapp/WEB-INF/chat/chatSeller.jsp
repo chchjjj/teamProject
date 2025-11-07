@@ -232,6 +232,7 @@
                             this.messages = response.map((msg) => {
                                 
                                 const senderIdFromData = msg.USER_ID; 
+                                // const isUnread = msg.IS_READ !== 'Y' && senderIdFromData !== this.userId;
 
                                 return {
                                     id: msg.MSG_ID, 
@@ -241,7 +242,8 @@
                                     // senderId와 currentUserId를 비교하여 이름 설정
                                     senderName: senderIdFromData === this.currentUserId ? '사장님' : '고객', 
                                     timestamp: msg.SENT_AT ? new Date(msg.SENT_AT) : new Date(),
-                                    isRead: msg.IS_READ // 읽음 표시 내용 
+                                    isRead: msg.IS_READ, // 🚀 즉시 화면 반영 
+                                    messageType: msg.MESSAGE_TYPE || 'TEXT'
                                 };
                             });
                             
