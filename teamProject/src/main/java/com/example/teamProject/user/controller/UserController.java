@@ -92,7 +92,6 @@ public class UserController {
 	}
 	
 	
-	
 	@RequestMapping(value = "/user/login.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String login(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
@@ -228,6 +227,20 @@ public class UserController {
 	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
 	    resultMap = userService.SelectOrder(map);
 	    return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/user/chat.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String chatList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		
+		resultMap = userService.SelectChatList(map);
+		
+		System.out.println(map);
+		
+		return new Gson().toJson(resultMap);
 	}
 	
 	

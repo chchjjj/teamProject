@@ -656,9 +656,25 @@
 
                 fnLogout: function () {
                     if (confirm("로그아웃 하시겠습니까?")) {
-                        location.href = "/user/logout.do";
+                        let param = {};
+                        $.ajax({
+                            url: "/user/logout.dox",
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                if(data.result=="success"){
+                                    alert(data.msg+"! 홈페이지로 이동하겠습니다.");
+                                    location.href = "/main.do";
+                                }else{
+                                    alert("로그아웃하는 도중에 오류가 발생하였습니다.");
+                                }
+                                    
+                            }
+                            
+                        });
                     }
-                }
+                },
             },
 
             mounted() {

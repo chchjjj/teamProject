@@ -45,6 +45,9 @@ public interface UserMapper {
 	//count
 	int qnACount(HashMap<String, Object> map);
 	
+	//chatlist
+	List <User> chatListSelect(HashMap<String, Object> map);
+	
 	
 	//userview
 	User userSelect(HashMap<String, Object> map);
@@ -55,4 +58,5 @@ public interface UserMapper {
 	
 	//주문형황 조회
 	List <User> selectOrder (HashMap<String, Object> map);
+	
 }
