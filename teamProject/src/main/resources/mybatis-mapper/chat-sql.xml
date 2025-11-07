@@ -34,6 +34,16 @@
 	    WHERE ORDER_ID = #{orderId}
 	</select>
 	
+	<!-- 읽음 처리 (IS_READ) update -->
+	<update id="updateMessagesAsRead" parameterType="list">
+	    UPDATE CHAT_MSG_TBL
+	    SET IS_READ = 'Y'
+	    WHERE MSG_ID IN
+	    <foreach item="id" collection="list" open="(" separator="," close=")">
+	        #{id}
+	    </foreach>
+	</update>
+	
 	
 	<!-- 채팅방 chatId 기준으로 메시지 리스트 조회 (일단 xml까지만 작성됨) -->
 	<select id="selectMsgByChatId" resultType="com.example.teamProject.chat.model.Chat">

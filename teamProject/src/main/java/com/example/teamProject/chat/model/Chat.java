@@ -29,5 +29,5 @@ public class Chat {
     }
     
     private String content;	
-	
+	private String isRead;
 }
