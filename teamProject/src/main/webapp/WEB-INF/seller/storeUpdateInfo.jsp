@@ -617,9 +617,10 @@
                  * (예시) 주소 검색 처리 함수 (Daum/Kakao Postcode API 연동 필요)
                  */
                 function fnSearchAddress() {
-                    // **[수정]** Spring Controller의 주소 맵핑인 /juso/popup을 호출합니다.
+                    // Spring Controller의 주소 맵핑인 /user/addr.do를 호출합니다.
                     window.open(
-                        "/seller/popup",  // 이전에 만든 JusoViewController의 @RequestMapping 주소
+                        // 이 주소는 주소 팝업을 띄우는 JSP(요청하신 두 번째 코드 블록)를 로드하는 컨트롤러 매핑 주소입니다.
+                        "/user/addr.do",
                         "jusoPopup",
                         "width=500,height=600,scrollbars=yes"
                     );
@@ -633,31 +634,35 @@
                 }
 
                 /**
-                 * (예시) 멤버십 가입/해지 토글 함수
+                 * **[수정됨]** 도로명주소 안내시스템 API 팝업으로부터 정보를 받는 콜백 함수
+                 * 이 함수 이름(`jusoCallBack`)은 두 번째 코드 블록의 JSP 파일에서 호출하는 이름과 일치해야 합니다.
+                 * * @param {string} roadFullAddr - 전체 도로명 주소
+                 * @param {string} roadAddrPart1 - 도로명 주소 (Main)
+                 * @param {string} addrDetail - 주소 상세
+                 * @param {string} roadAddrPart2 - 도로명 주소 (Reference)
+                 * @param {string} engAddr - 영문 주소
+                 * @param {string} jibunAddr - 지번 주소
+                 * @param {string} zipNo - 우편번호
                  */
-                function fnToggleMembership() {
-                    const currentStatus = $('#is-membership').text();
-                    const nextAction = currentStatus === 'Y' ? '해지' : '가입';
-                    alert("멤버십 " + nextAction + " 로직 실행 (서버와 연동 필요)");
-                }
-                // storeUpdateInfo.jsp 파일 내의 <script> 태그 안
-                function setAddress(data) {
+                function jusoCallBack(roadFullAddr, roadAddrPart1, addrDetail, roadAddrPart2, engAddr, jibunAddr, zipNo) {
                     // 폼 필드에 값 바로 입력!
-                    // 팝업 창에서 전달된 데이터는 data.zipcode, data.roadAddress, data.jibunAddress 형태입니다.
 
                     // 1. 우편번호 업데이트
-                    $('#store-zipcode').val(data.zipcode);
+                    $('#store-zipcode').val(zipNo);
 
                     // 2. 메인 주소 업데이트 (도로명 주소 사용)
-                    $('#store-main-addr').val(data.roadAddress);
+                    $('#store-main-addr').val(roadAddrPart1); // roadAddrPart1은 기본 주소 부분
 
-                    // 3. 상세 주소 초기화 및 포커스 이동
-                    $('#store-detail-addr').val('');
+                    // 3. 상세 주소 초기화 및 포커스 이동 (addrDetail에 값이 있으면 채우고, 없으면 초기화)
+                    $('#store-detail-addr').val(addrDetail || '');
                     $('#store-detail-addr').focus();
 
-                    console.log("✅ 주소 업데이트 완료:", data);
+                    console.log("✅ 주소 업데이트 완료 (도로명주소 API):", {
+                        zipNo: zipNo,
+                        roadAddrPart1: roadAddrPart1,
+                        addrDetail: addrDetail
+                    });
                 }
-
                 /**
                  * 전체 정보 수정하기 (버튼 클릭 시 실행)
                  */

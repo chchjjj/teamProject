@@ -1,17 +1,19 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/seller/sellerSideBar.jsp" %>
+               
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>주문 상세</title> <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <title>주문 상세</title>
+    
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
     <style>
-        /* (스타일 시트 내용은 생략하고 유지) */
+        /* (스타일 시트 내용은 그대로 유지) */
         .content-area {
             flex-grow: 1;
             padding: 30px;
@@ -142,19 +144,20 @@
             margin-top: 15px;
         }
     </style>
+    
 </head>
-
 <body>
+    
     <script>
         // ⭐ 1. Model에 담긴 orderId를 EL(${orderId})을 사용해 가져옵니다.
         var initialOrderId = '${orderId}';
-        
+
         // 2. 혹시 Controller를 거치지 않고 직접 접근했거나, POST 요청이 아니어서 파라미터가 누락된 경우를 대비해 
-        //    쿼리스트링에서도 orderId를 확인하여 최종적으로 orderId를 확정합니다.
+        //    쿼리스트링에서도 orderId를 확인하여 최종적으로 orderId를 확정합니다.
         if (initialOrderId === 'null' || initialOrderId === '') {
             initialOrderId = new URLSearchParams(window.location.search).get('orderId') || '';
         }
-        
+
         // 최종적으로 orderId가 비어 있으면 Vue에서 에러 처리할 것입니다.
     </script>
 
@@ -169,29 +172,58 @@
 
                 <div v-else-if="orderDetail" class="detail-card">
                     <div class="order-header">
-                        주문 ID: [[ orderDetail.orderId ]] | 주문자: [[ orderDetail.userName ]] | 픽업일: [[ formatDate(orderDetail.pickupDate) ]]
+                        주문 ID: [[ orderDetail.orderId ]] | 주문자: [[
+                        orderDetail.userName ]] | 픽업일: [[
+                        formatDate(orderDetail.pickupDate) ]]
                     </div>
 
                     <div class="product-area">
                         <div class="product-image">
-                            <img v-if="orderDetail.productImage" :src="orderDetail.productImage" alt="제품 썸네일"
+                            <img v-if="orderDetail.productImage"
+                                :src="orderDetail.productImage" alt="제품 썸네일" 
                                 style="max-width:100%; max-height:100%;">
                             <div v-else>제품 썸네일</div>
                         </div>
 
                         <div class="options-list">
-                            <strong style="font-size: 18px; display: block; margin-bottom: 10px;">
+                            <strong
+                                style="font-size: 18px; display: block; margin-bottom: 10px;">
                                 [[ orderDetail.proName ]]
                             </strong>
 
-                            <div class="memo-box" v-if="orderDetail.message">
-                                <strong>문구/요청사항:</strong>
-                                <div class="memo-content">[[ orderDetail.message ]]</div>
+                            <div 
+                                style="font-weight: bold; color: #5d5ddb; margin-top: 10px; border-bottom: 1px solid #ddd;">
+                                <span>상품 단가 (VAT 포함)</span>
+                                <span class="option-value">[[
+                                    formatNumber(orderDetail.productPrice) ]]원</span>
                             </div>
-                            
-                            <div v-if="orderDetail.valueName">
-                                <span>선택 옵션</span>
-                                <span class="option-value">[[ orderDetail.valueName ]]</span>
+
+                            <div
+                                class="memo-box" style="margin-top: 10px; background-color: #f7f7f7;">
+                                <strong>선택 옵션 상세:</strong>
+                                <div class="memo-content">[[
+                                    orderDetail.optionDetails ]]</div>
+                            </div>
+
+                            <div
+                                class="memo-box" 
+                                v-if="orderDetail.message && orderDetail.message !== '요청사항 없음'">
+                                <strong>문구/요청사항:</strong>
+                                <div class="memo-content">[[
+                                    orderDetail.message ]]</div>
+                            </div>
+
+                            <div style="margin-top: 10px;">
+                                <span>옵션 차액 합계 (시스템 계산)</span>
+                                <span class="option-value">[[
+                                    formatNumber(orderDetail.autoOptionPriceDiff)
+                                    ]]원</span>
+                            </div>
+                            <div>
+                                <span>기타 옵션 금액 (수동 추가)</span>
+                                <span class="option-value"
+                                    style="color: darkred;">[[
+                                    formatNumber(orderDetail.manualOptionPrice) ]]원</span>
                             </div>
                         </div>
                     </div>
@@ -201,10 +233,12 @@
                     </div>
 
                     <div class="button-group">
-                        <button class="action-button option-add-button" @click="goToOptionAdd(orderDetail.orderId)">
+                        <button class="action-button option-add-button" 
+                        @click="goToOptionAdd(orderDetail.orderId)">
                             옵션 추가
                         </button>
-                        <button class="action-button" @click="goToChat(orderDetail.orderId)">
+                        <button class="action-button"
+                            @click="goToChat(orderDetail.orderId)">
                             채팅방 이동
                         </button>
                     </div>
@@ -217,23 +251,24 @@
         </div>
     </div>
 
+    
     <script>
         const app = Vue.createApp({
             delimiters: ['[[', ']]'],
             data() {
                 return {
                     // ⭐ 수정된 initialOrderId 변수 사용
-                    orderId: "${orderId}", 
+                    orderId: initialOrderId, // EL 표현식 대신 위에 선언한 JS 변수 사용
                     orderDetail: null,
                     loading: true
                 };
             },
             methods: {
                 fnDetail() {
-                    if (!this.orderId || this.orderId === 'null') { // 'null' 문자열 방지
+                    if (!this.orderId || this.orderId === 'null') {
                         console.error("주문 ID가 없습니다.");
                         this.loading = false;
-                        this.orderDetail = null; // orderDetail도 null로 설정하여 정보 없음 표시
+                        this.orderDetail = null;
                         return;
                     }
 
@@ -250,15 +285,27 @@
                                 return;
                             }
 
-                            const od = data.orderDetail;
+                            // 쿼리 결과는 배열 형태일 수 있으나, 주문 상세는 보통 하나의 레코드를 가져오므로 첫 번째 요소 사용
+                            const od = Array.isArray(data.orderDetail) ? data.orderDetail[0] : data.orderDetail;
+
                             this.orderDetail = {
                                 orderId: od.ORDER_ID,
                                 userName: od.USER_NAME || od.STORE_NAME || '-',
                                 proName: od.PRO_NAME || '-',
-                                pickupDate: od.PICKUP_DATE || od.ORDER_DATE || '-',
-                                totalPrice: (od.PRICE || 0) + (od.OPTION_PRICE || 0) + (od.DELIVERY_FEE || 0),
-                                valueName: od.OPTION_VALUE || '-',
-                                message: od.MESSAGE || '-',
+                                // 쿼리에서 별칭을 ORDER_OR_PICKUP_DATE로 사용했으므로 변경
+                                pickupDate: od.ORDER_OR_PICKUP_DATE || '-',
+                                totalPrice: od.TOTAL_PRICE || 0, // 총 결제 금액
+
+                                // 쿼리 결과의 필드를 정확히 바인딩
+                                productPrice: od.PRODUCT_PRICE || 0, // 상품 단가 (T3.PRICE)
+                                manualOptionPrice: od.MANUAL_OPTION_PRICE || 0, // 기타 옵션 금액 (T2.ADD_OPTION_PRICE)
+                                autoOptionPriceDiff: od.AUTO_OPTION_PRICE_DIFF || 0, // 시스템 옵션 차액 합계 (SUM(T6.PRICE_DIFF))
+                                optionDetails: od.OPTION_DETAILS || '선택된 옵션 없음', // 옵션 상세 목록 (LISTAGG)
+
+                                // LETTERING_WORD를 'message' 필드에 바인딩하여 HTML에서 사용
+                                message: od.LETTERING_WORD || '요청사항 없음',
+
+                                // 쿼리 결과에 없는 필드는 여전히 컨트롤러에서 넘겨줘야 합니다.
                                 chatRoomId: od.CHAT_ROOM_ID || '',
                                 productImage: od.PRO_IMAGE_URL || '',
                                 chatYN: od.CHAT_YN || 'N'
@@ -272,7 +319,7 @@
                             this.loading = false;
                         }
                     });
-                },
+                }, // <--- methods 내부의 각 함수 정의는 쉼표로 구분해야 합니다.
 
                 goToChat(orderId) {
                     if (!orderId) {
@@ -304,32 +351,31 @@
                             console.log("서버 응답:", xhr.responseText);
                         }
                     });
-                },
+                }, // <--- 쉼표 확인
 
                 goToOptionAdd(orderId) {
                     console.log(`주문 ID ${orderId}에 대한 옵션 추가 페이지로 이동합니다.`);
                     window.location.href = `/seller/order/addOption.do?orderId=${orderId}`;
-                    alert(`[옵션 추가] 버튼 클릭: 주문 ID ${orderId}`);
-                },
-                
+                }, // <--- 쉼표 확인
 
                 formatDate(date) {
                     if (!date) return '-';
                     const m = moment(new Date(date));
-                    return m.isValid() ? m.format('YYYY.MM.DD') : date;
-                },
+                    // 쿼리 결과 ORDER_OR_PICKUP_DATE가 DATE/TIMESTAMP 형태가 아닐 수 있어 안전하게 처리
+                    return m.isValid() ? m.format('YYYY.MM.DD HH:mm') : date;
+                }, // <--- 쉼표 확인
 
                 formatNumber(number) {
                     return number != null ? Number(number).toLocaleString() : '0';
-                }
-            },
+                } // 마지막 함수이므로 쉼표 불필요
+            }, // <--- methods 객체 종료
             mounted() {
                 this.fnDetail();
             }
-        });
+        }); // <--- createApp 호출 종료
 
-        app.mount('#app');
+        app.mount('#app'); // <--- 513번째 줄 근처의 오류 발생 지점일 가능성이 높습니다.
     </script>
+    
 </body>
-
 </html>
