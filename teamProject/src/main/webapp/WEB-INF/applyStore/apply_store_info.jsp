@@ -11,9 +11,18 @@
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <style>
+
+            body{
+                background-color: #f1f1f1;
+            }
+
             .form-container {
                 max-width: 650px;
-                margin: 60px auto;
+                /* margin: 60px auto; */
+                margin-top: 5px;
+                margin-bottom: 60px;
+                margin-left: auto;
+                margin-right: auto;
                 padding: 40px 50px;
                 background-color: #fff;
                 border-radius: 12px;
@@ -126,12 +135,17 @@
             /* ===== 입점 신청하기 제목 스타일 ===== */
             .apply-title {
                 text-align: center;
-                font-size: 28px;
+                font-size: 25px;
                 font-weight: 700;
                 color: #3E2723;
                 margin-top: 20px;
                 margin-bottom: 10px;
                 letter-spacing: -0.5px;
+            }
+
+            .infoImage{
+                align-items: center;
+                width: 100%;
             }
         </style>
     </head>
@@ -139,9 +153,9 @@
     <body>
         <%@ include file="/WEB-INF/main/header.jsp" %>
             <div id="app">
-                <h2 class="apply-title">입점 신청하기</h2>
+                <h3 class="apply-title">입점 신청</h3>
                 <div class="form-container">
-
+                    <img class=infoImage src="/img/입점광고.jpg" alt="입점신청배너">
                     <form @submit.prevent="nextPage">
                         <div class="form-group">
                             <label for="userId">유저 ID :</label>
