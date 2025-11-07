@@ -172,6 +172,10 @@
                 height : 140px
             }
 
+            body{
+                background-color: #f1f1f1;
+            }
+
         </style>
     </head>
 

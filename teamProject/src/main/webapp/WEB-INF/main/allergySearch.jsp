@@ -180,6 +180,10 @@
                 background-color: #f9f9f9;
                 margin-bottom: 100px;
             }
+
+            body{
+                background-color: #f1f1f1;
+            }
         </style>
     </head>
 
