@@ -106,4 +106,8 @@ public class User {
 		    //review
 		    private String cDateTime;
 		    
+		    //chat
+		    private String lastMsgAt;
+		    private int unreadCount;
+		    
 }
