@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="ko">
 
     <head>
         <meta charset="UTF-8">
@@ -10,137 +10,455 @@
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <script src="/js/page-change.js"></script>
+
+        <!-- Navbar CSS -->
+        <link rel="stylesheet" href="/css/navbar.css">
+
         <style>
-            table,
-            tr,
-            td,
-            th {
-                border: 1px solid black;
-                border-collapse: collapse;
-                padding: 5px 10px;
+            /* Page Specific Styles */
+            :root {
+                --espresso: #3E2723;
+                --peony: #F4C9D6;
+                --butter: #FFEDAC;
+                --light-bg: #F4F4F4;
+                --white: #FFFFFF;
+            }
+
+            body {
+                background-color: var(--light-bg);
+            }
+
+            /* Main Container */
+            .orderContainer {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            .pageTitle {
+                font-size: 22px;
+                color: var(--espresso);
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid var(--espresso);
+            }
+
+            .orderInfoArea {
+                background-color: transparent;
+            }
+
+            /* Order Card */
+            .orderCard {
+                background-color: var(--white);
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 18px;
+                margin-bottom: 18px;
+                transition: all 0.3s ease;
+            }
+
+            .orderCard:hover {
+                box-shadow: 0 3px 15px rgba(62, 39, 35, 0.1);
+                border-color: var(--espresso);
+            }
+
+            /* Store Header */
+            .storeName {
+                font-size: 17px;
+                color: var(--espresso);
+                margin-bottom: 12px;
+                padding-bottom: 12px;
+                border-bottom: 2px solid var(--butter);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .statusBadge {
+                display: inline-block;
+                padding: 4px 10px;
+                border-radius: 15px;
+                font-size: 12px;
+                font-weight: 600;
+            }
+
+            .status-P {
+                background-color: #e8f5e9;
+                color: #2e7d32;
+            }
+
+            .status-C {
+                background-color: #e3f2fd;
+                color: #1565c0;
+            }
+
+            .status-S {
+                background-color: #fff3e0;
+                color: #e65100;
+            }
+
+            /* Product Detail Card */
+            .orderDetailCard {
+                background-color: #fafafa;
+                border-left: 3px solid var(--peony);
+                padding: 15px;
+                margin: 10px 0;
+                border-radius: 6px;
+            }
+
+            .proName {
+                font-size: 16px;
+                color: var(--espresso);
+                margin-bottom: 10px;
+                font-weight: 600;
+            }
+
+            .detailRow {
+                padding: 5px 0;
+                color: #555;
+                font-size: 13px;
+                line-height: 1.5;
+            }
+
+            .detailRow strong {
+                color: var(--espresso);
+                min-width: 70px;
+                display: inline-block;
+                font-size: 13px;
+            }
+
+            /* Delivery Badge */
+            .deliveryBadge {
+                display: inline-block;
+                padding: 4px 10px;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: 500;
+                margin: 3px 0;
+            }
+
+            .delivery-D {
+                background-color: #e3f2fd;
+                color: #1976d2;
+            }
+
+            .delivery-P {
+                background-color: #fff3e0;
+                color: #f57c00;
+            }
+
+            /* Options List */
+            ul {
+                list-style: none;
+                padding: 0;
+                margin: 8px 0;
+            }
+
+            .optionCard {
+                background-color: var(--white);
+                padding: 8px 12px;
+                margin: 5px 0;
+                border-radius: 5px;
+                border-left: 2px solid var(--butter);
+                font-size: 12px;
+                color: #666;
+            }
+
+            .optionCard strong {
+                color: var(--espresso);
+                font-size: 12px;
+            }
+
+            .optionCard small {
+                color: #999;
+                font-size: 11px;
+            }
+
+            /* Order Summary */
+            .summaryRow {
+                padding: 6px 0;
+                color: #555;
+                font-size: 13px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #f5f5f5;
+            }
+
+            .summaryRow strong {
+                color: var(--espresso);
+                font-size: 13px;
+            }
+
+            .summaryRow span {
+                font-size: 13px;
+            }
+
+            .totalPrice {
+                font-size: 20px;
+                color: var(--espresso);
+                font-weight: bold;
+                margin: 12px 0 8px 0;
+                text-align: right;
+            }
+
+            /* Action Buttons */
+            .actionButtons {
+                display: flex;
+                gap: 8px;
+                margin-top: 15px;
+                padding-top: 15px;
+                border-top: 1px solid #f0f0f0;
+            }
+
+            .actionButtons button {
+                flex: 1;
+                padding: 10px 15px;
+                border: none;
+                border-radius: 6px;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .btnChat {
+                background-color: var(--peony);
+                color: var(--espresso);
+            }
+
+            .btnChat:hover {
+                background-color: #f0b8ca;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(244, 201, 214, 0.4);
+            }
+
+            .btnStatus {
+                background-color: var(--espresso);
+                color: var(--white);
+            }
+
+            .btnStatus:hover {
+                background-color: #2c1b18;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(62, 39, 35, 0.3);
+            }
+
+            /* Empty State */
+            .emptyState {
                 text-align: center;
+                padding: 60px 20px;
+                color: #999;
+                background-color: var(--white);
+                border-radius: 8px;
             }
 
-            th {
-                background-color: beige;
+            .emptyState h3 {
+                font-size: 20px;
+                margin-bottom: 12px;
+                color: #666;
             }
 
-            tr:nth-child(even) {
-                background-color: azure;
+            .emptyState p {
+                font-size: 14px;
+            }
+
+            /* Animation */
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .orderCard {
+                animation: fadeIn 0.3s ease;
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .orderContainer {
+                    padding: 20px 15px;
+                }
+
+                .pageTitle {
+                    font-size: 22px;
+                }
+
+                .orderCard {
+                    padding: 15px;
+                }
+
+                .storeName {
+                    font-size: 16px;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 10px;
+                }
+
+                .actionButtons {
+                    flex-direction: column;
+                }
+
+                .summaryRow {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 5px;
+                }
             }
         </style>
     </head>
 
     <body>
         <div id="app">
-            <!-- html 코드는 id가 app인 태그 안에서 작업 -->
+            <!-- Left Sidebar Navigation -->
             <div class="navBar">
-                <!---->
+                <!-- Logo Area -->
+                <div class="logoArea">
+                    <div class="logo">
+                        <a href="javascript:;" onclick="location.href='/main.do'">
+                            <!--로고 클릭시 홈페이지 새로고침 -->
+                            <img src="/img/로고.png" alt="쇼핑몰 로고">
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
                 <div class="navButton">
-                    <div>
-                        <button @click="fnOrderHistory()">주문 내역</button>
-                    </div>
-                    <div>
-                        <button @click="fnWishList()">찜한 상품</button>
-                    </div>
-                    <div>
-                        <button @click="fnChatList()">채팅이력</button>
-                    </div>
-                    <div>
-                        <button @click="fnReview()">내가 쓴 리뷰</button>
-                    </div>
-                    <div>
-                        <button @click="fnQnA()">QnA</button>
-                    </div>
-                    <div>
-                        <button @click="fnUserEdit()">정보수정</button>
-                    </div>
+                    <button @click="fnOrderHistory()" class="active">주문 내역</button>
+                    <button @click="fnWishList()">찜한 상품</button>
+                    <button @click="fnChatList()">채팅이력</button>
+                    <button @click="fnReview()">내가 쓴 리뷰</button>
+                    <button @click="fnQnA()">QnA</button>
+                    <button @click="fnUserEdit()">정보수정</button>
                 </div>
 
-                <!--logout button-->
+                <!-- Logout Button -->
                 <div class="logOut">
-                    <div>
-                        <button @click="fnLogout()">Logout</button>
-                    </div>
+                    <button @click="fnLogout()">Logout</button>
                 </div>
-
             </div>
 
-            <!--내용 구역-->
+            <!-- Mobile Menu Toggle (hidden on desktop) -->
+            <button class="menuToggle" @click="toggleMenu">☰</button>
+
+            <!-- Main Content -->
             <div class="orderContainer">
+                <h1 class="pageTitle">📦 주문 내역</h1>
+
                 <div class="orderInfoArea">
-                    <div class="storeSection">
+                    <!-- Empty State -->
+                    <div v-if="groupedOrdersList.length === 0" class="emptyState">
+                        <h3>주문 내역이 없습니다</h3>
+                        <p>주문하신 내역이 여기에 표시됩니다</p>
+                    </div>
 
-                        <!--order层-->
+                    <!-- Order List -->
+                    <div class="storeSection" v-else>
                         <div v-for="(order, orderIndex) in groupedOrdersList" :key="order.orderId" class="orderCard">
-                            <div class="orderCardContent">
-                                <div class="orderSingle">
-                                    <div>
-                                        <h3 class="storeName">가게명: {{ order.storeName }}/
-                                            <span v-if="order.status==='P'">결제 완료</span>
-                                            <span v-if="order.status==='C'">결제 수락</span>
-                                            <span v-if="order.status==='S'">결제 대기</span>
-                                        </h3>
-                                    </div>
+                            <!-- Store Name & Status -->
+                            <h3 class="storeName">
+                                {{ order.storeName }}
+                                <span class="statusBadge" :class="'status-' + order.status">
+                                    <span v-if="order.status==='P'">결제 완료</span>
+                                    <span v-else-if="order.status==='C'">결제 수락</span>
+                                    <span v-else-if="order.status==='S'">결제 대기</span>
+                                </span>
+                            </h3>
 
-                                    <!--orderDetail级别循环（groupedDetails是对象，需要Object.values转换成数组）-->
-                                    <div v-for="(orderDetail, orderDetailIndex) in Object.values(order.groupedDetails)"
-                                        :key="orderDetailIndex" class="orderDetailCard">
-                                        <div class="orderDetailCardContent">
-                                            <div>
-                                                <h3 class="proName">상품명: {{ orderDetail.proName }}</h3>
-                                            </div>
+                            <!-- Order Details -->
+                            <div v-for="(orderDetail, orderDetailIndex) in Object.values(order.groupedDetails)"
+                                :key="orderDetailIndex" class="orderDetailCard">
 
-                                            <div>
-                                                <span v-if="order.deliveryType==='D'">
-                                                    {{order.wishDeli}}
-                                                    예약배송
-                                                </span>
-                                                <span v-if="order.deliveryType==='P'">
-                                                    {{order.pickTime}}
-                                                    픽업
-                                                </span>
-                                            </div>
+                                <h4 class="proName">{{ orderDetail.proName }}</h4>
 
-                                            <!--option循环-->
-                                            <ul>
-                                                <li v-for="(option, optionIndex) in orderDetail.options"
-                                                    :key="optionIndex" class="optionCard">
-                                                    <!--这里假设optionName和valueName有对应值，如果没有可以用subOptionId/topOptionId-->
-                                                    옵션: {{ option.optionName }} / {{ option.valueName}}X{{option.priceDiff}}원
-                                                    (수량: {{ option.addQuantity }}개 / 추가금: {{option.optionTotal}}원)
-                                                </li>
-                                            </ul>
+                                <!-- Delivery Type -->
+                                <div class="detailRow">
+                                    <span class="deliveryBadge" :class="'delivery-' + order.deliveryType">
+                                        <span v-if="order.deliveryType==='D'">📦 {{ order.wishDeli }} 예약배송</span>
+                                        <span v-else-if="order.deliveryType==='P'">🏪 {{ order.pickTime }} 픽업</span>
+                                    </span>
+                                </div>
 
-                                            <div>가격: {{ orderDetail.price }}</div>
-                                            <div>수량: {{ orderDetail.quantity || 1 }}</div>
-                                            <div>레터링: {{ orderDetail.letteringWord }}</div>
-                                            <div>합계: {{ orderDetail.subtotal }}</div>
-                                        </div>
+                                <!-- Options -->
+                                <ul v-if="orderDetail.options && orderDetail.options.length > 0">
+                                    <li v-for="(option, optionIndex) in orderDetail.options" :key="optionIndex"
+                                        class="optionCard">
+                                        <strong>{{ option.optionName }} :</strong> {{ option.valueName }}
+                                        <br>
+                                        <small>{{ formatNumber(option.priceDiff) }}원 × {{ option.addQuantity }}개 = {{
+                                            formatNumber(option.optionTotal) }}원</small>
+                                    </li>
+                                </ul>
 
-                                    </div>
-                                    <div>채팅유무(Y/N):{{ order.chatYn }}</div>
-                                    <div>채팅추가비: {{ order.addOptionPrice || 0 }}</div>
-                                    <div>배송방식: {{ order.deliveryType }}</div>
-                                    <div>배송비: {{ order.deliveryFee }}</div>
-                                    <div>주소: {{ order.fullAddress }}</div>
-                                    <div>주문 시간: {{ order.orderDate }}</div>
-                                    <div>
-                                        <h3 class="totalPrice">총가격: {{ order.totalPrice }}</h3>
-                                    </div>
-                                    <div>주문 번호: {{ order.orderId }}</div>
+                                <!-- Product Info -->
+                                <div class="detailRow">
+                                    <strong>가격:</strong> {{ formatNumber(orderDetail.price) }}원
+                                </div>
+                                <div class="detailRow">
+                                    <strong>수량:</strong> {{ orderDetail.quantity }}개
+                                </div>
+                                <div class="detailRow" v-if="orderDetail.letteringWord">
+                                    <strong>레터링:</strong> {{ orderDetail.letteringWord }}
+                                </div>
+                                <div class="detailRow"
+                                    style="font-size: 14px; font-weight: 600; color: var(--espresso); border-top: 1px solid #e0e0e0; margin-top: 8px; padding-top: 8px;">
+                                    <strong>소계:</strong> {{ formatNumber(orderDetail.subtotal) }}원
                                 </div>
                             </div>
-                            <div v-if="order.chatYn==='Y'">
-                                <button @click="fnChat(order.orderId,order.storeId)">채팅방으로</button>
+
+                            <!-- Order Summary -->
+                            <div class="summaryRow" v-if="order.chatYn==='Y'">
+                                <strong>채팅:</strong>
+                                <span>사용 (추가비: {{ formatNumber(order.addOptionPrice) }}원)</span>
                             </div>
-                            <div>
-                                <button @click="fnOrderStatus(order.orderId)">주문현황</button>
+                            <div class="summaryRow" v-if="order.deliveryType==='D'">
+                                <strong>배송비:</strong>
+                                <span>{{ formatNumber(order.deliveryFee) }}원</span>
+                            </div>
+                            <div class="summaryRow" v-if="order.deliveryType==='P'">
+                                <strong>픽업시간:</strong>
+                                <span>{{order.pickTime}}</span>
+                            </div>
+                            <div class="summaryRow" v-if="order.deliveryType==='D'">
+                                <strong>주소:</strong>
+                                <span>{{ order.fullAddress }}</span>
+                            </div>
+                            <div class="summaryRow" v-if="order.deliveryType==='P'">
+                                <strong>주소:</strong>
+                                <span>{{ order.storeAddr }}</span>
+                            </div>
+                            <div class="summaryRow">
+                                <strong>주문 시간:</strong>
+                                <span>{{ order.orderDate }}</span>
+                            </div>
+                            <div class="summaryRow" style="border-bottom: none;">
+                                <strong>주문 번호:</strong>
+                                <span style="color: #999; font-size: 12px;">{{ order.orderId }}</span>
+                            </div>
+
+                            <h3 class="totalPrice">총 {{ formatNumber(order.totalPrice) }}원</h3>
+
+                            <!-- Action Buttons -->
+                            <div class="actionButtons" v-if="order.status!='C'">
+                                <button v-if="order.chatYn==='Y'" class="btnChat"
+                                    @click="fnChat(order.orderId, order.storeId)">
+                                    💬 채팅방으로
+                                </button>
+                                <button class="btnStatus" @click="fnPayment(order.orderId)" v-if="order.status==='S'">
+                                    💰 바로 결제
+                                </button>
+                                <button class="btnStatus" @click="fnOrderStatus(order.orderId)"
+                                    v-if="order.status==='P'">
+                                    📋 주문현황
+                                </button>
                             </div>
                         </div>
-
-
-                        <!--order循环结束-->
                     </div>
                 </div>
             </div>
@@ -153,15 +471,12 @@
         const app = Vue.createApp({
             data() {
                 return {
-                    // 변수 - (key : value)
                     userId: "${sessionId}",
                     orderList: [],
-                    groupedOrdersList: [],
-                    optionList: []
+                    groupedOrdersList: []
                 };
             },
             methods: {
-                // 함수(메소드) - (key : function())
                 fnOrderList: function () {
                     let self = this;
                     let param = { userId: self.userId };
@@ -176,117 +491,95 @@
                             self.fnGroupOrderList(self.orderList);
                         },
                         error: function (xhr, status, error) {
-                            console.error("장바구니 로드 실패:", status, error);
+                            console.error("주문내역 로드 실패:", status, error);
                         }
                     });
                 },
 
                 fnGroupOrderList: function (list) {
-                    //groupedOrdersList里面的每个order就是groupedOrders
-                    //为什么包着订单的是map，而包着detail的是数组：因为订单是唯一的可以方便查找，一个订单里可能有多件商品，每个商品是一个明细
                     const groupedOrders = {};
 
-                    //处理list是假值的情况
                     if (!Array.isArray(list) || list.length === 0) {
                         this.groupedOrdersList = [];
-                        console.log("장바구니 목록이 비어 있거나 올바르지 않아 그룹화하지 않습니다.");
                         return;
                     }
 
-                    //循环list中的每一个order
                     list.forEach(order => {
-                        //每个orderId依次装进const orderId里面
                         const orderId = order.orderId;
-                        //如果orderId不存在或是假值直接返回，不再继续执行代码
                         if (!orderId) return;
 
-
-                        //处理带数字的万一没有值的情况
-                        const deliveryType = order.deliveryType || "기본배송종류";
-                        const deliveryFee = Number(order.deliveryFee || 0);
-                        const totalPrice = Number(order.totalPrice || 0);
-                        const addOptionPrice = Number(order.addOptionPrice || 0);
-                        const wishDeli = order.wishDeli || "시간 미지정";
-                        const pickTime=order.pickTime||"시간 미지정";
-                        //1.假如groupedOrders[orderId]不存在（就是以前没有添加过，就添加）
                         if (!groupedOrders[orderId]) {
                             groupedOrders[orderId] = {
                                 orderId: order.orderId,
                                 storeName: order.storeName,
                                 fullAddress: order.fullAddress,
                                 orderDate: order.orderDate,
-                                deliveryType: deliveryType,
-                                deliveryFee: deliveryFee,
-                                totalPrice: totalPrice,
+                                deliveryType: order.deliveryType || "D",
+                                deliveryFee: Number(order.deliveryFee || 0),
+                                totalPrice: Number(order.totalPrice || 0),
                                 chatYn: order.chatYn,
-                                //添加完立刻再添加一个装details的map
-                                addOptionPrice: addOptionPrice,
-                                status:order.status,
-                                wishDeli:wishDeli,
-                                pickTime:pickTime,
-                                storeId:order.storeId,
+                                addOptionPrice: Number(order.addOptionPrice || 0),
+                                status: order.status || "S",
+                                wishDeli: order.wishDeli || "시간 미지정",
+                                pickTime: order.pickTime || "시간 미지정",
+                                storeAddr:order.storeAddr,
+                                storeId: order.storeId,
                                 groupedDetails: {}
                             };
-
                         }
 
-                        //2.装details
                         const orderDetailId = order.orderDetailId;
+                        if (!orderDetailId) return;
 
-                        const quantity = Number(order.quantity || 0);
-                        const subtotal = Number(order.subtotal || 0);
-                        const price = Number(order.price || 0);
                         if (!groupedOrders[orderId].groupedDetails[orderDetailId]) {
                             groupedOrders[orderId].groupedDetails[orderDetailId] = {
                                 proName: order.proName,
-                                subtotal: subtotal,
-                                price: price,
+                                subtotal: Number(order.subtotal || 0),
+                                price: Number(order.price || 0),
                                 letteringWord: order.letteringWord || "",
-                                quantity: quantity,
-                                //添加完立刻加一个list装option
+                                quantity: Number(order.quantity || 1),
                                 options: []
-                            }
+                            };
                         }
 
-                        //3.因为option是最后添加的东西，用list
-                        const addQuantity = Number(order.addQuantity || 0);
-                        const optionName = order.optionName || "옵션 미선택";
-                        const priceDiff = Number(order.priceDiff || 0);
-                        const optionTotal = Number(order.optionTotal || 0);
-                        // groupedOrders[orderId].groupedDetails[orderDetailId].options = groupedOrders[orderId].groupedDetails[orderDetailId].options || [];可以省略
-                        groupedOrders[orderId].groupedDetails[orderDetailId].options.push({
-                            topOptionId: order.topOptionId,
-                            subOptionId: order.subOptionId,
-                            optionName: optionName,
-                            valueName: order.valueName,
-                            priceDiff: order.priceDiff,
-                            addQuantity: addQuantity,
-                            optionTotal:optionTotal
-                        });
+                        if (order.orderOptionId) {
+                            const exists = groupedOrders[orderId].groupedDetails[orderDetailId].options
+                                .find(opt => opt.orderOptionId === order.orderOptionId);
 
-
+                            if (!exists) {
+                                groupedOrders[orderId].groupedDetails[orderDetailId].options.push({
+                                    orderOptionId: order.orderOptionId,
+                                    topOptionId: order.topOptionId,
+                                    subOptionId: order.subOptionId,
+                                    optionName: order.optionName || "옵션",
+                                    valueName: order.valueName || "",
+                                    priceDiff: Number(order.priceDiff || 0),
+                                    addQuantity: Number(order.addQuantity || 0),
+                                    optionTotal: Number(order.optionTotal || 0)
+                                });
+                            }
+                        }
                     });
 
                     this.groupedOrdersList = Object.values(groupedOrders);
+                    console.log("최종 주문 목록:", this.groupedOrdersList);
                 },
 
-
-                // formatNumber 함수 추가
                 formatNumber: function (num) {
-                    if (!num) return '0';
+                    if (!num && num !== 0) return '0';
                     return Number(num).toLocaleString('ko-KR');
                 },
 
+                toggleMenu: function () {
+                    document.querySelector('.navBar').classList.toggle('active');
+                    document.body.classList.toggle('menu-open');
+                },
 
-
-                // fnBack:function(){
-                //     location.href="/user/userMyPage.do";
-                // },
+                fnHome() { location.href = "/main.do" },
 
                 fnOrderHistory: function () {
                     location.href = "/user/orderHistory.do";
                 },
-
 
                 fnWishList: function () {
                     location.href = "/product/wishlist.do";
@@ -295,7 +588,6 @@
                 fnChatList: function () {
                     location.href = "/user/chatList.do";
                 },
-
 
                 fnReview: function () {
                     location.href = "/user/review.do";
@@ -310,21 +602,25 @@
                 },
 
                 fnLogout: function () {
-
+                    if (confirm("로그아웃 하시겠습니까?")) {
+                        location.href = "/user/logout.do";
+                    }
                 },
 
-                fnChat:function(orderId,storeId){
-                    pageChange("/chat/chatBuyer.do",{orderId:orderId,storeId:storeId});
+                fnChat: function (orderId, storeId) {
+                    pageChange("/chat/chatBuyer.do", { orderId: orderId, storeId: storeId });
                 },
 
-                fnOrderStatus:function(orderId){
-                    pageChange("/user/orderStatus.do",{orderId:orderId});
+                fnOrderStatus: function (orderId) {
+                    pageChange("/user/orderStatus.do", { orderId: orderId });
+                },
+
+                fnPayment: function (orderId) {
+                    pageChange("/payment/payment.do", { orderId: orderId });
                 }
-            }, // methods
-
+            },
 
             mounted() {
-                // 처음 시작할 때 실행되는 부분
                 let self = this;
                 self.fnOrderList();
             }

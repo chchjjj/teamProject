@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="ko">
 
     <head>
         <meta charset="UTF-8">
@@ -10,137 +10,484 @@
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <script src="/js/page-change.js"></script>
+
+        <!-- Navbar CSS -->
+        <link rel="stylesheet" href="/css/navbar.css">
+
         <style>
-            table,
-            tr,
-            td,
-            th {
-                border: 1px solid black;
-                border-collapse: collapse;
-                padding: 5px 10px;
+            /* Page Specific Styles */
+            :root {
+                --espresso: #3E2723;
+                --peony: #F4C9D6;
+                --butter: #FFEDAC;
+                --light-bg: #F4F4F4;
+                --white: #FFFFFF;
+            }
+
+            body {
+                background-color: var(--light-bg);
+            }
+
+            /* Main Container */
+            .orderContainer {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            .pageTitle {
+                font-size: 22px;
+                color: var(--espresso);
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid var(--espresso);
+            }
+
+            .orderInfoArea {
+                background-color: transparent;
+            }
+
+            /* Order Card - 优化版 */
+            .orderCard {
+                background-color: var(--white);
+                border: 1px solid #e0e0e0;
+                border-radius: 12px;
+                padding: 24px;
+                margin-bottom: 20px;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            }
+
+            .orderCard:hover {
+                box-shadow: 0 4px 16px rgba(62, 39, 35, 0.12);
+                border-color: var(--peony);
+            }
+
+            /* 订单头部 */
+            .orderHeader {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 20px;
+                padding-bottom: 16px;
+                border-bottom: 2px solid #f5f5f5;
+            }
+
+            .orderHeaderLeft {
+                flex: 1;
+            }
+
+            .storeName {
+                font-size: 18px;
+                font-weight: 700;
+                color: var(--espresso);
+                margin-bottom: 6px;
+            }
+
+            .orderMeta {
+                display: flex;
+                gap: 12px;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+
+            .orderDate {
+                font-size: 13px;
+                color: #999;
+            }
+
+            .orderId {
+                font-size: 12px;
+                color: #bbb;
+                font-family: monospace;
+            }
+
+            /* 状态标签 */
+            .statusBadge {
+                display: inline-block;
+                padding: 6px 14px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 600;
+                white-space: nowrap;
+            }
+
+            .status-P {
+                background-color: #e8f5e9;
+                color: #2e7d32;
+            }
+
+            .status-C {
+                background-color: #e3f2fd;
+                color: #1565c0;
+            }
+
+            .status-S {
+                background-color: #fff3e0;
+                color: #e65100;
+            }
+
+            /* 进度条区域 */
+            .progressSection {
+                background-color: #fafafa;
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .progressHeader {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+            }
+
+            .deliveryBadge {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 12px;
+                border-radius: 6px;
+                font-size: 13px;
+                font-weight: 600;
+            }
+
+            .delivery-D {
+                background-color: #e3f2fd;
+                color: #1976d2;
+            }
+
+            .delivery-P {
+                background-color: #fff3e0;
+                color: #f57c00;
+            }
+
+            .progressStatus {
+                font-size: 14px;
+                font-weight: 600;
+                color: var(--espresso);
+            }
+
+            /* 进度条 */
+            .progressBar {
+                position: relative;
+                height: 8px;
+                background-color: #e0e0e0;
+                border-radius: 10px;
+                overflow: hidden;
+            }
+
+            .progressFill {
+                height: 100%;
+                background: linear-gradient(90deg, var(--peony), #f0b8ca);
+                border-radius: 10px;
+                transition: width 0.6s ease;
+                position: relative;
+            }
+
+            .progressFill::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+                animation: shimmer 2s infinite;
+            }
+
+            @keyframes shimmer {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(100%); }
+            }
+
+            /* 商品列表 */
+            .productList {
+                margin-bottom: 20px;
+            }
+
+            .productItem {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                padding: 12px 0;
+                border-bottom: 1px solid #f5f5f5;
+            }
+
+            .productItem:last-child {
+                border-bottom: none;
+            }
+
+            .productInfo {
+                flex: 1;
+            }
+
+            .productName {
+                font-size: 15px;
+                font-weight: 600;
+                color: var(--espresso);
+                margin-bottom: 6px;
+            }
+
+            .productOptions {
+                font-size: 13px;
+                color: #666;
+                line-height: 1.6;
+            }
+
+            .productPrice {
+                font-size: 15px;
+                font-weight: 600;
+                color: var(--espresso);
+                white-space: nowrap;
+                margin-left: 16px;
+            }
+
+            /* 订单摘要 */
+            .orderSummary {
+                background-color: #fafafa;
+                border-radius: 8px;
+                padding: 16px;
+                margin-bottom: 16px;
+            }
+
+            .summaryRow {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                font-size: 13px;
+                color: #666;
+            }
+
+            .summaryRow strong {
+                color: var(--espresso);
+            }
+
+            .summaryRow.total {
+                padding-top: 12px;
+                margin-top: 8px;
+                border-top: 2px solid #e0e0e0;
+            }
+
+            .totalAmount {
+                font-size: 20px;
+                font-weight: 700;
+                color: var(--espresso);
+            }
+
+            /* Empty State */
+            .emptyState {
                 text-align: center;
+                padding: 60px 20px;
+                color: #999;
+                background-color: var(--white);
+                border-radius: 8px;
             }
 
-            th {
-                background-color: beige;
+            .emptyState h3 {
+                font-size: 20px;
+                margin-bottom: 12px;
+                color: #666;
             }
 
-            tr:nth-child(even) {
-                background-color: azure;
+            .emptyState p {
+                font-size: 14px;
+            }
+
+            /* Animation */
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .orderCard {
+                animation: fadeIn 0.3s ease;
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .orderContainer {
+                    padding: 20px 15px;
+                }
+
+                .orderCard {
+                    padding: 16px;
+                }
+
+                .orderHeader {
+                    flex-direction: column;
+                    gap: 12px;
+                }
+
+                .productItem {
+                    flex-direction: column;
+                    gap: 8px;
+                }
+
+                .productPrice {
+                    margin-left: 0;
+                }
+
+                .progressSection {
+                    padding: 16px;
+                }
             }
         </style>
     </head>
 
     <body>
         <div id="app">
-            <!-- html 코드는 id가 app인 태그 안에서 작업 -->
+            <!-- Left Sidebar Navigation -->
             <div class="navBar">
-                <!---->
+                <!-- Logo Area -->
+                <div class="logoArea">
+                    <div class="logo">
+                        <a href="javascript:;" onclick="location.href='/main.do'">
+                            <!--로고 클릭시 홈페이지 새로고침 -->
+                            <img src="/img/로고.png" alt="쇼핑몰 로고">
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
                 <div class="navButton">
-                    <div>
-                        <button @click="fnOrderHistory()">주문 내역</button>
-                    </div>
-                    <div>
-                        <button @click="fnWishList()">찜한 상품</button>
-                    </div>
-                    <div>
-                        <button @click="fnChatList()">채팅이력</button>
-                    </div>
-                    <div>
-                        <button @click="fnReview()">내가 쓴 리뷰</button>
-                    </div>
-                    <div>
-                        <button @click="fnQnA()">QnA</button>
-                    </div>
-                    <div>
-                        <button @click="fnUserEdit()">정보수정</button>
-                    </div>
+                    <button @click="fnOrderHistory()" class="active">주문 내역</button>
+                    <button @click="fnWishList()">찜한 상품</button>
+                    <button @click="fnChatList()">채팅이력</button>
+                    <button @click="fnReview()">내가 쓴 리뷰</button>
+                    <button @click="fnQnA()">QnA</button>
+                    <button @click="fnUserEdit()">정보수정</button>
                 </div>
 
-                <!--logout button-->
+                <!-- Logout Button -->
                 <div class="logOut">
-                    <div>
-                        <button @click="fnLogout()">Logout</button>
-                    </div>
+                    <button @click="fnLogout()">Logout</button>
                 </div>
-
             </div>
 
-            <!--내용 구역-->
+            <!-- Mobile Menu Toggle (hidden on desktop) -->
+            <button class="menuToggle" @click="toggleMenu">☰</button>
+
+            <!-- Main Content -->
             <div class="orderContainer">
+                <h1 class="pageTitle">📦 주문 내역</h1>
+
                 <div class="orderInfoArea">
-                    <div class="storeSection">
+                    <!-- Empty State -->
+                    <div v-if="groupedOrdersList.length === 0" class="emptyState">
+                        <h3>주문 내역이 없습니다</h3>
+                        <p>주문하신 내역이 여기에 표시됩니다</p>
+                    </div>
 
-                        <!--order层-->
-                        <div v-for="(order, orderIndex) in groupedOrdersList" :key="order.orderId" class="orderCard">
-                            <div class="orderCardContent">
-                                <div class="orderSingle">
-                                    <div>
-                                        <h3 class="storeName">가게명: {{ order.storeName }}/
-                                            <span v-if="order.status==='P'">결제 완료</span>
-                                            <span v-if="order.status==='C'">결제 수락</span>
-                                            <span v-if="order.status==='S'">결제 대기</span>
-                                        </h3>
+                    <!-- Order List -->
+                    <div v-else>
+                        <div v-for="order in groupedOrdersList" :key="order.orderId" class="orderCard">
+                            
+                            <!-- 订单头部 -->
+                            <div class="orderHeader">
+                                <div class="orderHeaderLeft">
+                                    <h3 class="storeName">{{ order.storeName }}</h3>
+                                    <div class="orderMeta">
+                                        <span class="orderDate">{{ order.orderDate }}</span>
+                                        <span class="orderId">주문번호: {{ order.orderId }}</span>
                                     </div>
+                                </div>
+                                <span class="statusBadge" :class="'status-' + order.status">
+                                    <span v-if="order.status==='P'">결제 완료</span>
+                                    <span v-else-if="order.status==='C'">결제 수락</span>
+                                    <span v-else-if="order.status==='S'">결제 대기</span>
+                                </span>
+                            </div>
 
-                                    <!--orderDetail级别循环（groupedDetails是对象，需要Object.values转换成数组）-->
-                                    <div v-for="(orderDetail, orderDetailIndex) in Object.values(order.groupedDetails)"
-                                        :key="orderDetailIndex" class="orderDetailCard">
-                                        <div class="orderDetailCardContent">
-                                            <div>
-                                                <h3 class="proName">상품명: {{ orderDetail.proName }}</h3>
-                                            </div>
-
-                                            <div>
-                                                <span v-if="order.deliveryType==='D'">
-                                                    {{order.wishDeli}}
-                                                    예약배송
-                                                </span>
-                                                <span v-if="order.deliveryType==='P'">
-                                                    {{order.pickTime}}
-                                                    픽업
-                                                </span>
-                                            </div>
-
-                                            <!--option循环-->
-                                            <ul>
-                                                <li v-for="(option, optionIndex) in orderDetail.options"
-                                                    :key="optionIndex" class="optionCard">
-                                                    <!--这里假设optionName和valueName有对应值，如果没有可以用subOptionId/topOptionId-->
-                                                    옵션: {{ option.optionName }} / {{ option.valueName}}X{{option.priceDiff}}원
-                                                    (수량: {{ option.addQuantity }}개 / 추가금: {{option.optionTotal}}원)
-                                                </li>
-                                            </ul>
-
-                                            <div>가격: {{ orderDetail.price }}</div>
-                                            <div>수량: {{ orderDetail.quantity || 1 }}</div>
-                                            <div>레터링: {{ orderDetail.letteringWord }}</div>
-                                            <div>합계: {{ orderDetail.subtotal }}</div>
-                                        </div>
-
-                                    </div>
-                                    <div>채팅유무(Y/N):{{ order.chatYn }}</div>
-                                    <div>채팅추가비: {{ order.addOptionPrice || 0 }}</div>
-                                    <div>배송방식: {{ order.deliveryType }}</div>
-                                    <div>배송비: {{ order.deliveryFee }}</div>
-                                    <div>주소: {{ order.fullAddress }}</div>
-                                    <div>주문 시간: {{ order.orderDate }}</div>
-                                    <div>
-                                        <h3 class="totalPrice">총가격: {{ order.totalPrice }}</h3>
-                                    </div>
-                                    <div>주문 번호: {{ order.orderId }}</div>
+                            <!-- 进度条区域 -->
+                            <div class="progressSection">
+                                <div class="progressHeader">
+                                    <span class="deliveryBadge" :class="'delivery-' + order.deliveryType">
+                                        <span v-if="order.deliveryType==='D'">📦 배송</span>
+                                        <span v-else-if="order.deliveryType==='P'">🏪 픽업</span>
+                                    </span>
+                                    <span class="progressStatus">
+                                        <span v-if="order.deliveryType==='D'">
+                                            <span v-if="order.deliveryStatus==='Z'">주문신청</span>
+                                            <span v-else-if="order.deliveryStatus==='A'">주문수락완료</span>
+                                            <span v-else-if="order.deliveryStatus==='D'">배송중</span>
+                                            <span v-else-if="order.deliveryStatus==='F'">배송완료</span>
+                                        </span>
+                                        <span v-else-if="order.deliveryType==='P'">
+                                            <span v-if="order.deliveryStatus==='Z'">준비중</span>
+                                            <span v-else-if="order.deliveryStatus==='A'">준비완료</span>
+                                            <span v-else-if="order.deliveryStatus==='D'">픽업완료</span>
+                                        </span>
+                                    </span>
+                                </div>
+                                <div class="progressBar">
+                                    <div class="progressFill" :style="{width: getProgressWidth(order)}"></div>
                                 </div>
                             </div>
-                            <div v-if="order.chatYn==='Y'">
-                                <button @click="fnChat(order.orderId,order.chatId)">채팅방으로</button>
+
+                            <!-- 商品列表 -->
+                            <div class="productList">
+                                <div v-for="orderDetail in Object.values(order.groupedDetails)" 
+                                     :key="orderDetail.proName" 
+                                     class="productItem">
+                                    <div class="productInfo">
+                                        <div class="productName">{{ orderDetail.proName }}</div>
+                                        <div class="productOptions">
+                                            <div v-if="orderDetail.letteringWord">
+                                                🎨 레터링: {{ orderDetail.letteringWord }}
+                                            </div>
+                                            <div v-if="orderDetail.options && orderDetail.options.length > 0">
+                                                <span v-for="(option, idx) in orderDetail.options" :key="idx">
+                                                    {{ option.optionName }}: {{ option.valueName }}
+                                                    ({{ formatNumber(option.priceDiff) }}원 × {{ option.addQuantity }})
+                                                    <span v-if="idx < orderDetail.options.length - 1"> / </span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="productPrice">
+                                        {{ formatNumber(orderDetail.subtotal) }}원
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <button @click="fnOrderStatus(order.deliveryType)">주문현황</button>
+
+                            <!-- 订单摘要 -->
+                            <div class="orderSummary">
+                                <div class="summaryRow" v-if="order.deliveryType==='D'">
+                                    <span>📍 배송 주소</span>
+                                    <span>{{ order.fullAddress }}</span>
+                                </div>
+                                <div class="summaryRow" v-if="order.deliveryType==='D'">
+                                    <span>🚚 희망 배송일</span>
+                                    <span>{{ order.wishDeli }}</span>
+                                </div>
+                                <div class="summaryRow" v-if="order.deliveryType==='P'">
+                                    <span>⏰ 픽업 시간</span>
+                                    <span>{{ order.pickTime }}</span>
+                                </div>
+                                <div class="summaryRow" v-if="order.deliveryType==='D'">
+                                    <span>배송비</span>
+                                    <span>{{ formatNumber(order.deliveryFee) }}원</span>
+                                </div>
+                                <div class="summaryRow" v-if="order.chatYn==='Y'">
+                                    <span>💬 채팅 추가 옵션</span>
+                                    <span>{{ formatNumber(order.addOptionPrice) }}원</span>
+                                </div>
+                                <div class="summaryRow total">
+                                    <strong>총 결제 금액</strong>
+                                    <span class="totalAmount">{{ formatNumber(order.totalPrice) }}원</span>
+                                </div>
                             </div>
+
                         </div>
-
-
-                        <!--order循环结束-->
                     </div>
                 </div>
             </div>
@@ -153,22 +500,21 @@
         const app = Vue.createApp({
             data() {
                 return {
-                    // 변수 - (key : value)
                     userId: "${sessionId}",
-                    orderId:"${orderId}",
+                    orderId: "${orderId}",
                     orderList: [],
-                    groupedOrdersList: [],
-                    optionList: []
+                    groupedOrdersList: []
                 };
             },
             methods: {
-                // 함수(메소드) - (key : function())
-                fnOrderList: function (orderId) {
+                fnOrderList: function () {
                     let self = this;
-                    orderId=self.orderId;
-                    let param = { userId: self.userId };
+                    let param = {
+                        userId: self.userId,
+                        orderId: self.orderId
+                    };
                     $.ajax({
-                        url: "/user/orderHistory.dox",
+                        url: "/user/orderStatus.dox",
                         dataType: "json",
                         type: "POST",
                         data: param,
@@ -178,116 +524,115 @@
                             self.fnGroupOrderList(self.orderList);
                         },
                         error: function (xhr, status, error) {
-                            console.error("장바구니 로드 실패:", status, error);
+                            console.error("주문내역 로드 실패:", status, error);
                         }
                     });
                 },
 
                 fnGroupOrderList: function (list) {
-                    //groupedOrdersList里面的每个order就是groupedOrders
-                    //为什么包着订单的是map，而包着detail的是数组：因为订单是唯一的可以方便查找，一个订单里可能有多件商品，每个商品是一个明细
                     const groupedOrders = {};
 
-                    //处理list是假值的情况
                     if (!Array.isArray(list) || list.length === 0) {
                         this.groupedOrdersList = [];
-                        console.log("장바구니 목록이 비어 있거나 올바르지 않아 그룹화하지 않습니다.");
                         return;
                     }
 
-                    //循环list中的每一个order
                     list.forEach(order => {
-                        //每个orderId依次装进const orderId里面
                         const orderId = order.orderId;
-                        //如果orderId不存在或是假值直接返回，不再继续执行代码
                         if (!orderId) return;
 
-
-                        //处理带数字的万一没有值的情况
-                        const deliveryType = order.deliveryType || "기본배송종류";
-                        const deliveryFee = Number(order.deliveryFee || 0);
-                        const totalPrice = Number(order.totalPrice || 0);
-                        const addOptionPrice = Number(order.addOptionPrice || 0);
-                        const wishDeli = order.wishDeli || "시간 미지정";
-                        const pickTime=order.pickTime||"시간 미지정";
-                        //1.假如groupedOrders[orderId]不存在（就是以前没有添加过，就添加）
                         if (!groupedOrders[orderId]) {
                             groupedOrders[orderId] = {
                                 orderId: order.orderId,
                                 storeName: order.storeName,
                                 fullAddress: order.fullAddress,
                                 orderDate: order.orderDate,
-                                deliveryType: deliveryType,
-                                deliveryFee: deliveryFee,
-                                totalPrice: totalPrice,
+                                deliveryType: order.deliveryType || "D",
+                                deliveryStatus: order.deliveryStatus || "Z",
+                                deliveryFee: Number(order.deliveryFee || 0),
+                                totalPrice: Number(order.totalPrice || 0),
                                 chatYn: order.chatYn,
-                                //添加完立刻再添加一个装details的map
-                                addOptionPrice: addOptionPrice,
-                                status:order.status,
-                                wishDeli:wishDeli,
-                                pickTime:pickTime,
+                                addOptionPrice: Number(order.addOptionPrice || 0),
+                                status: order.status || "S",
+                                wishDeli: order.wishDeli || "시간 미지정",
+                                pickTime: order.pickTime || "시간 미지정",
+                                storeId: order.storeId,
                                 groupedDetails: {}
                             };
-
                         }
 
-                        //2.装details
                         const orderDetailId = order.orderDetailId;
+                        if (!orderDetailId) return;
 
-                        const quantity = Number(order.quantity || 0);
-                        const subtotal = Number(order.subtotal || 0);
-                        const price = Number(order.price || 0);
                         if (!groupedOrders[orderId].groupedDetails[orderDetailId]) {
                             groupedOrders[orderId].groupedDetails[orderDetailId] = {
                                 proName: order.proName,
-                                subtotal: subtotal,
-                                price: price,
+                                subtotal: Number(order.subtotal || 0),
+                                price: Number(order.price || 0),
                                 letteringWord: order.letteringWord || "",
-                                quantity: quantity,
-                                //添加完立刻加一个list装option
+                                quantity: Number(order.quantity || 1),
                                 options: []
-                            }
+                            };
                         }
 
-                        //3.因为option是最后添加的东西，用list
-                        const addQuantity = Number(order.addQuantity || 0);
-                        const optionName = order.optionName || "옵션 미선택";
-                        const priceDiff = Number(order.priceDiff || 0);
-                        const optionTotal = Number(order.optionTotal || 0);
-                        // groupedOrders[orderId].groupedDetails[orderDetailId].options = groupedOrders[orderId].groupedDetails[orderDetailId].options || [];可以省略
-                        groupedOrders[orderId].groupedDetails[orderDetailId].options.push({
-                            topOptionId: order.topOptionId,
-                            subOptionId: order.subOptionId,
-                            optionName: optionName,
-                            valueName: order.valueName,
-                            priceDiff: order.priceDiff,
-                            addQuantity: addQuantity,
-                            optionTotal:optionTotal
-                        });
+                        if (order.orderOptionId) {
+                            const exists = groupedOrders[orderId].groupedDetails[orderDetailId].options
+                                .find(opt => opt.orderOptionId === order.orderOptionId);
 
-
+                            if (!exists) {
+                                groupedOrders[orderId].groupedDetails[orderDetailId].options.push({
+                                    orderOptionId: order.orderOptionId,
+                                    topOptionId: order.topOptionId,
+                                    subOptionId: order.subOptionId,
+                                    optionName: order.optionName || "옵션",
+                                    valueName: order.valueName || "",
+                                    priceDiff: Number(order.priceDiff || 0),
+                                    addQuantity: Number(order.addQuantity || 0),
+                                    optionTotal: Number(order.optionTotal || 0)
+                                });
+                            }
+                        }
                     });
 
                     this.groupedOrdersList = Object.values(groupedOrders);
+                    console.log("최종 주문 목록:", this.groupedOrdersList);
                 },
 
+                getProgressWidth: function(order) {
+                    if (order.deliveryType === 'D') {
+                        switch(order.deliveryStatus) {
+                            case 'Z': return '10%';
+                            case 'A': return '30%';
+                            case 'D': return '70%';
+                            case 'F': return '100%';
+                            default: return '0%';
+                        }
+                    } else if (order.deliveryType === 'P') {
+                        switch(order.deliveryStatus) {
+                            case 'Z': return '30%';
+                            case 'A': return '80%';
+                            case 'D': return '100%';
+                            default: return '0%';
+                        }
+                    }
+                    return '0%';
+                },
 
-                // formatNumber 함수 추가
                 formatNumber: function (num) {
-                    if (!num) return '0';
+                    if (!num && num !== 0) return '0';
                     return Number(num).toLocaleString('ko-KR');
                 },
 
+                toggleMenu: function () {
+                    document.querySelector('.navBar').classList.toggle('active');
+                    document.body.classList.toggle('menu-open');
+                },
 
-
-                // fnBack:function(){
-                //     location.href="/user/userMyPage.do";
-                // },
+                fnHome() { location.href = "/main.do" },
 
                 fnOrderHistory: function () {
                     location.href = "/user/orderHistory.do";
                 },
-
 
                 fnWishList: function () {
                     location.href = "/product/wishlist.do";
@@ -296,7 +641,6 @@
                 fnChatList: function () {
                     location.href = "/user/chatList.do";
                 },
-
 
                 fnReview: function () {
                     location.href = "/user/review.do";
@@ -311,21 +655,13 @@
                 },
 
                 fnLogout: function () {
-
-                },
-
-                fnChat:function(orderId,chatId){
-                    pageChange("/chat/chatBuyer.do",{orderId:orderId,chatId:chatId});
-                },
-
-                fnOrderStatus:function(orderId){
-                    pageChange("/user/orderStatus.do",{orderId:orderId});
+                    if (confirm("로그아웃 하시겠습니까?")) {
+                        location.href = "/user/logout.do";
+                    }
                 }
-            }, // methods
-
+            },
 
             mounted() {
-                // 처음 시작할 때 실행되는 부분
                 let self = this;
                 self.fnOrderList();
             }
