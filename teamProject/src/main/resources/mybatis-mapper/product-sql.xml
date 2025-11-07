@@ -22,6 +22,11 @@
 		AND I.FILEUSE = 'T'
 		WHERE P.PRO_NO = #{proNo}
 	</select>
+	<select id="proIMG" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
+	SELECT *
+		FROM PRODUCT_IMG_TBL
+		WHERE PRO_NO=#{proNo} AND FILEUSE = 'I'
+	</select>
 	<!--클릭시 조회수 업-->
 	<update id="updateCnt" parameterType="hashmap">
 		UPDATE PRODUCT_TBL
@@ -387,8 +392,9 @@ OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	
 	<select id="sellerInfo" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product"> 
 		SELECT *			
-		FROM SELLER_INFO_TBL
-		WHERE STORE_ID = #{storeId}
+		FROM SELLER_INFO_TBL F
+        LEFT JOIN SELLER_IMG_TBL I ON F.STORE_ID = I.STORE_ID
+		WHERE F.STORE_ID = #{storeId}
 	</select>
 	
 	<insert id="insertChat" parameterType="hashmap">
