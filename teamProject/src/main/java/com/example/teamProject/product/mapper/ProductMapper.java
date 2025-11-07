@@ -13,7 +13,8 @@ public interface ProductMapper {
 	
 	// 제품 상세정보
 	Product proInfo(HashMap<String, Object> map);
-	
+	// 제품 상세정보 사진
+	Product proIMG(HashMap<String, Object> map);
 	// 유저 정보
 	Product userInfo(HashMap<String, Object> map);
 	

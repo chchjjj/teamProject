@@ -145,7 +145,11 @@
                 <div class="tab-content">
 
                     <div v-if="currentTab === 'detail'">
-                        <p>제품 상세 설명.</p>
+                        <div v-if="!imgInfo.filePath || !imgInfo.fileName">
+                            판매자 등록 상세이미지
+                        </div>
+                        <img v-else :src="(imgInfo.filePath + imgInfo.fileName).trim()" alt="상품 이미지"
+                        style="width: 100%; height: auto; border-radius: 10px;">
                     </div>
 
                     <div v-if="currentTab === 'review'"> <!--후기 탭-->
@@ -306,13 +310,28 @@
 
                     showQnaModal: false, // 팝업 표시 여부
                     qnaContents: '',
-                    infoList: {}
+                    infoList: {},
+                    imgInfo: {}
 
                 };
             },
             methods: {
-                // 함수(메소드) - (key : function())
-
+                fnIII() {
+                    let self = this;
+                    let param = {
+                        proNo: self.proNo
+                    };
+                    $.ajax({
+                        url: "/product/Imginfo.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            self.imgInfo = data.info;
+                            console.log(data.info);
+                        }
+                    });
+                },
                 //탭 선택 및 내용 불러오기 함수
                 selectTab(tabName) {
                     this.currentTab = tabName;
@@ -495,6 +514,7 @@
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
                 // QnA 목록 가져오기
+                self.fnIII();
                 self.fnQnaList1();
                 self.fnReviewList();
                 self.fnInfo();

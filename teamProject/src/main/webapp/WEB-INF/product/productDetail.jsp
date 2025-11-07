@@ -47,13 +47,6 @@
                                         class="product-image" style="width: 100%; height: auto; border-radius: 10px;">
                                 </div>
 
-                                <div class="thumbnail-list">
-                                    <div class="thumbnail-item"></div>
-                                    <div class="thumbnail-item"></div>
-                                    <div class="thumbnail-item"></div>
-                                    <div class="thumbnail-item"></div>
-                                    <div class="thumbnail-item"></div>
-                                </div>
                             </div>
 
                             <div class="option-section">
