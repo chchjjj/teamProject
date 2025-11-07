@@ -224,7 +224,7 @@
                     </div>
                     
                     <!-- 여기부터 -->
-                    <div v-if="checkResult && !smsFlg">
+                    <!-- <div v-if="checkResult && !smsFlg">
                         <template v-if="!sendMessageFlg">
                             <div class="cert-box">
                                 <button @click="fnSendSms">문자인증</button>
@@ -240,7 +240,7 @@
 
                     <div v-else class="result-text" v-if="smsFlg">
                         {{userName}}님의 아이디는 <b>{{info.userId}}</b> 입니다.
-                    </div>
+                    </div> -->
                     <!-- 여기까지 -->
                     <div class="back-link">
                         <a href="/user/login.do">로그인으로 돌아가기</a>
