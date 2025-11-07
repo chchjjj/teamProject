@@ -130,7 +130,7 @@
         LEFT JOIN DELIVERY_TBL DELI ON DELI.ORDER_ID=O.ORDER_ID
         LEFT JOIN PICKUP_TBL PI ON PI.ORDER_ID=O.ORDER_ID
 	    WHERE O.ORDER_ID = #{orderId}
-    	ORDER BY O.ORDER_DATE
+    	ORDER BY O.ORDER_DATE DESC
 	</select>
 	
 	<!--review-->
@@ -177,6 +177,27 @@
 	</select>
 	
 	
+	<!--chatlist-->
+	<select id="chatListSelect" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
+   		SELECT 
+            C.CHAT_ID,
+            O.ORDER_ID,
+            S.STORE_NAME,
+            P.PRO_NAME,
+            C.CREATED_AT,
+            C.LAST_MSG_AT,
+            C.LAST_MSG,
+            C.UNREAD_COUNT
+        FROM CHAT_TBL C
+        INNER JOIN ORDER_TBL O ON O.ORDER_ID=C.ORDER_ID
+        INNER JOIN ORDER_DETAIL_TBL D ON O.ORDER_ID=D.ORDER_ID
+        INNER JOIN PRODUCT_TBL P ON P.PRO_NO=D.PRO_NO
+        INNER JOIN SELLER_INFO_TBL S ON S.STORE_ID=P.STORE_ID
+        WHERE O.USER_ID=#{userId}
+        ORDER BY C.LAST_MSG_AT DESC
+	</select>
+	
+	
 	<!--정보 수정-->
 	<!--사용자 개인 정보 가져오기 -->
 	<select id="userSelect" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
@@ -198,6 +219,8 @@
 		FROM USER_TBL
 		WHERE USER_NAME = #{userName} AND PHONE = #{phone}
 	</select>
+	
+	
 	
 	
 	

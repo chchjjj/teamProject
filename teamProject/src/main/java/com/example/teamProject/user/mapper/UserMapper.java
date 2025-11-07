@@ -45,6 +45,9 @@ public interface UserMapper {
 	//count
 	int qnACount(HashMap<String, Object> map);
 	
+	//chatlist
+	List <User> chatListSelect(HashMap<String, Object> map);
+	
 	
 	//userview
 	User userSelect(HashMap<String, Object> map);

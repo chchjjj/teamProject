@@ -116,7 +116,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="addOptionPrice">기타 옵션 금액 (NUMBER)</label>
+                            <label for="addOptionPrice">기타 옵션 금액 </label>
                             <input type="number" id="addOptionPrice" name="addOptionPrice"
                                 v-model.number="optionData.addOptionPrice"
                                 placeholder="추가 금액을 입력하세요 (숫자만)" min="0" required>
@@ -126,7 +126,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="letteringWord">레터링 문구 (VARCHAR2(300))</label>
+                            <label for="letteringWord">레터링 문구/기타</label>
                             <textarea id="letteringWord" name="letteringWord"
                                 v-model="optionData.letteringWord"
                                 placeholder="레터링 문구를 입력하세요. (문구없음이 기본값)" maxlength="300"></textarea>
@@ -211,7 +211,7 @@
             },
 
             goBack: function() {
-                window.location.href = "/seller/OrderHistoryViewDetails.do?orderId=" + this.optionData.orderId;
+                window.location.href = "/seller/OrderHistoryViewDetail.do?orderId=" + this.optionData.orderId;
             },
 
             formatNumber: function(number) {

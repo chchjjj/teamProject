@@ -9,7 +9,7 @@ body {
 /* 채팅방 컨테이너 */
 .chat-room-container {
     max-width: 550px;
-    height: 700px;
+    height: 720px;
     margin: 30px auto;
     background-color: #ffffff;
     display: flex;
@@ -111,4 +111,12 @@ body {
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;			
+}
+
+/* 읽음 처리 여부 */
+.message-status {
+    font-size: 11px;
+    color: rgb(0, 64, 128);
+    text-align: right;
+    margin-top: 2px;
 }

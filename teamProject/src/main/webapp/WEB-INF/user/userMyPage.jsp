@@ -376,7 +376,9 @@
                                 :key="orderDetailIndex" class="orderDetailCard">
 
                                 <h4 class="proName">{{ orderDetail.proName }}</h4>
-
+                                <div class="detailRow">
+                                    <strong>가격:</strong> {{ formatNumber(orderDetail.price) }}원
+                                </div>
                                 <!-- Delivery Type -->
                                 <div class="detailRow">
                                     <span class="deliveryBadge" :class="'delivery-' + order.deliveryType">
@@ -397,9 +399,6 @@
                                 </ul>
 
                                 <!-- Product Info -->
-                                <div class="detailRow">
-                                    <strong>가격:</strong> {{ formatNumber(orderDetail.price) }}원
-                                </div>
                                 <div class="detailRow">
                                     <strong>수량:</strong> {{ orderDetail.quantity }}개
                                 </div>
@@ -560,8 +559,8 @@
                             }
                         }
                     });
-
                     this.groupedOrdersList = Object.values(groupedOrders);
+                    this.groupedOrdersList = this.groupedOrdersList.slice().reverse();
                     console.log("최종 주문 목록:", this.groupedOrdersList);
                 },
 
@@ -603,7 +602,23 @@
 
                 fnLogout: function () {
                     if (confirm("로그아웃 하시겠습니까?")) {
-                        location.href = "/user/logout.do";
+                        let param = {};
+                        $.ajax({
+                            url: "/user/logout.dox",
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                if(data.result=="success"){
+                                    alert(data.msg+"! 홈페이지로 이동하겠습니다.");
+                                    location.href = "/main.do";
+                                }else{
+                                    alert("로그아웃하는 도중에 오류가 발생하였습니다.");
+                                }
+                                    
+                            }
+                            
+                        });
                     }
                 },
 

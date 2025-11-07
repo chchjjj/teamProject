@@ -29,5 +29,6 @@ public class Chat {
     }
     
     private String content;	
-	
+	private String isRead;
+	private String messageType; // TEXT or IMAGE
 }
