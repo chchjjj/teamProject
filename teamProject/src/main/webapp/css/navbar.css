@@ -1,0 +1,284 @@
+/* Color Variables */
+:root {
+    --espresso: #3E2723;
+    --peony: #F4C9D6;
+    --butter: #FFEDAC;
+    --light-bg: #F4F4F4;
+    --white: #FFFFFF;
+}
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    margin-left: 250px;
+    /* Sidebar width */
+    padding-top: 0;
+}
+
+/* Sidebar Navigation */
+.navBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background-color: var(--espresso);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+/* Logo Area in Sidebar */
+.logoArea {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 30px 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--white);
+    letter-spacing: 2px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+    color: var(--peony);
+}
+
+/* Logo Image Style (if using image) */
+.logo img {
+    max-width: 150px;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Navigation Buttons */
+.navButton {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    gap: 5px;
+}
+
+.navButton button {
+    background-color: transparent;
+    color: var(--white);
+    border: none;
+    padding: 15px 25px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-align: left;
+    border-left: 4px solid transparent;
+    letter-spacing: 0.5px;
+}
+
+.navButton button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-left-color: var(--peony);
+    padding-left: 30px;
+}
+
+.navButton button:active {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Active State for Current Page */
+.navButton button.active {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-left-color: var(--butter);
+    font-weight: 600;
+    color: var(--butter);
+}
+
+/* Logout Button at Bottom */
+.logOut {
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.logOut button {
+    width: 100%;
+    background-color: var(--peony);
+    color: var(--espresso);
+    border: none;
+    padding: 15px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+}
+
+.logOut button:hover {
+    background-color: #f0b8ca;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(244, 201, 214, 0.4);
+}
+
+.logOut button:active {
+    transform: translateY(0);
+}
+
+/* Scrollbar Styling for Sidebar */
+.navBar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.navBar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.navBar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.navBar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Mobile Menu Toggle */
+.menuToggle {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: var(--espresso);
+    border: none;
+    color: var(--white);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 5px;
+    z-index: 1001;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 968px) {
+    body {
+        margin-left: 220px;
+    }
+
+    .navBar {
+        width: 220px;
+    }
+
+    .navButton button {
+        font-size: 14px;
+        padding: 12px 20px;
+    }
+
+    .logo {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        margin-left: 0;
+    }
+
+    .menuToggle {
+        display: block;
+    }
+
+    .navBar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        width: 280px;
+    }
+
+    .navBar.active {
+        transform: translateX(0);
+    }
+
+    /* Overlay when menu is open */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 999;
+    }
+
+    body.menu-open::before {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+@media (max-width: 480px) {
+    .navBar {
+        width: 250px;
+    }
+
+    .logoArea {
+        padding: 20px 15px;
+    }
+
+    .logo {
+        font-size: 20px;
+    }
+
+    .navButton button {
+        font-size: 13px;
+        padding: 12px 20px;
+    }
+}
+
+/* Animation */
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.navBar {
+    animation: slideInLeft 0.3s ease;
+}
+
+/* Icon support (optional) */
+.navButton button::before {
+    content: '▸ ';
+    opacity: 0;
+    margin-right: 5px;
+    transition: opacity 0.3s ease;
+}
+
+.navButton button:hover::before,
+.navButton button.active::before {
+    opacity: 1;
+}
