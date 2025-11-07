@@ -9,7 +9,7 @@ body {
 /* 채팅방 컨테이너 */
 .chat-room-container {
     max-width: 550px;
-    height: 700px;
+    height: 720px;
     margin: 30px auto;
     background-color: #ffffff;
     display: flex;
