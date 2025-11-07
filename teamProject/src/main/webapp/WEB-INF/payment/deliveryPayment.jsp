@@ -59,7 +59,7 @@
             
 
             <div>
-                <button>취소하기</button>
+                <button @click="fnGoBack">취소하기</button>
 
                 <!-- 첫번째 줄 거는 테스트 편의용, 두번째 거가 실제 사용용 -->
                 <button @click="fnPayHistory('1', '1')">결제하기</button>
@@ -195,6 +195,10 @@
                     }
                 });
             },
+
+            fnGoBack: function(){
+                window.history.back();
+            }
 
            
         }, // methods
