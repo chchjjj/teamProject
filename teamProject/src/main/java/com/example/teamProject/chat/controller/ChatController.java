@@ -5,12 +5,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -105,6 +108,29 @@ public class ChatController {
         }
     }
 	
-	
+    // 메세지 읽음 처리
+    @PostMapping("/api/chat/markAsRead")
+    @ResponseBody
+    public void markMessagesAsRead(@RequestBody Map<String, Object> payload) {
+        Object ids = payload.get("messageIds");
+
+        if (ids instanceof List<?>) {
+            @SuppressWarnings("unchecked")
+            List<Integer> messageIds = (List<Integer>) ids;
+
+            if (messageIds != null && !messageIds.isEmpty()) {
+                chatService.markMessagesAsRead(messageIds);
+            }
+        }
+    }
+    
+    // 메시지 읽음 상태를 실시간으로 브로드캐스트
+    @MessageMapping("/readMessage")
+    @SendTo("/topic/public")
+    public Map<String, Object> notifyReadStatus(@RequestBody Map<String, Object> payload) {
+        System.out.println("읽음 상태 브로드캐스트 요청 수신: " + payload);
+        // payload 예시: { chatId: 101, messageIds: [12, 13, 14], readerId: "user01" }
+        return payload;
+    }
 	
 }

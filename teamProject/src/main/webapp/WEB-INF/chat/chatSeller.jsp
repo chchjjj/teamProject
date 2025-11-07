@@ -49,6 +49,10 @@
                 <div class="messages-area" id="chatBox">
                     <div v-for="(msg, idx) in messages" :key="idx" :class="['message-bubble', msg.sender === userId ? 'my' : 'other']">
                     <div class="message-content">{{ msg.content }}</div>
+                    <div class="message-status" v-if="msg.sender === userId">
+                        <span v-if="msg.isRead === 'Y'">읽음</span>
+                        <span v-else>전송됨</span>
+                    </div>
                     </div>
                 </div>
 
@@ -116,11 +120,23 @@
                         console.log("WebSocket 연결 성공: " + frame);
                         this.stompClient.subscribe('/topic/public', (message) => {
                             const msg = JSON.parse(message.body);
-                            this.messages.push(msg);
-                            // 💡 메시지를 받은 후 DOM 업데이트를 기다린 후 스크롤 이동
-                            this.$nextTick(() => { 
-                                this.scrollToBottom();
-                            });
+                             // 1️⃣ 일반 채팅 메시지 수신
+                            if (msg.content) {
+                                this.messages.push(msg);
+                                this.$nextTick(() => this.scrollToBottom());
+                            }
+
+                            // 2️⃣ 읽음 상태 알림 수신
+                            if (msg.messageIds && msg.readerId) {
+                                console.log("읽음 알림 수신:", msg);
+
+                                this.messages = this.messages.map(m => {
+                                    if (msg.messageIds.includes(m.id)) {
+                                        return { ...m, isRead: 'Y' };
+                                    }
+                                    return m;
+                                });
+                            }
                         });
                     }, (error) => {
                         console.error("WebSocket 연결 실패: ", error);
@@ -174,6 +190,7 @@
                                     // senderId와 currentUserId를 비교하여 이름 설정
                                     senderName: senderIdFromData === this.currentUserId ? '사장님' : '고객', 
                                     timestamp: msg.SENT_AT ? new Date(msg.SENT_AT) : new Date(),
+                                    isRead: msg.IS_READ // 읽음 표시 내용 
                                 };
                             });
                             
@@ -206,7 +223,52 @@
                 // 뒤로가기 버튼
                 fnGoBack : function() {
                     window.history.back(); 
-                }
+                },
+
+                // 메세지 읽음처리
+                markMessagesAsRead() {
+                    if (!this.messages.length || !this.chatId || !this.userId) return;
+
+                    // 읽지 않은 메시지 ID만 추출
+                    const unreadMsgIds = this.messages
+                        .filter(msg => msg.sender !== this.userId && msg.isRead !== 'Y')
+                        .map(msg => msg.id);
+
+                    if (unreadMsgIds.length === 0) return;
+
+                    console.log("읽음 처리할 메시지 ID 목록:", unreadMsgIds);
+
+                    axios.post('/api/chat/markAsRead', {
+                        chatId: this.chatId,
+                        messageIds: unreadMsgIds,
+                        readerId: this.userId
+                    })
+                    .then(res => {
+                        console.log("읽음 처리 완료:", res.data);
+
+                        // 1) 화면에서도 바로 반영
+                        this.messages = this.messages.map(msg => {
+                            if (unreadMsgIds.includes(msg.id)) {
+                                return { ...msg, isRead: 'Y' };
+                            }
+                            return msg;
+                        });
+
+                        // 2) 읽음 상태 WebSocket으로 다른 사용자에게도 알림
+                        if (this.stompClient && this.stompClient.connected) {
+                            const readNotification = {
+                                chatId: this.chatId,
+                                messageIds: unreadMsgIds,
+                                readerId: this.userId
+                            };
+                            console.log("읽음 알림 전송:", readNotification);
+                            this.stompClient.send("/app/readMessage", {}, JSON.stringify(readNotification));
+                        }
+                    })
+                    .catch(err => {
+                        console.error("읽음 처리 실패:", err);
+                    });
+                },
 
             },
             async mounted() {

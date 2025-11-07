@@ -18,4 +18,7 @@ public interface ChatService {
 	// 채팅내용 가져오기 
 	List<Chat> selectMsgByChatId(int chatId);	
 	
+	// 채팅 읽음 처리
+	void markMessagesAsRead(List<Integer> messageIds);
+	
 }
