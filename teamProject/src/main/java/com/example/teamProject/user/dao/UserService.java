@@ -147,7 +147,15 @@ public class UserService {
 
 		return resultMap;
 	}
+	public HashMap<String, Object> userNameCheck(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		User user = userMapper.userNameCheck(map);
+		String result = user != null ? "true" : "false";
 
+		resultMap.put("result", result);
+
+		return resultMap;
+	}
 	public HashMap<String, Object> userAuth(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
