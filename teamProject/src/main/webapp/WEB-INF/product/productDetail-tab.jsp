@@ -151,9 +151,9 @@
                     <div v-if="currentTab === 'review'"> <!--후기 탭-->
                         <section class="review-list">
                             <div class="review-block" v-for="item in reviewList">
-                                <div class="review-photo-area">
+                                <!-- <div class="review-photo-area">
                                     후기사진
-                                </div>
+                                </div> -->
                                 <div class="review-content-area">
                                     <div class="review-meta">
                                         <span class="nickname">{{item.userName}}</span>
