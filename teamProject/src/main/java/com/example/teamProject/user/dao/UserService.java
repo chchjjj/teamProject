@@ -6,6 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.teamProject.admin.model.Admin;
 import com.example.teamProject.user.mapper.UserMapper;
 import com.example.teamProject.user.model.User;
 import jakarta.servlet.http.HttpSession;
@@ -226,6 +229,89 @@ public class UserService {
 		}				
 		return resultMap;
 	}
+	
+	public HashMap<String, Object> SelectReviewList(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		//reviewlist 
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			List <User> reviewList= userMapper.reviewListSelect(map);
+			resultMap.put("reviewList",reviewList);
+			int totalRows=userMapper.reviewCount(map);
+			resultMap.put("totalRows",totalRows);
+			resultMap.put("result","success");
+		}catch(Exception e) {
+			resultMap.put("result","fail");
+			System.out.println(e.getMessage());		
+		}	
+		 return resultMap;
+				
+	}
+	
+	public HashMap<String, Object> SelectQnAList(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		//qnAlist 
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			List <User> qnAList= userMapper.qnAListSelect(map);
+			resultMap.put("qnAList",qnAList);
+			int totalRows=userMapper.reviewCount(map);
+			resultMap.put("totalRows",totalRows);
+			resultMap.put("result","success");
+		}catch(Exception e) {
+			resultMap.put("result","fail");
+			System.out.println(e.getMessage());		
+		}	
+		 return resultMap;
+				
+	}
+	
+	//userEdit
+	public HashMap<String, Object> SelectUser(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		User user= userMapper.userSelect(map);	
+		
+		resultMap.put("user",user);
+		resultMap.put("result","success");
+		return resultMap;
+	}
+	
+	public HashMap<String, Object> UpdateUser(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			int cnt= userMapper.userUpdate(map);
+
+		    } catch (Exception e) {
+		        resultMap.put("result", "fail");
+		        System.out.println(e.getMessage());
+		    }
+		    
+		    return resultMap;
+	}
+	
+	public HashMap<String, Object> SelectOrder(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+			List <User> list = userMapper.selectOrder(map);			
+			System.out.println(list);;
+			resultMap.put("list", list); 
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
+		}				
+		return resultMap;
+	}
+	
+	
 	
 
 }

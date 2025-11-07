@@ -102,7 +102,7 @@
             </li>
            
             <li class="<%= currentUri.contains("/seller/sellerReview.do") ? "active" : "" %>">
-                <a href="javascript:;" onclick="location.href='/seller/sellerReview.do'">리뷰 관리(임시)</a>
+                <a href="javascript:;" onclick="location.href='/seller/sellerReview.do'">리뷰 관리</a>
             </li>
             <li class="<%= currentUri.contains("/seller/order/calendarView.do") ? "active" : "" %>">
                 <a href="javascript:;" onclick="location.href='/seller/order/calendarView.do'">캘린더</a>

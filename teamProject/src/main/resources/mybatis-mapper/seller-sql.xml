@@ -532,6 +532,25 @@
 		SELECT STORE_NAME
 		FROM SELLER_INFO_TBL WHERE STORE_ID = #{storeId}
 	</select>
+	
+	<select id="selectProductList" parameterType="string" resultType="com.example.teamProject.seller.model.Seller">
+       SELECT
+        P.PRO_NO,
+        P.PRO_NAME,
+        P.PRO_TYPE,
+        P.PRICE,
+        P.STATUS,
+        P.CNT AS STOCK_QTY,  P.SELL_COUNT,
+        P.CREATED_AT
+    FROM
+        PRODUCT_TBL P
+    INNER JOIN
+        SELLER_INFO_TBL S ON P.STORE_ID = S.STORE_ID
+    WHERE
+        S.USER_ID = #{userId} 
+    ORDER BY
+        P.CREATED_AT DESC
+    </select>
 
 </mapper>
 

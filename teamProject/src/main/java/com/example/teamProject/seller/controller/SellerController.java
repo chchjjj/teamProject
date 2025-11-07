@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.teamProject.seller.dao.FileService;
+
 import com.example.teamProject.seller.dao.SellerService;
 import com.example.teamProject.seller.model.Seller;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -131,6 +132,23 @@ public class SellerController {
 
 		return "/seller/productAdd";
 	}
+	
+	@RequestMapping("/seller/productlist.do")
+	public String productList(Model model) throws Exception {
+
+		return "/seller/sellerProductList";
+	}
+	@RequestMapping("/seller/productUpdate.do")
+	public String productUpdate(Model model) throws Exception {
+
+		return "/seller/productUpdate";
+	}
+	
+
+	
+	
+
+	
 
 	@RequestMapping(value = "/seller/orderList.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
@@ -147,6 +165,17 @@ public class SellerController {
 
 		// 1. 반환 타입이 Map<String, Object>로 변경되었습니다.
 		HashMap<String, Object> resultMap = sellerService.getStoreList(map);
+
+		// 3. Map 객체 자체를 반환하여 Spring의 Jackson이 JSON으로 안전하게 변환하도록 합니다.
+		return resultMap;
+	}
+	
+	@RequestMapping(value = "/seller/productlist.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public Map<String, Object> productList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+
+		// 1. 반환 타입이 Map<String, Object>로 변경되었습니다.
+		HashMap<String, Object> resultMap = sellerService.getProductList(map);
 
 		// 3. Map 객체 자체를 반환하여 Spring의 Jackson이 JSON으로 안전하게 변환하도록 합니다.
 		return resultMap;

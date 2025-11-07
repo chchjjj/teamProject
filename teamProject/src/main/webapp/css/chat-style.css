@@ -1,113 +1,114 @@
 /* 기본 스타일 초기화 */
-        body { font-family: Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; }
+body { 
+    font-family: Arial, sans-serif; 
+    background-color: #f0f2f5; 
+    margin: 0; 
+    padding: 0; 
+}
 
-        /* 채팅방 컨테이너 */
-        .chat-room-container {
-            max-width: 600px;
-            /*height: 100vh; /* 화면 전체 높이 사용 */
-			height: 800px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            border-left: 1px solid #ddd;
-            border-right: 1px solid #ddd;
-        }
+/* 채팅방 컨테이너 */
+.chat-room-container {
+    max-width: 550px;
+    height: 700px;
+    margin: 30px auto;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ddd;
+}
 
-        /* 채팅방 헤더 */
-        .chat-header {
-            padding: 15px 20px;
-            border-bottom: 1px solid #ddd;
-            background-color: #f7f7f7;
-            text-align: center;
-        }
-        .chat-header h3 {
-            margin: 0;
-            font-size: 1.2em;
-            color: #333;
-        }
+/* 채팅방 헤더 */
+.chat-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #ddd;
+    background-color: #f7f7f7;
+    text-align: center;
+}
+.chat-header h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #333;
+}
 
-        /* 메시지 출력 영역 */
-        .messages-area {
-            flex-grow: 1; /* 남은 공간 모두 사용 */
-            overflow-y: auto;
-            padding: 15px;
-            background-color: #b2c7da; /* 채팅 배경색 */
-        }
+/* 메시지 출력 영역 */
+.messages-area {
+    flex-grow: 1; /* 남은 공간 모두 사용 */
+    overflow-y: auto;
+    padding: 15px;
+    background-color: #b2c7da; /* 채팅 배경색 */
+}
 
-        /* 메시지 버블 */
-        .message-bubble {
-            display: flex;
-            margin-bottom: 10px;
-            align-items: flex-end;
-        }
-        
-        .message-content {
-            max-width: 70%;
-            padding: 10px 12px;
-            border-radius: 15px;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-        
-        .message-info {
-            font-size: 0.75em;
-            color: #4a4a4a;
-            margin: 0 5px;
-            white-space: nowrap;
-            /* 읽음 여부 */
-        }
-        .sent-time {
-            color: #777;
-        }
+/* 메시지 버블 */
+.message-bubble {
+    display: flex;
+    flex-direction: column; /* 내용과 시간 위아래로 쌓기 */
+    margin-bottom: 10px;
+    max-width: 100%;
+}
 
-        /* 1. 상대방 메시지 (기본) - 왼쪽 정렬 */
-        .message-bubble.other {
-            justify-content: flex-start;
-        }
-        .message-bubble.other .message-content {
-            background-color: #ffffff;
-            border-bottom-left-radius: 2px;
-        }
+/* 상대방 메시지 - 왼쪽 정렬 */
+.message-bubble.other {
+    align-items: flex-start;
+}
 
-        /* 2. 내 메시지 - 오른쪽 정렬 */
-        .message-bubble.my {
-            justify-content: flex-end;
-        }
-        .message-bubble.my .message-content {
-            background-color: #fee500; /* 카카오톡 스타일 */
-            border-bottom-right-radius: 2px;
-        }
-        .message-bubble.my .message-info {
-            order: -1; /* 읽음 상태/시간을 메시지 왼쪽에 표시 */
-        }
+/* 내 메시지 - 오른쪽 정렬 */
+.message-bubble.my {
+    align-items: flex-end;
+}
 
-        /* 입력 영역 */
-        .chat-footer {
-            display: flex;
-			padding: 8px 10px;
-            border-top: 1px solid #ddd;
-            background-color: #f7f7f7;
-			/* 아이템들이 세로 중앙에 오도록 정렬 */
-			align-items: flex-end; /* 또는 center */
-			height: 70px;
-        }
-        .chat-footer textarea {
-            flex-grow: 1;
-			padding: 5px 10px;
-            border: 1px solid rgb(128, 128, 128);
-            border-radius: 8px;
-            resize: none;
-            height: 40px;
-            box-sizing: border-box;
-        }
-        .chat-footer button {
-            margin-left: 10px;
-            padding: 8px 15px;
-            border: none;
-            background-color: #4CAF50;
-            color: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+/* 메시지 내용 */
+.message-content {
+    max-width: 70%;
+    padding: 10px 12px;
+    border-radius: 15px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+/* 메시지 시간 */
+.message-timestamp {
+    font-size: 12px;
+    color: rgb(0, 0, 0);
+    margin-top: 4px;
+    text-align: right; /* 오른쪽 하단에 표시 */
+}
+
+/* 메시지 색상 */
+.message-bubble.other .message-content {
+    background-color: #ffffff;
+    border-bottom-left-radius: 2px;
+}
+
+.message-bubble.my .message-content {
+    background-color: #fee500; /* 카카오톡 스타일 */
+    border-bottom-right-radius: 2px;
+}
+
+/* 입력 영역 */
+.chat-footer {
+    display: flex;
+    padding: 8px 10px;
+    border-top: 1px solid #ddd;
+    background-color: #f7f7f7;
+    align-items: flex-end;
+    height: 70px;
+}
+.chat-footer textarea {
+    flex-grow: 1;
+    padding: 5px 10px;
+    border: 1px solid rgb(128, 128, 128);
+    border-radius: 8px;
+    resize: none;
+    height: 40px;
+    box-sizing: border-box;
+}
+.chat-footer button {
+    margin-left: 10px;
+    padding: 8px 15px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;			
+}

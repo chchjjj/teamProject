@@ -178,7 +178,7 @@
                             <div class="store-header">
                                 <div class="store-name-section">
                                     <h3>{{ item.storeName }}</h3>
-                                    <button @clilck="fnalert">가게 이름 수정하기</button>
+                                    <button onclick="location.href='/seller/storeInfoupdateInfo.do'">가게 이름 수정하기</button>
                                 </div>
                                 <div class="membership-info">
                                     <span>멤버십 사용 중</span>
@@ -191,9 +191,9 @@
                             </div>
 
                             <div class="management-buttons">
-                                <button @clilck="fnalert">프로필 이미지 수정</button>
-                                <button @clilck="fnalert">배너 이미지 수정</button>
-                                <button onclick="location.href='/seller/productAdd.do'">
+                                
+                                
+                                <button onclick="location.href='/seller/productlist.do'">
                                     상품 관리
                                 </button>
                                 <button class="primary-btn">수정하기</button>

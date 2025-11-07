@@ -27,6 +27,13 @@
 	    WHERE ORDER_ID = #{orderId}
 	</select>
 	
+	<!-- orderId로 storeId 조회 -->
+	<select id="selectStoreIdByOrderId" resultType="string">
+	    SELECT STORE_ID
+	    FROM CHAT_TBL
+	    WHERE ORDER_ID = #{orderId}
+	</select>
+	
 	
 	<!-- 채팅방 chatId 기준으로 메시지 리스트 조회 (일단 xml까지만 작성됨) -->
 	<select id="selectMsgByChatId" resultType="com.example.teamProject.chat.model.Chat">
