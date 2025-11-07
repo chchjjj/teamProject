@@ -249,7 +249,27 @@
                     fnReview() { location.href = "/user/review.do"; },
                     fnQnA() { location.href = "/user/qnA.do"; },
                     fnUserEdit() { location.href = "/user/userEdit.do"; },
-                    fnLogout() { location.href = "/logout.do"; }
+                    fnLogout: function () {
+                        if (confirm("로그아웃 하시겠습니까?")) {
+                            let param = {};
+                            $.ajax({
+                                url: "/user/logout.dox",
+                                dataType: "json",
+                                type: "POST",
+                                data: param,
+                                success: function (data) {
+                                    if (data.result == "success") {
+                                        alert(data.msg + "! 홈페이지로 이동하겠습니다.");
+                                        location.href = "/main.do";
+                                    } else {
+                                        alert("로그아웃하는 도중에 오류가 발생하였습니다.");
+                                    }
+
+                                }
+
+                            });
+                        }
+                    },
                 },
                 mounted() {
                     this.fnReviewList();

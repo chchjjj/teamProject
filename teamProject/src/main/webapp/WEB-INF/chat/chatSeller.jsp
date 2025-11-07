@@ -35,6 +35,11 @@
                 margin: 20px auto;
                 margin-right: 10px;
             }
+
+            .addImage{
+                width: 100px;
+                height: 50px;
+            }
         </style>
     </head>
 
@@ -48,7 +53,39 @@
 
                 <div class="messages-area" id="chatBox">
                     <div v-for="(msg, idx) in messages" :key="idx" :class="['message-bubble', msg.sender === userId ? 'my' : 'other']">
-                    <div class="message-content">{{ msg.content }}</div>
+                        
+                        <!-- 사진 메시지 -->
+                        <div v-if="msg.messageType === 'IMAGE' && msg.content" class="message-content">
+                            <img 
+                                :src="msg.content" 
+                                alt="첨부 이미지" 
+                                style="max-width:200px; border-radius:10px; cursor:pointer;"
+                                @click="openModal(msg.content)"
+                            >
+                        </div>
+
+                        <!-- 텍스트 메시지 -->
+                        <div v-else="msg.messageType === 'TEXT'" class="message-content">
+                            {{ msg.content }}
+                        </div>
+
+                        <!-- 메시지 상태 -->
+                        <div class="message-status" v-if="msg.sender === userId">
+                            <span v-if="msg.isRead === 'Y'">읽음</span>
+                            <span v-else>전송됨</span>
+                        </div>
+                    </div>
+
+                    <!-- 이미지 모달 -->
+                    <div v-if="modalVisible" 
+                        @click="closeModal"
+                        style="position:fixed; top:0; left:0; width:100%; height:100%; 
+                                background:rgba(0,0,0,0.8); display:flex; justify-content:center; align-items:center; z-index:1000;">
+                        <img :src="modalImage" style="max-width:90%; max-height:90%; border-radius:10px;">
+                        <a :href="modalImage" download
+                        style="position:absolute; top:10px; right:10px; color:white; font-size:16px; text-decoration:none; background:rgba(0,0,0,0.5); padding:5px 10px; border-radius:5px;">
+                        다운로드
+                        </a>
                     </div>
                 </div>
 
@@ -56,9 +93,17 @@
                     <textarea v-model="newMessage" placeholder="메시지를 입력하세요" @keyup.enter="sendMessage"></textarea>
                     <button @click="sendMessage">전송</button>
                 </footer>
+
+                <div id="chatApp">
+                    <!-- 파일 선택 -->
+                    <input type="file" ref="imageInput" accept="image/*" style="display:none" @change="uploadImage">
+                    <button @click="$refs.imageInput.click()" class="addImage">사진 첨부</button>
+                </div>
+
                 </div>
                 <div>
                     <button @click="fnGoBack">돌아가기</button>
+                    <button @click="fnAddOptionPrice">기타금액 변경</button>
                 </div>
             </div>
         <%@ include file="/WEB-INF/main/footer.jsp" %>
@@ -79,6 +124,9 @@
                 chatId: "${chatId}",
                 orderId: "${orderId}",
                 storeId: "${storeId}", 
+                stompClient: null,
+                modalVisible: false,
+                modalImage: "",
                 // orderDetailId: "${orderDetailId}",
                 // orderOptionId: "${orderOptionId}"
 
@@ -116,11 +164,29 @@
                         console.log("WebSocket 연결 성공: " + frame);
                         this.stompClient.subscribe('/topic/public', (message) => {
                             const msg = JSON.parse(message.body);
-                            this.messages.push(msg);
-                            // 💡 메시지를 받은 후 DOM 업데이트를 기다린 후 스크롤 이동
-                            this.$nextTick(() => { 
-                                this.scrollToBottom();
-                            });
+                            // 1️⃣ 일반 채팅 메시지 수신
+                            // if (msg.content) {
+                            //     this.messages.push(msg);
+                            //     this.$nextTick(() => this.scrollToBottom());
+                            // }
+
+                            // 1️⃣ 일반 채팅 & 이미지 메시지 수신
+                            if (msg.messageType === 'TEXT' || msg.messageType === 'IMAGE') {
+                                this.messages.push(msg);
+                                this.$nextTick(() => this.scrollToBottom());
+                            }
+
+                            // 2️⃣ 읽음 상태 알림 수신
+                            if (msg.messageIds && msg.readerId) {
+                                console.log("읽음 알림 수신:", msg);
+
+                                this.messages = this.messages.map(m => {
+                                    if (msg.messageIds.includes(m.id)) {
+                                        return { ...m, isRead: 'Y' };
+                                    }
+                                    return m;
+                                });
+                            }
                         });
                     }, (error) => {
                         console.error("WebSocket 연결 실패: ", error);
@@ -138,7 +204,8 @@
                         chatId: this.chatId,
                         // 아래 2개는 우선 임시
                         orderId: this.orderId,
-                        storeId: this.storeId
+                        storeId: this.storeId,
+                        messageType: "TEXT" // ✅ 추가 (명시적 선언)
                     };
                     this.stompClient.send("/app/sendMessage", {}, JSON.stringify(chatMessage));
                     this.newMessage = "";
@@ -165,6 +232,7 @@
                             this.messages = response.map((msg) => {
                                 
                                 const senderIdFromData = msg.USER_ID; 
+                                // const isUnread = msg.IS_READ !== 'Y' && senderIdFromData !== this.userId;
 
                                 return {
                                     id: msg.MSG_ID, 
@@ -174,6 +242,8 @@
                                     // senderId와 currentUserId를 비교하여 이름 설정
                                     senderName: senderIdFromData === this.currentUserId ? '사장님' : '고객', 
                                     timestamp: msg.SENT_AT ? new Date(msg.SENT_AT) : new Date(),
+                                    isRead: msg.IS_READ, // 🚀 즉시 화면 반영 
+                                    messageType: msg.MESSAGE_TYPE || 'TEXT'
                                 };
                             });
                             
@@ -203,16 +273,112 @@
                     }
                 },
 
-                // 뒤로가기 버튼
+                // 돌아가기 버튼
                 fnGoBack : function() {
                     window.history.back(); 
-                }
+                },
+
+                // 기타옵션금액 변경 버튼
+                fnAddOptionPrice : function(){
+                    window.location.href = `/seller/order/addOption.do?orderId=${orderId}`;
+                },
+
+                // 이미지 클릭 → 모달 열기
+                openModal(src) {
+                    this.modalImage = src;
+                    this.modalVisible = true;
+                },
+                // 모달 클릭 → 닫기
+                closeModal() {
+                    this.modalVisible = false;
+                    this.modalImage = '';
+                },
+
+                // 메세지 읽음처리
+                markMessagesAsRead() {
+                    if (!this.messages.length || !this.chatId || !this.userId) return;
+
+                    // 읽지 않은 메시지 ID만 추출
+                    const unreadMsgIds = this.messages
+                        .filter(msg => msg.sender !== this.userId && msg.isRead !== 'Y')
+                        .map(msg => msg.id);
+
+                    if (unreadMsgIds.length === 0) return;
+
+                    console.log("읽음 처리할 메시지 ID 목록:", unreadMsgIds);
+
+                    axios.post('/api/chat/markAsRead', {
+                        chatId: this.chatId,
+                        messageIds: unreadMsgIds,
+                        readerId: this.userId
+                    })
+                    .then(res => {
+                        console.log("읽음 처리 완료:", res.data);
+
+                        // 1) 화면에서도 바로 반영
+                        this.messages = this.messages.map(msg => {
+                            if (unreadMsgIds.includes(msg.id)) {
+                                return { ...msg, isRead: 'Y' };
+                            }
+                            return msg;
+                        });
+
+                        // 2) 읽음 상태 WebSocket으로 다른 사용자에게도 알림
+                        if (this.stompClient && this.stompClient.connected) {
+                            const readNotification = {
+                                chatId: this.chatId,
+                                messageIds: unreadMsgIds,
+                                readerId: this.userId
+                            };
+                            console.log("읽음 알림 전송:", readNotification);
+                            this.stompClient.send("/app/readMessage", {}, JSON.stringify(readNotification));
+                        }
+                    })
+                    .catch(err => {
+                        console.error("읽음 처리 실패:", err);
+                    });
+                },
+
+                // 사진첨부
+                uploadImage(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    const formData = new FormData();
+                    formData.append("image", file);
+
+                    fetch("/chat/uploadImage.do", {
+                        method: "POST",
+                        body: formData
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        const imageUrl = data.imageUrl;
+
+                        // ⚙️ DB 구조상 TEXT / IMAGE 구분
+                        const chatMessage = {
+                            chatId: this.chatId,
+                            sender: this.userId,
+                            content: imageUrl,          // message → content로 통일
+                            messageType: "IMAGE",
+                            orderId: this.orderId,
+                            storeId: this.storeId
+                        };
+
+                        // 서버로 전송
+                        this.stompClient.send("/app/sendMessage", {}, JSON.stringify(chatMessage));
+                        
+                        // ✅ 바로 스크롤 내리기
+                        this.$nextTick(() => this.scrollToBottom());
+                    })
+                    .catch(err => console.error("이미지 업로드 실패:", err));
+                },
 
             },
             async mounted() {
-                this.connect();               //  WebSocket 연결
                 await this.loadChatId(); // ✅ chatId를 먼저 조회
-                
+                this.connect();               //  WebSocket 연결
+                                
                 console.log("로그인 아이디 ==> " + this.userId); // 로그인한 아이디 잘 넘어오나 테스트
                 console.log("주문번호 ==> " + this.orderId); // 주문번호 잘 넘어오나 테스트
                 console.log("채팅방 id ==> " + this.chatId); // 채팅방번호 잘 넘어오나 테스트

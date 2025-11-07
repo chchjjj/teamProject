@@ -221,7 +221,7 @@
 
                     if (hasDelivery && hasPickup) {
                         alert("픽업 상품과 배달 상품은 동시에 주문할 수 없습니다.");
-                        return; // 🚫 주문 중단
+                        return; //  주문 중단
                     }
                     // console.log("선택된 상품 데이터:", selectedItemsData);
 
@@ -239,8 +239,17 @@
                             alert("주문이 완료되었습니다!");
                             // 결제 페이지로 이동 또는 주문 완료 페이지 이동
                             alert(data.orderIdList);
-                            self.fnAllRemove();
-                            pageChange("/payment/payment.do", { orderIdList: data.orderIdList });
+                            self.fnAllRemove(true);
+                            const deliveryType = selectedItemsData[0].deliveryType; // 선택한 상품들의 배송유형 동일함
+                            const orderIdList = data.orderIdList; // 서버에서 반환한 주문 ID 리스트
+
+                            if (deliveryType === 'D') {
+                                pageChange("/payment/deliveryPayment.do", { orderIdList: data.orderIdList });
+                            } else if (deliveryType === 'P') {
+                                pageChange("/payment/pickUpPayment.do", { orderIdList: data.orderIdList });
+                            } else {
+                                alert("배송 유형을 확인할 수 없습니다.");
+                            }
                         },
                         error: function (xhr, status, error) {
                             console.error("장바구니 로드 실패:", status, error);
@@ -258,7 +267,9 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            alert("삭제되었습니다!");
+                            if (!silent) { //  주문에서 호출한 경우엔 건너뜀
+                                alert("삭제되었습니다!");
+                            }
                             self.fnCart();
                         }
                     });
@@ -333,7 +344,7 @@
                         this.groupedCartList[i].totalPrice = this.groupedCartList[i].totalPrice * this.groupedCartList[i].itemQty;
 
                     }
-                     this.groupedCartList = this.groupedCartList.slice().reverse();
+                    this.groupedCartList = this.groupedCartList.slice().reverse();
                     console.log("그룹화된 장바구니 ===>", this.groupedCartList);
                 },
                 fnChangeItemQuantity: function (cartId, amount) {

@@ -95,6 +95,7 @@ public class PaymentService {
 	            
 	            
 	            paymentMapper.insertPayment(paymentMap);
+	            paymentMapper.updateOrderStatus(paymentMap);
 	       	 	resultMap.put("result", "success");
 	        }	
 			

@@ -36,25 +36,36 @@
                 <div>
                     배송 선택: {{item.deliveryType}}
                 </div>
+                <div>
+                    상품 가격: {{item.totalPrice}}
+                </div>
+                <div>
+                    수량: {{item.quantity}}
+                </div>
+                <div>
+                    판매처: {{item.storeName}}
+                </div>
+
                 <hr>
             </div>
-            <div>
-                배송지: <button @click="fnDelivery">배송지선택</button>
-            </div>
+            
             <div>
                 주문고객: {{toName}}
             </div>
             <div>
-                전화번호: {{toPhone}}
+                전화번호: {{toPhone}} 
             </div>
+            
+            총 결제가격: {{paymentPrice}}
+            
             
 
             <div>
-                <button>취소하기</button>
+                <button @click="fnGoBack">취소하기</button>
 
                 <!-- 첫번째 줄 거는 테스트 편의용, 두번째 거가 실제 사용용 -->
-                <button @click="fnPayHistory('1', '1')">결제하기</button>
-                <!-- <button @click="fnPayment">결제하기</button> -->
+                <!-- <button @click="fnPayHistory('1', '1')">결제하기</button> -->
+                <button @click="fnPayment">결제하기</button>
 
             </div>
 
@@ -73,6 +84,7 @@
                 toPhone: "${sessionPhone}", //받을 사람의 휴대폰 번호
                 orderList: [], //화면에 보이는 정보, 배송 정보 확정 전 단계, ORDER_TBL + ORDER_DETAIL_TBL + ORDER_OPTION_TBL
                 deliveryType: "", //배달인지 픽업인지 (배달이면 D, 픽업이면 P)
+                paymentPrice: 0, //최종 결제금액
                 
                 //order 관련 변수
                 // 1. 바로 구매 버튼을 누른 경우 order 테이블에서 사용 / 2. 장바구니 담고 나서 구매하는 경우 바로 이 페이지에서 생성한 주문번호
@@ -86,8 +98,9 @@
             
             fnOrderList: function(){
                 let self = this;
-                console.log(self.orderIdList);
+                console.log("JSON.stringify 이전: " + self.orderIdList);
                 let orderIdList = JSON.stringify(self.orderIdList);
+                console.log("JSON.stringify 이후: " + orderIdList);
                 let param = {
                     orderIdList : orderIdList
                 };
@@ -101,6 +114,12 @@
                         console.log(data);// 테스트용
                         self.orderList = data.list; //order 테이블 정보만 담으면 된다.
                         self.deliveryType = data.list.deliveryType; //배달인지 픽업인지
+                        // self.paymentPrice = data.list.totalPrice;
+
+                        for(let i=0; i<self.orderList.length; i++){
+                            self.paymentPrice += self.orderList[i].totalPrice;
+                            console.log("self.orderList[i].totalPrice:" + self.orderList[i].totalPrice);
+                        }
                     }
                 });
             },
@@ -139,9 +158,10 @@
 				    pg: "html5_inicis",
 				    pay_method: "card",
 				    merchant_uid: "merchant_" + new Date().getTime(),
-				    name: "1", //상품이름, 원래는 다음과 같은 형식이다: self.info.foodName,
+				    name: self.orderList[0].proName, //상품이름, 대표로 제일 첫번째 상품명을 보여준다.
 				    amount: 1, //실제 결제금액은 1원, 원래는 self.info.totalPrice
-				    buyer_tel: "010-0000-0000",
+				    buyer_tel: self.toPhone, // 구매자 휴대폰 번호
+                    buyer_name: self.toName // 구매자 성함
 				  }	, function (rsp) { // callback
 			   	      if (rsp.success) {
 			   	        // 결제 성공 시
@@ -172,12 +192,18 @@
                     success: function (data) {
                         if(data.result == "success"){
                             alert("결제되었습니다!");
+                            location.href="/main.do";
                         } else {
                             alert("오류가 발생했습니다!");
+                            location.href="/main.do";
                         }
                     }
                 });
             },
+
+            fnGoBack: function(){
+                window.history.back();
+            }
 
            
         }, // methods
@@ -201,7 +227,8 @@
 
             console.log("최종적으로 사용할 orderIdList 값은 => " + self.orderIdList);
             self.fnOrderList();
-
+            
+           
            
             
         }
