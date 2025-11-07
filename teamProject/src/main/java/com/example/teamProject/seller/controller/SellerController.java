@@ -23,8 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.teamProject.seller.dao.FileService;
-import com.example.teamProject.seller.dao.JusoSearchService;
-import com.example.teamProject.seller.dao.JusoSearchService;
+
 import com.example.teamProject.seller.dao.SellerService;
 import com.example.teamProject.seller.model.Seller;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -43,8 +42,7 @@ public class SellerController {
 	@Autowired
 	FileService fileService; 
 	
-	@Autowired
-    JusoSearchService jusoSearchService;
+	
   
 
 	@RequestMapping("/seller/list.do")
@@ -146,11 +144,7 @@ public class SellerController {
 		return "/seller/productUpdate";
 	}
 	
-	@RequestMapping("/seller/popup")
-    public String showJusoPopup() {
-        
-        return "/seller/jusoPopup";
-    }
+
 	
 	
 
