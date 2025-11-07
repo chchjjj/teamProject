@@ -160,9 +160,10 @@
 				    pg: "html5_inicis",
 				    pay_method: "card",
 				    merchant_uid: "merchant_" + new Date().getTime(),
-				    name: "결제", //상품이름, 원래는 다음과 같은 형식이다: self.info.foodName,
+				    name: self.orderList[0].proName, //상품이름, 대표로 제일 첫번째 상품명을 보여준다.
 				    amount: 1, //실제 결제금액은 1원, 원래는 self.info.totalPrice
-				    buyer_tel: self.toPhone,
+				    buyer_tel: self.toPhone, // 구매자 휴대폰 번호
+                    buyer_name: self.toName // 구매자 성함
 				  }	, function (rsp) { // callback
 			   	      if (rsp.success) {
 			   	        // 결제 성공 시
@@ -193,8 +194,10 @@
                     success: function (data) {
                         if(data.result == "success"){
                             alert("결제되었습니다!");
+                            location.href="/main.do";
                         } else {
                             alert("오류가 발생했습니다!");
+                            location.href="/main.do";
                         }
                     }
                 });

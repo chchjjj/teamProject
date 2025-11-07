@@ -90,5 +90,11 @@
 		WHERE ORDER_ID = #{orderId}
 	</update>
 	
+	<update id="updateOrderStatus" parameterType="hashmap">
+		UPDATE ORDER_TBL
+		SET STATUS = 'P'
+		WHERE ORDER_ID = #{orderId}
+	</update>
+	
 	
 </mapper>
