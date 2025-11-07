@@ -72,7 +72,7 @@
                 toName: "${sessionName}", //받을 사람
                 toPhone: "${sessionPhone}", //받을 사람의 휴대폰 번호
                 orderList: [], //화면에 보이는 정보, 배송 정보 확정 전 단계, ORDER_TBL + ORDER_DETAIL_TBL + ORDER_OPTION_TBL
-                
+                deliveryType: "", //배달인지 픽업인지 (배달이면 D, 픽업이면 P)
                 
                 //order 관련 변수
                 // 1. 바로 구매 버튼을 누른 경우 order 테이블에서 사용 / 2. 장바구니 담고 나서 구매하는 경우 바로 이 페이지에서 생성한 주문번호
@@ -100,7 +100,7 @@
                         console.log("Order 리스트 출력");// 테스트용
                         console.log(data);// 테스트용
                         self.orderList = data.list; //order 테이블 정보만 담으면 된다.
-                        
+                        self.deliveryType = data.list.deliveryType; //배달인지 픽업인지
                     }
                 });
             },
