@@ -27,8 +27,35 @@ public class PaymentController {
 	@Autowired
 	PaymentService paymentService;
 
-	@RequestMapping("/payment/payment.do")
-	public String payment(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map)
+//	@RequestMapping("/payment/payment.do")
+//	public String payment(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map)
+//			throws Exception {
+//
+//		// 바로 주문하는 경우(productDetail.jsp) orderId 넘겨받기
+//		request.setAttribute("orderId", map.get("orderId"));
+//
+//		// cart.jsp에서 보낸 selectItem(JSON 문자열) 꺼내기
+//		String selectItemJson = (String) map.get("orderIdList");
+//
+//		// JSON → List 변환 (Gson 사용)
+//		List<String> orderIdList = new ArrayList<>();
+//		if (selectItemJson != null && !selectItemJson.isEmpty()) {
+//			Gson gson = new Gson();
+//			orderIdList = gson.fromJson(selectItemJson, new TypeToken<List<String>>() {
+//			}.getType());
+//		}
+//
+//		// JSP에서 쓸 수 있도록 model에 담기
+//		model.addAttribute("orderIdList", orderIdList);
+//
+//		System.out.println("cart.do에서 넘어온 orderIdList 목록: " + orderIdList);
+//
+//		// 결제 페이지로 이동
+//		return "/payment/payment";
+//	}
+	
+	@RequestMapping("/payment/deliveryPayment.do")
+	public String deliveryPayment(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map)
 			throws Exception {
 
 		// 바로 주문하는 경우(productDetail.jsp) orderId 넘겨받기
@@ -51,7 +78,34 @@ public class PaymentController {
 		System.out.println("cart.do에서 넘어온 orderIdList 목록: " + orderIdList);
 
 		// 결제 페이지로 이동
-		return "/payment/payment";
+		return "/payment/deliveryPayment";
+	}
+	
+	@RequestMapping("/payment/pickUpPayment.do")
+	public String pickUpPayment(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map)
+			throws Exception {
+
+		// 바로 주문하는 경우(productDetail.jsp) orderId 넘겨받기
+		request.setAttribute("orderId", map.get("orderId"));
+
+		// cart.jsp에서 보낸 selectItem(JSON 문자열) 꺼내기
+		String selectItemJson = (String) map.get("orderIdList");
+
+		// JSON → List 변환 (Gson 사용)
+		List<String> orderIdList = new ArrayList<>();
+		if (selectItemJson != null && !selectItemJson.isEmpty()) {
+			Gson gson = new Gson();
+			orderIdList = gson.fromJson(selectItemJson, new TypeToken<List<String>>() {
+			}.getType());
+		}
+
+		// JSP에서 쓸 수 있도록 model에 담기
+		model.addAttribute("orderIdList", orderIdList);
+
+		System.out.println("cart.do에서 넘어온 orderIdList 목록: " + orderIdList);
+
+		// 결제 페이지로 이동
+		return "/payment/pickUpPayment";
 	}
 	
 	@RequestMapping("/payment/addressPopUp.do")
