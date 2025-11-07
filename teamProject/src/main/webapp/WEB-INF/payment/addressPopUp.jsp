@@ -43,6 +43,7 @@
             <div>기본배송지</div>
             <div>휴대폰 번호: {{userPhone}}</div> <!-- 가입할 때 휴대폰 번호-->
             <div>배송지: {{userAddress}}</div> <!-- 가입할 때 주소-->
+            <div><button @click="fnUseAddress(userPhone)">선택</button></div>
          </div>
          <div v-for="item in addressList">
             <hr>

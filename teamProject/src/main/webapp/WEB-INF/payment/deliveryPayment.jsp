@@ -156,9 +156,9 @@
 				    pg: "html5_inicis",
 				    pay_method: "card",
 				    merchant_uid: "merchant_" + new Date().getTime(),
-				    name: "1", //상품이름, 원래는 다음과 같은 형식이다: self.info.foodName,
+				    name: "결제", //상품이름, 원래는 다음과 같은 형식이다: self.info.foodName,
 				    amount: 1, //실제 결제금액은 1원, 원래는 self.info.totalPrice
-				    buyer_tel: "010-0000-0000",
+				    buyer_tel: self.toPhone,
 				  }	, function (rsp) { // callback
 			   	      if (rsp.success) {
 			   	        // 결제 성공 시
