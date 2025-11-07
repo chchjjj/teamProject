@@ -107,7 +107,7 @@ public class UserService {
 		
 		String message = session.getAttribute("sessionName") + "님 로그아웃 되었습니다.";
 		resultMap.put("msg", message);
-		
+		resultMap.put("result", "success");
 		//session.removeAttribute("sessionId"); //1개씩 삭제
 		
 		session.invalidate(); //세션정보 전체 삭제
@@ -147,7 +147,15 @@ public class UserService {
 
 		return resultMap;
 	}
+	public HashMap<String, Object> userNameCheck(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		User user = userMapper.userNameCheck(map);
+		String result = user != null ? "true" : "false";
 
+		resultMap.put("result", result);
+
+		return resultMap;
+	}
 	public HashMap<String, Object> userAuth(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
@@ -312,6 +320,24 @@ public class UserService {
 			System.out.println(e.getMessage());
 		}				
 		return resultMap;
+	}
+	
+	public HashMap<String, Object> SelectChatList(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		//qnAlist 
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			List <User> chatList= userMapper.chatListSelect(map);
+			resultMap.put("chatList",chatList);
+//			int totalRows=userMapper.chatCount(map);
+//			resultMap.put("totalRows",totalRows);
+			resultMap.put("result","success");
+		}catch(Exception e) {
+			resultMap.put("result","fail");
+			System.out.println(e.getMessage());		
+		}	
+		 return resultMap;
+				
 	}
 	
 	

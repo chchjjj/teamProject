@@ -14,7 +14,7 @@
 	        #{sender},
 	        #{storeId},
 	        #{content},
-	        'TEXT',
+	        #{messageType, jdbcType=VARCHAR},
 	        SYSDATE,
 	        'N'
 	    )
