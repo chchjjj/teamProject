@@ -80,7 +80,6 @@ public class User {
 		    private int quantity;     // 주문 수량
 		    private String deliveryType;
 		    private String status;
-		    private int subtotal;      // 상품 소계
 		    private String letteringWord; // 레터링 문구
 		    private String chatYn;
 		    private int totalQuantity;
@@ -98,8 +97,13 @@ public class User {
 		    
 		    //배송
 		    private String wishDeli;
+		    private String deliveryStatus;
 		    
 		    //픽업
 		    private String pickTime;
+		    private String storeAddr;
+		    
+		    //review
+		    private String cDateTime;
 		    
 }

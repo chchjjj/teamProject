@@ -11,6 +11,8 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <!--페이지 이동-->
+    <script src="/js/page-change.js"></script>
 
     <style>
         /* (스타일 시트 내용은 그대로 유지) */
@@ -321,42 +323,50 @@
                     });
                 }, // <--- methods 내부의 각 함수 정의는 쉼표로 구분해야 합니다.
 
-                goToChat(orderId) {
-                    if (!orderId) {
-                        alert("주문 정보가 없습니다.");
-                        return;
-                    }
+                // 채팅방 이동 버튼 (기존 재준님 작성)
+                // goToChat(orderId) {
+                //     if (!orderId) {
+                //         alert("주문 정보가 없습니다.");
+                //         return;
+                //     }
 
-                    $.ajax({
-                        url: "/seller/chat.dox",
-                        type: "POST",
-                        dataType: "json",
-                        data: { orderId: orderId },
-                        success: (res) => {
-                            console.log("채팅 호출 결과:", res);
+                //     $.ajax({
+                //         url: "/seller/chat.dox",
+                //         type: "POST",
+                //         dataType: "json",
+                //         data: { orderId: orderId },
+                //         success: (res) => {
+                //             console.log("채팅 호출 결과:", res);
 
-                            if (res && res.status === "success") {
-                                if (res.canChat) {
-                                    window.location.href = `/seller/sellerChat.do?orderId=${orderId}`;
-                                } else {
-                                    alert("현재 주문은 채팅 기능을 사용할 수 없습니다.");
-                                }
-                            } else {
-                                alert(res.message || "채팅 서버 호출에 실패했습니다.");
-                            }
-                        },
-                        error: (xhr, status, error) => {
-                            console.error("채팅 이동 실패:", status, error);
-                            alert("채팅 서버 호출 중 오류가 발생했습니다.");
-                            console.log("서버 응답:", xhr.responseText);
-                        }
-                    });
-                }, // <--- 쉼표 확인
+                //             if (res && res.status === "success") {
+                //                 if (res.canChat) {
+                //                     window.location.href = `/seller/sellerChat.do?orderId=${orderId}`;
+                //                 } else {
+                //                     alert("현재 주문은 채팅 기능을 사용할 수 없습니다.");
+                //                 }
+                //             } else {
+                //                 alert(res.message || "채팅 서버 호출에 실패했습니다.");
+                //             }
+                //         },
+                //         error: (xhr, status, error) => {
+                //             console.error("채팅 이동 실패:", status, error);
+                //             alert("채팅 서버 호출 중 오류가 발생했습니다.");
+                //             console.log("서버 응답:", xhr.responseText);
+                //         }
+                //     });
+                // },
 
                 goToOptionAdd(orderId) {
                     console.log(`주문 ID ${orderId}에 대한 옵션 추가 페이지로 이동합니다.`);
                     window.location.href = `/seller/order/addOption.do?orderId=${orderId}`;
-                }, // <--- 쉼표 확인
+                    alert(`[옵션 추가] 버튼 클릭: 주문 ID ${orderId}`);
+                },
+
+                // 채팅방 이동 (현지 작성)
+                goToChat(orderId){
+                    pageChange("/chat/chatSeller.do",{orderId : orderId});
+                },
+                
 
                 formatDate(date) {
                     if (!date) return '-';

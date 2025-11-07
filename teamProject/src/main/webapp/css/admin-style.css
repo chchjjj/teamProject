@@ -6,11 +6,21 @@
     padding: 0;
     box-sizing: border-box;
 }
-
+.logo img {
+    width: 200px;
+    /* 원하는 너비 */
+    height: auto;
+    /* 비율 유지 */
+}
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "맑은 고딕", "Malgun Gothic", sans-serif;
     background-color: #FFF9E6;
     color: #333;
+}
+.navButton button.active {
+    background-color: #ffb400; /* 노란색 강조 */
+    color: #fff;               /* 글씨 하얀색 */
+    font-weight: bold;         /* 글씨 강조 */
 }
 
 /* ===== 主容器布局 ===== */

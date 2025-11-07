@@ -40,8 +40,7 @@
 
                             <div class="image-section">
                                 <div class="main-image-box">
-                                    <div
-                                        v-if="!infoList.filePath || !infoList.fileName">
+                                    <div v-if="!infoList.filePath || !infoList.fileName">
                                         판매자 등록 썸네일
                                     </div>
                                     <img v-else :src="(infoList.filePath + infoList.fileName).trim()" alt="상품 이미지"
@@ -258,6 +257,11 @@
                 fnBuy: function (proNo) {
                     let self = this;
                     //유효성 검사
+                    if (self.userId == "" || self.userId == null) {
+                        alert("로그인 후 이용해주세요!");
+                        location.href = "/user/login.do"; // 로그인 페이지 이동
+                        return;
+                    }
                     if (!self.fnCheckRequiredSelections()) {
                         return; // 필수 옵션 미선택 시 함수 종료
                     }
@@ -366,10 +370,13 @@
                             data: param,
                             success: function (data) {
                                 if (data.result === "success") {
-                                    alert("주문이 완료되었습니다!");
-                                    // 결제 페이지로 이동 또는 주문 완료 페이지 이동
+                                    alert("주문이 완료되었습니다!");                            
                                     alert(data.orderId);
-                                    pageChange("/payment/payment.do", { orderId: data.orderId });
+                                    if (self.deliveryType === 'D') {
+                                        pageChange("/payment/deliveryPayment.do", { orderId: data.orderId });
+                                    } else if (self.deliveryType === 'P') {
+                                        pageChange("/payment/pickUpPayment.do", { orderId: data.orderId });
+                                    }
 
                                 } else {
                                     alert("주문 처리 중 오류가 발생했습니다.");
@@ -397,8 +404,7 @@
                         success: function (data) {
 
                             self.infoList = data.info;
-                            console.log("밑은 인포리스트");
-                            console.log(self.infoList);
+
                         }
                     });
                 },
@@ -430,7 +436,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data.list);
+
                             self.allOptList = data.list;
                         }
                     });
@@ -486,6 +492,11 @@
                 },
                 fnCart: function () {
                     let self = this;
+                    if (self.userId == "" || self.userId == null) {
+                        alert("로그인 후 이용해주세요!");
+                        location.href = "/user/login.do"; // 로그인 페이지 이동
+                        return;
+                    }
                     // 하위 옵션 선택 내역 수집
                     //유효성 검사
                     if (!self.fnCheckRequiredSelectionsCart()) {
@@ -681,6 +692,11 @@
                 },
                 fnwish: function () {
                     let self = this;
+                    if (self.userId == "" || self.userId == null) {
+                        alert("로그인 후 이용해주세요!");
+                        location.href = "/user/login.do"; // 로그인 페이지 이동
+                        return;
+                    }
                     if (self.isWished) {
                         let param = {
                             userId: self.userId,
@@ -725,7 +741,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data.info);
+
                             self.userInfo = data.info;
                         }
                     });

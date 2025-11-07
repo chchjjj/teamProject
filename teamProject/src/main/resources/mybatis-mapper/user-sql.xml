@@ -68,6 +68,7 @@
             OPT.PRICE_DIFF*OPT.ADD_QUANTITY AS OPTION_TOTAL,
             PI.PICK_TIME,
             DELI.WISH_DELI,
+            SE.STORE_ADDR,
 	        O.ORDER_ID,
 	        D.ORDER_DETAIL_ID,
 	        OPT.ORDER_OPTION_ID
@@ -82,13 +83,116 @@
         LEFT JOIN CHAT_TBL C ON C.ORDER_ID=O.ORDER_ID
         LEFT JOIN DELIVERY_TBL DELI ON DELI.ORDER_ID=O.ORDER_ID
         LEFT JOIN PICKUP_TBL PI ON PI.ORDER_ID=O.ORDER_ID
-	    WHERE 1=1 AND
-	    U.USER_ID = #{userId}
-	    <if test="orderId != null">
-	    	AND O.ORDER_ID=#{orderId}
-	    </if>
+	    WHERE U.USER_ID = #{userId}
     	ORDER BY O.ORDER_DATE DESC
 	</select>
+	
+	<select id="selectOrder" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
+	      SELECT
+	    	SE.STORE_ID,
+	        O.STORE_NAME,
+	        P.PRO_NAME,
+	        T.OPTION_NAME,
+	        S.VALUE_NAME,
+	        OPT.ADD_QUANTITY,
+	        OPT.PRICE_DIFF,
+	        D.PRICE,
+	        D.QUANTITY,
+	        D.LETTERING_WORD,
+	        D.SUBTOTAL,
+	        O.ADD_OPTION_PRICE,
+	        O.DELIVERY_FEE,
+	        O.DELIVERY_TYPE,
+	        DELI.DELIVERY_STATUS,
+	        O.FULL_ADDRESS,
+            O.CHAT_YN,
+	        O.ORDER_DATE,
+	        O.TOTAL_PRICE,
+            O.STATUS,
+            C.CHAT_ID,
+            OPT.PRICE_DIFF*OPT.ADD_QUANTITY AS OPTION_TOTAL,
+            PI.PICK_TIME,
+            PI.PICKUP_STATUS,
+            DELI.WISH_DELI,
+            SE.STORE_ADDR,
+	        O.ORDER_ID,
+	        D.ORDER_DETAIL_ID,
+	        OPT.ORDER_OPTION_ID
+	    FROM ORDER_TBL O
+	    LEFT JOIN ORDER_DETAIL_TBL D ON O.ORDER_ID = D.ORDER_ID
+	    LEFT JOIN ORDER_OPTION_TBL OPT ON OPT.ORDER_DETAIL_ID = D.ORDER_DETAIL_ID
+	    LEFT JOIN PRODUCT_TBL P ON D.PRO_NO = P.PRO_NO
+	    LEFT JOIN PRODUCT_OPTION_TBL T ON T.TOP_OPTION_ID = OPT.TOP_OPTION_ID
+	    LEFT JOIN PRODUCT_SUB_OPTION_TBL S ON S.SUB_OPTION_ID = OPT.SUB_OPTION_ID
+	    LEFT JOIN SELLER_INFO_TBL SE ON SE.STORE_NAME=O.STORE_NAME
+	    LEFT JOIN USER_TBL U ON U.USER_ID=O.USER_ID
+        LEFT JOIN CHAT_TBL C ON C.ORDER_ID=O.ORDER_ID
+        LEFT JOIN DELIVERY_TBL DELI ON DELI.ORDER_ID=O.ORDER_ID
+        LEFT JOIN PICKUP_TBL PI ON PI.ORDER_ID=O.ORDER_ID
+	    WHERE O.ORDER_ID = #{orderId}
+    	ORDER BY O.ORDER_DATE
+	</select>
+	
+	<!--review-->
+	<select id="reviewListSelect" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
+   		SELECT * FROM REVIEW_TBL R
+   		LEFT JOIN PRODUCT_IMG_TBL P
+   		ON P.PRO_NO=R.PRO_NO
+   		LEFT JOIN USER_TBL U
+   		ON U.USER_ID=R.USER_ID 
+   		LEFT JOIN PRODUCT_TBL PRO
+   		ON PRO.PRO_NO=R.PRO_NO
+   		WHERE U.USER_ID=#{userId}
+		ORDER BY CDATETIME DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
+	</select>
+	
+	
+	<select id="reviewCount" parameterType="hashmap" resultType="int">
+   		SELECT COUNT(*) FROM REVIEW_TBL R
+   		LEFT JOIN PRODUCT_IMG_TBL P
+   		ON P.PRO_NO=R.PRO_NO
+   		LEFT JOIN USER_TBL U
+   		ON U.USER_ID=R.USER_ID 
+   		LEFT JOIN PRODUCT_TBL PRO
+   		ON PRO.PRO_NO=R.PRO_NO
+   		WHERE U.USER_ID=#{userId}
+	</select>
+	
+	
+	<!--QnA-->
+	<select id="qnAListSelect" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
+   		SELECT * FROM QA_TBL Q
+   		INNER JOIN SELLER_INFO_TBL S
+   		ON Q.STORE_ID=S.STORE_ID
+		ORDER BY QUESTION_DATE DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
+	</select>
+	
+	
+	<select id="qnACount" parameterType="hashmap" resultType="int">
+   		SELECT * FROM QA_TBL Q
+   		INNER JOIN SELLER_INFO_TBL S
+   		ON Q.STORE_ID=S.STORE_ID
+	</select>
+	
+	
+	<!--정보 수정-->
+	<!--사용자 개인 정보 가져오기 -->
+	<select id="userSelect" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
+		SELECT *
+		FROM USER_TBL
+		WHERE USER_ID = #{userId}
+	</select>
+	
+	<!--사용자 개인 정보 고치기 -->
+	<update id="userUpdate" parameterType="hashmap">
+		UPDATE USER_TBL 
+		SET USER_NAME=#{userName},EMAIL=#{email},USER_ADDR=#{userAddr},PHONE=#{phone},USER_STATUS=#{userStatus}
+		WHERE USER_ID=#{userId}
+	</update>
+	
+	
 	
 	
 	

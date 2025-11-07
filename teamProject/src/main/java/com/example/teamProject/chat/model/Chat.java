@@ -1,6 +1,6 @@
 package com.example.teamProject.chat.model;
 
-import com.example.teamProject.main.model.Main;
+import java.util.Date;
 
 import lombok.Data;
 
@@ -18,12 +18,14 @@ public class Chat {
 	// 실시간 메세지용 (카페글 내용)
 	private String sender;
     private String message;
+	private Date sentAt;
     
     public Chat() {}
 
-    public Chat(String sender, String message) {
+    public Chat(String sender, String message, Date timestamp) {
         this.sender = sender;
         this.message = message;
+        this.sentAt = timestamp;
     }
     
     private String content;	
