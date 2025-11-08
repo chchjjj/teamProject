@@ -347,9 +347,9 @@
                         <div class="pro-name">
                             {{item.proName}}
                         </div>
-                        <div class="delivery-type">
-                            배송 선택: {{item.deliveryType}}
-                        </div>
+                        <!-- <div class="delivery-type">
+                            배송 선택: {{item.orderDate}}
+                        </div> -->
                         <div>
                             판매처: {{item.storeName}}
                         </div>
@@ -391,10 +391,11 @@
             </div>
             
             <div class="btn-group">
-                <button @click="fnGoBack" class="btn btn-cancel">취소하기</button>
-
+                <button @click="fnGoBack" class="btn btn-cancel">메인으로</button>
                 <button @click="fnPayment" class="btn btn-primary">결제하기</button>
 
+                <!-- 아랫줄은 간편 테스트용 -->
+                <!-- <button @click="fnPayHistory(1, 1)" class="btn btn-primary">결제하기</button> -->
             </div>
 
         </div>
@@ -444,7 +445,6 @@
                             self.orderList = data.list;
                             self.deliveryType = data.list[0].deliveryType; //배달인지 픽업인지
                             console.log("self.deliveryType[0] ===> " + data.list[0].deliveryType);
-                            // self.paymentPrice = data.list.totalPrice;
                             self.kind = data.list.length; // 상품 종류 갯수
                             console.log("상품 종류 갯수: " + self.kind + "개");
 
@@ -471,8 +471,6 @@
                         success: function (data) {
                             console.log("장바구니 비우기");// 테스트용
                             console.log(data);// 테스트용
-                            
-                            
                         }
                     });
                 },
@@ -486,12 +484,18 @@
                 //결제 버튼을 누르면 이 함수를 실행
                 fnPayment: function(){
                     let self = this;
+                    let proName;
+                    if(self.kind > 1){
+                        proName = self.orderList[0].proName + " 외 " +  (self.kind - 1) + "종";
+                    } else{
+                        proName = self.orderList[0].proName;
+                    }
                     IMP.request_pay({
                         pg: "html5_inicis",
                         pay_method: "card",
                         merchant_uid: "merchant_" + new Date().getTime(),
-                        name: self.orderList[0].proName + " 외 " +  (self.kind - 1) + "종", //상품이름, 대표로 제일 첫번째 상품명을 보여준다.
-                        amount: 1, //실제 결제금액은 1원, 원래는 self.info.totalPrice
+                        name: proName, //상품이름, 대표로 제일 첫번째 상품명을 보여준다.
+                        amount: 1, //실제 결제금액은 1원, 원래는 self.paymentPrice
                         buyer_tel: self.toPhone, // 구매자 휴대폰 번호
                         buyer_name: self.toName // 구매자 성함
                       } , function (rsp) { // callback
@@ -534,7 +538,8 @@
                 },
 
                 fnGoBack: function(){
-                    window.history.back();
+                        //window.history.back();
+                        window.location.href = "/main.do"; // 기본 이동 경로
                 }
 
                 
