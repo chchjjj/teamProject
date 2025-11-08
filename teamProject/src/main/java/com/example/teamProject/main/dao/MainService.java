@@ -95,7 +95,7 @@ public class MainService {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();		
 		try {
 			List<Main> list = mainMapper.selectIngreProList(map);
-			int cnt = mainMapper.selectMainCnt(map); // 게시된 상품 개수
+			int cnt = mainMapper.selectIngreProCnt(map); // 게시된 상품 개수
 			resultMap.put("list", list); 
 			resultMap.put("cnt", cnt); 
 			resultMap.put("result", "success");
