@@ -94,9 +94,11 @@ public class AdminService {
 		
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
-		List orderList= adminMapper.orderListSelect(map);	
+		List orderList= adminMapper.orderListSelect(map);
+		int totalRows=adminMapper.orderCount(map);
 		
 		resultMap.put("orderList",orderList);
+		resultMap.put("totalRows",totalRows);
 		resultMap.put("result","success");
 		return resultMap;
 	}
@@ -145,12 +147,13 @@ public class AdminService {
 			return resultMap;
 		}
 		
-		
+		@Transactional
 		public HashMap<String, Object> UpdateSeller(HashMap<String, Object> map) {
 			// TODO Auto-generated method stub
 			
 			HashMap<String, Object> resultMap = new HashMap<String, Object>();
 			int cnt= adminMapper.sellerUpdate(map);
+			int cnt2=adminMapper.userRoleUpdate(map);
 			resultMap.put("result","success");
 			return resultMap;
 		}

@@ -365,6 +365,7 @@
                     <button @click="fnReview()">내가 쓴 리뷰</button>
                     <button @click="fnQnA()">QnA</button>
                     <button @click="fnUserEdit()">정보수정</button>
+                    <button @click="fnDeleteAccount()">회원탈퇴</button>
                 </div>
 
                 <!-- Logout Button -->
@@ -652,6 +653,13 @@
 
                 fnUserEdit: function () {
                     location.href = "/user/userEdit.do";
+                },
+
+                fnDeleteAccount:function(){ 
+                    if(confirm("회원을 탈퇴하겠습니까?")){
+                        location.href="/main.do";
+                    }
+                    return;
                 },
 
                 fnLogout: function () {

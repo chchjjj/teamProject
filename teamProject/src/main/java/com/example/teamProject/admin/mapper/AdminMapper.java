@@ -52,11 +52,13 @@ public interface AdminMapper {
 				
 		//sellerupdate
 		int sellerUpdate(HashMap<String, Object> map);
+		int userRoleUpdate(HashMap<String, Object> map);
 		
 		//판매자 상세: 월 판매량 따라 차트 구현
 		List <HashMap> salesSelect(HashMap<String, Object> map);
 		//판매자 가장 핫한 상품
 		List <Admin> sellerPopularListSelect (HashMap<String, Object> map);
+		
 		
 		
 		
@@ -70,6 +72,7 @@ public interface AdminMapper {
 		
 		//4. user의 구매정보
 		Admin orderSelect(HashMap<String, Object> map);
+		int orderCount (HashMap<String, Object> map);
 		
 		
 		

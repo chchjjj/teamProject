@@ -223,7 +223,7 @@
                     <!-- QnA 테이블 -->
                     <table>
                         <tr>
-                            <th>선택<input type="checkbox" @click="fnSelectAll"></th>
+                            <th><input type="checkbox" @click="fnSelectAll"></th>
                             <th>번호</th>
                             <th>질문자</th>
                             <th>질문 내용</th>
@@ -287,7 +287,7 @@
                     <!-- 리뷰 테이블 -->
                     <table>
                         <tr>
-                            <th>선택<input type="checkbox" @click="fnSelectAll"></th>
+                            <th><input type="checkbox" @click="fnSelectAll"></th>
                             <th>리뷰번호</th>
                             <th>주문번호</th>
                             <th>상품</th>
@@ -313,19 +313,41 @@
                     </table>
 
                     <!-- 페이징 및 선택 삭제 -->
-                    <div class="paging">
-                        <span v-if="page>1"><button @click="fnPre()">◀</button></span>
-                        <a href="javascript:;" v-for="num in pageRangeList" @click="fnChange(num)"
-                            :class="{active:page == num}">{{num}}</a>
-                        <span v-if="page!=pageNum"><button @click="fnNext()">▶</button></span>
+                    <div class="paging" style="margin-top: 25px; margin-bottom: 20px; text-align: center;">
+                        <span v-if="page > 1">
+                            <button @click="fnPre()"
+                                style="background-color: #3E2723; color: #FFEDAC; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; margin: 0 5px;">◀</button>
+                        </span>
+                        <a href="javascript:;" v-for="num in pageRangeList" @click="fnChange(num)" :style="{
+            margin: '0 5px',
+            padding: '8px 12px',
+            textDecoration: 'none',
+            color: page == num ? '#FFEDAC' : '#3E2723',
+            backgroundColor: page == num ? '#3E2723' : '#FFEDAC',
+            borderRadius: '5px',
+            fontWeight: 'bold',
+            display: 'inline-block'
+        }">
+                            {{ num }}
+                        </a>
+                        <span v-if="page != pageNum">
+                            <button @click="fnNext()"
+                                style="background-color: #3E2723; color: #FFEDAC; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; margin: 0 5px;">▶</button>
+                        </span>
                     </div>
-                    <div><button @click="fnRemoveAll">선택 삭제</button></div>
-                </div>
 
-                <!-- 3. 게시판 리스트 (board) -->
-                <!--  -->
+                    <div style="margin-top: 25px; text-align: center;">
+                        <button @click="fnRemoveAll"
+                            style="padding: 6px 14px; border: none; background-color: #3E2723; color: white; border-radius: 5px; cursor: pointer;">
+                            선택 삭제
+                        </button>
+                    </div>
+
+
+                    <!-- 3. 게시판 리스트 (board) -->
+                    <!--  -->
+                </div>
             </div>
-        </div>
 
     </body>
 
@@ -356,6 +378,7 @@
                     // 변수 - (key : value)
 
                     currentMenu: "qna",
+                    sessionId: "${sessionId}",
 
                     qnAList: [],
                     reviewList: [],
@@ -609,20 +632,26 @@
                 },
 
                 fnLogout: function () {
-                                  param = {}
                     if (confirm("로그아웃 하시겠습니까?")) {
+                        let param = {};
                         $.ajax({
-                            url: "/user/logout.dox", // 로그아웃 url 주소
+                            url: "/user/logout.dox",
                             dataType: "json",
                             type: "POST",
                             data: param,
                             success: function (data) {
-                                alert(data.msg);
-                                location.href = "/main.do";
+                                if (data.result == "success") {
+                                    alert(data.msg + "! 홈페이지로 이동하겠습니다.");
+                                    location.href = "/main.do";
+                                } else {
+                                    alert("로그아웃하는 도중에 오류가 발생하였습니다.");
+                                }
+
                             }
+
                         });
                     }
-                }
+                },
 
 
 

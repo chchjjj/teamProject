@@ -46,8 +46,9 @@
                 <div class="navBar">
                     <!-- Logo -->
                     <div class="logo">
-                        <img src="/images/logo.png" alt="Dessert Lab" style="max-width: 150px;">
-                        <p>Admin Panel</p>
+                        <a href="javascript:;" onclick="location.href='/main.do'">
+                            <img src="/img/로고.png" alt="쇼핑몰 로고">
+                        </a>
                     </div>
                     <div class="navButton">
                         <div>
@@ -151,6 +152,7 @@
             data() {
                 return {
                     // 변수 - (key : value)
+                    sessionId: "${sessionId}",
                     adId:"${adId}",
                     ad:{},
                     adName:"",
@@ -256,8 +258,26 @@
 
 
                 fnLogout: function () {
-
-                }
+                    if (confirm("로그아웃 하시겠습니까?")) {
+                        let param = {};
+                        $.ajax({
+                            url: "/user/logout.dox",
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                if(data.result=="success"){
+                                    alert(data.msg+"! 홈페이지로 이동하겠습니다.");
+                                    location.href = "/main.do";
+                                }else{
+                                    alert("로그아웃하는 도중에 오류가 발생하였습니다.");
+                                }
+                                    
+                            }
+                            
+                        });
+                    }
+                },
 
 
 

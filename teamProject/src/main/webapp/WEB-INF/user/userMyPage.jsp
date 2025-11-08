@@ -336,6 +336,7 @@
                     <button @click="fnReview()">내가 쓴 리뷰</button>
                     <button @click="fnQnA()">QnA</button>
                     <button @click="fnUserEdit()">정보수정</button>
+                    <button @click="fnDeleteAccount()">회원탈퇴</button>
                 </div>
 
                 <!-- Logout Button -->
@@ -419,10 +420,6 @@
                             <div class="summaryRow" v-if="order.deliveryType==='D'">
                                 <strong>배송비:</strong>
                                 <span>{{ formatNumber(order.deliveryFee) }}원</span>
-                            </div>
-                            <div class="summaryRow" v-if="order.deliveryType==='P'">
-                                <strong>픽업시간:</strong>
-                                <span>{{order.pickTime}}</span>
                             </div>
                             <div class="summaryRow" v-if="order.deliveryType==='D'">
                                 <strong>주소:</strong>
@@ -600,6 +597,13 @@
                     location.href = "/user/userEdit.do";
                 },
 
+                fnDeleteAccount:function(){ 
+                    if(confirm("회원을 탈퇴하겠습니까?")){
+                        location.href="/main.do";
+                    }
+                    return;
+                },
+
                 fnLogout: function () {
                     if (confirm("로그아웃 하시겠습니까?")) {
                         let param = {};
@@ -632,7 +636,8 @@
 
                 fnPayment: function (orderId) {
                     pageChange("/payment/payment.do", { orderId: orderId });
-                }
+                },
+
             },
 
             mounted() {
