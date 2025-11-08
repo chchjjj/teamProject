@@ -1,10 +1,10 @@
 package com.example.teamProject.applyStore.dao;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.IOException; // ⭐ 누락된 import 추가
+import java.util.Calendar; // ⭐ 누락된 import 추가
 import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,6 +66,66 @@ public Integer getStoreIdByStoreNameAndUserId(String storeName, String userId) {
         }
     }
   
+
+
+
+
+
+
+
+@Transactional 
+public HashMap<String, Object> updateStoreImageInfo(int storeId, String userId, Map<String, String> savedFileDetails) {
     
+    HashMap<String, Object> resultMap = new HashMap<>();
+    int totalRowsAffected = 0; // 삽입된 행의 총 개수
+    
+    try {
+        // 1. 프로필 이미지 정보 준비 및 삽입
+        HashMap<String, Object> profileMap = new HashMap<>();
+        profileMap.put("storeId", storeId);
+        profileMap.put("fileUse", "프로필"); 
+        profileMap.put("filePath", "img-seller/");
+        profileMap.put("fileName", savedFileDetails.get("profileImageSaveName"));
+        profileMap.put("fileOrgName", savedFileDetails.get("profileImageOriginalName"));
+        profileMap.put("fileEtc", savedFileDetails.get("profileImageExt")); 
+
+        // 🟢 Mapper 호출 1: insertStoreImage 사용!
+        totalRowsAffected += applyStoreMapper.insertStoreImage(profileMap); 
+        System.out.println(">>> [Service] 프로필 이미지 DB 저장 완료.");
+
+
+        // 2. 배너 이미지 정보 준비 및 삽입
+        HashMap<String, Object> bannerMap = new HashMap<>();
+        bannerMap.put("storeId", storeId);
+        bannerMap.put("fileUse", "배너"); 
+        bannerMap.put("filePath", "img-seller/");
+        bannerMap.put("fileName", savedFileDetails.get("bannerImageSaveName"));
+        bannerMap.put("fileOrgName", savedFileDetails.get("bannerImageOriginalName"));
+        bannerMap.put("fileEtc", savedFileDetails.get("bannerImageExt")); 
+
+        // 🟢 Mapper 호출 2: insertStoreImage 사용!
+        totalRowsAffected += applyStoreMapper.insertStoreImage(bannerMap); 
+        System.out.println(">>> [Service] 배너 이미지 DB 저장 완료.");
+
+
+        // 3. 결과 처리
+        if (totalRowsAffected == 2) {
+            resultMap.put("success", true);
+            resultMap.put("message", "파일 정보가 DB에 성공적으로 저장되었습니다. (2건)");
+        } else {
+            resultMap.put("success", false);
+            resultMap.put("message", "DB 업데이트 실패: 2건 중 " + totalRowsAffected + "건만 저장되었습니다.");
+        }
+        
+    } catch (Exception e) {
+        System.err.println("DB 삽입 중 오류 발생: " + e.getMessage());
+        e.printStackTrace();
+        // Transactional이 붙어 있으므로, 오류 시 디스크에 저장된 파일 정보도 DB에 저장되지 않습니다.
+        resultMap.put("success", false);
+        resultMap.put("message", "DB 업데이트 중 서버 오류가 발생했습니다: " + e.getMessage());
+    }
+    
+    return resultMap;
+}
     
 }
