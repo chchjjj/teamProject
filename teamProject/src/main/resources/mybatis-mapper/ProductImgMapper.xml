@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.teamProject.seller.mapper.ProductImgMapper">
+
+    <resultMap id="productImgMap" type="com.example.teamProject.seller.model.ProductImgDTO">
+        <id property="imgNo" column="IMG_NO"/>
+        <result property="proNo" column="PRO_NO"/>
+        <result property="imgPath" column="IMG_PATH"/>
+        <result property="imgFilename" column="IMG_FILENAME"/>
+        <result property="imgOrgFilename" column="IMG_ORG_FILNAME"/>
+        <result property="imgFormat" column="IMG_FORMAT"/>
+        <result property="imgType" column="IMG_TYPE"/>
+        </resultMap>
+
+<insert id="insertProductImages" parameterType="com.example.teamProject.seller.model.ProductImgDTO">
+    INSERT INTO PRODUCT_IMG_TBL (
+        PRODUCT_IMG_NUM,
+        PRO_NO,
+        FILEPATH,        FILENAME,
+        FILEORGNAME,
+        FILEUSE,
+        FILEETC
+    )
+    VALUES (
+        SEQ_PRODUCT_IMG_NUM.NEXTVAL,
+        #{proNo},
+        #{imgPath},      #{imgFilename},  #{imgOrgFilename},
+        #{imgType},      #{imgFormat}     )
+</insert>
+
+
+    <select id="selectImagesByProNo" parameterType="int" resultMap="productImgMap">
+        SELECT 
+            IMG_NO, PRO_NO, IMG_FILENAME, IMG_PATH 
+        FROM PRODUCT_IMG_TBL 
+        WHERE PRO_NO = #{proNo}
+    </select>
+    
+    <delete id="deleteImagesByProNo" parameterType="int">
+        DELETE FROM PRODUCT_IMG_TBL
+        WHERE PRO_NO = #{proNo}
+    </delete>
+
+</mapper>

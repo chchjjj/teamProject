@@ -59,6 +59,9 @@ public class UserService {
 					session.setAttribute("sessionName", user.getUserName());
 					session.setAttribute("sessionRole", user.getRole());
 					session.setAttribute("sessionPhone", user.getPhone());
+					session.setAttribute("sessionAddress", user.getUserAddr()); 
+					
+					
 					resultMap.put("url", "/main.do");
 					
 					//밑에 주석처리 한거는 혹시라도 관리자 여부에 따라 이동할 페이지를 다르게 하고 싶을 때 사용하면 된다.
@@ -144,7 +147,15 @@ public class UserService {
 
 		return resultMap;
 	}
+	public HashMap<String, Object> userNameCheck(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		User user = userMapper.userNameCheck(map);
+		String result = user != null ? "true" : "false";
 
+		resultMap.put("result", result);
+
+		return resultMap;
+	}
 	public HashMap<String, Object> userAuth(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		

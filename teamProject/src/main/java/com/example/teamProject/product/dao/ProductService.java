@@ -37,6 +37,14 @@ public class ProductService {
 		resultMap.put("info", info);
 		return resultMap;
 	}
+	// 상품 상세사진
+	public HashMap<String, Object> getProImg(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		Product info = ProductMapper.proIMG(map);
+		resultMap.put("info", info);
+		return resultMap;
+	}
 	// 가게 정보
 		public HashMap<String, Object> getStoreInfo(HashMap<String, Object> map) {
 			// TODO Auto-generated method stub

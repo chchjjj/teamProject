@@ -77,7 +77,7 @@ public class PaymentService {
 	        if (orderList == null || orderList.isEmpty()) {
 	            resultMap.put("result", "fail");
 	            resultMap.put("message", "결제할 게 없습니다.");
-	            return resultMap;
+	            return resultMap; 
 	        }
 	        
 	        for (int i = 0; i < orderList.size(); i++) {
@@ -95,6 +95,7 @@ public class PaymentService {
 	            
 	            
 	            paymentMapper.insertPayment(paymentMap);
+	            paymentMapper.updateOrderStatus(paymentMap);
 	       	 	resultMap.put("result", "success");
 	        }	
 			

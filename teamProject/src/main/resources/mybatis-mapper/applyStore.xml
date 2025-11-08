@@ -68,5 +68,15 @@
 		#{fileExt}
 		)
 	</insert>
+	
+	<select id="selectStoreIdByStoreNameAndUserId" resultType="int">
+    SELECT
+        STORE_ID    /* 실제 테이블 컬럼명에 맞게 대문자로 수정하세요 */
+    FROM
+        SELLER_INFO_TBL
+    WHERE
+        STORE_NAME = #{storeName}
+        AND USER_ID = #{userId}
+</select>
 
 </mapper>

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.teamProject.seller.mapper.ProductImgMapper;
 import com.example.teamProject.seller.mapper.SellerMapper;
 import com.example.teamProject.seller.model.Seller;
 
@@ -17,6 +18,9 @@ import com.example.teamProject.seller.model.Seller;
 public class SellerService {
 	@Autowired
 	SellerMapper sellerMapper;
+	
+	@Autowired
+    private ProductImgMapper productImgMapper; // 이미지 삭제를 위해 필요
 
 	// 판매자 가게 리스트 불러오기
 	public HashMap<String, Object> getStoreList(HashMap<String, Object> map) {
@@ -531,6 +535,31 @@ private void insertOptions(int proNo, List<Seller> options) {
             }
         }
     }
+}
+
+@Transactional // 💡 두 개의 Mapper 호출을 하나의 트랜잭션으로 묶어줍니다.
+public int deleteProduct(int proNo) {
+    
+    // 1. **하위 데이터 삭제: 상품 이미지 정보 삭제**
+    //    -> 메인 상품(PRODUCT_TBL) 삭제 전, 외래 키로 묶인 이미지 테이블(PRODUCT_IMG_TBL)의 데이터를 먼저 삭제해야 합니다.
+    //    -> 성공/실패 여부를 여기서 체크하지 않고, 메인 상품 삭제가 실패할 경우 전체 롤백되도록 처리합니다.
+    try {
+        int imgDeletedCount = productImgMapper.deleteImagesByProNo(proNo);
+        System.out.println("LOG: " + proNo + "번 상품의 이미지 " + imgDeletedCount + "개 삭제 완료.");
+    } catch (Exception e) {
+        // 이미지 삭제 실패 시, 트랜잭션을 롤백시키기 위해 RuntimeException을 던집니다.
+        throw new RuntimeException("상품 이미지 삭제 중 오류 발생: " + e.getMessage());
+    }
+
+    // 2. **상위 데이터 삭제: 메인 상품 정보 삭제**
+    int productDeletedCount = sellerMapper.deleteProduct(proNo);
+    
+    if (productDeletedCount == 0) {
+         // 메인 상품이 삭제되지 않았다면 (proNo 불일치), 여기서 롤백을 유도할 수 있습니다.
+         // 다만, 보통 delete는 0이 반환되어도 정상 흐름으로 간주하고 최종 productDeletedCount를 Controller에 반환합니다.
+    }
+    
+    return productDeletedCount;
 }
 
 }

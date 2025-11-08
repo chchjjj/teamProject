@@ -40,21 +40,13 @@
 
                             <div class="image-section">
                                 <div class="main-image-box">
-                                    <div
-                                        v-if="!infoList.filePath || !infoList.fileName">
+                                    <div v-if="!infoList.filePath || !infoList.fileName">
                                         판매자 등록 썸네일
                                     </div>
                                     <img v-else :src="(infoList.filePath + infoList.fileName).trim()" alt="상품 이미지"
                                         class="product-image" style="width: 100%; height: auto; border-radius: 10px;">
                                 </div>
 
-                                <div class="thumbnail-list">
-                                    <div class="thumbnail-item"></div>
-                                    <div class="thumbnail-item"></div>
-                                    <div class="thumbnail-item"></div>
-                                    <div class="thumbnail-item"></div>
-                                    <div class="thumbnail-item"></div>
-                                </div>
                             </div>
 
                             <div class="option-section">
@@ -371,10 +363,14 @@
                             data: param,
                             success: function (data) {
                                 if (data.result === "success") {
-                                    alert("주문이 완료되었습니다!");
-                                    // 결제 페이지로 이동 또는 주문 완료 페이지 이동
+                                    alert("주문이 완료되었습니다!");                            
                                     alert(data.orderId);
                                     pageChange("/payment/payment.do", { orderId: data.orderId });
+                                    // if (self.deliveryType === 'D') {
+                                    //     pageChange("/payment/deliveryPayment.do", { orderId: data.orderId });
+                                    // } else if (self.deliveryType === 'P') {
+                                    //     pageChange("/payment/pickUpPayment.do", { orderId: data.orderId });
+                                    // }
 
                                 } else {
                                     alert("주문 처리 중 오류가 발생했습니다.");
@@ -434,7 +430,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-               
+
                             self.allOptList = data.list;
                         }
                     });
@@ -739,7 +735,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                           
+
                             self.userInfo = data.info;
                         }
                     });

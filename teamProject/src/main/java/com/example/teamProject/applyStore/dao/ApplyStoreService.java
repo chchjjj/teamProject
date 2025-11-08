@@ -43,37 +43,29 @@ public class ApplyStoreService {
     }
 
     // 가게 정보 조회
-    public Long getStoreIdByUserId(String userId) {
-        return applyStoreMapper.getStoreIdByUserId(userId);
-    }
-
-    // 가게 이미지 저장
-    @Transactional
-    public boolean saveStoreImages(MultipartFile profileImage, MultipartFile bannerImage) {
-        try {
-            String profileImagePath = "uploads/profile/" + profileImage.getOriginalFilename();
-            String bannerImagePath = "uploads/banner/" + bannerImage.getOriginalFilename();
-
+public Integer getStoreIdByStoreNameAndUserId(String storeName, String userId) {
         
-            File profileFile = new File(profileImagePath);
-            File bannerFile = new File(bannerImagePath);
-            Files.createDirectories(Paths.get(profileFile.getParent()));
+        System.out.println("Service: getStoreIdByStoreNameAndUserId 호출 - Store Name: " + storeName + ", User ID: " + userId);
 
-            // 이미지 파일 업로드
-            profileImage.transferTo(profileFile);
-            bannerImage.transferTo(bannerFile);
-
-            // 이미지 경로 DB에 저장
-            HashMap<String, Object> imageParams = new HashMap<>();
-            imageParams.put("profileImagePath", profileImagePath);
-            imageParams.put("bannerImagePath", bannerImagePath);
-
-            int rowsAffected = applyStoreMapper.insertStoreImages(imageParams);
-
-            return rowsAffected > 0;  
-        } catch (IOException e) {
+        // ⭐ Mapper 호출: DB에서 storeName과 userId가 일치하는 storeId를 조회
+        // 이 메서드는 정리된 Mapper의 selectStoreIdByStoreNameAndUserId를 호출합니다.
+        try {
+            Integer storeId = applyStoreMapper.selectStoreIdByStoreNameAndUserId(storeName, userId);
+            
+            if (storeId == null) {
+                System.out.println("Service: 조회된 가게 번호 없음.");
+            } else {
+                System.out.println("Service: 조회된 가게 번호: " + storeId);
+            }
+            return storeId;
+            
+        } catch (Exception e) {
+            System.err.println("Service: 가게 번호 조회 중 DB 오류 발생: " + e.getMessage());
             e.printStackTrace();
-            return false;  
+            return null; // 오류 발생 시 null 반환
         }
     }
+  
+    
+    
 }
