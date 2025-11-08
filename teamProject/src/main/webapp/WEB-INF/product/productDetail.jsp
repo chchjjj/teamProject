@@ -365,7 +365,7 @@
                                 if (data.result === "success") {
                                     alert("주문이 완료되었습니다!");                            
                                     alert(data.orderId);
-                                    pageChange("/payment/payment.do", { orderIdList: data.orderIdList });
+                                    pageChange("/payment/payment.do", { orderId: data.orderId });
                                     // if (self.deliveryType === 'D') {
                                     //     pageChange("/payment/deliveryPayment.do", { orderId: data.orderId });
                                     // } else if (self.deliveryType === 'P') {
