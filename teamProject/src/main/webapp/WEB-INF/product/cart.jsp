@@ -243,13 +243,14 @@
                             const deliveryType = selectedItemsData[0].deliveryType; // 선택한 상품들의 배송유형 동일함
                             const orderIdList = data.orderIdList; // 서버에서 반환한 주문 ID 리스트
 
-                            if (deliveryType === 'D') {
-                                pageChange("/payment/deliveryPayment.do", { orderIdList: data.orderIdList });
-                            } else if (deliveryType === 'P') {
-                                pageChange("/payment/pickUpPayment.do", { orderIdList: data.orderIdList });
-                            } else {
-                                alert("배송 유형을 확인할 수 없습니다.");
-                            }
+                            pageChange("/payment/payment.do", { orderIdList: data.orderIdList });
+                            // if (deliveryType === 'D') {
+                            //     pageChange("/payment/deliveryPayment.do", { orderIdList: data.orderIdList });
+                            // } else if (deliveryType === 'P') {
+                            //     pageChange("/payment/pickUpPayment.do", { orderIdList: data.orderIdList });
+                            // } else {
+                            //     alert("배송 유형을 확인할 수 없습니다.");
+                            // }
                         },
                         error: function (xhr, status, error) {
                             console.error("장바구니 로드 실패:", status, error);

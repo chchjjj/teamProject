@@ -365,11 +365,12 @@
                                 if (data.result === "success") {
                                     alert("주문이 완료되었습니다!");                            
                                     alert(data.orderId);
-                                    if (self.deliveryType === 'D') {
-                                        pageChange("/payment/deliveryPayment.do", { orderId: data.orderId });
-                                    } else if (self.deliveryType === 'P') {
-                                        pageChange("/payment/pickUpPayment.do", { orderId: data.orderId });
-                                    }
+                                    pageChange("/payment/payment.do", { orderId: data.orderId });
+                                    // if (self.deliveryType === 'D') {
+                                    //     pageChange("/payment/deliveryPayment.do", { orderId: data.orderId });
+                                    // } else if (self.deliveryType === 'P') {
+                                    //     pageChange("/payment/pickUpPayment.do", { orderId: data.orderId });
+                                    // }
 
                                 } else {
                                     alert("주문 처리 중 오류가 발생했습니다.");
