@@ -84,6 +84,7 @@ public class User {
 		    private String chatYn;
 		    private int totalQuantity;
 		    private int orderOptionId; // 시퀀스 자동 생성
+		    private int subtotal;
 		 
 		    
 
@@ -104,7 +105,7 @@ public class User {
 		    private String storeAddr;
 		    
 		    //review
-		    private String cDateTime;
+//		    private String cDateTime;
 		    
 		    //chat
 		    private String lastMsgAt;

@@ -107,6 +107,7 @@
                 <button @click="fnReview()">내가 쓴 리뷰</button>
                 <button @click="fnQnA()">QnA</button>
                 <button @click="fnUserEdit()">정보수정</button>
+                <button @click="fnDeleteAccount()">회원탈퇴</button>
             </div>
 
             <div class="logOut">
@@ -167,6 +168,12 @@
                 fnReview() { location.href = "/user/review.do"; },
                 fnQnA() { location.href = "/user/qnA.do"; },
                 fnUserEdit() { location.href = "/user/userEdit.do"; },
+                fnDeleteAccount:function(){ 
+                    if(confirm("회원을 탈퇴하겠습니까?")){
+                        location.href="/main.do";
+                    }
+                    return;
+                },
                 fnLogout() {
                     if (confirm("로그아웃 하시겠습니까?")) {
                         $.ajax({
@@ -182,7 +189,7 @@
                         });
                     }
                 },
-                fnChat(orderId, storeId) {
+                fnChat(orderId) {
                     pageChange("/chat/chatBuyer.do", { orderId: orderId});
                 }
             },

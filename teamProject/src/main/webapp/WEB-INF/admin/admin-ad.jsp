@@ -134,7 +134,9 @@
                                     <th>클릭</th>
                                     <th>클릭당 비용(원)</th>
                                     <th>진행상태</th>
+                                    <th>비용발생(원)</th>
                                     <th>수정</th>
+                                    
                                 </tr>
                             </thead>
                             <tbody>
@@ -147,6 +149,7 @@
                                     <td>{{ad.clicks}}</td>
                                     <td>{{ad.clickUnitCost}}</td>
                                     <td>{{ad.status}}</td>
+                                    <td>{{formatNumber(ad.adCost)}}</td>
                                     <td>
                                         <span v-if="ad.status==='진행중'||ad.status==='예정'">
                                             <button @click="fnEdit(ad.adId)">수정</button>
@@ -338,6 +341,11 @@
 
                 },
 
+                 formatNumber: function (num) {
+                    if (!num && num !== 0) return '0';
+                    return Number(num).toLocaleString('ko-KR');
+                },
+
 
 
                 fnBuyerManage: function () {
@@ -369,17 +377,23 @@
                 },
 
                 fnLogout: function () {
-                    param = {}
                     if (confirm("로그아웃 하시겠습니까?")) {
+                        let param = {};
                         $.ajax({
-                            url: "/user/logout.dox", // 로그아웃 url 주소
+                            url: "/user/logout.dox",
                             dataType: "json",
                             type: "POST",
                             data: param,
                             success: function (data) {
-                                alert(data.msg);
-                                location.href = "/main.do";
+                                if(data.result=="success"){
+                                    alert(data.msg+"! 홈페이지로 이동하겠습니다.");
+                                    location.href = "/main.do";
+                                }else{
+                                    alert("로그아웃하는 도중에 오류가 발생하였습니다.");
+                                }
+                                    
                             }
+                            
                         });
                     }
                 },

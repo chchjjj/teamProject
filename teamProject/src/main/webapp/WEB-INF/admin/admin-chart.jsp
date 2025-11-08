@@ -11,87 +11,91 @@
     <link rel="stylesheet" href="/css/admin-style.css">
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
- /* ===== 관리자 테이블 공통 스타일 ===== */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: 'Arial', sans-serif;
-    margin-top: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+        /* ===== 관리자 테이블 공통 스타일 ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Arial', sans-serif;
+            margin-top: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
 
-th, td {
-    padding: 10px 15px;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-}
+        th,
+        td {
+            padding: 10px 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
 
-th {
-    background-color: #3E2723; /* ESPRESSO 색상 */
-    color: #FFEDAC; /* BUTTER 색상 */
-    font-weight: bold;
-}
+        th {
+            background-color: #3E2723;
+            /* ESPRESSO 색상 */
+            color: #FFEDAC;
+            /* BUTTER 색상 */
+            font-weight: bold;
+        }
 
-tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
 
-tr:hover {
-    background-color: #F4C9D6; /* PEONY 색상 */
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
+        tr:hover {
+            background-color: #F4C9D6;
+            /* PEONY 색상 */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
 
-td {
-    color: #333;
-}
+        td {
+            color: #333;
+        }
 
-select,
-input[type="text"] {
-    padding: 5px 8px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
+        select,
+        input[type="text"] {
+            padding: 5px 8px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
 
-button {
-    padding: 6px 12px;
-    background-color: #3E2723;
-    color: #FFEDAC;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
+        button {
+            padding: 6px 12px;
+            background-color: #3E2723;
+            color: #FFEDAC;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
 
-button:hover {
-    background-color: #5D4037;
-}
+        button:hover {
+            background-color: #5D4037;
+        }
 
-/* 페이징 버튼 */
-.paging a,
-.paging button {
-    display: inline-block;
-    margin: 0 3px;
-    padding: 5px 10px;
-    text-decoration: none;
-    color: #3E2723;
-    border: 1px solid #3E2723;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-}
+        /* 페이징 버튼 */
+        .paging a,
+        .paging button {
+            display: inline-block;
+            margin: 0 3px;
+            padding: 5px 10px;
+            text-decoration: none;
+            color: #3E2723;
+            border: 1px solid #3E2723;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
 
-.paging a.active,
-.paging button:hover {
-    background-color: #3E2723;
-    color: #FFEDAC;
-    border-color: #3E2723;
-}
+        .paging a.active,
+        .paging button:hover {
+            background-color: #3E2723;
+            color: #FFEDAC;
+            border-color: #3E2723;
+        }
 
         .monthlyRevenue {
-    margin-top: 20px;
-    text-align: center;
-}
+            margin-top: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -99,75 +103,76 @@ button:hover {
     <!--이것을 추가해야 영어외의 언어가 정상적으로 작동-->
     <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
         <div id="app">
-    <div class="mainPageContainer">
-        <!-- 사이드바 -->
-        <div class="navBar">
-            <!-- Logo -->
-            <div class="logo">
-                <a href="javascript:;" onclick="location.href='/main.do'">
-                    <img src="/img/로고.png" alt="쇼핑몰 로고">
-                </a>
-            </div>
+            <div class="mainPageContainer">
+                <!-- 사이드바 -->
+                <div class="navBar">
+                    <!-- Logo -->
+                    <div class="logo">
+                        <a href="javascript:;" onclick="location.href='/main.do'">
+                            <img src="/img/로고.png" alt="쇼핑몰 로고">
+                        </a>
+                    </div>
 
-            <!-- 메뉴 버튼 -->
-            <div class="navButton">
-                <div>
-                    <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">구매자 관리</button>
-                </div>
-                <div>
-                    <button @click="fnSellerManage()" :class="{active: currentMenu==='seller'}">판매자관리</button>
-                </div>
-                <div>
-                    <button @click="fnSalesManage()" :class="{active: currentMenu==='money'}">매출관리</button>
-                </div>
-                <div>
-                    <button @click="fnAdRequest()" :class="{active: currentMenu==='ad'}">광고관리</button>
-                </div>
-                <div>
-                    <button @click="fnMembership()" :class="{active: currentMenu==='membership'}">맴버쉽관리</button>
-                </div>
-                <div>
-                    <button @click="fnMonthlyFee()" :class="{active: currentMenu==='month'}">판매자 월 정산결과 조회</button>
-                </div>
-                <div>
-                    <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">Q&A</button>
-                </div>
-            </div>
+                    <!-- 메뉴 버튼 -->
+                    <div class="navButton">
+                        <div>
+                            <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">구매자 관리</button>
+                        </div>
+                        <div>
+                            <button @click="fnSellerManage()" :class="{active: currentMenu==='seller'}">판매자관리</button>
+                        </div>
+                        <div>
+                            <button @click="fnSalesManage()" :class="{active: currentMenu==='money'}">매출관리</button>
+                        </div>
+                        <div>
+                            <button @click="fnAdRequest()" :class="{active: currentMenu==='ad'}">광고관리</button>
+                        </div>
+                        <div>
+                            <button @click="fnMembership()" :class="{active: currentMenu==='membership'}">맴버쉽관리</button>
+                        </div>
+                        <div>
+                            <button @click="fnMonthlyFee()" :class="{active: currentMenu==='month'}">판매자 월 정산결과
+                                조회</button>
+                        </div>
+                        <div>
+                            <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">Q&A</button>
+                        </div>
+                    </div>
 
-            <!-- 로그아웃 -->
-            <div class="logOut">
-                <div>
-                    <button @click="fnLogout()">Logout</button>
+                    <!-- 로그아웃 -->
+                    <div class="logOut">
+                        <div>
+                            <button @click="fnLogout()">Logout</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 컨텐츠 영역 -->
+                <div class="contentArea">
+                    <!-- 차트 -->
+                    <div id="chart" style="margin-bottom: 40px;"></div>
+
+                    <!-- 이 달의 수익 테이블 -->
+                    <div class="monthlyRevenue">
+                        <div style="font-weight:bold; font-size:18px; margin-bottom:10px;">이 달의 수익(원)</div>
+                        <table>
+                            <tr>
+                                <th>판매 수익</th>
+                                <th>맴버십 수익</th>
+                                <th>광고 수익</th>
+                                <th>총합</th>
+                            </tr>
+                            <tr>
+                                <td>{{formatNumber(revenue.monthlyRevenue)}}</td>
+                                <td>{{formatNumber(revenue.membershipFee)}}</td>
+                                <td>{{formatNumber(revenue.monthlyAdRevenue)}}</td>
+                                <td>{{formatNumber(revenue.totalMonthlyRevenue)}}</td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- 컨텐츠 영역 -->
-        <div class="contentArea">
-            <!-- 차트 -->
-            <div id="chart" style="margin-bottom: 40px;"></div>
-
-            <!-- 이 달의 수익 테이블 -->
-            <div class="monthlyRevenue">
-                <div style="font-weight:bold; font-size:18px; margin-bottom:10px;">이 달의 수익</div>
-                <table>
-                    <tr>
-                        <th>판매 수익</th>
-                        <th>맴버십 수익</th>
-                        <th>광고 수익</th>
-                        <th>총합</th>
-                    </tr>
-                    <tr>
-                        <td>{{revenue.monthlyRevenue}}</td>
-                        <td>{{revenue.membershipFee}}</td>
-                        <td>{{revenue.monthlyAdRevenue}}</td>
-                        <td>{{revenue.totalMonthlyRevenue}}</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
 
 </body>
 
@@ -177,42 +182,113 @@ button:hover {
     const app = Vue.createApp({
         data() {
             return {
+                sessionId: "${sessionId}",
                 revenue: {},
                 currentMenu: "money",
                 chart: null,
                 options: {
                     series: [{
-                        name: "Sales",
+                        name: "매출액", // 韩语标题
                         data: [],
                     }],
                     chart: {
                         height: 350,
                         type: 'line',
-                        zoom: {
-                            enabled: false
-                        }
+                        zoom: { enabled: false },
+                        toolbar: { show: false },
+                        locales: [{
+                            name: 'ko',
+                            options: {
+                                months: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                                shortMonths: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                                days: ['일', '월', '화', '수', '목', '금', '토'],
+                                shortDays: ['일', '월', '화', '수', '목', '금', '토'],
+                                toolbar: {
+                                    exportToSVG: 'SVG로 내보내기',
+                                    exportToPNG: 'PNG로 내보내기',
+                                    exportToCSV: 'CSV로 내보내기',
+                                    menu: '메뉴',
+                                    selection: '선택',
+                                    selectionZoom: '선택 확대',
+                                    zoomIn: '확대',
+                                    zoomOut: '축소',
+                                    pan: '이동',
+                                    reset: '초기화'
+                                }
+                            }
+                        }],
+                        defaultLocale: 'ko',
                     },
                     dataLabels: {
                         enabled: true,
-
+                        style: {
+                            fontSize: '12px',
+                            colors: ['#3E2723'],
+                        },
+                        background: {
+                            enabled: true,
+                            borderRadius: 4,
+                            foreColor: '#fff',
+                        },
+                        formatter: function (val) {
+                            return val.toLocaleString('ko-KR'); 
+                        }
                     },
                     stroke: {
-                        curve: 'smooth'
+                        curve: 'smooth',
+                        width: 4,
+                        colors: ['#E91E63'], 
+                    },
+                    markers: {
+                        size: 5,
+                        colors: ['#E91E63'],
+                        strokeColors: '#fff',
+                        strokeWidth: 2,
+                        hover: { size: 7 },
                     },
                     title: {
-                        text: '2025년 트랜드 판매량 조회',
-                        align: 'center'
+                        text: '2025년 월별 매출 추이',
+                        align: 'center',
+                        style: {
+                            fontSize: '20px',
+                            fontWeight: 'bold',
+                            color: '#3E2723',
+                        }
                     },
                     grid: {
+                        borderColor: '#f0e6dc',
                         row: {
-                            colors: ['#f3f3f3', 'transparent'],
-                            opacity: 0.5
+                            colors: ['#fff', '#faf5f0'],
+                            opacity: 0.5,
                         },
                     },
                     xaxis: {
-                        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                    }
+                        categories: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                        labels: {
+                            style: {
+                                colors: '#3E2723',
+                                fontSize: '13px',
+                            }
+                        }
+                    },
+                    yaxis: {
+                        labels: {
+                            formatter: val => val.toLocaleString('ko-KR'),
+                            style: { colors: '#3E2723' }
+                        },
+                        title: {
+                            text: '판매액 (원)',
+                            style: { color: '#3E2723', fontWeight: 'bold' }
+                        }
+                    },
+                    tooltip: {
+                        theme: 'light',
+                        y: {
+                            formatter: val => val.toLocaleString('ko-KR') + ' 원'
+                        }
+                    },
                 }
+
             };
         },
         methods: {
@@ -306,20 +382,31 @@ button:hover {
             },
 
             fnLogout: function () {
-                                  param = {}
-                    if (confirm("로그아웃 하시겠습니까?")) {
-                        $.ajax({
-                            url: "/user/logout.dox", // 로그아웃 url 주소
-                            dataType: "json",
-                            type: "POST",
-                            data: param,
-                            success: function (data) {
-                                alert(data.msg);
+                if (confirm("로그아웃 하시겠습니까?")) {
+                    let param = {};
+                    $.ajax({
+                        url: "/user/logout.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            if (data.result == "success") {
+                                alert(data.msg + "! 홈페이지로 이동하겠습니다.");
                                 location.href = "/main.do";
+                            } else {
+                                alert("로그아웃하는 도중에 오류가 발생하였습니다.");
                             }
-                        });
-                    }
-            }
+
+                        }
+
+                    });
+                }
+            },
+
+            formatNumber: function (num) {
+                if (!num && num !== 0) return '0';
+                return Number(num).toLocaleString('ko-KR');
+            },
 
 
         },

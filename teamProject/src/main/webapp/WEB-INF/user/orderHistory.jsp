@@ -336,6 +336,7 @@
                     <button @click="fnReview()">내가 쓴 리뷰</button>
                     <button @click="fnQnA()">QnA</button>
                     <button @click="fnUserEdit()">정보수정</button>
+                    <button @click="fnDeleteAccount()">회원탈퇴</button>
                 </div>
 
                 <!-- Logout Button -->
@@ -379,7 +380,6 @@
                                 <div class="detailRow">
                                     <strong>가격:</strong> {{ formatNumber(orderDetail.price) }}원
                                 </div>
-
                                 <!-- Delivery Type -->
                                 <div class="detailRow">
                                     <span class="deliveryBadge" :class="'delivery-' + order.deliveryType">
@@ -421,10 +421,6 @@
                                 <strong>배송비:</strong>
                                 <span>{{ formatNumber(order.deliveryFee) }}원</span>
                             </div>
-                            <div class="summaryRow" v-if="order.deliveryType==='P'">
-                                <strong>픽업시간:</strong>
-                                <span>{{order.pickTime}}</span>
-                            </div>
                             <div class="summaryRow" v-if="order.deliveryType==='D'">
                                 <strong>주소:</strong>
                                 <span>{{ order.fullAddress }}</span>
@@ -445,14 +441,16 @@
                             <h3 class="totalPrice">총 {{ formatNumber(order.totalPrice) }}원</h3>
 
                             <!-- Action Buttons -->
-                            <div class="actionButtons">
-                                <button class="btnChat" @click="fnChat(order.orderId, order.storeId)">
+                            <div class="actionButtons" v-if="order.status!='C'">
+                                <button v-if="order.chatYn==='Y'" class="btnChat"
+                                    @click="fnChat(order.orderId, order.storeId)">
                                     💬 채팅방으로
                                 </button>
-                                <button class="btnStatus" @click="fnPayment(order.orderId)">
+                                <button class="btnStatus" @click="fnPayment(order.orderId)" v-if="order.status==='S'">
                                     💰 바로 결제
                                 </button>
-                                <button class="btnStatus" @click="fnOrderStatus(order.orderId)">
+                                <button class="btnStatus" @click="fnOrderStatus(order.orderId)"
+                                    v-if="order.status==='P'">
                                     📋 주문현황
                                 </button>
                             </div>
@@ -520,7 +518,7 @@
                                 status: order.status || "S",
                                 wishDeli: order.wishDeli || "시간 미지정",
                                 pickTime: order.pickTime || "시간 미지정",
-                                storeAddr: order.storeAddr,
+                                storeAddr:order.storeAddr,
                                 storeId: order.storeId,
                                 groupedDetails: {}
                             };
@@ -558,8 +556,8 @@
                             }
                         }
                     });
-
                     this.groupedOrdersList = Object.values(groupedOrders);
+                    this.groupedOrdersList = this.groupedOrdersList.slice().reverse();
                     console.log("최종 주문 목록:", this.groupedOrdersList);
                 },
 
@@ -597,6 +595,12 @@
 
                 fnUserEdit: function () {
                     location.href = "/user/userEdit.do";
+                },
+                fnDeleteAccount:function(){ 
+                    if(confirm("회원을 탈퇴하겠습니까?")){
+                        location.href="/main.do";
+                    }
+                    return;
                 },
 
                 fnLogout: function () {

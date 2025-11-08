@@ -26,7 +26,7 @@
 
                 <!--외쪽측 네이버바-->
                 <div class="navBar">
-                   <div class="logo">
+                    <div class="logo">
                         <a href="javascript:;" onclick="location.href='/main.do'">
                             <!--로고 클릭시 홈페이지 새로고침 -->
                             <img src="/img/로고.png" alt="쇼핑몰 로고">
@@ -37,22 +37,23 @@
                             <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">구매자 관리</button>
                         </div>
                         <div>
-                            <button @click="fnSellerManage()":class="{active: currentMenu==='seller'}">판매자관리</button>
+                            <button @click="fnSellerManage()" :class="{active: currentMenu==='seller'}">판매자관리</button>
                         </div>
                         <div>
-                            <button @click="fnSalesManage()":class="{active: currentMenu==='money'}">매출관리</button>
+                            <button @click="fnSalesManage()" :class="{active: currentMenu==='money'}">매출관리</button>
                         </div>
                         <div>
-                            <button @click="fnAdRequest()":class="{active: currentMenu==='ad'}">광고관리</button>
-                        </div>  
-                        <div>
-                            <button @click="fnMembership()":class="{active: currentMenu==='membership'}">맴버쉽관리</button>
-                        </div>
-                         <div>
-                            <button @click="fnMonthlyFee()":class="{active: currentMenu==='month'}">판매자 월 정산결과 조회</button>
+                            <button @click="fnAdRequest()" :class="{active: currentMenu==='ad'}">광고관리</button>
                         </div>
                         <div>
-                            <button @click="fnQandA()":class="{active: currentMenu==='qna'}">Q&A</button>
+                            <button @click="fnMembership()" :class="{active: currentMenu==='membership'}">맴버쉽관리</button>
+                        </div>
+                        <div>
+                            <button @click="fnMonthlyFee()" :class="{active: currentMenu==='month'}">판매자 월 정산결과
+                                조회</button>
+                        </div>
+                        <div>
+                            <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">Q&A</button>
                         </div>
                     </div>
 
@@ -99,14 +100,14 @@
                                 <th>시간</th>
                                 <th>가게아이디</th>
                                 <th>가게이름</th>
-                                <th>월말정산결과</th>
+                                <th>월말정산결과(원)</th>
                             </tr>
                             <tr v-for="seller in sellerList">
                                 <td><input type="checkbox" :value="seller.storeId" v-model="selectItem"></td>
                                 <td>{{seller.thisMonth}}</td>
                                 <td>{{seller.storeId}}</td>
                                 <td>{{seller.storeName}}</td>
-                                <td>{{seller.storeMonthlyFee}}</td>
+                                <td>{{formatNumber(seller.storeMonthlyFee)}}</td>
                             </tr>
                         </table>
                     </div>
@@ -297,6 +298,11 @@
 
                 },
 
+                formatNumber: function (num) {
+                    if (!num && num !== 0) return '0';
+                    return Number(num).toLocaleString('ko-KR');
+                },
+
                 fnBuyerManage: function () {
                     location.href = "/admin/userlist.do";
                 },
@@ -326,20 +332,26 @@
                 },
 
                 fnLogout: function () {
-                  param = {}
                     if (confirm("로그아웃 하시겠습니까?")) {
+                        let param = {};
                         $.ajax({
-                            url: "/user/logout.dox", // 로그아웃 url 주소
+                            url: "/user/logout.dox",
                             dataType: "json",
                             type: "POST",
                             data: param,
                             success: function (data) {
-                                alert(data.msg);
-                                location.href = "/main.do";
+                                if (data.result == "success") {
+                                    alert(data.msg + "! 홈페이지로 이동하겠습니다.");
+                                    location.href = "/main.do";
+                                } else {
+                                    alert("로그아웃하는 도중에 오류가 발생하였습니다.");
+                                }
+
                             }
+
                         });
                     }
-                }
+                },
 
 
 

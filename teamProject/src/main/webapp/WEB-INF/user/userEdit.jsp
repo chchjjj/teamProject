@@ -188,6 +188,7 @@
                         <button @click="fnReview()">내가 쓴 리뷰</button>
                         <button @click="fnQnA()">QnA</button>
                         <button @click="fnUserEdit()">정보수정</button>
+                        <button @click="fnDeleteAccount()">회원탈퇴</button>
                     </div>
                     <div class="logOut">
                         <button @click="fnLogout()">Logout</button>
@@ -217,15 +218,6 @@
                         <tr>
                             <th>주소</th>
                             <td><input type="text" v-model="userAddr"><button @click="fnAddr">주소선택</button></td>
-                        </tr>
-                        <tr>
-                            <th>활동탈퇴여부</th>
-                            <td>
-                                <select v-model="userStatus">
-                                    <option value="O">활동</option>
-                                    <option value="X">탈퇴</option>
-                                </select>
-                            </td>
                         </tr>
                         <tr>
                             <th>가입일자</th>
@@ -313,6 +305,12 @@
                 fnReview() { location.href = "/user/review.do"; },
                 fnQnA() { location.href = "/user/qnA.do"; },
                 fnUserEdit() { location.href = "/user/userEdit.do"; },
+                fnDeleteAccount:function(){ 
+                    if(confirm("회원을 탈퇴하겠습니까?")){
+                        location.href="/main.do";
+                    }
+                    return;
+                },
                 fnLogout: function () {
                     if (confirm("로그아웃 하시겠습니까?")) {
                         let param = {};

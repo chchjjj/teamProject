@@ -119,6 +119,7 @@ public class Admin {
     private String linkUrl;
     private int clicks;
     private int clickUnitCost;
+    private int adCost;
     
     //수수료 정산
     private double storeMonthlyFee;

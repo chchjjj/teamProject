@@ -135,7 +135,7 @@
 	
 	<!--review-->
 	<select id="reviewListSelect" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
-   		SELECT * FROM REVIEW_TBL R
+   		SELECT R.*,U.*,TO_CHAR(CDATETIME,'YYYY-MM-DD') AS C_DATE_TIME FROM REVIEW_TBL R
    		LEFT JOIN PRODUCT_IMG_TBL P
    		ON P.PRO_NO=R.PRO_NO
    		LEFT JOIN USER_TBL U
@@ -165,6 +165,7 @@
    		SELECT * FROM QA_TBL Q
    		INNER JOIN SELLER_INFO_TBL S
    		ON Q.STORE_ID=S.STORE_ID
+   		WHERE Q.USER_ID=#{userId}
 		ORDER BY QUESTION_DATE DESC
 		OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
 	</select>
@@ -174,6 +175,7 @@
    		SELECT * FROM QA_TBL Q
    		INNER JOIN SELLER_INFO_TBL S
    		ON Q.STORE_ID=S.STORE_ID
+   		WHERE Q.USER_ID=#{userId}
 	</select>
 	
 	

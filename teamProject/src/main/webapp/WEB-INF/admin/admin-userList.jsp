@@ -92,6 +92,8 @@
                 color: #FFEDAC;
                 border-color: #3E2723;
             }
+
+            
         </style>
     </head>
 
@@ -173,7 +175,7 @@
                         <!--태이블-->
                         <table>
                             <tr>
-                                <th>선택<input type="checkbox" @click="fnSelectAll"></th>
+                                <th><input type="checkbox" @click="fnSelectAll"></th>
                                 <th>아이디</th>
                                 <th>닉네임</th>
                                 <th>연락처</th>
@@ -423,20 +425,26 @@
                 },
 
                 fnLogout: function () {
-                    param = {}
                     if (confirm("로그아웃 하시겠습니까?")) {
+                        let param = {};
                         $.ajax({
-                            url: "/user/logout.dox", // 로그아웃 url 주소
+                            url: "/user/logout.dox",
                             dataType: "json",
                             type: "POST",
                             data: param,
                             success: function (data) {
-                                alert(data.msg);
-                                location.href = "/main.do";
+                                if(data.result=="success"){
+                                    alert(data.msg+"! 홈페이지로 이동하겠습니다.");
+                                    location.href = "/main.do";
+                                }else{
+                                    alert("로그아웃하는 도중에 오류가 발생하였습니다.");
+                                }
+                                    
                             }
+                            
                         });
                     }
-                }
+                },
 
 
 
