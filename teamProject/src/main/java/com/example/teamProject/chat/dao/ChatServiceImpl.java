@@ -1,5 +1,6 @@
 package com.example.teamProject.chat.dao;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ public class ChatServiceImpl implements ChatService {
         if (messageIds == null || messageIds.isEmpty()) return;
         chatMapper.updateMessagesAsRead(messageIds);
     }
+
 
 
 	

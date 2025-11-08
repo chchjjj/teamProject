@@ -60,7 +60,6 @@
 	    WHERE CHAT_ID = #{chatId}
 	    ORDER BY SENT_AT ASC
 	</select>
-
-
+	
 
 </mapper> 

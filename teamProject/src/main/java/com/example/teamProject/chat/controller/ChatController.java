@@ -23,12 +23,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.teamProject.chat.dao.ChatServiceImpl;
 import com.example.teamProject.chat.model.Chat;
+import com.google.gson.Gson;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -186,7 +188,6 @@ public class ChatController {
         result.put("imageUrl", imageUrl);
         return result;
     }
-    
 
 	
 }

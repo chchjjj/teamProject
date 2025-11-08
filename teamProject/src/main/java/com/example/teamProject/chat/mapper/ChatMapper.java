@@ -1,11 +1,13 @@
 package com.example.teamProject.chat.mapper;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.example.teamProject.chat.model.Chat;
+import com.example.teamProject.user.model.User;
 
 @Mapper
 public interface ChatMapper {
@@ -24,7 +26,5 @@ public interface ChatMapper {
 	
 	// 읽음처리
 	int updateMessagesAsRead(List<Integer> msgIds);
-	
-	
 	
 }
