@@ -5,282 +5,350 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>내가 쓴 리뷰</title>
-
-        <!-- 스타일시트 -->
-        <link rel="stylesheet" href="/css/productDetail-style.css">
+        <title>사용자 정보 수정</title>
         <link rel="stylesheet" href="/css/navbar.css">
 
-        <!-- 라이브러리 -->
-        <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap"
+            rel="stylesheet">
+
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.7.1.js"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+        <!-- Vue.js -->
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
+        <!-- 페이지 변경 유틸리티 -->
+        <script src="/js/page-change.js"></script>
+
         <style>
-            body {
-                background-color: #fff;
-                font-family: "Noto Sans KR", sans-serif;
+            .userEdit {
+                margin-left: 270px;
+                margin-top: 50px;
+                background-color: var(--white);
+                border-radius: 14px;
+                width: 70%;
+                max-width: 900px;
+                padding: 50px 60px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
             }
 
-            .content-area {
-                margin: 40px 60px;
-                padding-left: 260px;
-                /* navbar 공간 확보 */
+            .title {
+                font-size: 30px;
+                font-weight: 700;
+                text-align: center;
+                color: var(--espresso);
+                margin-bottom: 35px;
+                letter-spacing: 1px;
             }
 
-            .review-header {
-                font-size: 22px;
-                font-weight: 600;
-                margin-bottom: 30px;
-            }
-
-            .review-list {
-                display: flex;
-                flex-direction: column;
-                gap: 25px;
-            }
-
-            .review-card {
-                display: flex;
-                align-items: flex-start;
-                gap: 20px;
-                border: 1px solid #e0e0e0;
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                color: #3E2723;
+                font-size: 17px;
+                background-color: #fffdfc;
                 border-radius: 10px;
-                padding: 20px;
-                background-color: #fafafa;
-                transition: box-shadow 0.2s ease, transform 0.1s ease;
-                cursor: pointer;
+                overflow: hidden;
             }
 
-            .review-card:hover {
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            th {
+                text-align: left;
+                width: 180px;
+                padding: 15px 20px;
+                background-color: #f7f3f1;
+                font-weight: 600;
+                border-bottom: 1px solid #e6dcd8;
+            }
+
+            td {
+                padding: 15px 20px;
+                border-bottom: 1px solid #eee;
+            }
+
+            input[type="text"],
+            select {
+                width: 100%;
+                padding: 10px 12px;
+                font-size: 15px;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            }
+
+            input[type="text"]:focus,
+            select:focus {
+                border-color: var(--peony);
+                box-shadow: 0 0 4px rgba(244, 201, 214, 0.5);
+                outline: none;
+            }
+
+            td button {
+                background-color: var(--peony);
+                color: var(--espresso);
+                border: none;
+                border-radius: 6px;
+                padding: 8px 15px;
+                margin-left: 10px;
+                margin-top: 15px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            td button:hover {
+                background-color: #f0b8ca;
+                transform: translateY(-1px);
+            }
+
+            /* 修改按钮（卡片左下角） */
+            .userEdit .edit-btn {
+                position: relative;
+                display: inline-block;
+                margin-top: 25px;
+                background-color: var(--butter);
+                color: var(--espresso);
+                border: none;
+                border-radius: 8px;
+                padding: 12px 30px;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .userEdit .edit-btn:hover {
+                background-color: #ffeb9e;
                 transform: translateY(-2px);
             }
 
-            .review-image {
-                width: 120px;
-                height: 120px;
-                background-color: #f2f2f2;
-                border-radius: 8px;
-                flex-shrink: 0;
-                overflow: hidden;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+            /* 让外层 div 的布局正常，不漂浮 */
+            .userEdit {
+                position: relative;
             }
 
-            .review-image img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
+            .userEdit .button-container {
+                margin-top: 20px;
+                text-align: left;
             }
 
-            .review-info {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
+
+            @media (max-width: 1024px) {
+                .userEdit {
+                    width: 85%;
+                    padding: 40px;
+                    margin-left: 250px;
+                }
+
+                th {
+                    width: 150px;
+                }
             }
 
-            .review-meta {
-                font-size: 14px;
-                color: #555;
-                margin-bottom: 8px;
-            }
+            @media (max-width: 768px) {
+                .userEdit {
+                    width: 90%;
+                    margin-left: 0;
+                    margin-top: 80px;
+                    padding: 30px;
+                }
 
-            .review-content {
-                font-size: 15px;
-                color: #333;
-                margin-bottom: 10px;
-                line-height: 1.4;
-            }
+                table {
+                    font-size: 15px;
+                }
 
-            .review-rating {
-                color: #ffb400;
-                font-weight: 600;
-            }
-
-            .paging {
-                text-align: center;
-                margin-top: 30px;
-            }
-
-            .paging a,
-            .paging button {
-                background: none;
-                border: none;
-                color: #444;
-                margin: 0 5px;
-                font-size: 15px;
-                cursor: pointer;
-            }
-
-            .paging a.active {
-                font-weight: bold;
-                color: #3E2723;
+                th {
+                    width: 120px;
+                }
             }
         </style>
     </head>
 
     <body>
         <div id="app">
-            <!-- 왼쪽 사이드바 -->
-            <div class="navBar">
-                <!-- Logo Area -->
-                <div class="logoArea">
-                    <div class="logo">
+            <div class="mainPageContainer">
+                <div class="navBar">
+                    <div class="logoArea">
+                        <div class="logo">
                         <a href="javascript:;" onclick="location.href='/main.do'">
                             <!--로고 클릭시 홈페이지 새로고침 -->
                             <img src="/img/로고.png" alt="쇼핑몰 로고">
                         </a>
                     </div>
-                </div>
-
-                <!-- Navigation Buttons -->
-                <div class="navButton">
-                    <button @click="fnOrderHistory()" class="active">주문 내역</button>
-                    <button @click="fnWishList()">찜한 상품</button>
-                    <button @click="fnChatList()">채팅이력</button>
-                    <button @click="fnReview()">내가 쓴 리뷰</button>
-                    <button @click="fnQnA()">QnA</button>
-                    <button @click="fnUserEdit()">정보수정</button>
-                    <button @click="fnDeleteAccount()">회원탈퇴</button>
-                </div>
-
-                <!-- Logout Button -->
-                <div class="logOut">
-                    <button @click="fnLogout()">Logout</button>
-                </div>
-            </div>
-
-            <!--  본문 영역 -->
-            <div class="content-area">
-                <div class="review-header">내가 쓴 리뷰</div>
-
-                <div class="review-list">
-                    <div v-if="reviewList.length === 0">등록된 리뷰가 없습니다.</div>
-
-                    <div v-for="review in reviewList" :key="review.reviewId" class="review-card">
-
-                        <div class="review-info">
-                            <div class="review-meta">
-                                닉네임: {{review.userName || '익명'}} <br>
-                                작성일: {{review.cdatetime || '0000-00-00'}}
-                            </div>
-                            <div class="review-content">
-                                {{review.reviewContent || '후기내용이 없습니다.'}}
-                            </div>
-                            <div class="review-rating">
-                                별점: {{review.rating}} / 5
-                            </div>
-                        </div>
+                    </div>
+                    <div class="navButton">
+                        <button @click="fnOrderHistory()" class="active">주문 내역</button>
+                        <button @click="fnWishList()">찜한 상품</button>
+                        <button @click="fnChatList()">채팅이력</button>
+                        <button @click="fnReview()">내가 쓴 리뷰</button>
+                        <button @click="fnQnA()">QnA</button>
+                        <button @click="fnUserEdit()">정보수정</button>
+                    </div>
+                    <div class="logOut">
+                        <button @click="fnLogout()">Logout</button>
                     </div>
                 </div>
 
-                <!-- 페이징 -->
-                <div class="paging" v-if="pageNum > 1">
-                    <button v-if="page > 1" @click="fnPre()">◀</button>
-                    <a v-for="num in pageRangeList" :key="num" @click="fnChange(num)"
-                        :class="{active: page === num}">{{num}}</a>
-                    <button v-if="page < pageNum" @click="fnNext()">▶</button>
+                <div class="userEdit">
+                    <div class="title">사용자 정보 수정</div>
+
+                    <table>
+                        <tr>
+                            <th>아이디</th>
+                            <td>{{user.userId}}</td>
+                        </tr>
+                        <tr>
+                            <th>닉네임</th>
+                            <td><input type="text" v-model="userName"></td>
+                        </tr>
+                        <tr>
+                            <th>연락처</th>
+                            <td><input type="text" v-model="phone"></td>
+                        </tr>
+                        <tr>
+                            <th>이메일</th>
+                            <td><input type="text" v-model="email"></td>
+                        </tr>
+                        <tr>
+                            <th>주소</th>
+                            <td><input type="text" v-model="userAddr"><button @click="fnAddr">주소선택</button></td>
+                        </tr>
+                        <tr>
+                            <th>활동탈퇴여부</th>
+                            <td>
+                                <select v-model="userStatus">
+                                    <option value="O">활동</option>
+                                    <option value="X">탈퇴</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>가입일자</th>
+                            <td>{{user.joinCdate}}</td>
+                        </tr>
+                    </table>
+                    <div class="button-container">
+                        <button class="edit-btn" @click="fnEdit(userId)">수정</button>
+                    </div>
                 </div>
+
+
             </div>
         </div>
+    </body>
 
-        <script>
-            const app = Vue.createApp({
-                data() {
-                    return {
-                        userId: "${sessionId}",
-                        reviewList: [],
-                        page: 1,
-                        pageSize: 5,
-                        pageRange: 5,
-                        pageRangeList: [],
-                        pageNum: 0,
-                        totalRows: 0
-                    };
+    <script>
+        function jusoCallBack(roadFullAddr, roadAddrPart1, addrDetail, roadAddrPart2, engAddr, jibunAddr, zipNo, admCd, rnMgtSn, bdMgtSn, detBdNmList, bdNm, bdKdcd, siNm, sggNm, emdNm, liNm, rn, udrtYn, buldMnnm, buldSlno, mtYn, lnbrMnnm, lnbrSlno, emdNo) {
+            console.log(roadFullAddr);
+            console.log(addrDetail);
+            console.log(zipNo);
+
+            window.vueObj.fnResult(roadFullAddr, addrDetail, zipNo);
+        }
+
+        const app = Vue.createApp({
+            data() {
+                return {
+                    userId: "${sessionId}",
+                    user: {},
+                    userName: "",
+                    phone: "",
+                    email: "",
+                    userAddr: "",
+                    userStatus: "",
+                    joinCdate: "",
+                    role: "",
+                    storePass: ""
+                };
+            },
+            methods: {
+                fnUser() {
+                    const self = this;
+                    $.ajax({
+                        url: "/user/view.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: { userId: self.userId },
+                        success(data) {
+                            self.user = data.user;
+                            Object.assign(self, data.user);
+                        }
+                    });
                 },
-                methods: {
-                    fnReviewList() {
-                        let self = this;
-                        $.ajax({
-                            url: "/user/reviewlist.dox",
-                            type: "POST",
-                            dataType: "json",
-                            data: {
-                                userId: self.userId,
-                                offset: (self.page - 1) * self.pageSize,
-                                fetchRows: self.pageSize
-                            },
-                            success(data) {
-                                console.log(data.reviewList);
-                                self.reviewList = data.reviewList;
-                                self.totalRows = data.totalRows;
-                                self.pageNum = Math.ceil(self.totalRows / self.pageSize);
-                                self.fnPageRange();
-                            }
-                        });
-                    },
-                    fnPageRange() {
-                        let start = Math.floor((this.page - 1) / this.pageRange) * this.pageRange + 1;
-                        let end = Math.min(start + this.pageRange - 1, this.pageNum);
-                        this.pageRangeList = [];
-                        for (let i = start; i <= end; i++) this.pageRangeList.push(i);
-                    },
-                    fnChange(num) {
-                        this.page = num;
-                        this.fnReviewList();
-                    },
-                    fnPre() {
-                        if (this.page > 1) this.page--;
-                        this.fnReviewList();
-                    },
-                    fnNext() {
-                        if (this.page < this.pageNum) this.page++;
-                        this.fnReviewList();
-                    },
-                    fnDeleteAccount:function(){ 
+                fnEdit() {
+                    const self = this;
+                    $.ajax({
+                        url: "/user/update.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: {
+                            userId: self.userId,
+                            userName: self.userName,
+                            phone: self.phone,
+                            email: self.email,
+                            userAddr: self.userAddr,
+                            userStatus:self.userStatus
+                        },
+                        success() {
+                            alert("수정되었습니다.");
+                            self.fnBack?.();
+                        }
+                    });
+                },
+                fnAddr() {
+                    window.open("/user/addr.do", "addr", "width=500,height=500,top=100,left=100");
+                },
+                fnResult(roadFullAddr) {
+                    this.userAddr = roadFullAddr;
+                },
+                fnHome() { location.href = "/main.do" },
+                fnOrderHistory() { location.href = "/user/orderHistory.do"; },
+                fnWishList() { location.href = "/product/wishlist.do"; },
+                fnChatList() { location.href = "/user/chatList.do"; },
+                fnReview() { location.href = "/user/review.do"; },
+                fnQnA() { location.href = "/user/qnA.do"; },
+                fnUserEdit() { location.href = "/user/userEdit.do"; },
+                fnDeleteAccount:function(){ 
                     if(confirm("회원을 탈퇴하겠습니까?")){
                         location.href="/main.do";
                     }
                     return;
                 },
-
-                    fnHome() { location.href = "/main.do" },
-                    fnOrderHistory() { location.href = "/user/orderHistory.do"; },
-                    fnWishList() { location.href = "/product/wishlist.do"; },
-                    fnChatList() { location.href = "/user/chatList.do"; },
-                    fnReview() { location.href = "/user/review.do"; },
-                    fnQnA() { location.href = "/user/qnA.do"; },
-                    fnUserEdit() { location.href = "/user/userEdit.do"; },
-                    fnLogout: function () {
-                        if (confirm("로그아웃 하시겠습니까?")) {
-                            let param = {};
-                            $.ajax({
-                                url: "/user/logout.dox",
-                                dataType: "json",
-                                type: "POST",
-                                data: param,
-                                success: function (data) {
-                                    if (data.result == "success") {
-                                        alert(data.msg + "! 홈페이지로 이동하겠습니다.");
-                                        location.href = "/main.do";
-                                    } else {
-                                        alert("로그아웃하는 도중에 오류가 발생하였습니다.");
-                                    }
-
+                fnLogout: function () {
+                    if (confirm("로그아웃 하시겠습니까?")) {
+                        let param = {};
+                        $.ajax({
+                            url: "/user/logout.dox",
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                if(data.result=="success"){
+                                    alert(data.msg+"! 홈페이지로 이동하겠습니다.");
+                                    location.href = "/main.do";
+                                }else{
+                                    alert("로그아웃하는 도중에 오류가 발생하였습니다.");
                                 }
-
-                            });
-                        }
-                    },
+                                    
+                            }
+                            
+                        });
+                    }
                 },
-                mounted() {
-                    this.fnReviewList();
-                }
-            });
-            app.mount('#app');
-        </script>
-    </body>
+            },
+            mounted() {
+                this.fnUser();
+                //스크립트에서 vue 내부의 데이터 접근
+                window.vueObj = this;
+            }
+        });
+
+        app.mount('#app');
+    </script>
 
     </html>
