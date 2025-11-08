@@ -12,7 +12,7 @@ public interface ApplyStoreMapper {
 	int insertSellerInfo(HashMap<String, Object> params);
 	
 	//가게 정보 입력 후 이미지 입력
-	int insertStoreImages(HashMap<String, Object> params);
+	int insertStoreImage(HashMap<String, Object> params);
 	
 	//가게 이미지 페이지
 	Long getStoreIdByUserId(@Param("userId") String userId);
@@ -21,6 +21,8 @@ public interface ApplyStoreMapper {
 	        @Param("storeName") String storeName,
 	        @Param("userId") String userId
 	    );
+	
+
 	
 	
 	

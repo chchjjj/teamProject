@@ -13,70 +13,91 @@
 		WHERE STORE_ID = #{storeId}
 	</select>
 
-<insert id="insertSellerInfo" parameterType="hashmap">
-    INSERT INTO SELLER_INFO_TBL (
-        STORE_ID,           
-        STORE_NAME,         
-        USER_ID,            
-        BUSINESS_NO,        
-        STORE_INTRO,        
-        DELIVERY_YN,        
-        IS_CHAT_ENABLED,    
-        CHAT_START,        
-        CHAT_END,           
-        STORE_ADDR,         
-        STORE_AREA,         STORE_PASS,         
-        REJECT_REASON,      
-        GRADE_CODE,         
-        MEMBERSHIP,         
-        REG_DATE,           
-        UDATE               
-    )
-    VALUES (
-        SELLER_INFO_SEQ.NEXTVAL,
-        #{storeName},
-        #{userId},
-        #{businessNo},
-        #{storeIntro},
-        #{deliveryYn},
-        #{isChatEnabled},
-        
-     
-        TO_DATE(#{chatStart}, 'HH24:MI:SS'), 
-        TO_DATE(#{chatEnd}, 'HH24:MI:SS'),   
-        
-        #{storeAddr},
-        #{storeArea},     #{storePass},     
-        #{rejectReason},  
-        #{gradeCode},     
-        #{membership},    
-        
-        SYSDATE,          
-        SYSDATE           
-    )
-</insert>
-
-
-	<insert id="insertStoreImages" parameterType="hashmap">
-		INSERT INTO SELLER_IMG_TBL
+	<insert id="insertSellerInfo" parameterType="hashmap">
+		INSERT INTO SELLER_INFO_TBL (
+		STORE_ID,
+		STORE_NAME,
+		USER_ID,
+		BUSINESS_NO,
+		STORE_INTRO,
+		DELIVERY_YN,
+		IS_CHAT_ENABLED,
+		CHAT_START,
+		CHAT_END,
+		STORE_ADDR,
+		STORE_AREA, STORE_PASS,
+		REJECT_REASON,
+		GRADE_CODE,
+		MEMBERSHIP,
+		REG_DATE,
+		UDATE
+		)
 		VALUES (
-		#{storeId},
-		#{fileUse},
-		#{filePath},
-		#{fileName},
-		#{fileOrgName},
-		#{fileExt}
+		SELLER_INFO_SEQ.NEXTVAL,
+		#{storeName},
+		#{userId},
+		#{businessNo},
+		#{storeIntro},
+		#{deliveryYn},
+		#{isChatEnabled},
+
+
+		TO_DATE(#{chatStart}, 'HH24:MI:SS'),
+		TO_DATE(#{chatEnd}, 'HH24:MI:SS'),
+
+		#{storeAddr},
+		#{storeArea}, #{storePass},
+		#{rejectReason},
+		#{gradeCode},
+		#{membership},
+
+		SYSDATE,
+		SYSDATE
 		)
 	</insert>
-	
-	<select id="selectStoreIdByStoreNameAndUserId" resultType="int">
-    SELECT
-        STORE_ID    /* 실제 테이블 컬럼명에 맞게 대문자로 수정하세요 */
-    FROM
-        SELLER_INFO_TBL
-    WHERE
-        STORE_NAME = #{storeName}
-        AND USER_ID = #{userId}
-</select>
 
+
+	
+
+	<select id="selectStoreIdByStoreNameAndUserId" resultType="int">
+		SELECT
+		STORE_ID /* 실제 테이블 컬럼명에 맞게 대문자로 수정하세요 */
+		FROM
+		SELLER_INFO_TBL
+		WHERE
+		STORE_NAME = #{storeName}
+		AND USER_ID = #{userId}
+	</select>
+
+
+	<insert id="insertStoreImage" parameterType="hashmap">
+    INSERT INTO SELLER_IMG_TBL (
+        SELLER_IMG_NUM,
+        STORE_ID,
+        FILEUSE,
+        FILEPATH,
+        FILENAME,
+        FILEORGNAME,
+        FILEETC
+    )
+    VALUES (
+        SELLER_IMG_SEQ.NEXTVAL,  #{storeId},
+        #{fileUse},
+        #{filePath}, 
+        #{fileName},
+        #{fileOrgName},
+        #{fileEtc} 
+    )
+</insert>
+	
+	
+
+	<select id="getStoreIdByUserId" resultType="long" parameterType="string">
+		SELECT
+		STORE_ID
+		FROM
+		SELLER_INFO_TBL
+		WHERE
+		USER_ID = #{userId}
+	</select>
 </mapper>

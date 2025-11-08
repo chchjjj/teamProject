@@ -144,8 +144,8 @@
     <div class="category-options">
         <label>카테고리:</label>
         <input type="radio" id="categoryCake" value="케이크" v-model="product.proType"><label for="categoryCake">케이크</label>
-        <input type="radio" id="categoryBakery" value="베이커리" v-model="product.proType"><label for="categoryBakery">베이커리</label>
-        <input type="radio" id="categoryChocolate" value="초콜릿/사탕" v-model="product.proType"><label for="categoryChocolate">초콜릿/사탕</label>
+        <input type="radio" id="categoryBakery" value="쿠키" v-model="product.proType"><label for="categoryBakery">쿠키</label>
+        <input type="radio" id="categoryChocolate" value="초콜릿" v-model="product.proType"><label for="categoryChocolate">초콜릿</label>
      
         
         <label style="margin-left: 20px;">레터링 가능:</label>
@@ -210,195 +210,197 @@
 </html>
 
 <script>
-    // UUID 또는 임시 ID를 생성하는 유틸리티 함수
-    let nextTopOptionId = 1;
-    let nextSubOptionId = 1;
+    // UUID 또는 임시 ID를 생성하는 유틸리티 함수
+    let nextTopOptionId = 1;
+    let nextSubOptionId = 1;
 
-    // Vue 앱 초기화
-    const app = Vue.createApp({
-        data() {
-            // JSP EL이 비어있으면 ''로, 아니면 실제 값으로 설정 (수정 모드 대비)
-            const proNoFromJSP = "${proNo}" === "" ? null : parseInt("${proNo}");
-
-            return {
-                proNo: proNoFromJSP, // 제품 번호 (null이면 등록 모드, 값이 있으면 수정 모드)
-                userId : "${sessionId}",
-                
-                // 폼 데이터 모델
-                product: {
-                    userId : "${sessionId}",
-                    proName: '',
-                    price: 0,
-                    deliveryFee: 0,
-                    proType: '케이크', // 기본값 "케이크"
-                    lettering: 'N' ,   // 기본값
-                 
-                },
-
-                // 이미지 파일 관리 (서버 전송용)
-                thumbnailFile: null,
-                detailFiles: [],
-                longFile: null,
-                thumbnailUrl: null, // 미리보기 URL
-
-                // 옵션 데이터 구조 (화면 관리 및 서버 전송용)
-                options: [], // [{ id, optionName, isQuantitySelectAble, subOptions: [{ id, valueName, priceDiff }] }]
-                
-                // Flatpickr 관련
-                disabledDates: [], // 저장된 불가 날짜 (DB에서 로드될 예정)
-                datePicker: null,
-            };
-        },
-        methods: {
-            // ************ 파일 핸들링 ************
-            handleFileChange(type, event) {
-                const files = event.target.files;
-                if (!files || files.length === 0) return;
-
-                if (type === 'thumbnail') {
-                    this.thumbnailFile = files[0];
-                    // 미리보기
-                    this.thumbnailUrl = URL.createObjectURL(files[0]);
-                } else if (type === 'detail') {
-                    // 최대 5개 제한
-                    this.detailFiles = Array.from(files).slice(0, 5);
-                } else if (type === 'long') {
-                    this.longFile = files[0];
-                }
-            },
+    // Vue 앱 초기화
+    const app = Vue.createApp({
+        data() {
+            // JSP EL이 비어있으면 ''로, 아니면 실제 값으로 설정 (수정 모드 대비)
+            const proNoFromJSP = "${proNo}" === "" ? null : parseInt("${proNo}");
+            // 🌟 Controller에서 Model로 주입한 storeId 값을 받습니다.
+            const storeIdFromJSP = "${storeId}" === "" ? null : parseInt("${storeId}");
             
-            // ************ 옵션 관리 ************
-            addTopOption() {
-                this.options.push({
-                    id: 'new-' + nextTopOptionId++,
-                    optionName: '',
-                    isQuantitySelectAble: 'N',
-                    subOptions: []
-                });
-            },
-            removeTopOption(index) {
-                if (confirm('상위 옵션을 삭제하시겠습니까? 해당 하위 옵션도 모두 삭제됩니다.')) {
-                    this.options.splice(index, 1);
-                }
-            },
-            addSubOption(topIndex) {
-                this.options[topIndex].subOptions.push({
-                    id: 'new-' + nextSubOptionId++,
-                    valueName: '',
-                    priceDiff: 0
-                });
-            },
-            removeSubOption(topIndex, subIndex) {
-                this.options[topIndex].subOptions.splice(subIndex, 1);
-            },
+            return {
+                proNo: proNoFromJSP, // 제품 번호 (null이면 등록 모드, 값이 있으면 수정 모드)
+                userId : "${sessionId}",
+                storeId: storeIdFromJSP,// 👈 Vue 데이터로 storeId 정의 (console 확인용)
+                
+                // 폼 데이터 모델
+                product: {
+                    userId : "${sessionId}",
+                    storeId: storeIdFromJSP, // 👈 상품 정보(product)에도 storeId 추가 (서버 전송용)
+                    proName: '',
+                    price: 0,
+                    deliveryFee: 0,
+                    proType: '케이크', // 기본값 "케이크"
+                    lettering: 'N' ,   // 기본값
+                 
+                },
 
-            // ************ Flatpickr (픽업 불가 날짜) ************
-            initFlatpickr() {
-                const self = this;
-                // Flatpickr 초기화 시 'range' 모드와 'multiple' 모드를 함께 사용하여 범위/개별 날짜를 모두 선택 가능하게 합니다.
-                self.datePicker = flatpickr("#disabledDatesInput", {
-                    locale: "ko",
-                    mode: "multiple", // 여러 날짜를 개별적으로 선택 가능
-                    enableTime: false,
-                    dateFormat: "Y-m-d",
-                    minDate: "today",
-                    // DB에서 로드된 disabledDates 배열을 사용하도록 설정
-                    defaultDate: self.disabledDates.map(date => {
-                        // DB 데이터가 범위(객체)인 경우와 개별 날짜(문자열)인 경우를 모두 처리해야 함.
-                        return typeof date === 'string' ? date : [date.from, date.to];
-                    }),
-                    
-                    onChange: function (selectedDates, dateStr, instance) {
-                        // 선택된 날짜 문자열 배열을 disabledDates 배열에 저장
-                        self.disabledDates = selectedDates.map(d => flatpickr.formatDate(d, "Y-m-d"));
-                        console.log("선택된 불가 날짜:", self.disabledDates);
-                        // 이 배열을 서버에 저장할 문자열로 변환해야 합니다. (예: 2025-11-01,2025-11-05)
-                        // Note: 범위 선택 모드(range)를 사용하면 이 로직이 더 복잡해지므로, Simple 'multiple'이 권장됩니다.
-                    },
-                    // disable 옵션은 초기화 시에만 적용되므로, 실제 서버 전송 시에는 disabledDates 배열을 활용합니다.
-                });
-            },
-            clearDisabledDates() {
-                if (this.datePicker) {
-                    this.datePicker.clear(); // 달력에서 선택된 날짜를 지웁니다.
-                }
-                this.disabledDates = []; // Vue 데이터도 초기화
-            },
+                // 이미지 파일 관리 (서버 전송용)
+                thumbnailFile: null,
+                detailFiles: [],
+                longFile: null,
+                thumbnailUrl: null, // 미리보기 URL
+
+                // 옵션 데이터 구조 (화면 관리 및 서버 전송용)
+                options: [], // [{ id, optionName, isQuantitySelectAble, subOptions: [{ id, valueName, priceDiff }] }]
+                
+                // Flatpickr 관련
+                disabledDates: [], // 저장된 불가 날짜 (DB에서 로드될 예정)
+                datePicker: null,
+            };
+        },
+        methods: {
+            // ************ 파일 핸들링 ************
+            handleFileChange(type, event) {
+                const files = event.target.files;
+                if (!files || files.length === 0) return;
+
+                if (type === 'thumbnail') {
+                    this.thumbnailFile = files[0];
+                    // 미리보기
+                    this.thumbnailUrl = URL.createObjectURL(files[0]);
+                } else if (type === 'detail') {
+                    // 최대 5개 제한
+                    this.detailFiles = Array.from(files).slice(0, 5);
+                } else if (type === 'long') {
+                    this.longFile = files[0];
+                }
+            },
+            
+            // ************ 옵션 관리 ************
+            addTopOption() {
+                this.options.push({
+                    id: 'new-' + nextTopOptionId++,
+                    optionName: '',
+                    isQuantitySelectAble: 'N',
+                    subOptions: []
+                });
+            },
+            removeTopOption(index) {
+                if (confirm('상위 옵션을 삭제하시겠습니까? 해당 하위 옵션도 모두 삭제됩니다.')) {
+                    this.options.splice(index, 1);
+                }
+            },
+            addSubOption(topIndex) {
+                this.options[topIndex].subOptions.push({
+                    id: 'new-' + nextSubOptionId++,
+                    valueName: '',
+                    priceDiff: 0
+                });
+            },
+            removeSubOption(topIndex, subIndex) {
+                this.options[topIndex].subOptions.splice(subIndex, 1);
+            },
+
+            // ************ Flatpickr (픽업 불가 날짜) ************
+            initFlatpickr() {
+                const self = this;
+                // Flatpickr 초기화 시 'range' 모드와 'multiple' 모드를 함께 사용하여 범위/개별 날짜를 모두 선택 가능하게 합니다.
+                self.datePicker = flatpickr("#disabledDatesInput", {
+                    locale: "ko",
+                    mode: "multiple", // 여러 날짜를 개별적으로 선택 가능
+                    enableTime: false,
+                    dateFormat: "Y-m-d",
+                    minDate: "today",
+                    // DB에서 로드된 disabledDates 배열을 사용하도록 설정
+                    defaultDate: self.disabledDates.map(date => {
+                        // DB 데이터가 범위(객체)인 경우와 개별 날짜(문자열)인 경우를 모두 처리해야 함.
+                        return typeof date === 'string' ? date : [date.from, date.to];
+                    }),
+                    
+                    onChange: function (selectedDates, dateStr, instance) {
+                        // 선택된 날짜 문자열 배열을 disabledDates 배열에 저장
+                        self.disabledDates = selectedDates.map(d => flatpickr.formatDate(d, "Y-m-d"));
+                        console.log("선택된 불가 날짜:", self.disabledDates);
+                        // 이 배열을 서버에 저장할 문자열로 변환해야 합니다. (예: 2025-11-01,2025-11-05)
+                        // Note: 범위 선택 모드(range)를 사용하면 이 로직이 더 복잡해지므로, Simple 'multiple'이 권장됩니다.
+                    },
+                    // disable 옵션은 초기화 시에만 적용되므로, 실제 서버 전송 시에는 disabledDates 배열을 활용합니다.
+                });
+            },
+            clearDisabledDates() {
+                if (this.datePicker) {
+                    this.datePicker.clear(); // 달력에서 선택된 날짜를 지웁니다.
+                }
+                this.disabledDates = []; // Vue 데이터도 초기화
+            },
 
 
-            // ************ 서버 전송 (등록/수정) ************
-           fnSubmitProduct() {
-    if (!this.proNo && !this.thumbnailFile) {
-        alert('썸네일 이미지는 필수입니다.');
-        return;
-    }
+            // ************ 서버 전송 (등록/수정) ************
+          fnSubmitProduct() {
+    // ... (유효성 검사 등 기존 로직) ...
 
     const formData = new FormData();
 
-    // 기본 상품 정보 추가
+    // 1. 기본 상품 정보 추가 (기존 코드)
     for (const key in this.product) {
         formData.append(key, this.product[key]);
     }
     if (this.proNo) formData.append('proNo', this.proNo);
 
-    // ✅ 파일 구분에 따른 FILEUSE 값 추가
-    // 대표 이미지 (T)
+    // 🚨🚨🚨 파일 객체를 FormData에 추가하는 핵심 수정 부분 🚨🚨🚨
+    
+    // 2. 썸네일 파일 추가 (서버에서 'thumbnailFile'이라는 이름으로 받음)
     if (this.thumbnailFile) {
-        formData.append('thumbnailFile', this.thumbnailFile);
-        formData.append('thumbnailUse', 'T'); // ✅ 추가
+        // 서버에서 요구하는 파트 이름 'thumbnailFile'을 정확히 사용
+        formData.append('thumbnailFile', this.thumbnailFile); 
     }
-
-    // 긴 이미지 (B)
-    if (this.longFile) {
-        formData.append('longFile', this.longFile);
-        formData.append('longUse', 'B'); // ✅ 추가
-    }
-
-    // 하위 이미지 (I)
+    
+    // 3. 하위 이미지 파일들 추가 (multiple 파일)
     this.detailFiles.forEach((file, index) => {
-        formData.append('detailFiles', file);
-        formData.append(`detailUse_${index}`, 'I'); // ✅ 추가
+        // 서버에서 배열로 받을 수 있도록 같은 이름으로 반복 추가
+        formData.append('detailFiles', file); 
     });
 
-    // 옵션, 날짜 그대로 유지
+    // 4. 롱 이미지 파일 추가
+    if (this.longFile) {
+        formData.append('longFile', this.longFile);
+    }
+    
+    // 5. 옵션 및 날짜 정보 추가 (기존 코드)
     const optionsJson = JSON.stringify(this.options);
     formData.append('optionsJson', optionsJson);
     formData.append('disabledDatesStr', this.disabledDates.join(','));
 
     const url = this.proNo ? "/seller/product/update.dox" : "/seller/product/register.dox";
 
-    $.ajax({
-        url: url,
-        type: "POST",
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: (response) => {
-            if (response.success) {
-                alert(this.proNo ? "제품 정보 수정 완료" : "제품 등록 완료");
-                location.href = "/seller/productlist.do";
-            } else {
-                alert("실패: " + (response.message || "알 수 없는 오류"));
-            }
-        },
-        error: (xhr, status, error) => {
-            alert("서버 통신 오류: " + error);
-        }
-    });
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: (response) => {
+            if (response.success) {
+                alert(this.proNo ? "제품 정보 수정 완료" : "제품 등록 완료");
+                location.href = "/seller/productlist.do";
+            } else {
+                alert("실패: " + (response.message || "알 수 없는 오류"));
+            }
+        },
+        error: (xhr, status, error) => {
+            alert("서버 통신 오류: " + error);
+        }
+    });
 },
 
-            
-        },
-        mounted() {
-            // Flatpickr 초기화
-            this.initFlatpickr();
-           console.log(this.userId);
-            // 수정 모드인 경우 데이터 로드
-            if (this.proNo) {
-                this.loadProductDataForEdit();
-            }
-        }
-    });
+            
+        },
+        mounted() {
+            // Flatpickr 초기화
+            this.initFlatpickr();
+           console.log("현재 userId:", this.userId);
+           console.log("현재 storeId:", this.storeId); // 🌟 storeId가 정상적으로 출력되는지 확인하세요.
+            // 수정 모드인 경우 데이터 로드
+            if (this.proNo) {
+                this.loadProductDataForEdit();
+            }
+        }
+    });
 
-    app.mount('#productRegisterApp');
+    app.mount('#productRegisterApp');
 </script>

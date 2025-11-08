@@ -191,12 +191,14 @@
                             </div>
 
                             <div class="management-buttons">
-                                
-                                
-                                <button onclick="location.href='/seller/productlist.do'">
-                                    상품 관리
-                                </button>
-                                <button class="primary-btn">수정하기</button>
+
+
+                                <div class="management-buttons">
+                                    <button @click="fnGoProductList(item.storeId)">
+                                        상품 관리
+                                    </button>
+                                    <button class="primary-btn">수정하기</button>
+                                </div>
                             </div>
                         </div>
 
@@ -211,7 +213,8 @@
                     return {
                         list: [],
                         userId: "${sessionId}",
-                        storeName: ""
+                        storeName: "",
+                        storeId: ""
                     };
                 },
                 methods: {
@@ -222,7 +225,8 @@
                         let self = this;
                         let param = {
                             userId: self.userId,
-                            storeName: self.storeName
+                            storeName: self.storeName,
+                            storeId: self.storeId
                         };
                         $.ajax({
                             url: "/store/list.dox",
@@ -230,17 +234,40 @@
                             type: "POST",
                             data: param,
                             success: function (data) {
+                                // ⭐️ 중요: 서버 응답에 storeId가 포함되어 있어야 합니다.
                                 self.list = data.list;
-                                console.log(data);
-                                console.log(self.userId);
+                                console.log("가게 목록 조회 성공:", data);
                             },
                             error: function (xhr, status, error) {
                                 console.error("가게 목록 조회 실패:", error);
                                 self.list = [];
-                                console.log(data);
-                                console.log(self.userId);
                             }
                         });
+                    },
+
+                    /** ⭐️ 새로 추가된 함수: storeId를 POST 방식으로 /seller/productlist.do로 전송 */
+                    fnGoProductList: function (storeId) {
+                        // storeId가 유효한지 확인
+                        if (!storeId) {
+                            alert("선택된 가게 ID가 없습니다.");
+                            return;
+                        }
+
+                        // 폼 생성 및 POST 전송 (GET 방식의 location.href 대신 사용)
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '/seller/productlist.do'; // 상품 목록 뷰 URL
+
+                        // storeId를 숨겨진 입력 필드(input)로 추가
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'storeId'; // 서버에서 @RequestParam("storeId")로 받게 됨
+                        hiddenInput.value = storeId;
+
+                        form.appendChild(hiddenInput);
+                        document.body.appendChild(form); // 폼을 문서에 잠시 추가
+                        form.submit(); // POST 요청 전송
+                        document.body.removeChild(form); // 전송 후 폼 제거
                     }
                 },
                 mounted() {

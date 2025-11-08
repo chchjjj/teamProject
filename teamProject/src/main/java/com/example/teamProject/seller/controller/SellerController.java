@@ -23,12 +23,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.teamProject.seller.dao.FileService;
-
 import com.example.teamProject.seller.dao.SellerService;
 import com.example.teamProject.seller.model.Seller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class SellerController {
@@ -128,21 +129,34 @@ public class SellerController {
 	}
 
 	@RequestMapping("/seller/productAdd.do")
-	public String addSellerProduct(Model model) throws Exception {
+	public String productAdd(@RequestParam("storeId") int storeId, Model model) {
+	    // storeId (45)를 받아 다음 로직을 처리합니다.
+	    model.addAttribute("storeId", storeId);
 
 		return "/seller/productAdd";
 	}
 	
-	@RequestMapping("/seller/productlist.do")
-	public String productList(Model model) throws Exception {
-
-		return "/seller/sellerProductList";
+	@RequestMapping(value = "/seller/productlist.do", method = {RequestMethod.GET, RequestMethod.POST})
+	public String productList(
+	    HttpSession session, 
+	    Model model, 
+	    @RequestParam(value = "storeId", required = false) String paramStoreId
+	) throws Exception {
+	    String finalStoreId = paramStoreId;
+	    
+	    if (finalStoreId == null || finalStoreId.isEmpty()) {
+	         // 세션에서 가져옵니다.
+	         finalStoreId = (String) session.getAttribute("storeId"); 
+	    }
+	    
+	
+	    
+	    // 2. 최종 storeId를 Model에 담습니다.
+	    model.addAttribute("storeId", finalStoreId);
+	    
+	    return "/seller/sellerProductList";
 	}
-	@RequestMapping("/seller/productUpdate.do")
-	public String productUpdate(Model model) throws Exception {
 
-		return "/seller/productUpdate";
-	}
 	
 
 	
@@ -173,7 +187,7 @@ public class SellerController {
 	@RequestMapping(value = "/seller/productlist.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public Map<String, Object> productList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
-
+		
 		// 1. 반환 타입이 Map<String, Object>로 변경되었습니다.
 		HashMap<String, Object> resultMap = sellerService.getProductList(map);
 
