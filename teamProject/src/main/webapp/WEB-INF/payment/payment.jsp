@@ -416,8 +416,7 @@
                     paymentPrice: 0, //최종 결제금액
                     kind: 0, //상품 갯수
                     
-                    //order 관련 변수
-                    // 1. 바로 구매 버튼을 누른 경우 order 테이블에서 사용 / 2. 장바구니 담고 나서 구매하는 경우 바로 이 페이지에서 생성한 주문번호
+                    //order_tbl 관련 변수
                     orderId : "${orderId}", //이전 페이지에서 orderId로 받을 때
                     orderIdList : []//이 페이지에서 order 관련 테이블의 데이터에 접근할 때 사용
                 };
