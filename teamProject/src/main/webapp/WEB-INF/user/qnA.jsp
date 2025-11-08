@@ -158,9 +158,10 @@
 
             <!-- 본문 -->
             <div class="content-area">
-                <div class="page-title">Q&A</div>
+                <div class="page-title">QnA</div>
 
                 <div class="qna-list">
+                    <div v-if="qnAList.length === 0">등록된 QnA가 없습니다.</div>
                     <div class="qna-card" v-for="qnA in qnAList" :key="qnA.questionId" @click="toggleAnswer(qnA)">
                         <div class="qna-question">{{ qnA.questionContent }}</div>
                         <div class="qna-meta">
