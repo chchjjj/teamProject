@@ -369,6 +369,11 @@
             
             <hr class="separator"> <div class="info-section">
                 
+                <div v-if="deliveryType=='D'" class="info-row">
+                    <span>배송 정보</span>
+                    <button @click="fnDelivery" class="btn btn-delivery">배송지 선택/변경</button>
+                </div>
+                
                 <div class="info-row">
                     <span>주문 고객:</span>
                     <span>{{toName}}</span>
@@ -408,6 +413,7 @@
                     orderList: [], //화면에 보이는 정보, 배송 정보 확정 전 단계, ORDER_TBL + ORDER_DETAIL_TBL + ORDER_OPTION_TBL
                     deliveryType: "", //배달인지 픽업인지 (배달이면 D, 픽업이면 P)
                     paymentPrice: 0, //최종 결제금액
+                    kind: 0, //상품 갯수
                     
                     //order 관련 변수
                     // 1. 바로 구매 버튼을 누른 경우 order 테이블에서 사용 / 2. 장바구니 담고 나서 구매하는 경우 바로 이 페이지에서 생성한 주문번호
@@ -435,11 +441,14 @@
                         success: function (data) {
                             console.log("Order 리스트 출력");// 테스트용
                             console.log(data);// 테스트용
-                            self.orderList = data.list; //order 테이블 정보만 담으면 된다.
-                            self.deliveryType = data.list.deliveryType; //배달인지 픽업인지
+                            self.orderList = data.list;
+                            self.deliveryType = data.list[0].deliveryType; //배달인지 픽업인지
+                            console.log("self.deliveryType[0] ===> " + data.list[0].deliveryType);
                             // self.paymentPrice = data.list.totalPrice;
+                            self.kind = data.list.length; // 상품 종류 갯수
+                            console.log("상품 종류 갯수: " + self.kind + "개");
 
-                            for(let i=0; i<self.orderList.length; i++){
+                            for(let i=0; i<self.orderList.length; i++){ // 총 결제가격 구하기
                                 self.paymentPrice += self.orderList[i].totalPrice;
                                 console.log("self.orderList[i].totalPrice:" + self.orderList[i].totalPrice);
                             }
@@ -481,7 +490,7 @@
                         pg: "html5_inicis",
                         pay_method: "card",
                         merchant_uid: "merchant_" + new Date().getTime(),
-                        name: self.orderList[0].proName, //상품이름, 대표로 제일 첫번째 상품명을 보여준다.
+                        name: self.orderList[0].proName + " 외 " +  (self.kind - 1) + "종", //상품이름, 대표로 제일 첫번째 상품명을 보여준다.
                         amount: 1, //실제 결제금액은 1원, 원래는 self.info.totalPrice
                         buyer_tel: self.toPhone, // 구매자 휴대폰 번호
                         buyer_name: self.toName // 구매자 성함
@@ -550,10 +559,6 @@
 
                 console.log("최종적으로 사용할 orderIdList 값은 => " + self.orderIdList);
                 self.fnOrderList();
-                
-                
-                
-                
             }
         });
 
