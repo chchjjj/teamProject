@@ -7,13 +7,13 @@
 	<!-- 메인페이지 / 상품리스트 조회 -->
 	<select id="selectMainProList" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">
 		SELECT *
-FROM PRODUCT_TBL P
-LEFT JOIN SELLER_INFO_TBL S
-    ON P.STORE_ID = S.STORE_ID
-LEFT JOIN PRODUCT_IMG_TBL PI
-    ON P.PRO_NO = PI.PRO_NO
-   AND PI.FILEUSE = 'T'
-   WHERE 1=1
+		FROM PRODUCT_TBL P
+		LEFT JOIN SELLER_INFO_TBL S
+		    ON P.STORE_ID = S.STORE_ID
+		LEFT JOIN PRODUCT_IMG_TBL PI
+		    ON P.PRO_NO = PI.PRO_NO
+		   AND PI.FILEUSE = 'T'
+		   WHERE 1=1
 		<!-- 판매자 페이지 이동 내용도 같이 사용-->
 		<if test="sellerPage == 23 and storeId != null">
 		      AND P.STORE_ID = #{storeId}
@@ -52,13 +52,34 @@ LEFT JOIN PRODUCT_IMG_TBL PI
             <otherwise>
                 P.CREATED_AT DESC
             </otherwise>
-        </choose>	
+        </choose>
+        
+        OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY <!--페이징-->	
 	</select>
 	
 	<!-- 메인화면 페이징 처리 위해 게시글 개수 구하기 (resultType int) -->
 	<select id="selectMainCnt" parameterType="hashmap" resultType="int">
 		SELECT COUNT(*) AS CNT
-		FROM PRODUCT_TBL		
+		FROM PRODUCT_TBL P
+		LEFT JOIN SELLER_INFO_TBL S
+		    ON P.STORE_ID = S.STORE_ID	
+		WHERE 1=1
+		<!-- 지역 목록 -->
+		<if test="area != '' and area !=null">	<!--area가 빈값이나 null이 아닐 때-->
+			AND STORE_AREA = #{area} 
+			<!--내가 area값으로 보낸 (선택한) 지역 값이 들어가면 그 내역만 나오게! -->	
+			<!--빈값이면 일단 전체 목록 다 나오도록 -->							
+		</if>
+		
+		<!-- 검색 조건에 맞게 출력 -->
+		<if test="keyword != '' and keyword !=null">
+			AND PRO_NAME LIKE '%' || #{keyword} || '%'
+		</if>
+		
+		<!-- 상품 카테고리별 -->
+		<if test="category != null and category != ''">
+        AND PRO_TYPE = #{category} 
+    	</if>	
 	</select>
 	
 	
@@ -179,16 +200,23 @@ LEFT JOIN PRODUCT_IMG_TBL PI
 	
 	<!-- 원재료 '미포함'한 상품 리스트 -->
 	<select id="selectIngreProList" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">
-		SELECT *
-		FROM PRODUCT_TBL P
-		INNER JOIN SELLER_INFO_TBL S ON P.STORE_ID = S.STORE_ID
-		WHERE NOT EXISTS (
-		    SELECT 1 
-		    FROM PRODUCT_INGREDIENT_TBL G
-		    INNER JOIN INGREDIENT_TBL I ON G.INGREDIENT_ID = I.INGREDIENT_ID
-		    WHERE P.PRO_NO = G.PRO_NO 
-		      AND I.INGREDIENT_NAME IN
-		      <choose>
+	    SELECT 
+	        P.*,
+	        S.*,
+	        PI.FILEPATH AS filePath,
+	        PI.FILENAME AS fileName
+	    FROM PRODUCT_TBL P
+	    INNER JOIN SELLER_INFO_TBL S ON P.STORE_ID = S.STORE_ID
+	    LEFT JOIN PRODUCT_IMG_TBL PI
+	        ON P.PRO_NO = PI.PRO_NO
+	       AND PI.FILEUSE = 'T'
+	    WHERE NOT EXISTS (
+	        SELECT 1 
+	        FROM PRODUCT_INGREDIENT_TBL G
+	        INNER JOIN INGREDIENT_TBL I ON G.INGREDIENT_ID = I.INGREDIENT_ID
+	        WHERE P.PRO_NO = G.PRO_NO 
+	          AND I.INGREDIENT_NAME IN
+	          <choose>
 	            <when test="ingreName != null and ingreName instanceof java.util.List">
 	                <foreach collection="ingreName" item="item" open="(" separator="," close=")">
 	                    #{item}
@@ -197,8 +225,32 @@ LEFT JOIN PRODUCT_IMG_TBL PI
 	            <otherwise>
 	                (#{ingreName})
 	            </otherwise>
-	        </choose>
-		)		
+	          </choose>
+	    )
+	    OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY <!--페이징-->
+	</select>
+	
+	<!-- 원재료 '미포함' 상품 리스트 페이징 처리 위해 게시글 개수 구하기 (resultType int) -->
+	<select id="selectIngreProCnt" parameterType="hashmap" resultType="int">
+	    SELECT COUNT(*) AS CNT
+	    FROM PRODUCT_TBL P
+	    WHERE NOT EXISTS (
+	        SELECT 1
+	        FROM PRODUCT_INGREDIENT_TBL G
+	        INNER JOIN INGREDIENT_TBL I ON G.INGREDIENT_ID = I.INGREDIENT_ID
+	        WHERE P.PRO_NO = G.PRO_NO
+	          AND I.INGREDIENT_NAME IN
+	          <choose>
+	            <when test="ingreName != null and ingreName instanceof java.util.List">
+	                <foreach collection="ingreName" item="item" open="(" separator="," close=")">
+	                    #{item}
+	                </foreach>
+	            </when>
+	            <otherwise>
+	                (#{ingreName})
+	            </otherwise>
+	          </choose>
+	    )
 	</select>
 	
 	
@@ -209,7 +261,5 @@ LEFT JOIN PRODUCT_IMG_TBL PI
 		INNER JOIN PRODUCT_TBL P ON I.PRO_NO = P.PRO_NO
 		INNER JOIN SELLER_INFO_TBL S ON P.STORE_ID = S.STORE_ID
 		WHERE S.MEMBERSHIP = 'Y'AND I.FILEUSE = 'M'
-	</select>
-	
-	
+	</select>	
 </mapper>

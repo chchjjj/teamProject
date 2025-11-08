@@ -812,3 +812,11 @@ display: block;
     border-radius: 8px;
     color: #777;
 }
+
+/* 지역 필터 시 해당하는 상품 없을 경우 */
+.no-product {
+    text-align: center;
+    color: #555;
+    font-size: 16px;
+    padding: 50px 0;
+}
