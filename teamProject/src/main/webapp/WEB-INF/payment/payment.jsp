@@ -269,13 +269,13 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 24px; 
+        font-size: 22px; 
     }
     
     .total-payment {
         padding: 20px 0;
         border-top: 2px solid var(--border-color);
-        font-size: 30px; 
+        font-size: 28px; 
         font-weight: bold;
         text-align: right;
         color: var(--primary-color);
