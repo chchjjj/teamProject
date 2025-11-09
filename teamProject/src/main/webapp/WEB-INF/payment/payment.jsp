@@ -341,15 +341,12 @@
         <div id="app">
             <h2 style="margin-top: 0; color: var(--primary-color); text-align: center; font-size: 30px;">주문 상세 내역</h2>
             <div class="order-list">
-                <div v-for="item in orderList" class="order-item-card">
+                <div v-for="item in groupedOrdersList" class="order-item-card">
                     
                     <div class="item-details">
                         <div class="pro-name">
                             {{item.proName}}
                         </div>
-                        <!-- <div class="delivery-type">
-                            배송 선택: {{item.orderDate}}
-                        </div> -->
                         <div>
                             판매처: {{item.storeName}}
                         </div>
@@ -392,9 +389,10 @@
             
             <div class="btn-group">
                 <button @click="fnGoBack" class="btn btn-cancel">메인으로</button>
-                <button @click="fnPayment" class="btn btn-primary">결제하기</button>
+                <button v-if="deliveryType=='D'" @click="fnCheckDelivery" class="btn btn-primary">결제하기</button>
+                <button v-else @click="fnPayment" class="btn btn-primary">결제하기</button>
 
-                <!-- 아랫줄은 간편 테스트용 -->
+                <!-- 아랫줄은 간편 테스트용(결제 api를 우회할 수 있음) -->
                 <!-- <button @click="fnPayHistory(1, 1)" class="btn btn-primary">결제하기</button> -->
             </div>
 
@@ -411,14 +409,15 @@
                     // 변수 - (key : value)
                     toName: "${sessionName}", //받을 사람
                     toPhone: "${sessionPhone}", //받을 사람의 휴대폰 번호
-                    orderList: [], //화면에 보이는 정보, 배송 정보 확정 전 단계, ORDER_TBL + ORDER_DETAIL_TBL + ORDER_OPTION_TBL
+                    orderList: [], //배송 정보 확정 전 단계, ORDER_TBL + ORDER_DETAIL_TBL + ORDER_OPTION_TBL
                     deliveryType: "", //배달인지 픽업인지 (배달이면 D, 픽업이면 P)
                     paymentPrice: 0, //최종 결제금액
                     kind: 0, //상품 갯수
                     
                     //order_tbl 관련 변수
                     orderId : "${orderId}", //이전 페이지에서 orderId로 받을 때
-                    orderIdList : []//이 페이지에서 order 관련 테이블의 데이터에 접근할 때 사용
+                    orderIdList : [], //이 페이지에서 order 관련 테이블의 데이터에 접근할 때 사용
+                    groupedOrdersList: [] //주문들을 그룹화한 리스트
                 };
             },
             methods: {
@@ -442,15 +441,9 @@
                             console.log("Order 리스트 출력");// 테스트용
                             console.log(data);// 테스트용
                             self.orderList = data.list;
+                            self.fnGroupOrderList(self.orderList);
                             self.deliveryType = data.list[0].deliveryType; //배달인지 픽업인지
                             console.log("self.deliveryType[0] ===> " + data.list[0].deliveryType);
-                            self.kind = data.list.length; // 상품 종류 갯수
-                            console.log("상품 종류 갯수: " + self.kind + "개");
-
-                            for(let i=0; i<self.orderList.length; i++){ // 총 결제가격 구하기
-                                self.paymentPrice += self.orderList[i].totalPrice;
-                                console.log("self.orderList[i].totalPrice:" + self.orderList[i].totalPrice);
-                            }
                         }
                     });
                 },
@@ -480,14 +473,35 @@
                     window.open("/payment/addressPopUp.do?orderIdList="+self.orderIdList, "addressPopUp", "width=700, height=500, top=100, left=100");
                 },
 
+                fnCheckDelivery: function(){
+                    let self = this;
+                    let param = {
+                       orderId: self.groupedOrdersList[0].orderId
+                    };
+                    $.ajax({
+                        url: "/payment/checkDelivery.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            if(data.info.fullAddress != "주소없음" && data.info.fullAddress != null && data.info.fullAddress != ""){
+                                self.fnPayment();
+                            } else {
+                                alert("배송지 정보를 먼저 선택해주세요!");
+                            }
+                        }
+                    });
+                },
+
                 //결제 버튼을 누르면 이 함수를 실행
                 fnPayment: function(){
                     let self = this;
                     let proName;
+
                     if(self.kind > 1){
-                        proName = self.orderList[0].proName + " 외 " +  (self.kind - 1) + "종";
+                        proName = self.groupedOrdersList[0].proName + " 외 " +  (self.kind - 1) + "종";
                     } else{
-                        proName = self.orderList[0].proName;
+                        proName = self.groupedOrdersList[0].proName;
                     }
                     IMP.request_pay({
                         pg: "html5_inicis",
@@ -539,7 +553,85 @@
                 fnGoBack: function(){
                         //window.history.back();
                         window.location.href = "/main.do"; // 기본 이동 경로
-                }
+                },
+
+                fnGroupOrderList: function (list) {
+                    let self = this;
+                    const groupedOrders = {};
+
+                    if (!Array.isArray(list) || list.length === 0) {
+                        self.groupedOrdersList = [];
+                        return;
+                    }
+
+                    list.forEach(order => {
+                        const orderId = order.orderId;
+                        if (!orderId) return;
+
+                        if (!groupedOrders[orderId]) {
+                            groupedOrders[orderId] = {
+                                orderId: order.orderId,
+                                storeName: order.storeName,
+                                fullAddress: order.fullAddress,
+                                proName: order.proName,
+                                quantity: Number(order.quantity || 1),
+                                orderDate: order.orderDate,
+                                deliveryType: order.deliveryType || "D",
+                                deliveryFee: Number(order.deliveryFee || 0),
+                                totalPrice: Number(order.totalPrice || 0),
+                                chatYn: order.chatYn,
+                                addOptionPrice: Number(order.addOptionPrice || 0),
+                                status: order.status || "S",
+                                wishDeli: order.wishDeli || "시간 미지정",
+                                pickTime: order.pickTime || "시간 미지정",
+                                storeAddr:order.storeAddr,
+                                storeId: order.storeId,
+                                groupedDetails: {}
+                            };
+                        }
+
+                        const orderDetailId = order.orderDetailId;
+                        if (!orderDetailId) return;
+
+                        if (!groupedOrders[orderId].groupedDetails[orderDetailId]) {
+                            groupedOrders[orderId].groupedDetails[orderDetailId] = {
+                                proName: order.proName,
+                                subtotal: Number(order.subtotal || 0),
+                                price: Number(order.price || 0),
+                                letteringWord: order.letteringWord || "",
+                                quantity: Number(order.quantity || 1),
+                                options: []
+                            };
+                        }
+
+                        if (order.orderOptionId) {
+                            const exists = groupedOrders[orderId].groupedDetails[orderDetailId].options
+                                .find(opt => opt.orderOptionId === order.orderOptionId);
+
+                            if (!exists) {
+                                groupedOrders[orderId].groupedDetails[orderDetailId].options.push({
+                                    orderOptionId: order.orderOptionId,
+                                    topOptionId: order.topOptionId,
+                                    subOptionId: order.subOptionId,
+                                    optionName: order.optionName || "옵션",
+                                    valueName: order.valueName || "",
+                                    priceDiff: Number(order.priceDiff || 0),
+                                    addQuantity: Number(order.addQuantity || 0),
+                                    optionTotal: Number(order.optionTotal || 0)
+                                });
+                            }
+                        }
+                    });
+                    self.groupedOrdersList = Object.values(groupedOrders);
+                    self.groupedOrdersList = self.groupedOrdersList.slice().reverse();
+                    console.log("최종 주문 목록:", self.groupedOrdersList);
+                    self.kind = self.groupedOrdersList.length; // 상품 종류 갯수
+                    console.log("상품 종류 갯수: " + self.kind + "개");
+                    for(let i=0; i<self.groupedOrdersList.length; i++){ // 총 결제가격 구하기
+                        self.paymentPrice += self.groupedOrdersList[i].totalPrice;
+                        console.log("self.groupedOrdersList[i].totalPrice:" + self.groupedOrdersList[i].totalPrice);
+                    }
+                },
 
                 
             }, // methods

@@ -64,7 +64,19 @@ public class PaymentService {
 		return resultMap;
 	}
 	
-	
+	public HashMap<String, Object> checkDelivery(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			Payment info = paymentMapper.selectOrderAddress(map);
+			resultMap.put("info", info); 
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage()); //개발자가 확인할 로그 기록
+		}
+		
+		return resultMap;
+	}
 
 	@Transactional
 	public HashMap<String, Object> addPayment(HashMap<String, Object> map) {
@@ -184,6 +196,8 @@ public class PaymentService {
 		
 		return resultMap;
 	}
+
+	
 	
 	
 	

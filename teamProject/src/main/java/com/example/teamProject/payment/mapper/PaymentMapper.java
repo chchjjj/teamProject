@@ -40,4 +40,7 @@ public interface PaymentMapper {
 	//주문서에 주문 상태 정보 주문완료로 갱신하기
 	int updateOrderStatus(HashMap<String, Object> map);
 
+	//주문서에 배송지 정보가 갱신됐는지 확인하기
+	Payment selectOrderAddress(HashMap<String, Object> map);
+
 }
