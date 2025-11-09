@@ -229,7 +229,6 @@
             </div>
             <div class="card-button-group">
                 <button class="btn-modify" @click="fnUseAddress(userAddress)">선택</button>
-                <button class="btn-delete">삭제</button>
             </div>
         </div>
 
@@ -334,7 +333,7 @@
                     success: function (data) {
                         alert("배송지가 성공적으로 추가되었습니다!");
                         self.fnAddressList();
-                        self.showAddForm = false; // 저장 후 폼 숨기기
+                        //self.showAddForm = false; // 저장 후 폼 숨기기
                     }
                 });
             },
