@@ -119,8 +119,8 @@ public interface SellerMapper {
 
  	// proNo를 통해 상품 불가 날짜 조회 (수정용)
  	List<String> selectDisabledDates(int proNo);
- 	// 핵심 기능 지원: STORE_ID 조회 
- 	Integer getStoreIdByUserId(String userId);
+ 	//가게 번호 조회
+ 	int checkStoreOwnership(@Param("userId") String userId, @Param("storeId") int storeId);
  	
  	//스토어 아이디를 이용해서 스토어 이름 얻기
  	String getStoreNameByStoreId(@Param("storeId") String storeId);
