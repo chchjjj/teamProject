@@ -52,19 +52,13 @@ public class UserService {
 					// 로그인 성공
 					// cnt값을 0으로 초기화
 					
-					message = user.getUserName() + " 님 환영합니다!";
+					message = "로그인 성공!";
 					result = "success";
 					
 					session.setAttribute("sessionId", user.getUserId());
 					session.setAttribute("sessionName", user.getUserName());
 					session.setAttribute("sessionRole", user.getRole());
 					session.setAttribute("sessionPhone", user.getPhone());
-					session.setAttribute("sessionAddress", user.getUserAddr()); 
-					
-					//세션 만료 시간 설정 (단위 초)
-					session.setMaxInactiveInterval(60 * 60);
-					
-					
 					resultMap.put("url", "/main.do");
 					
 					//밑에 주석처리 한거는 혹시라도 관리자 여부에 따라 이동할 페이지를 다르게 하고 싶을 때 사용하면 된다.
@@ -225,8 +219,11 @@ public class UserService {
 		
 		try {
 			List<User> list = userMapper.selectOrderList(map);			
-			System.out.println(list);;
+			System.out.println(list);
 			resultMap.put("list", list); 
+			int totalRows=userMapper.orderCount(map);
+			resultMap.put("totalRows",totalRows);
+			
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -334,6 +331,25 @@ public class UserService {
 		 return resultMap;
 				
 	}
+	
+	
+	public HashMap<String, Object> InsertReview(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			int cnt= userMapper.reviewInsert(map);
+			resultMap.put("result", "success");
+
+		    } catch (Exception e) {
+		        resultMap.put("result", "fail");
+		        System.out.println(e.getMessage());
+		    }
+		    
+		    return resultMap;
+	}
+	
+	
 	
 	
 	
