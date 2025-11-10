@@ -241,6 +241,7 @@
                     contentType: false,
                     success(response) {
                         alert(response.success ? '입점 신청이 완료되었습니다.' : '이미지 업로드 실패');
+                        location.href = 'http://localhost:8087/main.do';
                         // 성공 시 리다이렉트 등의 추가 로직을 여기에 넣을 수 있습니다.
                     },
                     error() {

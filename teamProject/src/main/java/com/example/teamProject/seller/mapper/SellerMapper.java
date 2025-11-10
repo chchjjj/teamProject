@@ -61,7 +61,7 @@ public interface SellerMapper {
 	// 판매자 정보 조회
 	HashMap<String, Object> selectSellerInfo(HashMap<String, Object> map);
 	// 판매자 가게정보 조회
-	HashMap<String, Object> selectStoreInfoByUserId(HashMap<String, Object> map);
+	HashMap<String, Object> selectStoreInfoStoreId(HashMap<String, Object> map);
 
 	// 판매자 정보 수정
 	int updateSellerInfo(HashMap<String, Object> map);
@@ -130,11 +130,10 @@ public interface SellerMapper {
  	List<Seller> selectProductList(HashMap<String, Object> map);
  	//상품삭제
 	int deleteProduct(int proNo);
- 	
- 
-
+	//회원정보
+	int updateMemberInfo(Map<String, Object> params) throws Exception;	
+ 	//가게 정보 조회
+	public Map<String, Object> selectStoreInfoData(String storeId);
 	
 	
- 	
- 	
 }

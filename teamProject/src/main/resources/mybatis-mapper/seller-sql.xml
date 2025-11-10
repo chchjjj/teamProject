@@ -282,35 +282,16 @@ ORDER BY T3.PRO_NAME
 		S.MEMBERSHIP
 		FROM USER_TBL U
 		JOIN SELLER_INFO_TBL S ON U.USER_ID = S.USER_ID
-		WHERE U.USER_ID = #{userId}
+		WHERE U.USER_ID = #{userId} 
+		ORDER BY S.STORE_ID ASC  FETCH FIRST 1 ROWS ONLY
 	</select>
 
-	<select id="selectStoreInfoByUserId" parameterType="string"
+	<select id="selectStoreInfoStoreId" parameterType="string"
 		resultType="hashmap">
-		SELECT
-		U.USER_ID,
-		U.USER_NAME,
-		U.EMAIL,
-		U.USER_ADDR,
-		U.PHONE,
-		U.ROLE,
-		U.USER_STATUS,
-		U.JOIN_CDATE,
-		U.UDATE,
-		S.STORE_ID,
-		S.STORE_NAME,
-		S.BUSINESS_NO,
-		S.STORE_INTRO,
-		S.DELIVERY_YN,
-		S.IS_CHAT_ENABLED,
-		S.CHAT_START,
-		S.CHAT_END,
-		S.STORE_ADDR,
-		S.MEMBERSHIP
-		FROM USER_TBL U
-		JOIN SELLER_INFO_TBL S ON U.USER_ID = S.USER_ID
-		WHERE U.USER_ID = #{userId}
+		SELECT * FROM SELLER_INFO_TBL WHERE STORE_ID = #{storeId}
 	</select>
+	
+	
 
 
 	<!-- 사용자 정보 수정 -->
@@ -390,39 +371,47 @@ ORDER BY T3.PRO_NAME
 	<select id="selectStoreInfo" resultType="map">
 		SELECT
 		SI.STORE_NAME,
-		SI.STORE_ADDR, SI.STORE_INTRO,
+		SI.STORE_ADDR, 
+		SI.STORE_INTRO,
 		SI.DELIVERY_YN,
-		SI.IS_CHAT_ENABLED AS CHAT_YN, SI.MEMBERSHIP AS IS_MEMBERSHIP,
-		M.MEMBERSHIP_LEVEL FROM SELLER_INFO_TBL SI
-		LEFT JOIN MEMBERSHIP_TBL M ON SI.USER_ID = M.USER_ID
-		WHERE SI.USER_ID = #{userId}
+		SI.IS_CHAT_ENABLED AS CHAT_YN, 
+		SI.MEMBERSHIP AS IS_MEMBERSHIP,
+		M.MEMBERSHIP_LEVEL 
+	FROM SELLER_INFO_TBL SI
+	LEFT JOIN MEMBERSHIP_TBL M ON SI.USER_ID = M.USER_ID
+	WHERE SI.USER_ID = #{userId} 
+	ORDER BY SI.STORE_ID ASC  FETCH FIRST 1 ROWS ONLY
 	</select>
 
-	<update id="updateStoreInfo" parameterType="map"> UPDATE SELLER_INFO_TBL <set>
-			<if test="storeName != null and storeName != ''">
-				STORE_NAME = #{storeName},
-			</if>
+	<update id="updateStoreInfo" parameterType="map"> 
+    UPDATE SELLER_INFO_TBL 
+    <set>
+        <if test="storeName != null and storeName != ''">
+            STORE_NAME = #{storeName},
+        </if>
         
-        <if
-				test="storeAddrMain != null and storeAddrMain != ''">
-				STORE_ADDR = #{storeAddrMain},
-			</if>
+        <if test="storeAddrMain != null and storeAddrMain != ''">
+            STORE_ADDR = #{storeAddrMain},
+        </if>
         
-        <if
-				test="storeIntro != null and storeIntro != ''">
-				STORE_INTRO = #{storeIntro},
-			</if>
+        <if test="storeIntro != null and storeIntro != ''">
+            STORE_INTRO = #{storeIntro},
+        </if>
         
-        <if
-				test="deliveryYn != null and deliveryYn != ''">
-				DELIVERY_YN = #{deliveryYn},
-			</if>
+        <if test="deliveryYn != null and deliveryYn != ''">
+            DELIVERY_YN = #{deliveryYn},
+        </if>
         
-        <if
-				test="chatYn != null and chatYn != ''">
-				IS_CHAT_ENABLED = #{chatYn},
-			</if> UDATE = SYSDATE </set>
-		WHERE USER_ID = #{userId} </update>
+        <if test="chatYn != null and chatYn != ''">
+            IS_CHAT_ENABLED = #{chatYn},
+        </if> 
+        
+        UDATE = SYSDATE 
+    </set>
+    WHERE 
+        USER_ID = #{userId} 
+        AND STORE_ID = #{storeId, jdbcType=NUMERIC} 
+</update>
 
 	<insert id="insertProduct"
 		parameterType="com.example.teamProject.seller.model.Seller">
@@ -436,19 +425,7 @@ ORDER BY T3.PRO_NAME
 		jdbcType=VARCHAR}, #{price}, #{deliveryFee, jdbcType=NUMERIC}, #{status,
 		jdbcType=CHAR}, #{lettering, jdbcType=CHAR}, #{cnt}, #{sellCount},
 		SYSDATE, SYSDATE, #{storeName, jdbcType=VARCHAR} ) </insert>
-	<update id="updateProduct"
-		parameterType="com.example.teamProject.seller.model.Seller"> UPDATE
-		PRODUCT_TBL <set>
-			PRO_NAME = #{proName},
-			PRO_TYPE = #{proType},
-			PRO_INFO = #{proInfo},
-			PRICE = #{price},
-			STOCK_QTY = #{stockQty},
-			STATUS = #{status},
-			UDATE = SYSDATE
-		</set>
-		WHERE PRO_NO = #{proNo} AND STORE_ID = (SELECT STORE_ID FROM
-		SELLER_INFO_TBL WHERE USER_ID = #{userId}) </update>
+	
 
 	<insert id="insertTopOption"
 		parameterType="com.example.teamProject.seller.model.Seller">
@@ -573,6 +550,61 @@ ORDER BY T3.PRO_NAME
     FROM seller_info_tbl
     WHERE user_id = #{userId} AND store_id = #{storeId}
 </select>
+
+
+
+    <update id="updateProduct" parameterType="hashmap">
+        UPDATE PRODUCT_TBL
+        SET
+            PRO_NAME = #{proName},
+            PRO_TYPE = #{proType},
+            STORE_ID = #{storeId},        STORE_NAME = #{storeName},
+            PRICE = #{price},
+            DELIVERY_FEE = #{deliveryFee},
+            STATUS = #{status},
+            PRO_INFO = #{proInfo},
+            LETTERING = #{lettering},
+            UPDATED_AT = SYSDATE         WHERE PRO_NO = #{proNo}
+    </update>
+	<update id="updateMemberInfo" parameterType="map">
+    UPDATE USER_TBL
+    <set>
+        <if test="USER_PASS != null and USER_PASS != ''">
+            USER_PASS = #{USER_PASS},
+        </if>
+        
+        <if test="USER_NAME != null and USER_NAME != ''">
+            USER_NAME = #{USER_NAME},
+        </if>
+        
+        <if test="EMAIL != null and EMAIL != ''">
+            EMAIL = #{EMAIL},
+        </if>
+        
+        <if test="USER_ADDR != null and USER_ADDR != ''">
+            USER_ADDR = #{USER_ADDR},
+        </if>
+        
+        <if test="PHONE != null and PHONE != ''">
+            PHONE = #{PHONE},
+        </if>
+        
+        <if test="USER_STATUS != null and USER_STATUS != ''">
+            USER_STATUS = #{USER_STATUS},
+        </if>
+        
+        UDATE = SYSDATE,
+    </set>
+    WHERE 
+        USER_ID = #{USER_ID}
+        </update>
+    <select id="selectStoreInfoData" parameterType="String" resultType="Map">
+    SELECT
+        * FROM SELLER_INFO_TBL
+    WHERE STORE_ID = #{storeId}
+</select>
+  
+    
 
 </mapper>
 

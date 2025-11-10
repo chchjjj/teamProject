@@ -68,6 +68,15 @@ public class SellerController {
 
 		return "seller/sellerOrderHistory";
 	}
+	@RequestMapping("/seller/productUpdate.do")
+	public String productUpdate(@RequestParam("proNo") int proNo, Model model) {
+	    // 1. URL에서 받은 proNo를 모델에 담아 View로 전달합니다.
+	    //    (View에서는 이 proNo를 사용하여 해당 상품의 상세 정보를 AJAX로 조회할 수 있습니다.)
+	    model.addAttribute("proNo", proNo);
+
+	    // 2. View 파일의 경로를 반환합니다. (예: /WEB-INF/views/seller/productUpdate.jsp)
+	    return "/seller/productUpdate";
+	}
 
 	@RequestMapping("/seller/OrderHistoryViewDetail.do")
 	public String viewOrderHistory(
@@ -116,11 +125,7 @@ public class SellerController {
 		return "/seller/sellerUpdateInfo";
 	}
 
-	@RequestMapping("/seller/storeInfoupdateInfo.do")
-	public String storeInfo(Model model) throws Exception {
-
-		return "/seller/storeUpdateInfo";
-	}
+	
 
 	@RequestMapping("/seller/sellerViewQnA.do")
 	public String QnA(Model model) throws Exception {
@@ -159,7 +164,12 @@ public class SellerController {
 
 	
 
-	
+	@RequestMapping("/seller/storeInfoupdateInfo.do")
+	public String storeUpdate(Model model) throws Exception {
+
+		return "/seller/storeUpdateInfo";
+	}
+
 	
 
 	
@@ -418,26 +428,7 @@ public class SellerController {
 		return new Gson().toJson(resultMap);
 	}
 
-	@RequestMapping(value = "/store/storeinfo.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public String getStoreInfo(@RequestParam HashMap<String, Object> map) throws Exception {
-		HashMap<String, Object> resultMap = new HashMap<>();
-		try {
-
-			System.out.println("📥 [INFO] 요청 파라미터: " + map);
-
-			resultMap = sellerService.getStoreInfo(map);
-
-			System.out.println("📤 [INFO] 조회 결과: " + resultMap);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultMap.put("result", "error");
-			resultMap.put("message", "판매자 정보 조회 중 오류 발생: " + e.getMessage());
-			System.out.println("❌ [ERROR] 판매자 정보 조회 실패: " + e.getMessage());
-		}
-		return new Gson().toJson(resultMap);
-	}
+	
 
 	// ✅ 판매자 정보 수정
 	@RequestMapping(value = "/seller/updateInfo.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -489,55 +480,49 @@ public class SellerController {
 		return new Gson().toJson(resultMap);
 	}
 
-	@RequestMapping(value = "/store/info.dox", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> getStoreInfo(@RequestParam("userId") String userId) {
-		Map<String, Object> result = new HashMap<>();
-		try {
-			// userId를 기반으로 가게 정보를 조회합니다.
-			Map<String, Object> storeInfo = sellerService.getStoreInfo(userId);
-			if (storeInfo != null) {
-				result.put("store", storeInfo); // 조회된 가게 정보 전달
-			} else {
-				result.put("message", "가게 정보를 찾을 수 없습니다.");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			result.put("message", "서버 오류가 발생했습니다.");
-		}
-		return result;
-	}
+	
 
 	@RequestMapping(value = "/store/update.dox", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> updateStoreInfo(@RequestParam Map<String, String> params) {
-		Map<String, Object> result = new HashMap<>();
-		try {
-			// 전달된 파라미터에서 수정할 가게 정보를 받습니다.
-			String userId = params.get("userId");
-			String storeName = params.get("storeName");
-			String storeZipcode = params.get("storeZipcode");
-			String storeAddrMain = params.get("storeAddrMain");
-			String storeAddrDetail = params.get("storeAddrDetail");
-			String storeIntro = params.get("storeIntro");
-			String deliveryYn = params.get("deliveryYn");
-			String chatYn = params.get("chatYn");
+	    Map<String, Object> result = new HashMap<>();
+	    try {
+	        // 1. 테이블 스키마에 존재하는 필드만 받도록 정리했습니다.
+	        String userId = params.get("userId");
+	        String storeId = params.get("storeId");
+	        String storeName = params.get("storeName");
+	        
+	        // 💡 DB에 STORE_ZIPCODE, STORE_ADDR_DETAIL은 없으므로 제거했습니다.
+	        String storeAddr = params.get("storeAddrMain"); // DB 컬럼: STORE_ADDR
+	        
+	        String storeIntro = params.get("storeIntro");
+	        String deliveryYn = params.get("deliveryYn");
+	        String chatYn = params.get("chatYn"); // DB 컬럼: IS_CHAT_ENABLED
 
-			// 서비스 메서드를 호출하여 DB에서 수정 작업을 수행
-			boolean isUpdated = sellerService.updateStoreInfo(userId, storeName, storeZipcode, storeAddrMain,
-					storeAddrDetail, storeIntro, deliveryYn, chatYn);
-			if (isUpdated) {
-				result.put("result", "success");
-			} else {
-				result.put("result", "failure");
-				result.put("message", "정보 수정에 실패했습니다.");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			result.put("result", "failure");
-			result.put("message", "서버 오류가 발생했습니다.");
-		}
-		return result;
+	        // 2. 핵심 WHERE 조건 필드(userId, storeId)에 대한 유효성 검증 강화
+	        if (userId == null || userId.isEmpty() || storeId == null || storeId.isEmpty()) {
+	            result.put("result", "failure");
+	            result.put("message", "필수 정보(사용자 ID 또는 가게 ID)가 누락되었습니다.");
+	            return result;
+	        }
+
+	        // 3. Service 메서드 호출 시 불필요한 파라미터를 제거했습니다.
+	        boolean isUpdated = sellerService.updateStoreInfo(userId, storeId, storeName, storeAddr, 
+	                                                         storeIntro, deliveryYn, chatYn, chatYn, chatYn);
+	        
+	        if (isUpdated) {
+	            result.put("result", "success");
+	        } else {
+	            // 🚨 정보 수정 실패 시, WHERE 조건 불일치 가능성이 가장 높습니다.
+	            result.put("result", "failure");
+	            result.put("message", "정보 수정에 실패했습니다. (가게 ID 및 사용자 ID 확인 필요)");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        result.put("result", "failure");
+	        result.put("message", "서버 오류가 발생했습니다. 로그를 확인하세요.");
+	    }
+	    return result;
 	}
 
 	
@@ -745,5 +730,37 @@ public class SellerController {
 	    
 	    return response;
 	}
+	
+	@PostMapping("/store/infoUpdate.dox")
+    @ResponseBody
+    public Map<String, Object> getStoreInfoForUpdate(@RequestParam("storeId") String storeId) {
+        Map<String, Object> resultMap = new HashMap<>();
+        
+        try {
+            // 🟢 [수정됨] sellerService를 사용하여 가게 정보를 조회합니다.
+            // 조회된 객체의 타입은 Map 또는 SellerInfoVO 등으로 가정합니다.
+            // 여기서는 유연하게 Map<String, Object> 타입으로 가정하겠습니다.
+        	Object storeInfo = sellerService.selectStoreInfoData(storeId); 
+
+            if (storeInfo != null) {
+                // 조회 성공 시, "store"라는 키로 데이터를 담아 JSON으로 반환합니다.
+                // 클라이언트 JavaScript가 data.store로 접근하는 것에 맞춥니다.
+                resultMap.put("store", storeInfo);
+                resultMap.put("success", true);
+                resultMap.put("message", "가게 정보 조회 성공");
+            } else {
+                // 가게 정보가 없을 경우
+                resultMap.put("success", false);
+                resultMap.put("message", "해당 STORE_ID로 등록된 가게 정보가 없습니다.");
+            }
+        } catch (Exception e) {
+            // 오류 발생 시
+            System.err.println("가게 정보 조회 중 오류 발생: " + e.getMessage());
+            resultMap.put("success", false);
+            resultMap.put("message", "서버 오류로 인해 정보를 조회할 수 없습니다.");
+        }
+
+        return resultMap;
+    }
 
 }
