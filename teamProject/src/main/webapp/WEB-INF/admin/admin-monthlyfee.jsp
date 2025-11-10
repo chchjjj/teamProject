@@ -42,6 +42,13 @@
             td {
                 color: #333;
             }
+
+            .info {
+                font-size: 14px;
+                color: #666;
+                margin-bottom: 30px;
+            }
+
         </style>
     </head>
 
@@ -102,9 +109,10 @@
                         <div>
                             판매자 월 정산결과 조회
                         </div>
-                        <!--아이콘-->
-                        <div></div>
-                        <!--선택사항-->
+                        <div class="info">
+                            ※ 판매 승인을 받은 판매자 목록만 표시합니다.
+                        </div>
+
                         <div>
                             <select v-model="pageSize" @change="fnSellerList">
                                 <option value="10">:: 10개씩 ::</option>
@@ -180,6 +188,7 @@
                     sessionId: "${sessionId}",
 
                     currentMenu: "month",
+                    flgPending: true, // 항상 P만 보도록 기본값 설정
 
                     //선택
                     selectItem: [],
@@ -208,6 +217,7 @@
                         option: self.option,
                         keyWord: self.keyWord,
                         flgApp: self.flgApp,
+                        flgPending: true, // <-- 추가 (판매자 테이블에서 판매승인 받은 애들만 나오게)
                         offset: (self.page - 1) * self.pageSize,
                         fetchRows: self.pageSize,
                     };
@@ -216,7 +226,7 @@
                         dataType: "json",
                         type: "POST",
                         data: param,
-                        success: function (data) {
+                        success: function (data) {                           
                             self.sellerList = data.sellerList;
                             self.totalRows = data.totalRows;
                             self.pageNum = Math.ceil(self.totalRows / self.pageSize);
@@ -326,10 +336,16 @@
 
                 },
 
-                formatNumber: function (num) {
-                    if (!num && num !== 0) return '0';
+                // formatNumber: function (num) {
+                //     if (!num && num !== 0) return '0';
+                //     return Number(num).toLocaleString('ko-KR');
+                // },
+
+                formatNumber: function(num) {
+                    if (num === null || num === undefined) return '0';
                     return Number(num).toLocaleString('ko-KR');
                 },
+
 
                 fnBuyerManage: function () {
                     location.href = "/admin/userlist.do";

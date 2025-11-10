@@ -91,23 +91,30 @@
 		LEFT JOIN USER_TBL U ON S.USER_ID=U.USER_ID
    		WHERE 1=1
    		<!-- 검색어가 있을 때만 조건 추가 -->
-    <if test="keyWord != null and keyWord != ''">
-        <choose>
-            <when test="option == 'all'">
-                AND (STORE_ID LIKE '%' || #{keyWord} || '%' OR STORE_NAME LIKE '%' || #{keyWord} || '%')
-            </when>
-            <when test="option == 'storeId'">
-                AND STORE_ID LIKE '%' || #{keyWord} || '%'
-            </when>
-            <when test="option == 'storeName'">
-                AND STORE_NAME LIKE '%' || #{keyWord} || '%'
-            </when>
-        </choose>
-    </if>
+	    <if test="keyWord != null and keyWord != ''">
+	        <choose>
+	            <when test="option == 'all'">
+	                AND (STORE_ID LIKE '%' || #{keyWord} || '%' OR STORE_NAME LIKE '%' || #{keyWord} || '%')
+	            </when>
+	            <when test="option == 'storeId'">
+	                AND STORE_ID LIKE '%' || #{keyWord} || '%'
+	            </when>
+	            <when test="option == 'storeName'">
+	                AND STORE_NAME LIKE '%' || #{keyWord} || '%'
+	            </when>
+	        </choose>
+	    </if>
    		
+   		<!-- 입점 승인 대기 목록만 보기-->
    		<if test="flgApp=='true'">
    			AND STORE_PASS='G'
    		</if>
+   		
+   		<!-- 판매자별 월 정산금액 보는 화면에서 판매승인 받은 애들만 보기 -->
+   		<if test="flgPending != null and flgPending">
+		    AND STORE_PASS='P'
+		</if>
+   		
 		ORDER BY STORE_ID DESC
 		OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
 	</select>
@@ -137,6 +144,11 @@
    		<if test="flgApp=='true'"> <!-- 입점신청 진행자만 보기 -->
    			AND STORE_PASS='G'
    		</if>
+   		
+   		<!-- 판매자별 월 정산금액 화면에서 판매승인 받은 애들만 보기 -->
+	    <if test="flgPending != null and flgPending">
+	        AND STORE_PASS='P'
+	    </if>
 	</select>
 	
 	<!--판매자 상세-->
@@ -255,7 +267,7 @@
 	
 	
 <!--4.수익 관리 부분-->
-	<!--월 판매량 트랜드-->
+	<!--월 전체 매출-->
 	<select id="salesTrendsSelect" resultType="HashMap">
 		 <![CDATA[ 
 			WITH MONTHS AS (
@@ -298,6 +310,22 @@
 		    (SELECT SUM(MONTHLY_FEE)
 		     FROM MEMBERSHIP_TBL
 		     WHERE TO_CHAR(JOIN_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')) AS MEMBERSHIP_FEE,
+		     
+		     <!-- 수수료 산출 추가 -->
+			(
+			    SELECT SUM(
+			               CASE 
+			                   WHEN S.GRADE_CODE = 'A' THEN (O.TOTAL_PRICE - O.DELIVERY_FEE) * 0.15
+			                   WHEN S.GRADE_CODE = 'S' THEN (O.TOTAL_PRICE - O.DELIVERY_FEE) * 0.07
+			                   ELSE 0
+			               END
+			           )
+			    FROM ORDER_TBL O
+			    JOIN ORDER_DETAIL_TBL OD ON O.ORDER_ID = OD.ORDER_ID
+			    JOIN SELLER_INFO_TBL S ON OD.STORE_ID = S.STORE_ID
+			    WHERE TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
+			      AND O.STATUS = 'P'
+			) AS COMMISSION_FEE,
 		
 		    (SELECT SUM(O.TOTAL_PRICE - O.DELIVERY_FEE)
 		     FROM SELLER_INFO_TBL S
@@ -312,11 +340,28 @@
 		    (  (SELECT SUM(MONTHLY_FEE)
 		        FROM MEMBERSHIP_TBL
 		        WHERE TO_CHAR(JOIN_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM'))
-		     + (SELECT SUM(O.TOTAL_PRICE - O.DELIVERY_FEE)
+		        
+		    <!-- + (SELECT SUM(O.TOTAL_PRICE - O.DELIVERY_FEE)
 		        FROM SELLER_INFO_TBL S
 		        LEFT JOIN ORDER_TBL O ON S.STORE_NAME = O.STORE_NAME
 		        WHERE TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
-		          AND O.STATUS = 'P')
+		          AND O.STATUS = 'P') -->
+		     + (SELECT SUM(
+                CASE 
+                    WHEN S.GRADE_CODE = 'A' THEN (O.TOTAL_PRICE - O.DELIVERY_FEE) * 0.15
+                    WHEN S.GRADE_CODE = 'S' THEN (O.TOTAL_PRICE - O.DELIVERY_FEE) * 0.07
+                    ELSE 0
+                END
+		           )
+			     FROM SELLER_INFO_TBL S
+			     LEFT JOIN ORDER_TBL O ON S.STORE_NAME = O.STORE_NAME
+			     WHERE TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
+			       AND O.STATUS = 'P'
+			    )
+			     
+		     
+		     
+		          
 		     + (SELECT SUM(CLICKS*CLICK_UNIT_COST)
 		        FROM AD_TBL
 		        WHERE TO_CHAR(END_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM'))
@@ -567,9 +612,9 @@
 	</update>
 	
 	
-	
+	<!-- 판매자별 월 수익 (제대로 안뜸 ) -->
 	<select id="monthlyFeeCalculate" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
-         SELECT 
+       <!--  SELECT 
             TO_CHAR(SYSDATE,'YYYY-MM') AS THIS_MONTH,
             T.STORE_NAME,
             T.STORE_ID,
@@ -587,7 +632,35 @@
             GROUP BY S.STORE_ID, S.STORE_NAME
         ) T
         LEFT JOIN COMMISSION_GRADE_TBL G
-            ON T.MONTHLY_INCOME BETWEEN G.LOSAL AND G.HISAL
+            ON T.MONTHLY_INCOME BETWEEN G.LOSAL AND G.HISAL -->
+            
+        <!-- 수정본 (제대로 반영 안됨 ㅠㅠㅠ) -->
+		SELECT 
+		    S.STORE_ID,
+		    S.STORE_NAME,
+		    NVL(SUM(O.TOTAL_PRICE - O.DELIVERY_FEE), 0) AS storeMonthlyFee
+		FROM SELLER_INFO_TBL S
+		LEFT JOIN (
+		    SELECT 
+		        D.STORE_ID, 
+		        O.TOTAL_PRICE, 
+		        O.DELIVERY_FEE
+		    FROM ORDER_DETAIL_TBL D
+		    JOIN ORDER_TBL O
+		        ON D.ORDER_ID = O.ORDER_ID
+		    WHERE O.STATUS = 'P'
+		      AND O.ORDER_DATE >= TRUNC(SYSDATE,'MM')
+		      AND O.ORDER_DATE &lt; ADD_MONTHS(TRUNC(SYSDATE,'MM'),1)
+		) O
+		ON S.STORE_ID = O.STORE_ID
+		WHERE S.STORE_PASS = 'P'
+		GROUP BY S.STORE_ID, S.STORE_NAME
+		ORDER BY S.STORE_ID;
+		) O
+		ON S.STORE_ID = O.STORE_ID
+		WHERE S.STORE_PASS='P'
+		GROUP BY S.STORE_NAME, S.STORE_ID
+		ORDER BY S.STORE_ID;
     </select>
     
     <select id="monthlyFeeCalculateCount" resultType="int">
@@ -614,8 +687,19 @@
     </select>
 	
 	
-	
-	
+	<!-- 매출관리 차트 속 월 클릭시 (작동안됨 하) -->
+	<select id="revenueByMonthSelect" parameterType="hashmap" resultType="hashmap">
+	    SELECT 
+	        TO_CHAR(AH.AD_DATE, 'YYYY-MM') AS MONTH,
+	        S.STORE_NAME,
+	        SUM(AH.AD_FEE) AS TOTAL_FEE,
+	        SUM(AH.AD_PRICE) AS TOTAL_PRICE
+	    FROM AD_HISTORY_TBL AH
+	    LEFT JOIN SELLER_INFO_TBL S ON AH.STORE_ID = S.STORE_ID
+	    WHERE TO_CHAR(AH.AD_DATE, 'YYYY-MM') = #{month}
+	    GROUP BY TO_CHAR(AH.AD_DATE, 'YYYY-MM'), S.STORE_NAME
+	    ORDER BY S.STORE_NAME
+	</select>
 		
 	
 	
