@@ -183,7 +183,7 @@ SELECT
         #{proName},
         #{itemQty},
         #{defPrice},
-        #{totalPrice}, 
+        #{subtotal}, 
         #{letteringWord} 
     )
 	</insert>
@@ -449,4 +449,11 @@ OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 		''
 	)
 	</insert>
+	
+	<select id="disableDateinfo" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product">
+	SELECT *
+	FROM DISABLED_DATE_TBL
+	WHERE PRO_NO = #{proNo}
+	
+	</select>
 </mapper>

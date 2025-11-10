@@ -21,6 +21,9 @@ public interface ProductMapper {
 	// 조회수 증가
 	int updateCnt(HashMap<String, Object> map);
 	
+	// 불가 날짜 가져오기
+	List<Product> disableDateinfo(HashMap<String, Object> map);
+	
 	// 상위옵션
 	List<Product> topOptList(HashMap<String, Object> map); 
 	

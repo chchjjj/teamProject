@@ -99,5 +99,8 @@ public class Product {
 	    private String filePath;   // 파일 경로
 	    private String fileName;   // 파일 이름 
 	    private String fileUse;    // 대표 여부 (T/F)
+	    
+	    private String disabledDate; // 배송 불가 날짜
+	    
 
 }

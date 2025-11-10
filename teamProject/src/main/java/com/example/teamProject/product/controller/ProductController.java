@@ -190,7 +190,13 @@ public class ProductController {
 		resultMap = ProductService.getQnaList(map);
 		return new Gson().toJson(resultMap);
 	}
-	
+	@RequestMapping(value = "/product/disableDateInfo.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String disableDateInfo(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = ProductService.DateInfo(map);
+		return new Gson().toJson(resultMap);
+	}
 	@RequestMapping(value = "/product/orderInsert.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String orderInsert(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
