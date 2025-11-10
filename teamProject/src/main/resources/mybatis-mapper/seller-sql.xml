@@ -538,11 +538,7 @@ ORDER BY T3.PRO_NAME
 		WHERE PRO_NO = #{proNo}
 		ORDER BY DISABLED_DATE
 	</select>
-	<select id="getStoreIdByUserId" parameterType="string" resultType="int">
-		SELECT STORE_ID
-    FROM SELLER_INFO_TBL
-    WHERE USER_ID = #{userId}
-	</select>
+
 
 	<select id="getStoreNameByStoreId" resultType="string">
 		SELECT STORE_NAME
@@ -571,6 +567,12 @@ ORDER BY T3.PRO_NAME
     DELETE FROM PRODUCT_TBL
     WHERE PRO_NO = #{proNo}
 </delete>
+
+<select id="checkStoreOwnership" resultType="int">
+   SELECT COUNT(*)
+    FROM seller_info_tbl
+    WHERE user_id = #{userId} AND store_id = #{storeId}
+</select>
 
 </mapper>
 

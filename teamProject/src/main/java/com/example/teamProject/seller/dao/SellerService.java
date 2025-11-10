@@ -443,24 +443,8 @@ public Map<String, Object> getProductDataForEdit(int proNo) {
     return result;
 }
 
-//SellerService.java (수정안)
-public int getStoreIdByUserId(String userId) {
- 
- // 1. MyBatis Mapper 호출
- // 💡 참고: Mapper 인터페이스에서 반환 타입을 int로 선언했을 경우, 
- // 결과가 NULL이면 Mybatis는 0을 반환할 수 있으므로, Integer로 받습니다.
- Integer storeId = sellerMapper.getStoreIdByUserId(userId);
- 
- // 2. 로그 출력
- // 로그를 Service 레벨에서 출력하여 디버깅을 돕습니다.
- System.out.println(">>> [Service Log] " + userId + "로 조회한 STORE_ID: " + (storeId != null ? storeId : "NULL"));
- 
- // 3. NULL 체크 및 반환
- // 조회 결과가 NULL일 경우 0을 반환하여, Controller에서 0을 체크하여 
- // "스토어 정보 없음"으로 처리할 수 있도록 합니다.
- // 💡 조회 실패 시 0을 반환하는 것은 '정상적인' 흐름이므로 그대로 유지합니다.
- return (storeId != null) ? storeId : 0; 
-}
+
+
 
 @Transactional
 public void updateProduct(Seller seller) throws Exception {
@@ -573,6 +557,10 @@ public int deleteProduct(int proNo) {
     }
     
     return productDeletedCount;
+}
+
+public int checkStoreOwnership(String userId, int storeId) {
+    return sellerMapper.checkStoreOwnership(userId, storeId);
 }
 
 }
