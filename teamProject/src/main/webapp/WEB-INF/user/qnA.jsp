@@ -9,6 +9,7 @@
         <link rel="stylesheet" href="/css/navbar.css">
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="/js/page-change.js"></script>
 
         <style>
             body {
@@ -165,7 +166,7 @@
                     <div class="qna-card" v-for="qnA in qnAList" :key="qnA.questionId" @click="toggleAnswer(qnA)">
                         <div class="qna-question">{{ qnA.questionContent }}</div>
                         <div class="qna-meta">
-                            질문자: {{ qnA.userId }} ｜ 작성일: {{ qnA.questionDate }} ｜ 상태:
+                            <a href="javascript:;" @click.stop="fnProductDetail(qnA.proNo)" style="color:orange;text-decoration:none">상품상세 클릭</a> | 질문자: {{ qnA.userId }} ｜ 작성일: {{ qnA.questionDate }} ｜ 상태:
                             <span v-if="qnA.answerContent" style="color:chocolate">완료</span>
                             <span v-else>대기</span>
                         </div>
@@ -252,6 +253,10 @@
                         location.href="/main.do";
                     }
                     return;
+                },
+
+                fnProductDetail:function(proNo){
+                    pageChange("/productDetail.do", { proNo: proNo }); 
                 },
                     fnHome() { location.href = "/main.do"; },
                     fnOrderHistory() { location.href = "/user/orderHistory.do"; },

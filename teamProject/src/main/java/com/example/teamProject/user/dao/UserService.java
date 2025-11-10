@@ -258,7 +258,7 @@ public class UserService {
 		try {
 			List <User> qnAList= userMapper.qnAListSelect(map);
 			resultMap.put("qnAList",qnAList);
-			int totalRows=userMapper.reviewCount(map);
+			int totalRows=userMapper.qnACount(map);
 			resultMap.put("totalRows",totalRows);
 			resultMap.put("result","success");
 		}catch(Exception e) {
