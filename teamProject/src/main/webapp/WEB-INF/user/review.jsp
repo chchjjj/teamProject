@@ -137,10 +137,10 @@
 
                 <!-- Navigation Buttons -->
                 <div class="navButton">
-                    <button @click="fnOrderHistory()" class="active">주문 내역</button>
+                    <button @click="fnOrderHistory()">주문 내역</button>
                     <button @click="fnWishList()">찜한 상품</button>
                     <button @click="fnChatList()">채팅이력</button>
-                    <button @click="fnReview()">내가 쓴 리뷰</button>
+                    <button @click="fnReview()" class="active">내가 쓴 리뷰</button>
                     <button @click="fnQnA()">QnA</button>
                     <button @click="fnUserEdit()">정보수정</button>
                     <button @click="fnDeleteAccount()">회원탈퇴</button>
@@ -164,6 +164,8 @@
                         <div class="review-info">
                             <div class="review-meta">
                                 닉네임: {{review.userName || '익명'}} <br>
+                                상품명: {{review.proName}} <br>
+                                주문번호: {{review.orderId}} <br>
                                 작성일: {{review.cdatetime || '0000-00-00'}}
                             </div>
                             <div class="review-content">

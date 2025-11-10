@@ -514,7 +514,7 @@
                             </div>
 
                             <!-- Order Summary -->
-                            <div class="summaryRow" v-if="order.chatYn==='Y'">
+                            <div class="summaryRow" v-if="order.chatYn==='Y',order.addOptionPrice!=0">
                                 <strong>채팅:</strong>
                                 <span>사용 (추가비: {{ formatNumber(order.addOptionPrice) }}원)</span>
                             </div>
@@ -543,7 +543,7 @@
 
                             <!-- Action Buttons -->
                             <div class="actionButtons" v-if="order.status!='C'">
-                                <button v-if="order.chatYn==='Y'" class="btnChat"
+                                <button v-if="order.chatYn==='Y' && order.addOptionPrice==0" class="btnChat"
                                     @click="fnChat(order.orderId, order.storeId)">
                                     💬 채팅방으로
                                 </button>

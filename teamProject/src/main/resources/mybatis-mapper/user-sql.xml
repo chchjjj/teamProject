@@ -114,6 +114,7 @@
 	      SELECT
 	    	SE.STORE_ID,
 	        O.STORE_NAME,
+	        P.PRO_NO,
 	        P.PRO_NAME,
 	        T.OPTION_NAME,
 	        S.VALUE_NAME,
@@ -161,7 +162,7 @@
 	
 	<!--review-->
 	<select id="reviewListSelect" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
-   		SELECT R.*,U.*,TO_CHAR(CDATETIME,'YYYY-MM-DD') AS C_DATE_TIME FROM REVIEW_TBL R
+   		SELECT R.*,U.*,PRO.*,TO_CHAR(CDATETIME,'YYYY-MM-DD') AS C_DATE_TIME FROM REVIEW_TBL R
    		LEFT JOIN PRODUCT_IMG_TBL P
    		ON P.PRO_NO=R.PRO_NO
    		LEFT JOIN USER_TBL U

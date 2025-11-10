@@ -182,12 +182,13 @@
                     </div>
                     </div>
                     <div class="navButton">
-                        <button @click="fnOrderHistory()" class="active">주문 내역</button>
+                        <button @click="fnOrderHistory()" >주문 내역</button>
                         <button @click="fnWishList()">찜한 상품</button>
                         <button @click="fnChatList()">채팅이력</button>
                         <button @click="fnReview()">내가 쓴 리뷰</button>
                         <button @click="fnQnA()">QnA</button>
-                        <button @click="fnUserEdit()">정보수정</button>
+                        <button @click="fnUserEdit()" class="active">정보수정</button>
+                        <button @click="fnDeleteAccount()">회원탈퇴</button>
                     </div>
                     <div class="logOut">
                         <button @click="fnLogout()">Logout</button>
@@ -339,6 +340,12 @@
                             
                         });
                     }
+                },
+                fnDeleteAccount: function () {
+                    if (confirm("회원을 탈퇴하겠습니까?")) {
+                        location.href = "/main.do";
+                    }
+                    return;
                 },
             },
             mounted() {
