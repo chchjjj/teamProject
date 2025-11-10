@@ -24,6 +24,12 @@ public interface PaymentMapper {
 	
 	//결제를 하면 결제 테이블에 내역 추가
 	int insertPayment(HashMap<String, Object> map);
+	
+	//결제와 동시에 배송 날짜를 업데이트
+	int updateDeliveryWishDeli(HashMap<String, Object> map);
+	
+	//결제와 동시에 픽업 날짜를 업데이트
+	int updatePickUpDate(HashMap<String, Object> map);
 
 	//배송지 주소 추가
 	int insertAddress(HashMap<String, Object> map);

@@ -99,9 +99,20 @@
 	
 	<update id="updateOrderStatus" parameterType="hashmap">
 		UPDATE ORDER_TBL
-		SET STATUS = 'P'
+		SET STATUS = TO_DATE(#{deliveryDate}, 'YYYY-MM-DD HH24:MI')
 		WHERE ORDER_ID = #{orderId}
 	</update>
 	
+	<update id="updateDeliveryWishDeli" parameterType="hashmap">
+	    UPDATE ORDER_TBL
+		SET WISH_DELI = TO_DATE(#{deliveryDate}, 'YYYY-MM-DD HH24:MI')
+		WHERE ORDER_ID = #{orderId}
+	</update>
+	
+	<update id="updatePickUpDate" parameterType="hashmap">
+	    UPDATE ORDER_TBL
+		SET (PICKUP_DATE, PICK_TIME) = (TO_DATE(#{deliveryDate}, 'YYYY-MM-DD HH24:MI'), TO_DATE(#{deliveryDate}, 'YYYY-MM-DD HH24:MI'))
+		WHERE ORDER_ID = #{orderId}
+	</update>
 	
 </mapper>
