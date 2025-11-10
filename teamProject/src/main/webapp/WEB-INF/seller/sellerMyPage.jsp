@@ -178,7 +178,7 @@
                             <div class="store-header">
                                 <div class="store-name-section">
                                     <h3>{{ item.storeName }}</h3>
-                                    <button onclick="location.href='/seller/storeInfoupdateInfo.do'">가게 이름 수정하기</button>
+                                   
                                 </div>
                                 <div class="membership-info">
                                     <span>멤버십 사용 중</span>

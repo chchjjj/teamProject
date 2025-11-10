@@ -68,6 +68,15 @@ public class SellerController {
 
 		return "seller/sellerOrderHistory";
 	}
+	@RequestMapping("/seller/productUpdate.do")
+	public String productUpdate(@RequestParam("proNo") int proNo, Model model) {
+	    // 1. URL에서 받은 proNo를 모델에 담아 View로 전달합니다.
+	    //    (View에서는 이 proNo를 사용하여 해당 상품의 상세 정보를 AJAX로 조회할 수 있습니다.)
+	    model.addAttribute("proNo", proNo);
+
+	    // 2. View 파일의 경로를 반환합니다. (예: /WEB-INF/views/seller/productUpdate.jsp)
+	    return "/seller/productUpdate";
+	}
 
 	@RequestMapping("/seller/OrderHistoryViewDetail.do")
 	public String viewOrderHistory(
@@ -116,11 +125,7 @@ public class SellerController {
 		return "/seller/sellerUpdateInfo";
 	}
 
-	@RequestMapping("/seller/storeInfoupdateInfo.do")
-	public String storeInfo(Model model) throws Exception {
-
-		return "/seller/storeUpdateInfo";
-	}
+	
 
 	@RequestMapping("/seller/sellerViewQnA.do")
 	public String QnA(Model model) throws Exception {
@@ -159,7 +164,12 @@ public class SellerController {
 
 	
 
-	
+	@RequestMapping("/seller/storeInfoupdateInfo.do")
+	public String storeUpdate(Model model) throws Exception {
+
+		return "/seller/storeUpdateInfo";
+	}
+
 	
 
 	
@@ -418,26 +428,7 @@ public class SellerController {
 		return new Gson().toJson(resultMap);
 	}
 
-	@RequestMapping(value = "/store/storeinfo.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public String getStoreInfo(@RequestParam HashMap<String, Object> map) throws Exception {
-		HashMap<String, Object> resultMap = new HashMap<>();
-		try {
-
-			System.out.println("📥 [INFO] 요청 파라미터: " + map);
-
-			resultMap = sellerService.getStoreInfo(map);
-
-			System.out.println("📤 [INFO] 조회 결과: " + resultMap);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultMap.put("result", "error");
-			resultMap.put("message", "판매자 정보 조회 중 오류 발생: " + e.getMessage());
-			System.out.println("❌ [ERROR] 판매자 정보 조회 실패: " + e.getMessage());
-		}
-		return new Gson().toJson(resultMap);
-	}
+	
 
 	// ✅ 판매자 정보 수정
 	@RequestMapping(value = "/seller/updateInfo.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -489,24 +480,7 @@ public class SellerController {
 		return new Gson().toJson(resultMap);
 	}
 
-	@RequestMapping(value = "/store/info.dox", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> getStoreInfo(@RequestParam("userId") String userId) {
-		Map<String, Object> result = new HashMap<>();
-		try {
-			// userId를 기반으로 가게 정보를 조회합니다.
-			Map<String, Object> storeInfo = sellerService.getStoreInfo(userId);
-			if (storeInfo != null) {
-				result.put("store", storeInfo); // 조회된 가게 정보 전달
-			} else {
-				result.put("message", "가게 정보를 찾을 수 없습니다.");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			result.put("message", "서버 오류가 발생했습니다.");
-		}
-		return result;
-	}
+	
 
 	@RequestMapping(value = "/store/update.dox", method = RequestMethod.POST)
 	@ResponseBody

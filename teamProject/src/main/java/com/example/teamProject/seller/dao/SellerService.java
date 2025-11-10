@@ -301,29 +301,7 @@ public HashMap<String, Object> getSellerInfo(HashMap<String, Object> map) {
     return resultMap;
 }
 
-public HashMap<String, Object> getStoreInfo(HashMap<String, Object> map) {
-    HashMap<String, Object> resultMap = new HashMap<>();
-    try {
-        System.out.println("📥 getSellerInfo() 호출됨 - 전달된 map: " + map);
-        HashMap<String, Object> info = sellerMapper.selectStoreInfoByUserId(map);
-        System.out.println("📤 selectSellerInfo 결과: " + info);
 
-        if (info != null) {
-            resultMap.put("info", info);
-            resultMap.put("result", "success");
-            System.out.println("✅ 판매자 정보 조회 성공");
-        } else {
-            resultMap.put("result", "not_found");
-            System.out.println("⚠️ 판매자 정보 없음");
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-        resultMap.put("result", "error");
-        resultMap.put("message", "판매자 정보 조회 중 오류 발생: " + e.getMessage());
-        System.out.println("❌ 판매자 정보 조회 중 오류: " + e.getMessage());
-    }
-    return resultMap;
-}
 
 
 //판매자 정보 수정
@@ -395,7 +373,7 @@ public HashMap<String, Object> updateAnswerContent(int questionId, String answer
 }
 
 public Map<String, Object> getStoreInfo(String userId) {
-    return sellerMapper.selectStoreInfo(userId); // userId를 통해 DB에서 가게 정보를 조회
+    return (Map<String, Object>) sellerMapper.selectStoreInfo(userId); // userId를 통해 DB에서 가게 정보를 조회
 }
 
 // 가게 정보 수정

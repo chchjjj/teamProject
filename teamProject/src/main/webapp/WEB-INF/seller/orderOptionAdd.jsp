@@ -198,7 +198,7 @@
                     success: function(res) {
                         if (res && res.status === "success") {
                             alert("옵션 정보가 성공적으로 저장되었습니다.");
-                            window.location.href = "/seller/OrderHistoryViewDetails.do?orderId=" + initialOrderId;
+                            window.location.href = "/seller/OrderHistoryViewDetail.do?orderId=" + initialOrderId;
                         } else {
                             alert(res.message || "옵션 정보 저장 중 오류가 발생했습니다.");
                         }

@@ -155,9 +155,7 @@
             
                 <div v-if="pagedReviews.length > 0">
                     <div v-for="review in pagedReviews" :key="review.REVIEW_ID" class="review-card">
-                        <div class="review-image-area">
-                            후기사진
-                        </div>
+                     
                         <div class="review-content-area">
                             <div class="review-meta">
                                 <strong>{{ review.USER_ID }} (닉네임)</strong>

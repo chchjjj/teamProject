@@ -418,286 +418,303 @@
                     </style>
             </head>
 
-            <body>
-                    <div class="container">
-                            <%-- 인클루드된 sellerSideBar.jsp가 여기에 표시됩니다. --%>
+   <body>
+                    <div class="container">
+                        <%-- 인클루드된 sellerSideBar.jsp가 여기에 표시됩니다. --%>
 
-                                <main class="content">
-                                        <h2>회원 정보 수정</h2>
+                            <main class="content">
+                                    <h2>회원 정보 수정</h2>
 
-                                        <div class="tabs">
-                                                <button class="tab-button"
-                                    onclick="location.href='/seller/userUpdateInfo.do'">개인 정보 수정 (USER_TBL)</button>
-                                                <button class="tab-button store-active"
-                                    onclick="location.href='/seller/storeInfoupdateInfo.do'">가게 정보 수정
-                                    (SELLER_INFO_TBL)</button>
-                                            </div>
-                                       
-                                       
+                                    <div class="tabs">
+                                            <button class="tab-button"
+                                        onclick="location.href='/seller/userUpdateInfo.do'">개인 정보 수정 (USER_TBL)</button>
+                                            <button class="tab-button store-active"
+                                        onclick="location.href='/seller/storeInfoupdateInfo.do'">가게 정보 수정
+                                        (SELLER_INFO_TBL)</button>
+                                        </div>
+
+                                    
                             <hr>
 
-                                        <form action="/store/update.dox" method="POST" class="edit-form"
+                                    <form action="/store/update.dox" method="POST" class="edit-form"
                                 id="storeEditForm">
-                                               
-                                                <%-- Hidden 필드로 사용자 ID 전송 (JSP EL 사용) --%>
-                                                    <input type="hidden" name="userId" id="hidden-seller-id"
-                                        value="${sessionId}">
+                                            
+                                            <%-- Hidden 필드로 사용자 ID 전송 (JSP EL 사용) --%>
+                                                <input type="hidden" name="userId" id="hidden-seller-id"
+                                            value="${sessionId}">
+                                        <div class="form-group">
+                                            <label for="store-id">가게 번호 (STORE_ID)</label>
+                                            <input type="text" id="store-id" name="storeId" value="${store.storeId}"
+                                                placeholder="수정할 가게 번호를 반드시 입력하세요." required>
+                                            <button type="button" class="btn-secondary" onclick="fnSearchStoreInfoById()">가게
+                                                정보 조회</button>
+                                        </div>
 
-                                                    <div class="form-group">
-                                                            <label for="store-name">가게 이름</label>
-                                                            <%-- 1. storeName: 가게 이름 --%>
-                                                                <input type="text" id="store-name" name="storeName"
-                                                value="${store.storeName}">
-                                                                <button type="button" class="btn-action"
-                                                onclick="fnUpdateStoreField('storeName')">수정</button>
-                                                            </div>
-                                                   
-                                                    <div class="form-group">
-                                                            <label>멤버십</label>
-                                                            <div class="membership-info">
-                                                                    <%-- 2. isMembership: 멤버십 상태 --%>
-                                                                        현재 상태: **<span
+                                                <div class="form-group">
+                                                        <label for="store-name">가게 이름</label>
+                                                        <%-- 1. storeName: 가게 이름 --%>
+                                                            <input type="text" id="store-name" name="storeName"
+                                                    value="${store.storeName}">
+                                                            <button type="button" class="btn-action"
+                                                    onclick="fnUpdateStoreField('storeName')">수정</button>
+                                                        </div>
+                                                
+                                                <div class="form-group">
+                                                        <label>멤버십</label>
+                                                        <div class="membership-info">
+                                                                <%-- 2. isMembership: 멤버십 상태 --%>
+                                                                    현재 상태: **<span
                                                     id="is-membership">${store.isMembership}</span>** <button
                                                     type="button" class="btn-action" onclick="fnToggleMembership()">
-                                                                                <span id="membership-action">
-                                                                                        <%-- JSP EL을 사용하여 초기 버튼 텍스트 설정
+                                                                            <span id="membership-action">
+                                                                                    <%-- JSP EL을 사용하여 초기 버튼 텍스트 설정
                                                             --%>
-                                                                                            ${store.isMembership eq 'Y'
+                                                                                        ${store.isMembership eq 'Y'
                                                             ? '해지' : '가입'}
-                                                                                        </span>
-                                                                            </button>
-                                                                    </div>
-                                                        </div>
+                                                                            </span>
+                                                                        </button>
+                                                            </div>
+                                                        </div>
 
-                                                    <div class="form-group address-group">
-                                                            <label>가게 주소</label>
-                                                            <div class="address-line">
-                                                                    <%-- 3. storeZipcode: 우편번호 --%>
-                                                                        <input type="text" id="store-zipcode"
-                                                    name="storeZipcode" value="${store.storeZipcode}" placeholder="우편번호"
-                                                    readonly>
-                                                                        <button type="button" class="btn-secondary"
+                                                <div class="form-group address-group">
+                                                        <label>가게 주소</label>
+                                                        <div class="address-line">
+                                                
+                                                                    <button type="button" class="btn-secondary"
                                                     onclick="fnSearchAddress()">주소 검색</button>
-                                                                        <%-- 4. storeAddrMain: 기본 주소 --%>
-                                                                            <input type="text" id="store-main-addr"
+                                                                    <%-- 4. storeAddrMain: 기본 주소 --%>
+                                                                        <input type="text" id="store-main-addr"
                                                         name="storeAddrMain" value="${store.storeAddrMain}"
                                                         placeholder="기본 주소" readonly>
-                                                                        </div>
-                                                            <div class="address-line detail-addr">
-                                                                    <%-- 5. storeAddrDetail: 상세 주소 --%>
-                                                                        <input type="text" id="store-detail-addr"
-                                                    name="storeAddrDetail" value="${store.storeAddrDetail}"
-                                                    placeholder="상세 주소">
-                                                                    </div>
-                                                            <button type="button" class="btn-action address-btn"
-                                            onclick="fnUpdateAddress()">수정</button>
-                                                        </div>
+                                                            </div>
+                                                        
+                                                            <button type="button" class="btn-action address-btn"
+                                                onclick="fnUpdateAddress()">수정</button>
+                                                        </div>
 
-                                                    <div class="form-group store-intro-group">
-                                                            <label for="store-intro">가게 소개</label>
-                                                            <%-- 6. storeIntro: 가게 소개 --%>
-                                                                <textarea id="store-intro" name="storeIntro"
+                                                <div class="form-group store-intro-group">
+                                                        <label for="store-intro">가게 소개</label>
+                                                        <%-- 6. storeIntro: 가게 소개 --%>
+                                                            <textarea id="store-intro" name="storeIntro"
                                                 placeholder="가게 소개글을 입력하세요.">${store.storeIntro}</textarea>
-                                                            </div>
-                                                   
-                                                    <div class="form-group operation-setup-group">
-                                                            <label>운영 설정</label>
-                                                           
-                                                            <%-- 7. deliveryYn: 배송 가능 여부 --%>
-                                                                <div class="radio-group">
-                                                                        <label>배송 가능 여부:</label>
-                                                                        <input type="radio" id="delivery-possible"
+                                                        </div>
+                                                
+                                                <div class="form-group operation-setup-group">
+                                                        <label>운영 설정</label>
+                                                        
+                                                        <%-- 7. deliveryYn: 배송 가능 여부 --%>
+                                                            <div class="radio-group">
+                                                                    <label>배송 가능 여부:</label>
+                                                                    <input type="radio" id="delivery-possible"
                                                     name="deliveryYn" value="Y" ${store.deliveryYn eq 'Y' ? 'checked'
                                                     : '' }>
-                                                                        <label for="delivery-possible">가능</label>
-                                                                        <input type="radio" id="delivery-impossible"
+                                                                    <label for="delivery-possible">가능</label>
+                                                                    <input type="radio" id="delivery-impossible"
                                                     name="deliveryYn" value="N" ${store.deliveryYn eq 'N' ? 'checked'
                                                     : '' }>
-                                                                        <label for="delivery-impossible">불가능</label>
-                                                                    </div>
-                                                               
-                                                                <%-- 8. chatYn: 채팅 기능 여부 --%>
-                                                                    <div class="radio-group">
-                                                                            <label>채팅 기능 여부:</label>
-                                                                            <input type="radio" id="chat-use"
-                                                        name="chatYn" value="Y" ${store.chatYn eq 'Y' ? 'checked' : ''
-                                                        }>
-                                                                            <label for="chat-use">사용</label>
-                                                                            <input type="radio" id="chat-notuse"
-                                                        name="chatYn" value="N" ${store.chatYn eq 'N' ? 'checked' : ''
-                                                        }>
-                                                                            <label for="chat-notuse">미사용</label>
-                                                                        </div>
-                                                                </div>
+                                                                    <label for="delivery-impossible">불가능</label>
+                                                                </div>
+                                                            
+                                                            <%-- 8. chatYn: 채팅 기능 여부 --%>
+                                                                <div class="radio-group">
+                                                                        <label>채팅 기능 여부:</label>
+                                                                        <input type="radio" id="chat-use"
+                                                            name="chatYn" value="Y" ${store.chatYn eq 'Y' ? 'checked' : ''
+                                                            }>
+                                                                        <label for="chat-use">사용</label>
+                                                                        <input type="radio" id="chat-notuse"
+                                                            name="chatYn" value="N" ${store.chatYn eq 'N' ? 'checked' : ''
+                                                            }>
+                                                                        <label for="chat-notuse">미사용</label>
+                                                                    </div>
+                                                            </div>
 
-                                                    <div class="submit-area">
-                                                            <button type="button" class="btn-primary"
-                                            onclick="fnUpdateStoreInfo()">정보 수정하기</button>
-                                                        </div>
+                                                <div class="submit-area">
+                                                        <button type="button" class="btn-primary"
+                                                onclick="fnUpdateStoreInfo()">정보 수정하기</button>
+                                                        </div>
 
-                                                </form>
-                                   
-                        </main>
-                            </div>
+                                                </form>
+                                        
+                                </main>
+                            </div>
             </body>
-            <script>
-                // 현재 로그인된 사용자 ID를 JSP EL로 가져옵니다.
-                const CURRENT_SELLER_ID = "${sessionId}";
+<script>
+    // 현재 로그인된 사용자 ID를 JSP EL로 가져옵니다. (사용은 되지만, 조회는 storeId 기반)
+    const CURRENT_SELLER_ID = "${sessionId}";
 
-                /**
-                 * 가게 정보를 AJAX로 조회하여 화면에 바인딩하는 함수
-                 * **로그에 맞춰 대문자 스네이크 케이스 키로 데이터를 바인딩하도록 수정되었습니다.**
-                 */
-                function fnGetStoreInfo() {
-                    if (!CURRENT_SELLER_ID || CURRENT_SELLER_ID === "") {
-                        console.warn("판매자 로그인 정보가 없어 AJAX 조회를 건너뜁니다.");
-                        return;
-                    }
+    /**
+     * 가게 정보를 AJAX로 조회하여 화면에 바인딩하는 함수
+     * @param {string} storeId - 조회할 가게의 고유 ID (STORE_ID)
+     */
+    function fnGetStoreInfo(storeId) {
+        // 💡 [필수 검증] storeId가 유효한지 확인
+        if (!storeId || storeId.trim() === "") {
+            console.warn("조회할 가게 번호(storeId)가 없어 AJAX 조회를 건너뜁니다.");
+            return;
+        }
 
-                    $.ajax({
-                        url: "/store/info.dox",
-                        dataType: "json",
-                        type: "POST",
-                        data: { userId: CURRENT_SELLER_ID },
-                        success: function (data) {
-                            // 서버에서 { "store": { STORE_NAME: "...", ... } } 형태로 응답한다고 가정
-                            if (data && data.store) {
-                                // 💡 AJAX 응답 키를 대문자 스네이크 케이스로 접근하도록 수정
-                                const store = data.store;
+        $.ajax({
+            url: "/store/info.dox",
+            dataType: "json",
+            type: "POST",
+            data: { storeId: storeId },
+            success: function (data) {
+                // 서버 응답 구조: { "store": { ... }, "result": "success" } 가정
 
-                                // 1. 가게 이름
-                                $('#store-name').val(store.STORE_NAME || '');
-
-                                // 2. 멤버십 정보
-                                // 테이블 컬럼명 MEMBERSHIP을 가져오거나, 쿼리에서 IS_MEMBERSHIP으로 별칭 지정한 것을 가져와야 함.
-                                const membershipStatus = store.IS_MEMBERSHIP === 'Y' ? 'Y' : 'N'; // 콘솔 로그 IS_MEMBERSHIP 사용
-                                const membershipAction = membershipStatus === 'Y' ? '해지' : '가입';
-                                $('#is-membership').text(membershipStatus);
-                                $('#membership-action').text(membershipAction);
-
-                                // 3, 4, 5. 주소 정보
-                                $('#store-zipcode').val(store.STORE_ZIPCODE || '');       // STORE_ZIPCODE로 수정 (주소 관련 컬럼 키 확인 필요)
-                                $('#store-main-addr').val(store.STORE_ADDR_MAIN || store.STORE_ADDR || ''); // 테이블 정의에 따라 STORE_ADDR_MAIN 또는 STORE_ADDR 사용
-                                $('#store-detail-addr').val(store.STORE_ADDR_DETAIL || ''); // STORE_ADDR_DETAIL로 수정 (주소 관련 컬럼 키 확인 필요)
-
-                                // 6. 가게 소개
-                                $('#store-intro').val(store.STORE_INTRO || '');
-
-                                // 7. 운영 설정 (배송 가능 여부)
-                                // DELIVERY_YN 키는 서버 응답과 JSP EL에서 모두 사용 가능하여 충돌 가능성이 적음.
-                                $(`input[name="deliveryYn"][value="${store.DELIVERY_YN || 'N'}"]`).prop('checked', true);
-
-                                // 8. 운영 설정 (채팅 기능 여부)
-                                // CHAT_YN 키는 서버 응답에서 IS_CHAT_ENABLED의 별칭으로 사용된다고 가정.
-                                $(`input[name="chatYn"][value="${store.CHAT_YN || 'N'}"]`).prop('checked', true);
-
-                                console.log("✅ 가게 정보 화면 바인딩 성공 (수정된 키 사용):", store);
-
-                            } else {
-                                console.error("가게 정보 조회 실패: 데이터 구조 오류 또는 데이터 없음", data);
-                                alert("가게 정보를 불러오는데 실패했습니다.");
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            console.error("가게 정보 조회 실패:", error);
-                            alert("서버 통신 오류로 가게 정보를 불러올 수 없습니다.");
-                        }
-                    });
+                // 1. 서버 응답 구조 유연하게 처리: data.store가 있으면 그걸 쓰고, 없으면 data 자체를 store로 간주
+                let store = null;
+                if (data.result === 'success' && data.store) {
+                    store = data.store;
+                } else if (data.result === 'success' && data.STORE_ID) { 
+                    // 혹시나 result=success인데 store 래퍼가 없는 경우 대비 (권장하지 않음)
+                    store = data;
                 }
 
-                /**
-                 * (예시) 개별 필드 수정 처리 함수
-                 * @param {string} fieldName - 수정할 필드의 name 속성 값 (카멜 케이스)
-                 */
-                function fnUpdateStoreField(fieldName) {
-                    alert(fieldName + " 필드 수정 로직 실행 (서버와 연동 필요)");
+                if (store) {
+                    // ⭐ 바인딩 로직
+                    $('#store-id').val(store.STORE_ID || ''); 
+                    $('#store-name').val(store.STORE_NAME || '');
+
+                    const membershipStatus = store.MEMBERSHIP === 'Y' ? 'Y' : 'N';
+                    const membershipAction = membershipStatus === 'Y' ? '해지' : '가입';
+                    $('#is-membership').text(membershipStatus);
+                    $('#membership-action').text(membershipAction);
+
+                    // 주소 필드 바인딩 (DB 스키마에 없는 필드는 주석 처리 유지)
+                    // $('#store-zipcode').val(store.STORE_ZIPCODE || ''); 
+                    $('#store-main-addr').val(store.STORE_ADDR || ''); 
+                    // $('#store-detail-addr').val(store.STORE_ADDR_DETAIL || '');
+
+                    $('#store-intro').val(store.STORE_INTRO || '');
+
+                    // 라디오 버튼 체크 로직은 HTML에서 EL로 초기화되었으나, AJAX 조회 후 갱신
+                    $(`input[name="deliveryYn"][value="${store.DELIVERY_YN || 'N'}"]`).prop('checked', true);
+                    $(`input[name="chatYn"][value="${store.IS_CHAT_ENABLED || 'N'}"]`).prop('checked', true);
+
+                    console.log("✅ 가게 정보 화면 바인딩 성공 (storeId 기반 조회):", store);
+
+                } else if (data.result === 'not_found' || data.result === 'fail') {
+                    // 서버에서 데이터 없음을 명확히 알릴 때
+                    console.error("가게 정보 조회 실패: 유효한 가게 데이터를 찾을 수 없습니다.", data);
+                    alert("가게 정보를 찾을 수 없습니다. (ID 확인 필요)");
+                    
+                } else {
+                    // 기타 데이터 구조 오류
+                    console.error("가게 정보 조회 실패: 서버 응답 데이터 구조 오류", data);
+                    alert("가게 정보를 불러오는데 실패했습니다. (서버 응답 확인 필요)");
                 }
+            },
+            error: function (xhr, status, error) {
+                console.error("가게 정보 조회 실패:", error);
+                alert("서버 통신 오류로 가게 정보를 불러올 수 없습니다. (400 Bad Request 또는 500 Internal Server Error 확인)");
+            }
+        });
+    }
 
-                /**
-                 * (예시) 주소 검색 처리 함수 (Daum/Kakao Postcode API 연동 필요)
-                 */
-                function fnSearchAddress() {
-                    // Spring Controller의 주소 맵핑인 /user/addr.do를 호출합니다.
-                    window.open(
-                        // 이 주소는 주소 팝업을 띄우는 JSP(요청하신 두 번째 코드 블록)를 로드하는 컨트롤러 매핑 주소입니다.
-                        "/user/addr.do",
-                        "jusoPopup",
-                        "width=500,height=600,scrollbars=yes"
-                    );
+
+    /**
+     * '가게 정보 조회' 버튼 클릭 시 실행
+     */
+    function fnSearchStoreInfoById() {
+        const storeId = $('#store-id').val(); 
+
+        // 1. 필수 입력 검증
+        if (!storeId || storeId.trim() === '') {
+            alert("조회할 가게 번호를 입력해주세요.");
+            $('#store-id').focus();
+            return;
+        }
+
+        // 2. 조회 함수 실행
+        fnGetStoreInfo(storeId);
+    }
+
+    // ... (fnUpdateStoreInfo, fnSearchAddress, jusoCallBack 함수는 로직 변경 없음) ...
+    // (fnToggleMembership, fnUpdateStoreField, fnUpdateAddress 함수는 정의가 없으므로 그대로 두었습니다.)
+
+    /**
+     * 전체 정보 수정하기 (버튼 클릭 시 실행)
+     */
+    function fnUpdateStoreInfo() {
+        const form = $('#storeEditForm');
+        const storeId = $('#store-id').val(); // STORE_ID 값 가져오기
+
+        // 💡 [필수 검증] STORE_ID 필수 입력 검증
+        if (!storeId || storeId.trim() === '') {
+            alert("가게 번호 (STORE_ID)를 반드시 입력해야 합니다.");
+            $('#store-id').focus(); 
+            return; 
+        }
+
+        // 폼 데이터 직렬화 (storeId 포함 모든 name 속성 값이 전송됨)
+        const serializedData = form.serialize();
+
+        $.ajax({
+            url: form.attr('action'), // /store/update.dox
+            type: form.attr('method'), // POST
+            data: serializedData,
+            success: function (response) {
+                // 서버 응답 구조에 따라 변경
+                if (response.result === 'success' || response.success) {
+                    alert("가게 정보가 성공적으로 수정되었습니다.");
+                    // 💡 [수정] 정보 수정 후, storeId를 인수로 전달하여 화면 재조회
+                    fnGetStoreInfo(storeId); 
+                } else {
+                    alert("정보 수정에 실패했습니다: " + (response.message || "알 수 없는 오류"));
                 }
+            },
+            error: function (xhr, status, error) {
+                console.error("전체 정보 수정 실패:", error);
+                alert("서버 통신 오류로 정보 수정에 실패했습니다.");
+            }
+        });
+    }
 
-                /**
-                 * (예시) 주소 수정 처리 함수
-                 */
-                function fnUpdateAddress() {
-                    alert("주소 정보 수정 로직 실행 (서버와 연동 필요)");
-                }
+    /**
+     * (예시) 주소 검색 처리 함수 (Daum/Kakao Postcode API 연동 필요)
+     */
+    function fnSearchAddress() {
+        window.open(
+            "/user/addr.do",
+            "jusoPopup",
+            "width=500,height=600,scrollbars=yes"
+        );
+    }
 
-                /**
-                 * **[수정됨]** 도로명주소 안내시스템 API 팝업으로부터 정보를 받는 콜백 함수
-                 * 이 함수 이름(`jusoCallBack`)은 두 번째 코드 블록의 JSP 파일에서 호출하는 이름과 일치해야 합니다.
-                 * * @param {string} roadFullAddr - 전체 도로명 주소
-                 * @param {string} roadAddrPart1 - 도로명 주소 (Main)
-                 * @param {string} addrDetail - 주소 상세
-                 * @param {string} roadAddrPart2 - 도로명 주소 (Reference)
-                 * @param {string} engAddr - 영문 주소
-                 * @param {string} jibunAddr - 지번 주소
-                 * @param {string} zipNo - 우편번호
-                 */
-                function jusoCallBack(roadFullAddr, roadAddrPart1, addrDetail, roadAddrPart2, engAddr, jibunAddr, zipNo) {
-                    // 폼 필드에 값 바로 입력!
+    /**
+     * 도로명주소 안내시스템 API 팝업으로부터 정보를 받는 콜백 함수
+     */
+    function jusoCallBack(roadFullAddr, roadAddrPart1, addrDetail, roadAddrPart2, engAddr, jibunAddr, zipNo) {
+        // 1. 우편번호 업데이트
+        // $('#store-zipcode').val(zipNo); // DB에 없는 필드
 
-                    // 1. 우편번호 업데이트
-                    $('#store-zipcode').val(zipNo);
+        // 2. 메인 주소 업데이트
+        $('#store-main-addr').val(roadAddrPart1); 
 
-                    // 2. 메인 주소 업데이트 (도로명 주소 사용)
-                    $('#store-main-addr').val(roadAddrPart1); // roadAddrPart1은 기본 주소 부분
+        // 3. 상세 주소 업데이트 및 포커스 이동
+        // $('#store-detail-addr').val(addrDetail || ''); // DB에 없는 필드
+        // $('#store-detail-addr').focus();
 
-                    // 3. 상세 주소 초기화 및 포커스 이동 (addrDetail에 값이 있으면 채우고, 없으면 초기화)
-                    $('#store-detail-addr').val(addrDetail || '');
-                    $('#store-detail-addr').focus();
+        console.log("✅ 주소 업데이트 완료 (도로명주소 API):", {
+            zipNo: zipNo,
+            roadAddrPart1: roadAddrPart1,
+            addrDetail: addrDetail
+        });
+    }
+    
+    // 페이지 로드 완료 후 정보 조회 함수 실행
+    $(document).ready(function () {
+        // 초기 로드 시 HTML 필드에 이미 설정되어 있는 storeId 값을 가져옵니다.
+        const initialStoreId = $('#store-id').val();
 
-                    console.log("✅ 주소 업데이트 완료 (도로명주소 API):", {
-                        zipNo: zipNo,
-                        roadAddrPart1: roadAddrPart1,
-                        addrDetail: addrDetail
-                    });
-                }
-                /**
-                 * 전체 정보 수정하기 (버튼 클릭 시 실행)
-                 */
-                function fnUpdateStoreInfo() {
-                    const form = $('#storeEditForm');
-
-                    // 폼 데이터 직렬화 (모든 name 속성(카멜 케이스)이 전송됨)
-                    const serializedData = form.serialize();
-
-                    $.ajax({
-                        url: form.attr('action'), // /store/update.dox
-                        type: form.attr('method'), // POST
-                        data: serializedData,
-                        success: function (response) {
-                            // 서버 응답 구조에 따라 변경
-                            if (response.result === 'success' || response.success) {
-                                alert("가게 정보가 성공적으로 수정되었습니다.");
-                                // 정보가 수정되었으므로 화면 재조회
-                                fnGetStoreInfo();
-                            } else {
-                                alert("정보 수정에 실패했습니다: " + (response.message || "알 수 없는 오류"));
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            console.error("전체 정보 수정 실패:", error);
-                            alert("서버 통신 오류로 정보 수정에 실패했습니다.");
-                        }
-                    });
-                }
-
-                // 페이지 로드 완료 후 정보 조회 함수 실행
-                $(document).ready(function () {
-                    // 서버에서 데이터를 다시 가져와서 화면을 최신 상태로 업데이트
-                    fnGetStoreInfo();
-                });
-            </script>
+        if (initialStoreId) {
+            // 💡 storeId를 인수로 전달하며 함수 실행
+            fnGetStoreInfo(initialStoreId); 
+        } else {
+            console.warn("페이지 초기 로드에 필요한 storeId 값이 HTML에 설정되어 있지 않습니다.");
+        }
+    });
+</script>
 
             </html>
