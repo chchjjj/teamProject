@@ -102,8 +102,8 @@
     LEFT JOIN DELIVERY_TBL DELI ON DELI.ORDER_ID = O.ORDER_ID
     LEFT JOIN PICKUP_TBL PI ON PI.ORDER_ID = O.ORDER_ID
     INNER JOIN ORDERED_LIST OL ON OL.ORDER_ID = O.ORDER_ID
-    WHERE OL.RN BETWEEN #{offset, jdbcType=INTEGER} + 1 
-                    AND #{offset, jdbcType=INTEGER} + #{fetchRows, jdbcType=INTEGER}
+    WHERE OL.RN BETWEEN #{offset} + 1 
+                    AND #{offset} + #{fetchRows}
     ORDER BY O.ORDER_DATE DESC
 </select>
 	
@@ -199,10 +199,10 @@
 	
 	
 	<select id="qnACount" parameterType="hashmap" resultType="int">
-   		SELECT * FROM QA_TBL Q
-   		INNER JOIN SELLER_INFO_TBL S
-   		ON Q.STORE_ID=S.STORE_ID
-   		WHERE Q.USER_ID=#{userId}
+   		 SELECT COUNT(DISTINCT Q.QUESTION_ID) FROM QA_TBL Q
+	    INNER JOIN SELLER_INFO_TBL S
+	    ON Q.STORE_ID=S.STORE_ID
+	    WHERE Q.USER_ID=#{userId}
 	</select>
 	
 	

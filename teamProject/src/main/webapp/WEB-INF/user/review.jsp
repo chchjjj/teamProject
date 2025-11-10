@@ -14,6 +14,7 @@
         <!-- 라이브러리 -->
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="/js/page-change.js"></script>
 
         <style>
             body {
@@ -159,7 +160,7 @@
                 <div class="review-list">
                     <div v-if="reviewList.length === 0">등록된 리뷰가 없습니다.</div>
 
-                    <div v-for="review in reviewList" :key="review.reviewId" class="review-card">
+                    <div v-for="review in reviewList" :key="review.reviewId" class="review-card" @click="fnProductDetail(review.proNo)">
 
                         <div class="review-info">
                             <div class="review-meta">
@@ -246,6 +247,11 @@
                         location.href="/main.do";
                     }
                     return;
+                },
+
+
+                fnProductDetail:function(proNo){
+                    pageChange("/productDetail.do", { proNo: proNo }); 
                 },
 
                     fnHome() { location.href = "/main.do" },

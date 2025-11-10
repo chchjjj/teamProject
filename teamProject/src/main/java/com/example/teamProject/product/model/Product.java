@@ -102,5 +102,6 @@ public class Product {
 	    
 	    private String disabledDate; // 배송 불가 날짜
 	    
+	    
 
 }
