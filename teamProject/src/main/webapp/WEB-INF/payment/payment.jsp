@@ -536,9 +536,9 @@
                             fnDelivery: function (orderId) {
                                 let self = this;
                                 // 클릭한 주문 카드(orderId) 기준으로 팝업 열기
-                                window.open("/payment/addressPopUp.do?orderIdList=" + orderId,
-                                    "addressPopUp",
-                                    "width=700, height=500, top=100, left=100");
+                                   window.open("/payment/addressPopUp.do?orderIdList=" + orderId,
+                        "addressPopUp",
+                        "width=700, height=500, top=100, left=100");
                             },
 
                             //결제 진행전 유효성 검사
@@ -927,6 +927,7 @@
 
                         }, // methods
                         mounted() {
+                            window.app = this;
                             // 처음 시작할 때 실행되는 부분
                             let self = this;
                             let orderId = self.orderId.trim(); // 혹시 모를 공백 제거
