@@ -378,10 +378,11 @@ public Map<String, Object> getStoreInfo(String userId) {
 
 // 가게 정보 수정
 public boolean updateStoreInfo(String userId, String storeName, String storeZipcode, 
-        String storeAddrMain, String storeAddrDetail, String storeIntro, String deliveryYn, String chatYn) {
+        String storeAddrMain, String storeAddrDetail, String storeId, String storeIntro, String deliveryYn, String chatYn) {
     // 서비스 로직 수행 (DB에 업데이트)
     Map<String, String> params = new HashMap<>();
     params.put("userId", userId);
+    params.put("storeId", storeId);
     params.put("storeName", storeName);
     params.put("storeZipcode", storeZipcode);
     params.put("storeAddrMain", storeAddrMain);

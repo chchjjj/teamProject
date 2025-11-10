@@ -9,6 +9,7 @@
     <title>가게 정보 수정 - DessertLab</title>
     <script src="https://code.jquery.com/jquery-3.7.1.js"
         integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <style>
         body {
             font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif;
@@ -154,10 +155,20 @@
             border: 1px solid #e6d7ce;
             background-color: #fffaf8;
         }
-        .address-line input#zipcode { max-width: 120px; flex-grow: 0; }
-        .address-line input#main-addr { flex-grow: 2; min-width: 180px; }
+        /* 우편번호, 상세 주소 필드를 삭제했으므로 관련 CSS는 삭제 */
+        .address-line input#store-main-addr { flex-grow: 2; min-width: 180px; }
         .address-btn { width: 100%; margin-top: 0px; padding: 10px 15px; }
         .submit-area { margin-top: 30px; text-align: center; }
+        .radio-group {
+            display: flex; 
+            gap: 20px; 
+            align-items: center;
+            flex: 1;
+        }
+        .radio-group label {
+            width: auto;
+            min-width: unset;
+        }
     </style>
 </head>
 
@@ -173,12 +184,14 @@
             <form action="/store/update.dox" method="POST" class="edit-form" id="storeEditForm">
                 <input type="hidden" name="userId" value="${sessionId}">
                 <input type="hidden" id="initial-store-id" value="${store.storeId != null ? store.storeId : (param.storeId != null ? param.storeId : '')}">
+                <input type="hidden" id="store-zipcode" name="storeZipcode" value="${store.storeZipcode != null ? store.storeZipcode : ''}">
+                <input type="hidden" id="store-detail-addr" name="storeAddrDetail" value="${store.storeAddrDetail != null ? store.storeAddrDetail : ''}">
                 
                 <div class="form-group">
                     <label for="store-id">가게 번호 (STORE_ID)</label>
                     <input type="text" id="store-id" name="storeId" 
                             value="${store.storeId != null ? store.storeId : (param.storeId != null ? param.storeId : '')}" 
-                            placeholder="수정할 가게 번호를 반드시 입력하세요." required>
+                            placeholder="수정할 가게 번호를 반드시 입력하세요." required readonly>
                     <button type="button" class="btn-secondary" onclick="fnSearchStoreInfoById()">가게 정보 조회</button>
                 </div>
                 <div class="form-group">
@@ -186,13 +199,27 @@
                     <input type="text" id="store-name" name="storeName" value="${store.storeName != null ? store.storeName : ''}">
                     <button type="button" class="btn-action" onclick="alert('전체 수정 버튼을 이용해주세요.')">개별 수정</button>
                 </div>
-                <div class="form-group address-group">
-                    <label>가게 주소</label>
-                    <div class="address-line">
-                        <button type="button" class="btn-secondary" onclick="fnSearchAddress()">주소 검색</button>
-                        <input type="text" id="store-main-addr" name="storeAddrMain" value="${store.storeAddrMain != null ? store.storeAddrMain : ''}" placeholder="기본 주소" readonly>
+                
+                <div class="form-group">
+                    <label>가게 주소 (Main)</label>
+                    <input type="text" id="store-main-addr" name="storeAddrMain" 
+                        value="${store.storeAddrMain != null ? store.storeAddrMain : ''}" 
+                        placeholder="주소 검색을 통해 기본 주소를 입력하세요" readonly required>
+                    <button type="button" class="btn-secondary" onclick="fnSearchAddress()">주소 검색</button>
+                </div>
+                <div class="form-group">
+                    <label>배달 여부 </label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="deliveryYn" value="Y" ${store.deliveryYn == 'Y' ? 'checked' : (store.deliveryYn == null ? '' : '')}> 가능</label>
+                        <label><input type="radio" name="deliveryYn" value="N" ${store.deliveryYn == 'N' ? 'checked' : (store.deliveryYn == null ? 'checked' : '')}> 불가능</label>
                     </div>
-                    <button type="button" class="btn-action address-btn" onclick="fnUpdateAddress()">수정</button>
+                </div>
+                <div class="form-group">
+                    <label>채팅 여부 (`chatYn`)</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="chatYn" value="Y" ${store.chatYn == 'Y' ? 'checked' : (store.chatYn == null ? 'checked' : '')}> 가능</label>
+                        <label><input type="radio" name="chatYn" value="N" ${store.chatYn == 'N' ? 'checked' : (store.chatYn == null ? '' : '')}> 불가능</label>
+                    </div>
                 </div>
                 <div class="form-group store-intro-group">
                     <label for="store-intro">가게 소개</label>
@@ -217,23 +244,24 @@
                 let store = data.store;
                 if (!store) store = data;
 
-                // 🟢 [수정됨] 서버에서 반환된 대문자 키를 사용하여 필드 값을 설정합니다.
+                // 서버에서 반환된 대문자 키를 사용하여 필드 값을 설정합니다.
                 $('#store-id').val(store.STORE_ID || '');
                 $('#store-name').val(store.STORE_NAME || '');
                 
-                // 주소: 클라이언트에서는 storeAddrMain이지만, 서버에서는 STORE_ADDR로 옴.
+                // 💡 주소 단순화: 기본 주소 (Main) 필드에만 값을 채웁니다.
+                // 서버로부터는 STORE_ADDR, STORE_ZIPCODE, STORE_ADDR_DETAIL을 모두 받아와 hidden 필드에 설정합니다.
+                $('#store-zipcode').val(store.STORE_ZIPCODE || '');
                 $('#store-main-addr').val(store.STORE_ADDR || ''); 
+                $('#store-detail-addr').val(store.STORE_ADDR_DETAIL || ''); 
+                
+                // 라디오 버튼 상태 업데이트
+                $('input:radio[name=deliveryYn][value=' + (store.DELIVERY_YN || 'N') + ']').prop('checked', true);
+                $('input:radio[name=chatYn][value=' + (store.CHAT_YN || 'Y') + ']').prop('checked', true);
 
-                // 가게 소개: 클라이언트에서는 storeIntro이지만, 서버에서는 STORE_INTRO로 옴.
-                // HTML 인코딩 문제를 해결하기 위해, 만약 JSON에 이스케이프된 문자열이 있다면 처리할 수 있도록 decodeURI를 적용합니다.
-                // DB에서 읽어온 데이터는 자동으로 이스케이프되지 않았을 가능성이 높으므로, 일반적인 접근으로 우선 처리합니다.
                 let storeIntro = store.STORE_INTRO || '';
                 try {
-                    // Java에서 "\n"이 이스케이프되어 JSON으로 넘어왔다면 decodeURI가 도움이 될 수 있습니다.
                     storeIntro = decodeURI(storeIntro.replace(/\\n/g, "%0A")); 
-                } catch(e) {
-                    // 오류 발생 시 원래 문자열 사용
-                }
+                } catch(e) { }
                 
                 $('#store-intro').val(storeIntro);
                 
@@ -241,7 +269,6 @@
             },
             error: function(xhr,status,error){
                 console.error("가게 정보 조회 실패:", error);
-                // 500 에러를 겪고 온 경우, 다시 에러가 발생하면 상세 메시지를 띄우는 것이 좋습니다.
                 alert("가게 정보 조회에 실패했습니다. (500 에러가 아닌지 서버 콘솔을 다시 확인해주세요.)");
             }
         });
@@ -257,14 +284,76 @@
         fnGetStoreInfo(storeId);
     }
 
+    /**
+     * 💡 카카오 우편번호 서비스 API를 사용하여 주소 검색 기능을 구현합니다.
+     * 이 함수는 /user/addr.do API가 작동하지 않을 때의 대체 솔루션입니다.
+     */
+    function fnSearchAddress() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                // 도로명 주소 (R) 또는 지번 주소 (J)를 선택하여 사용
+                const fullAddr = data.roadAddress || data.jibunAddress; 
+                const extraAddr = (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) ? data.bname : '';
+                
+                // 서버 호환성을 위해 hidden 필드에 우편번호(ZIPCODE)를 설정합니다.
+                $('#store-zipcode').val(data.zonecode); 
+                
+                // 화면에 보이는 기본 주소(MAIN_ADDR) 필드에 값을 설정합니다. (readonly)
+                $('#store-main-addr').val(fullAddr); 
+                
+                // 상세 주소(DETAIL_ADDR) 필드는 사용자 입력을 유도합니다.
+                // 여기서는 주소 검색으로 채워지는 것이 아니므로, 초기화하고 포커스를 줍니다.
+                $('#store-detail-addr').val(''); 
+                $('#store-detail-addr').focus();
+                
+                alert(`주소 검색이 완료되었습니다. 상세 주소를 입력한 후 '정보 수정하기' 버튼을 눌러주세요. (우편번호: ${data.zonecode})`);
+            }
+        }).open();
+    }
+
     function fnUpdateStoreInfo() {
         const form = $('#storeEditForm');
-    const storeId = $('#store-id').val(); // 👈 여기서 값을 가져옴
-    if (!storeId || storeId.trim() === '') {
-        alert("가게 번호 (STORE_ID)를 반드시 입력해야 합니다.");
-        $('#store-id').focus();
-        return;
-    }
+        const storeId = $('#store-id').val(); 
+        if (!storeId || storeId.trim() === '') {
+            alert("가게 번호 (STORE_ID)를 반드시 입력해야 합니다.");
+            $('#store-id').focus();
+            return;
+        }
+
+        let isValid = true;
+        
+        // **필수 필드 검증 로직 수정 (간소화)**
+        const requiredFields = [
+            { id: 'store-name', msg: "가게 이름" }, 
+            { id: 'store-main-addr', msg: "가게 주소" }, // 주소는 검색을 통해 채워져야 하므로 필수
+            { id: 'store-intro', msg: "가게 소개" }
+        ];
+
+        for (const field of requiredFields) {
+            const val = $('#' + field.id).val();
+            if (!val || val.trim() === '') {
+                alert(`${field.msg}을(를) 입력/선택해주세요.`);
+                $('#' + field.id).focus();
+                isValid = false;
+                break;
+            }
+        }
+        
+        // 라디오 버튼 검증 (선택되지 않은 경우 기본값으로 간주 가능하지만, 확실히 검증)
+        if (form.find('input[name="deliveryYn"]:checked').length === 0) {
+            alert("배달 여부를 선택해주세요.");
+            isValid = false;
+        }
+        if (form.find('input[name="chatYn"]:checked').length === 0) {
+            alert("채팅 여부를 선택해주세요.");
+            isValid = false;
+        }
+
+        if (!isValid) return;
+        
+        // 🚨 디버깅을 위해 불필요한 콘솔 에러를 제거하거나 정확히 로깅합니다.
+        console.log("모든 필수 필드 검증 완료. AJAX 호출 시작.");
+        
         $.ajax({
             url: form.attr('action'),
             type: form.attr('method'),
@@ -274,21 +363,18 @@
                     alert("가게 정보가 성공적으로 수정되었습니다.");
                     fnGetStoreInfo(storeId);
                 } else {
-                    alert("정보 수정에 실패했습니다: " + (response.message || "알 수 없는 오류"));
+                    alert("정보 수정에 실패했습니다: " + (response.message || "서버에서 알 수 없는 오류 발생."));
                 }
             },
             error: function(xhr,status,error){
-                alert("서버 통신 오류로 정보 수정에 실패했습니다.");
+                alert("서버 통신 오류로 정보 수정에 실패했습니다. 상태: " + status + ", 에러: " + error);
             }
         });
     }
 
-    function fnSearchAddress() {
-        window.open("/user/addr.do","jusoPopup","width=500,height=600,scrollbars=yes");
-    }
-
+    // 주소 수정 버튼은 주소 검색으로 대체되었으므로 기능 변경
     function fnUpdateAddress() {
-        alert("주소 수정 로직이 필요합니다. 주소 검색 후 새로운 주소를 입력하고 전체 수정 버튼을 눌러주세요.");
+        alert("주소는 '주소 검색' 버튼을 눌러 다시 설정할 수 있습니다. 변경 후 '정보 수정하기' 버튼을 눌러주세요.");
     }
 
     $(document).ready(function() {

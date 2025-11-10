@@ -485,33 +485,44 @@ public class SellerController {
 	@RequestMapping(value = "/store/update.dox", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> updateStoreInfo(@RequestParam Map<String, String> params) {
-		Map<String, Object> result = new HashMap<>();
-		try {
-			// 전달된 파라미터에서 수정할 가게 정보를 받습니다.
-			String userId = params.get("userId");
-			String storeName = params.get("storeName");
-			String storeZipcode = params.get("storeZipcode");
-			String storeAddrMain = params.get("storeAddrMain");
-			String storeAddrDetail = params.get("storeAddrDetail");
-			String storeIntro = params.get("storeIntro");
-			String deliveryYn = params.get("deliveryYn");
-			String chatYn = params.get("chatYn");
+	    Map<String, Object> result = new HashMap<>();
+	    try {
+	        // 1. 테이블 스키마에 존재하는 필드만 받도록 정리했습니다.
+	        String userId = params.get("userId");
+	        String storeId = params.get("storeId");
+	        String storeName = params.get("storeName");
+	        
+	        // 💡 DB에 STORE_ZIPCODE, STORE_ADDR_DETAIL은 없으므로 제거했습니다.
+	        String storeAddr = params.get("storeAddrMain"); // DB 컬럼: STORE_ADDR
+	        
+	        String storeIntro = params.get("storeIntro");
+	        String deliveryYn = params.get("deliveryYn");
+	        String chatYn = params.get("chatYn"); // DB 컬럼: IS_CHAT_ENABLED
 
-			// 서비스 메서드를 호출하여 DB에서 수정 작업을 수행
-			boolean isUpdated = sellerService.updateStoreInfo(userId, storeName, storeZipcode, storeAddrMain,
-					storeAddrDetail, storeIntro, deliveryYn, chatYn);
-			if (isUpdated) {
-				result.put("result", "success");
-			} else {
-				result.put("result", "failure");
-				result.put("message", "정보 수정에 실패했습니다.");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			result.put("result", "failure");
-			result.put("message", "서버 오류가 발생했습니다.");
-		}
-		return result;
+	        // 2. 핵심 WHERE 조건 필드(userId, storeId)에 대한 유효성 검증 강화
+	        if (userId == null || userId.isEmpty() || storeId == null || storeId.isEmpty()) {
+	            result.put("result", "failure");
+	            result.put("message", "필수 정보(사용자 ID 또는 가게 ID)가 누락되었습니다.");
+	            return result;
+	        }
+
+	        // 3. Service 메서드 호출 시 불필요한 파라미터를 제거했습니다.
+	        boolean isUpdated = sellerService.updateStoreInfo(userId, storeId, storeName, storeAddr, 
+	                                                         storeIntro, deliveryYn, chatYn, chatYn, chatYn);
+	        
+	        if (isUpdated) {
+	            result.put("result", "success");
+	        } else {
+	            // 🚨 정보 수정 실패 시, WHERE 조건 불일치 가능성이 가장 높습니다.
+	            result.put("result", "failure");
+	            result.put("message", "정보 수정에 실패했습니다. (가게 ID 및 사용자 ID 확인 필요)");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        result.put("result", "failure");
+	        result.put("message", "서버 오류가 발생했습니다. 로그를 확인하세요.");
+	    }
+	    return result;
 	}
 
 	
