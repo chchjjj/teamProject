@@ -64,7 +64,19 @@ public class PaymentService {
 		return resultMap;
 	}
 	
-	
+	public HashMap<String, Object> checkDelivery(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			Payment info = paymentMapper.selectOrderAddress(map);
+			resultMap.put("info", info); 
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage()); //개발자가 확인할 로그 기록
+		}
+		
+		return resultMap;
+	}
 
 	@Transactional
 	public HashMap<String, Object> addPayment(HashMap<String, Object> map) {
@@ -77,7 +89,7 @@ public class PaymentService {
 	        if (orderList == null || orderList.isEmpty()) {
 	            resultMap.put("result", "fail");
 	            resultMap.put("message", "결제할 게 없습니다.");
-	            return resultMap;
+	            return resultMap; 
 	        }
 	        
 	        for (int i = 0; i < orderList.size(); i++) {
@@ -95,6 +107,97 @@ public class PaymentService {
 	            
 	            
 	            paymentMapper.insertPayment(paymentMap);
+	            paymentMapper.updateOrderStatus(paymentMap);
+	       	 	resultMap.put("result", "success");
+	        }	
+			
+		} catch (Exception e) {
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage()); //개발자가 확인할 로그 기록
+		}
+		
+		return resultMap;
+	}
+	
+	@Transactional
+	public HashMap<String, Object> addDeliPayment(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			List<HashMap<String, Object>> orderList = (List<HashMap<String, Object>>) map.get("orderList");
+			System.out.println("맵=>" + map);
+	        System.out.println("주문리스트=>" + orderList);
+         
+	        if (orderList == null || orderList.isEmpty()) {
+	            resultMap.put("result", "fail");
+	            resultMap.put("message", "결제할 게 없습니다.");
+	            return resultMap; 
+	        }
+	        
+	        for (int i = 0; i < orderList.size(); i++) {
+	        	HashMap<String, Object> order = orderList.get(i);
+	        	// 공통 데이터
+//	        	String orderId = (String) map.get("orderId");
+//	        	String totalPrice = (String) order.get("totalPrice");
+	        	int orderId = Integer.parseInt(order.get("orderId").toString());
+	            int totalPrice = Integer.parseInt(order.get("totalPrice").toString());
+	            String selectedDate = (String) map.get("selectedDate");
+	            
+	            System.out.println("selectedDate 변환 결과:" + selectedDate);
+	        	
+	        	// payment_tbl로 넘길 데이터 구성
+	            HashMap<String, Object> paymentMap = new HashMap<>();
+	            paymentMap.put("orderId", orderId);
+	            paymentMap.put("totalPrice", totalPrice);
+	            paymentMap.put("selectedDate", selectedDate);
+	            
+	            
+	            paymentMapper.insertPayment(paymentMap);
+	            paymentMapper.updateDeliveryWishDeli(paymentMap);
+	            paymentMapper.updateOrderStatus(paymentMap);
+	       	 	resultMap.put("result", "success");
+	        }	
+			
+		} catch (Exception e) {
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage()); //개발자가 확인할 로그 기록
+		}
+		
+		return resultMap;
+	}
+
+	@Transactional
+	public HashMap<String, Object> addPickPayment(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			List<HashMap<String, Object>> orderList = (List<HashMap<String, Object>>) map.get("orderList");
+			System.out.println("맵=>" + map);
+	        System.out.println("주문리스트=>" + orderList);
+         
+	        if (orderList == null || orderList.isEmpty()) {
+	            resultMap.put("result", "fail");
+	            resultMap.put("message", "결제할 게 없습니다.");
+	            return resultMap; 
+	        }
+	        
+	        for (int i = 0; i < orderList.size(); i++) {
+	        	HashMap<String, Object> order = orderList.get(i);
+	        	// 공통 데이터
+//	        	String orderId = (String) map.get("orderId");
+//	        	String totalPrice = (String) order.get("totalPrice");
+	        	int orderId = Integer.parseInt(order.get("orderId").toString());
+	            int totalPrice = Integer.parseInt(order.get("totalPrice").toString());
+	            String selectedDate = (String) map.get("selectedDate");
+	            System.out.println("selectedDate 변환 결과:" + selectedDate);
+	        	
+	        	// payment_tbl로 넘길 데이터 구성
+	            HashMap<String, Object> paymentMap = new HashMap<>();
+	            paymentMap.put("orderId", orderId);
+	            paymentMap.put("totalPrice", totalPrice);
+	            paymentMap.put("selectedDate", selectedDate);
+	            
+	            
+	            paymentMapper.insertPayment(paymentMap);
+	            paymentMapper.updatePickUpDate(paymentMap);
 	            paymentMapper.updateOrderStatus(paymentMap);
 	       	 	resultMap.put("result", "success");
 	        }	
@@ -184,6 +287,10 @@ public class PaymentService {
 		
 		return resultMap;
 	}
+
+	
+
+	
 	
 	
 	

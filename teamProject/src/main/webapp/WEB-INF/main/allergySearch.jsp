@@ -17,6 +17,7 @@
         <!-- <script src="https://unpkg.com/mitt/dist/mitt.umd.js"></script>  -->
 
         <style>
+
             /* QnA 제목 스타일 */
             .title {
                 font-size: 28px;
@@ -32,6 +33,7 @@
 
             /* 새 목록 컨테이너 스타일 */
             .ingredient-list {
+                
                 display: flex;
                 flex-wrap: wrap;
                 /* 줄바꿈 허용 */
@@ -180,6 +182,15 @@
                 background-color: #f9f9f9;
                 margin-bottom: 100px;
             }
+
+            body{
+                background-color: #f1f1f1;
+            }
+            .content-container{
+                border: 1px solid #a7a7a7;
+                border-radius: 10px;
+                background-color: #fff;
+            }
         </style>
     </head>
 
@@ -228,10 +239,15 @@
                         <div v-else class="product-grid">
                             <div class="product-item" v-for="item in proList" @click="fnProDetail(item.proNo)">
                                 <div class="product-image-wrapper">
-                                    <div class="product-image-placeholder">판매자 등록 썸네일</div>
-                                    <!-- 멤버쉽 Y이면 추천 딱지 표시 -->
-                                    <img v-if="item.membership === 'Y'" class="recommend-badge" src="/img/recommend.png"
-                                        alt="추천 딱지">
+                                        <div class="product-image-placeholder" v-if="!item.filePath || !item.fileName">
+                                            판매자 등록 썸네일
+                                        </div>
+                                        <img v-else :src="(item.filePath + item.fileName).trim()" alt="상품 이미지"
+                                            class="product-image"
+                                            style="width: 100%; height: auto; border-radius: 10px;">
+                                        <!-- 멤버쉽 Y이면 추천 딱지 표시 -->
+                                        <img v-if="item.membership === 'Y'" class="recommend-badge"
+                                            src="/img/recommend.png" alt="추천 딱지">
                                 </div>
                                 <p class="product-title">{{item.proName}}</p>
                                 <p>{{item.storeName}}</p>
@@ -277,7 +293,7 @@
                     proNo: "", // 상품번호
                     keyword: "", // 헤더 검색 키워드 변수 추가
 
-                    pageSize: 4, // 한 페이지에 출력할 게시글 개수 (4개로 기본값)
+                    pageSize: 4, // 한 페이지에 출력할 게시글 개수 (8개로 기본값)
                     page: 1, // 현재 페이지(위치) - 최초 1페이지부터 시작 (OFFSET 다음에 오는 숫자)
                     index: 0, // 최대 페이지 값 (표현할 페이지 개수)
 
@@ -313,6 +329,8 @@
                 // '검색' 클릭 시 해당 원재료 미포함 상품 불러오기
                 fnIngreProList: function () {
                     let self = this;
+                    
+                     console.log("선택된 원재료:", self.ingreName); // ← 여기 확인
                     // 배열이 아닐 때 강제로 배열로 변환 
                     let names = Array.isArray(self.ingreName) ? self.ingreName : [self.ingreName];
 
@@ -379,14 +397,16 @@
                 fnPage: function (num) { // 파라미터로 클릭한 num 보내주기
                     let self = this;
                     self.page = num; // 현재 페이지를 num의 숫자로 반영
-                    self.fnIngreList(); // 반영 후 기준으로 리스트 재호출
+                    //self.fnIngreList(); // 반영 후 기준으로 리스트 재호출
+                    self.fnIngreProList(); // ← 상품 목록 조회로 변경
                 },
 
                 // 페이지 숫자 양옆 화살표 버튼 누르면 페이지 이동
                 fnMove: function (move) {
                     let self = this;
                     self.page += move; // 현재 페이지를 -1 또는 +1 
-                    self.fnIngreList();
+                    //self.fnIngreList();
+                    self.fnIngreProList(); // ← 상품 목록 조회로 변경
                 },
 
 

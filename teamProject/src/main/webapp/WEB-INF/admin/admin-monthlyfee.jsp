@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>판매자 월 정산결과 조회</title>
+        <title>:: 판매자 월 정산결과 조회 ::</title>
         <link rel="stylesheet" href="/css/admin-style.css">
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
@@ -13,6 +13,41 @@
         <script src="/js/page-change.js"></script>
 
         <style>
+            th,
+            td {
+                padding: 10px 15px;
+                text-align: center;
+                border-bottom: 1px solid #ddd;
+            }
+
+            th {
+                background-color: #3E2723;
+                /* ESPRESSO 색상 */
+                color: #FFEDAC;
+                /* BUTTER 색상 */
+                font-weight: bold;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+            tr:hover {
+                background-color: #F4C9D6;
+                /* PEONY 색상 */
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            td {
+                color: #333;
+            }
+
+            .info {
+                font-size: 14px;
+                color: #666;
+                margin-bottom: 30px;
+            }
 
         </style>
     </head>
@@ -26,7 +61,7 @@
 
                 <!--외쪽측 네이버바-->
                 <div class="navBar">
-                   <div class="logo">
+                    <div class="logo">
                         <a href="javascript:;" onclick="location.href='/main.do'">
                             <!--로고 클릭시 홈페이지 새로고침 -->
                             <img src="/img/로고.png" alt="쇼핑몰 로고">
@@ -34,25 +69,26 @@
                     </div>
                     <div class="navButton">
                         <div>
-                            <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">구매자 관리</button>
+                            <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">전체 유저 관리</button>
                         </div>
                         <div>
-                            <button @click="fnSellerManage()":class="{active: currentMenu==='seller'}">판매자관리</button>
+                            <button @click="fnSellerManage()" :class="{active: currentMenu==='seller'}">판매자관리</button>
                         </div>
                         <div>
-                            <button @click="fnSalesManage()":class="{active: currentMenu==='money'}">매출관리</button>
+                            <button @click="fnSalesManage()" :class="{active: currentMenu==='money'}">매출관리</button>
                         </div>
                         <div>
-                            <button @click="fnAdRequest()":class="{active: currentMenu==='ad'}">광고관리</button>
-                        </div>  
-                        <div>
-                            <button @click="fnMembership()":class="{active: currentMenu==='membership'}">맴버쉽관리</button>
-                        </div>
-                         <div>
-                            <button @click="fnMonthlyFee()":class="{active: currentMenu==='month'}">판매자 월 정산결과 조회</button>
+                            <button @click="fnAdRequest()" :class="{active: currentMenu==='ad'}">광고관리</button>
                         </div>
                         <div>
-                            <button @click="fnQandA()":class="{active: currentMenu==='qna'}">Q&A</button>
+                            <button @click="fnMembership()" :class="{active: currentMenu==='membership'}">맴버쉽관리</button>
+                        </div>
+                        <div>
+                            <button @click="fnMonthlyFee()" :class="{active: currentMenu==='month'}">판매자 월 정산결과
+                                조회</button>
+                        </div>
+                        <div>
+                            <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">게시글 관리</button>
                         </div>
                     </div>
 
@@ -73,21 +109,22 @@
                         <div>
                             판매자 월 정산결과 조회
                         </div>
-                        <!--아이콘-->
-                        <div></div>
-                        <!--선택사항-->
+                        <div class="info">
+                            ※ 판매 승인을 받은 판매자 목록만 표시합니다.
+                        </div>
+
                         <div>
                             <select v-model="pageSize" @change="fnSellerList">
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
+                                <option value="10">:: 10개씩 ::</option>
+                                <option value="15">:: 15개씩 ::</option>
+                                <option value="20">:: 20개씩 ::</option>
                             </select>
                             <select v-model="option">
-                                <option value="all">::전체::</option>
-                                <option value="storeId">가게아이디</option>
-                                <option value="storeName">가게이름</option>
+                                <option value="all">:: 전체 ::</option>
+                                <option value="storeId">가게 아이디</option>
+                                <option value="storeName">가게 이름</option>
                             </select>
-                            <input type="text" v-model="keyWord">
+                            <input type="text" v-model="keyWord" @keyup.enter="fnSellerList">
                             <button @click="fnSellerList">검색</button>
                         </div>
                         <!--태이블-->
@@ -99,14 +136,14 @@
                                 <th>시간</th>
                                 <th>가게아이디</th>
                                 <th>가게이름</th>
-                                <th>월말정산결과</th>
+                                <th>월말정산결과(원)</th>
                             </tr>
                             <tr v-for="seller in sellerList">
                                 <td><input type="checkbox" :value="seller.storeId" v-model="selectItem"></td>
                                 <td>{{seller.thisMonth}}</td>
                                 <td>{{seller.storeId}}</td>
                                 <td>{{seller.storeName}}</td>
-                                <td>{{seller.storeMonthlyFee}}</td>
+                                <td>{{formatNumber(seller.storeMonthlyFee)}}</td>
                             </tr>
                         </table>
                     </div>
@@ -126,7 +163,7 @@
                     </div>
 
 
-                    <div>
+                    <div style="text-align: left; margin-top: 10px;">
                         <button @click="fnRemoveAll">
                             선택 삭제
                         </button>
@@ -151,6 +188,7 @@
                     sessionId: "${sessionId}",
 
                     currentMenu: "month",
+                    flgPending: true, // 항상 P만 보도록 기본값 설정
 
                     //선택
                     selectItem: [],
@@ -179,6 +217,7 @@
                         option: self.option,
                         keyWord: self.keyWord,
                         flgApp: self.flgApp,
+                        flgPending: true, // <-- 추가 (판매자 테이블에서 판매승인 받은 애들만 나오게)
                         offset: (self.page - 1) * self.pageSize,
                         fetchRows: self.pageSize,
                     };
@@ -187,7 +226,7 @@
                         dataType: "json",
                         type: "POST",
                         data: param,
-                        success: function (data) {
+                        success: function (data) {                           
                             self.sellerList = data.sellerList;
                             self.totalRows = data.totalRows;
                             self.pageNum = Math.ceil(self.totalRows / self.pageSize);
@@ -297,6 +336,17 @@
 
                 },
 
+                // formatNumber: function (num) {
+                //     if (!num && num !== 0) return '0';
+                //     return Number(num).toLocaleString('ko-KR');
+                // },
+
+                formatNumber: function(num) {
+                    if (num === null || num === undefined) return '0';
+                    return Number(num).toLocaleString('ko-KR');
+                },
+
+
                 fnBuyerManage: function () {
                     location.href = "/admin/userlist.do";
                 },
@@ -326,20 +376,26 @@
                 },
 
                 fnLogout: function () {
-                  param = {}
                     if (confirm("로그아웃 하시겠습니까?")) {
+                        let param = {};
                         $.ajax({
-                            url: "/user/logout.dox", // 로그아웃 url 주소
+                            url: "/user/logout.dox",
                             dataType: "json",
                             type: "POST",
                             data: param,
                             success: function (data) {
-                                alert(data.msg);
-                                location.href = "/main.do";
+                                if (data.result == "success") {
+                                    alert(data.msg + "! 홈페이지로 이동하겠습니다.");
+                                    location.href = "/main.do";
+                                } else {
+                                    alert("로그아웃하는 도중에 오류가 발생하였습니다.");
+                                }
+
                             }
+
                         });
                     }
-                }
+                },
 
 
 

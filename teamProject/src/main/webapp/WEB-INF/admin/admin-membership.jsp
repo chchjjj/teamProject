@@ -5,90 +5,121 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>멤버십관리</title>
+        <title>:: 멤버쉽 관리 ::</title>
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-            <link rel="stylesheet" href="/css/admin-style.css">
+        <link rel="stylesheet" href="/css/admin-style.css">
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <script src="/js/page-change.js"></script>
         <style>
-      /* ===== 관리자 테이블 공통 스타일 ===== */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: 'Arial', sans-serif;
-    margin-top: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+            /* ===== 관리자 테이블 공통 스타일 ===== */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-family: 'Arial', sans-serif;
+                margin-top: 10px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
 
-th, td {
-    padding: 10px 15px;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-}
+            th,
+            td {
+                padding: 10px 15px;
+                text-align: center;
+                border-bottom: 1px solid #ddd;
+            }
 
-th {
-    background-color: #3E2723; /* ESPRESSO 색상 */
-    color: #FFEDAC; /* BUTTER 색상 */
-    font-weight: bold;
-}
+            th {
+                background-color: #3E2723;
+                /* ESPRESSO 색상 */
+                color: #FFEDAC;
+                /* BUTTER 색상 */
+                font-weight: bold;
+            }
 
-tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
 
-tr:hover {
-    background-color: #F4C9D6; /* PEONY 색상 */
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
+            tr:hover {
+                background-color: #F4C9D6;
+                /* PEONY 색상 */
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
 
-td {
-    color: #333;
-}
+            td {
+                color: #333;
+            }
 
-select,
-input[type="text"] {
-    padding: 5px 8px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
+            select,
+            input[type="text"] {
+                padding: 5px 8px;
+                margin: 5px 0;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
 
-button {
-    padding: 6px 12px;
-    background-color: #3E2723;
-    color: #FFEDAC;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
+            button {
+                padding: 6px 12px;
+                background-color: #3E2723;
+                color: #FFEDAC;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
 
-button:hover {
-    background-color: #5D4037;
-}
+            button:hover {
+                background-color: #5D4037;
+            }
 
-/* 페이징 버튼 */
-.paging a,
-.paging button {
-    display: inline-block;
-    margin: 0 3px;
-    padding: 5px 10px;
-    text-decoration: none;
-    color: #3E2723;
-    border: 1px solid #3E2723;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-}
+            /* 페이징 버튼 */
+            .paging a,
+            .paging button {
+                display: inline-block;
+                margin: 0 3px;
+                padding: 5px 10px;
+                text-decoration: none;
+                color: #3E2723;
+                border: 1px solid #3E2723;
+                border-radius: 4px;
+                transition: all 0.2s ease;
+            }
 
-.paging a.active,
-.paging button:hover {
-    background-color: #3E2723;
-    color: #FFEDAC;
-    border-color: #3E2723;
-}
+            .paging a.active,
+            .paging button:hover {
+                background-color: #3E2723;
+                color: #FFEDAC;
+                border-color: #3E2723;
+            }
 
+            .section-title {
+            font-size: 20px !important;
+            font-weight: bold !important;
+            }
+            .section-title {
+                font-weight: bold;
+                font-size: 18px;
+                padding: 10px 0;
+                border-bottom: 2px solid #3E2723; /* 진한 검은색 라인 */
+                margin-bottom: 15px; /* 아래 테이블과 여백 */
+            }
+
+            .paging {
+                display: flex;
+                justify-content: center; /* 가로 가운데 정렬 */
+                align-items: center;     /* 세로 가운데 정렬 */
+                gap: 5px;                /* 버튼과 숫자 간 간격 */
+                margin: 25px 0;          /* 위아래 여백 */
+            }
+
+            .info {
+                font-size: 14px;
+                color: #666;
+                margin-bottom: 30px;
+            }
+
+            
         </style>
     </head>
 
@@ -109,7 +140,7 @@ button:hover {
                     </div>
                     <div class="navButton">
                         <div>
-                            <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">구매자 관리</button>
+                            <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">전체 유저 관리</button>
                         </div>
                         <div>
                             <button @click="fnSellerManage()" :class="{active: currentMenu==='seller'}">판매자관리</button>
@@ -128,7 +159,7 @@ button:hover {
                                 조회</button>
                         </div>
                         <div>
-                            <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">Q&A</button>
+                            <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">게시글 관리</button>
                         </div>
                     </div>
 
@@ -146,19 +177,18 @@ button:hover {
                     <!--멤버십 리스트-->
                     <div>
                         <!--구역이름-->
-                        <div>
-                            멤버십 관리
+                        <div class="section-title">멤버쉽 관리</div>
+
+                        <div class="info">
+                            ※ 멤버쉽 가입/탈퇴는 판매자 마이페이지에서 개별 신청 및 반영됩니다.
                         </div>
-                        <!--아이콘-->
-                        <div></div>
-                        <!--선택사항-->
                         <div>
                             <select v-model="pageSize" @change="fnMembershipList">
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
+                                <option value="10">:: 10개씩 ::</option>
+                                <option value="15">:: 15개씩 ::</option>
+                                <option value="20">:: 20개씩 ::</option>
                             </select>
-                            <input type="text" v-model="keyWord">
+                            <input type="text" v-model="keyWord" @keyup.enter="fnMembershipList">
                             <button @click="fnMembershipList">사용자 아이디로 검색</button>
                         </div>
                         <!--태이블-->
@@ -180,8 +210,13 @@ button:hover {
                                     <span v-if="membership.membershipLevel==='G'">GOLD</span>
                                 </td>
                                 <td>{{membership.joinDate}}</td>
-                                <td>{{membership.membershipStatus}}</td>
-                                <td>{{membership.monthlyFee}}</td>
+                                <!-- <td>{{membership.membershipStatus}}</td> -->
+                                <td>
+                                    <span v-if="membership.membershipStatus==='A'">구독중</span>
+                                    <span v-if="membership.membershipStatus==='B'">중단요청중</span>
+                                    <span v-if="membership.membershipStatus==='C'">최종중단</span>
+                                </td>
+                                <td>{{formatNumber(membership.monthlyFee)}}</td>
                                 <td>{{membership.expirationDate}}</td>
                             </tr>
                         </table>
@@ -337,22 +372,32 @@ button:hover {
                     location.href = "/admin/boardManage.do";
                 },
 
+                formatNumber: function (num) {
+                    if (!num && num !== 0) return '0';
+                    return Number(num).toLocaleString('ko-KR');
+                },
+
                 fnLogout: function () {
-                                     param = {}
                     if (confirm("로그아웃 하시겠습니까?")) {
+                        let param = {};
                         $.ajax({
-                            url: "/user/logout.dox", // 로그아웃 url 주소
+                            url: "/user/logout.dox",
                             dataType: "json",
                             type: "POST",
                             data: param,
                             success: function (data) {
-                                alert(data.msg);
-                                location.href = "/main.do";
+                                if (data.result == "success") {
+                                    alert(data.msg + "! 홈페이지로 이동하겠습니다.");
+                                    location.href = "/main.do";
+                                } else {
+                                    alert("로그아웃하는 도중에 오류가 발생하였습니다.");
+                                }
+
                             }
+
                         });
                     }
-                }
-
+                },
 
 
 

@@ -59,9 +59,6 @@ public class UserService {
 					session.setAttribute("sessionName", user.getUserName());
 					session.setAttribute("sessionRole", user.getRole());
 					session.setAttribute("sessionPhone", user.getPhone());
-					session.setAttribute("sessionAddress", user.getUserAddr()); 
-					
-					
 					resultMap.put("url", "/main.do");
 					
 					//밑에 주석처리 한거는 혹시라도 관리자 여부에 따라 이동할 페이지를 다르게 하고 싶을 때 사용하면 된다.
@@ -147,15 +144,7 @@ public class UserService {
 
 		return resultMap;
 	}
-	public HashMap<String, Object> userNameCheck(HashMap<String, Object> map) {
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		User user = userMapper.userNameCheck(map);
-		String result = user != null ? "true" : "false";
 
-		resultMap.put("result", result);
-
-		return resultMap;
-	}
 	public HashMap<String, Object> userAuth(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
@@ -230,8 +219,11 @@ public class UserService {
 		
 		try {
 			List<User> list = userMapper.selectOrderList(map);			
-			System.out.println(list);;
+			System.out.println(list);
 			resultMap.put("list", list); 
+			int totalRows=userMapper.orderCount(map);
+			resultMap.put("totalRows",totalRows);
+			
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -266,7 +258,7 @@ public class UserService {
 		try {
 			List <User> qnAList= userMapper.qnAListSelect(map);
 			resultMap.put("qnAList",qnAList);
-			int totalRows=userMapper.reviewCount(map);
+			int totalRows=userMapper.qnACount(map);
 			resultMap.put("totalRows",totalRows);
 			resultMap.put("result","success");
 		}catch(Exception e) {
@@ -339,6 +331,25 @@ public class UserService {
 		 return resultMap;
 				
 	}
+	
+	
+	public HashMap<String, Object> InsertReview(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			int cnt= userMapper.reviewInsert(map);
+			resultMap.put("result", "success");
+
+		    } catch (Exception e) {
+		        resultMap.put("result", "fail");
+		        System.out.println(e.getMessage());
+		    }
+		    
+		    return resultMap;
+	}
+	
+	
 	
 	
 	

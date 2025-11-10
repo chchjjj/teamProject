@@ -20,25 +20,8 @@
 
          
         <style>
-            button {
-                padding: 8px 15px;
-                background-color: #555;
-                /* 어두운 계열 (헤더 QnA 버튼과 유사하게) */
-                color: white;
-                border: none;
-                border-radius: 4px;
-                font-size: 14px;
-                cursor: pointer;
-                transition: background-color 0.3s;
-                height: 38px;
-                display: inline-block; /* 버튼을 블록 레벨 요소로 만듭니다 */
-                margin: 20px auto;
-                margin-right: 10px;
-            }
-
-            .addImage{
-                width: 100px;
-                height: 50px;
+            body{
+                background-color: #f1f1f1;
             }
         </style>
     </head>
@@ -94,17 +77,14 @@
                     <button @click="sendMessage">전송</button>
                 </footer>
 
-                <div id="chatApp">
+                <div id="chatApp" class="chat-actions">
                     <!-- 파일 선택 -->
                     <input type="file" ref="imageInput" accept="image/*" style="display:none" @change="uploadImage">
-                    <button @click="$refs.imageInput.click()" class="addImage">사진 첨부</button>
-                </div>
-
-                </div>
-                <div>
+                    <button @click="$refs.imageInput.click()" >사진 첨부</button>
                     <button @click="fnGoBack">돌아가기</button>
                     <button @click="fnAddOptionPrice">기타금액 변경</button>
                 </div>
+              </div>
             </div>
         <%@ include file="/WEB-INF/main/footer.jsp" %>
     </body>

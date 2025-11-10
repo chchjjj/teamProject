@@ -289,7 +289,7 @@ ul {
 
 /* 3. 메인 콘텐츠 */
 .content-container {
-    max-width: 1000px;
+    max-width: 1100px;
     /* 이미지 너비에 맞춰 조정 */
     margin: 20px auto;
     padding: 0 20px;
@@ -513,65 +513,53 @@ ul {
     display: flex;
     justify-content: space-around;
     padding: 15px 0;
-    margin-bottom: 30px;
 }
 
 .category-btn {
-display: block;
-    width: 150px;
-    height: 150px;
-    
-    /* 텍스트를 이미지 위에 보이게 할 경우, font-size 유지, color 변경 */
-    /* 텍스트를 숨길 경우, font-size: 0; 또는 text-indent: -9999px; */
-    
-    font-size: 20px;
-    line-height: 150px; 
+    display: block;
+    width: 280px;
+    height: 80px;
+    margin: 0px 5px;
+    font-size: 16px;
+    line-height: 60px;
     text-align: center;
-    background-color: #f0f0f0; /* 기본 배경색 */
-    border-radius: 50%;
     font-weight: bold;
-    color: #FFEDAC; /* 텍스트가 보이지 않도록 color 속성 제거 (font-size: 0으로 대체) */
-    
-    /* 👇 통일된 움직임 효과를 위해 transition: all로 변경 */
-    transition: all 0.2s ease-in-out; 
-    
-    /* 이미지 관련 속성 기본 설정 (전체 버튼의 기본 이미지가 있다면 여기에 설정) */
+    color: #FFEDAC;
+    background-color: #3E2723;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    
-    /* 전체 버튼의 기본 이미지 설정 (선택 사항) */
-    background-image: url('/img/category_all.jpg');
+    border-radius: 12px;
+    box-sizing: border-box; /* 중요 */
+    background-clip: padding-box; /* 중요 */
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;    
 }
 
 /* 👇 [추가] 선택된 카테고리 버튼 스타일 */
 .category-btn.active {
-/* 배경색을 메뉴바 색상(진한 갈색)으로 변경 */
-    background-color: #3E2723;
-    /* 텍스트 색상을 흰색으로 변경 */
-    color: #FFEDAC; 
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    /* 입체감 있는 그림자 */
-    transform: scale(1.05);
-    /* 살짝 커지는 효과로 강조 */
+    background-color: #7e6763;
+    color: #FFEDAC;
+    /* box-shadow: 0 0 10px rgba(0,0,0,0.3); */
+    border: 4px solid #FFEDAC; /* border 확실히 보이도록 */
+
+    
 }
 
 .category-btn:hover {
-
-    transform: scale(1.05);
+    transform: scale(1.02);
+    opacity: 0.9;
 }
 
 .main-category a:nth-child(1) {
-    /* 텍스트를 보이게 설정 */
-    font-size: 20px; 
-    color: #FFEDAC; /* 일반 상태 텍스트 색상 */
-    /* 배경 이미지 제거 */
-    background-image: none; 
-    background-color: #3E2723; /* 원래의 회색 배경 */
+    background-image: url('/img/전체카테고리.jpg'); 
+    background-size: cover; /* 이미지가 원을 꽉 채우도록 */
+    background-repeat: no-repeat;
+    background-position: center;
 }
 /* 2. 케이크 */
 .main-category a:nth-child(2) { /* '케이크' 버튼 */
-    background-image: url('/img/케이크카테코리.jpg'); 
+    background-image: url('/img/케이크카테고리.png'); 
     background-size: cover; /* 이미지가 원을 꽉 채우도록 */
     background-repeat: no-repeat;
     background-position: center;
@@ -580,7 +568,7 @@ display: block;
 
 /* 3. 쿠키 */
 .main-category a:nth-child(3) { /* '쿠키' 버튼 */
-    background-image: url('/img/쿠키카테코리.jpg');
+    background-image: url('/img/쿠키카테고리.png');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -589,7 +577,7 @@ display: block;
 
 /* 4. 초콜릿/사탕 */
 .main-category a:nth-child(4) { /* '초콜릿/사탕' 버튼 */
-    background-image: url('/img/사탕카테코리.jpg');
+    background-image: url('/img/사탕카테고리.png');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -599,7 +587,7 @@ display: block;
     border: 0;
     height: 1px;
     background-color: #ddd;
-    margin: 20px 0;
+    margin: 5px 0;
 }
 
 /* 셀렉트박스 */
@@ -680,7 +668,7 @@ display: block;
 
 .product-item {
     /* 기존 스타일 제거 및 재정의 */
-    border: 1px solid #eee;
+    border: 1px solid #d8d8d8;
     padding: 15px; /* 패딩 증가 */
     text-align: left;
     border-radius: 8px; /* 둥근 모서리 */
@@ -715,7 +703,7 @@ display: block;
 .product-image-wrapper {
   position: relative;
   width: 100%;
-  height: 180px; /* 원하는 카드 높이에 맞게 조정 */
+  height: 200px; /* 원하는 카드 높이에 맞게 조정 */
   border-radius: 12px;
   overflow: hidden;
   background-color: #f5f5f5;
@@ -792,9 +780,9 @@ display: block;
 }
 
 .pagination a.active {
-    background-color: #333;
+    background-color: #3E2723;
     color: #fff;
-    border-color: #333;
+    border-color: #3E2723;
 }
 
 .pagination a:hover:not(.active) {
@@ -804,11 +792,19 @@ display: block;
 /* 3-5. 외부 광고 */
 .external-ad {
     background-color: #e0e0e0;
-    height: 120px;
+    height: 140px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 30px 0;
     border-radius: 8px;
     color: #777;
+}
+
+/* 지역 필터 시 해당하는 상품 없을 경우 */
+.no-product {
+    text-align: center;
+    color: #555;
+    font-size: 16px;
+    padding: 50px 0;
 }

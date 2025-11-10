@@ -69,16 +69,16 @@
 
                         <section class="main-category">
                             <a href="#" class="category-btn" :class="{ active: selectedCategory === '' }"
-                                @click.prevent="selectedCategory = ''; fnList()">전체</a>
+                                @click.prevent="selectedCategory = ''; page = 1; fnList()"></a>
 
                             <a href="#" class="category-btn" :class="{ active: selectedCategory === '케이크' }"
-                                @click.prevent="selectedCategory = '케이크'; fnList()"></a>
+                                @click.prevent="selectedCategory = '케이크'; page = 1; fnList()"></a>
 
                             <a href="#" class="category-btn" :class="{ active: selectedCategory === '쿠키' }"
-                                @click.prevent="selectedCategory = '쿠키'; fnList()"></a>
+                                @click.prevent="selectedCategory = '쿠키'; page = 1; fnList()"></a>
 
-                            <a href="#" class="category-btn" :class="{ active: selectedCategory === '초콜릿/사탕' }"
-                                @click.prevent="selectedCategory = '초콜렛'; fnList()"></a>
+                            <a href="#" class="category-btn" :class="{ active: selectedCategory === '초콜렛' }"
+                                @click.prevent="selectedCategory = '초콜렛'; page = 1; fnList()"></a>
                         </section>
 
                         <hr class="divider">
@@ -112,7 +112,10 @@
                                 </div>
 
                             </div>
-                            <div class="product-grid">
+                            <div v-if="list.length === 0" class="no-product">
+                                선택한 조건에 맞는 상품이 없습니다.
+                            </div>
+                            <div v-else class="product-grid">
                                 <div class="product-item" v-for="item in list" @click="fnProDetail(item.proNo)">
                                     <div class="product-image-wrapper">
                                         <div class="product-image-placeholder" v-if="!item.filePath || !item.fileName">
@@ -205,6 +208,7 @@
                 // 함수(메소드) - (key : function())
                 fnList: function () {
                     let self = this;
+
                     let param = {
                         // 선택할 때마다 새로 목록 가져오게 해야함(위에서 @change 처리함)
                         area: self.area,
@@ -222,7 +226,8 @@
                         success: function (data) {
                             console.log(data);
                             self.list = data.list; // data에 있는 list 값을 변수 list에 담기      
-                            self.index = Math.ceil(data.cnt / self.pageSize);
+                            //self.index = Math.ceil(data.cnt / self.pageSize);
+                            self.index = Math.max(1, Math.ceil(data.cnt / self.pageSize)); //최소 1페이지 보장
                         }
                     });
                 },
@@ -435,3 +440,4 @@
 
         app.mount('#app');
     </script>
+    

@@ -14,6 +14,7 @@
         <!-- 라이브러리 -->
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="/js/page-change.js"></script>
 
         <style>
             body {
@@ -137,12 +138,13 @@
 
                 <!-- Navigation Buttons -->
                 <div class="navButton">
-                    <button @click="fnOrderHistory()" class="active">주문 내역</button>
+                    <button @click="fnOrderHistory()">주문 내역</button>
                     <button @click="fnWishList()">찜한 상품</button>
                     <button @click="fnChatList()">채팅이력</button>
-                    <button @click="fnReview()">내가 쓴 리뷰</button>
+                    <button @click="fnReview()" class="active">내가 쓴 리뷰</button>
                     <button @click="fnQnA()">QnA</button>
                     <button @click="fnUserEdit()">정보수정</button>
+                    <button @click="fnDeleteAccount()">회원탈퇴</button>
                 </div>
 
                 <!-- Logout Button -->
@@ -158,16 +160,14 @@
                 <div class="review-list">
                     <div v-if="reviewList.length === 0">등록된 리뷰가 없습니다.</div>
 
-                    <div v-for="review in reviewList" :key="review.reviewId" class="review-card">
-                        <div class="review-image">
-                            <img v-if="review.reviewImg" :src="review.reviewImg" alt="후기사진">
-                            <span v-else>후기사진</span>
-                        </div>
+                    <div v-for="review in reviewList" :key="review.reviewId" class="review-card" @click="fnProductDetail(review.proNo)">
 
                         <div class="review-info">
                             <div class="review-meta">
                                 닉네임: {{review.userName || '익명'}} <br>
-                                작성일: {{review.cDateTime || '0000-00-00'}}
+                                상품명: {{review.proName}} <br>
+                                주문번호: {{review.orderId}} <br>
+                                작성일: {{review.cdatetime || '0000-00-00'}}
                             </div>
                             <div class="review-content">
                                 {{review.reviewContent || '후기내용이 없습니다.'}}
@@ -216,6 +216,7 @@
                                 fetchRows: self.pageSize
                             },
                             success(data) {
+                                console.log(data.reviewList);
                                 self.reviewList = data.reviewList;
                                 self.totalRows = data.totalRows;
                                 self.pageNum = Math.ceil(self.totalRows / self.pageSize);
@@ -241,6 +242,17 @@
                         if (this.page < this.pageNum) this.page++;
                         this.fnReviewList();
                     },
+                    fnDeleteAccount:function(){ 
+                    if(confirm("회원을 탈퇴하겠습니까?")){
+                        location.href="/main.do";
+                    }
+                    return;
+                },
+
+
+                fnProductDetail:function(proNo){
+                    pageChange("/productDetail.do", { proNo: proNo }); 
+                },
 
                     fnHome() { location.href = "/main.do" },
                     fnOrderHistory() { location.href = "/user/orderHistory.do"; },

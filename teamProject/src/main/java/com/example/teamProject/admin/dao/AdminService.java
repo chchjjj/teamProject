@@ -94,9 +94,11 @@ public class AdminService {
 		
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
-		List orderList= adminMapper.orderListSelect(map);	
+		List orderList= adminMapper.orderListSelect(map);
+		int totalRows=adminMapper.orderCount(map);
 		
 		resultMap.put("orderList",orderList);
+		resultMap.put("totalRows",totalRows);
 		resultMap.put("result","success");
 		return resultMap;
 	}
@@ -145,12 +147,14 @@ public class AdminService {
 			return resultMap;
 		}
 		
-		
+		// 입점신청자 (판매자) 업데이트
+		@Transactional
 		public HashMap<String, Object> UpdateSeller(HashMap<String, Object> map) {
 			// TODO Auto-generated method stub
 			
 			HashMap<String, Object> resultMap = new HashMap<String, Object>();
 			int cnt= adminMapper.sellerUpdate(map);
+			int cnt2=adminMapper.userRoleUpdate(map);
 			resultMap.put("result","success");
 			return resultMap;
 		}
@@ -417,6 +421,20 @@ public class AdminService {
 			return resultMap;
 		}
 	  
+		
+		// 월별 광고 수익 조회
+		public HashMap<String, Object> SelectRevenueByMonth(HashMap<String, Object> map) {
+		    HashMap<String, Object> resultMap = new HashMap<>();
+		    try {
+		        List<HashMap> list = adminMapper.revenueByMonthSelect(map);
+		        resultMap.put("list", list);
+		        resultMap.put("result", "success");
+		    } catch (Exception e) {
+		        resultMap.put("result", "fail");
+		        System.out.println(e.getMessage());
+		    }
+		    return resultMap;
+		}
 		
 		
 	

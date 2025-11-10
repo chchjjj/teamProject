@@ -26,33 +26,33 @@ public class PaymentController {
 
 	@Autowired
 	PaymentService paymentService; 
+	
+	@RequestMapping("/payment/payment.do")
+	public String payment(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map)
+			throws Exception {
 
-//	@RequestMapping("/payment/payment.do")
-//	public String payment(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map)
-//			throws Exception {
-//
-//		// 바로 주문하는 경우(productDetail.jsp) orderId 넘겨받기
-//		request.setAttribute("orderId", map.get("orderId"));
-//
-//		// cart.jsp에서 보낸 selectItem(JSON 문자열) 꺼내기
-//		String selectItemJson = (String) map.get("orderIdList");
-//
-//		// JSON → List 변환 (Gson 사용)
-//		List<String> orderIdList = new ArrayList<>();
-//		if (selectItemJson != null && !selectItemJson.isEmpty()) {
-//			Gson gson = new Gson();
-//			orderIdList = gson.fromJson(selectItemJson, new TypeToken<List<String>>() {
-//			}.getType());
-//		}
-//
-//		// JSP에서 쓸 수 있도록 model에 담기
-//		model.addAttribute("orderIdList", orderIdList);
-//
-//		System.out.println("cart.do에서 넘어온 orderIdList 목록: " + orderIdList);
-//
-//		// 결제 페이지로 이동
-//		return "/payment/payment";
-//	}
+		// 바로 주문하는 경우(productDetail.jsp) orderId 넘겨받기
+		request.setAttribute("orderId", map.get("orderId"));
+
+		// cart.jsp에서 보낸 selectItem(JSON 문자열) 꺼내기
+		String selectItemJson = (String) map.get("orderIdList");
+
+		// JSON → List 변환 (Gson 사용)
+		List<String> orderIdList = new ArrayList<>();
+		if (selectItemJson != null && !selectItemJson.isEmpty()) {
+			Gson gson = new Gson();
+			orderIdList = gson.fromJson(selectItemJson, new TypeToken<List<String>>() {
+			}.getType());
+		}
+
+		// JSP에서 쓸 수 있도록 model에 담기
+		model.addAttribute("orderIdList", orderIdList);
+
+		System.out.println("cart.do에서 넘어온 orderIdList 목록: " + orderIdList);
+
+		// 결제 페이지로 이동
+		return "/payment/payment";
+	}
 	
 	@RequestMapping("/payment/deliveryPayment.do")
 	public String deliveryPayment(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map)
@@ -191,6 +191,15 @@ public class PaymentController {
 
 		return new Gson().toJson(resultMap);
 	}
+	
+	@RequestMapping(value = "/payment/checkDelivery.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String checkDelivery(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = paymentService.checkDelivery(map);
+
+		return new Gson().toJson(resultMap);
+	}
 
 	@RequestMapping(value = "/payment/payment.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
@@ -210,6 +219,50 @@ public class PaymentController {
 		System.out.println("payment map 안에 담긴 값은 ===>" + map);
 		
 		resultMap = paymentService.addPayment(map);
+
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/payment/deliPayment.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String deliPayment(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		// 2. Controller(.dox)에서 리스트 형태로 변경 후 map에 넣기
+		//String json = (String) map.get("cartItems");
+		String json = map.get("orderList").toString();
+		ObjectMapper mapper = new ObjectMapper();
+		List<Object> orderList = mapper.readValue(json, new TypeReference<List<Object>>() {});
+
+		//List<HashMap<String, Object>> list = mapper.readValue(json, new TypeReference<List<HashMap<String, Object>>>(){});
+
+		map.put("orderList", orderList);
+
+		System.out.println("payment map 안에 담긴 값은 ===>" + map);
+		
+		resultMap = paymentService.addDeliPayment(map);
+
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/payment/pickPayment.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String pickPayment(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		// 2. Controller(.dox)에서 리스트 형태로 변경 후 map에 넣기
+		//String json = (String) map.get("cartItems");
+		String json = map.get("orderList").toString();
+		ObjectMapper mapper = new ObjectMapper();
+		List<Object> orderList = mapper.readValue(json, new TypeReference<List<Object>>() {});
+
+		//List<HashMap<String, Object>> list = mapper.readValue(json, new TypeReference<List<HashMap<String, Object>>>(){});
+
+		map.put("orderList", orderList);
+
+		System.out.println("payment map 안에 담긴 값은 ===>" + map);
+		
+		resultMap = paymentService.addPickPayment(map);
 
 		return new Gson().toJson(resultMap);
 	}

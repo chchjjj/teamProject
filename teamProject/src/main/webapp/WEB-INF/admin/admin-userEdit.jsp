@@ -1,42 +1,43 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>사용자관리</title>
-    <!-- 관리자 스타일시트 -->
-    <link rel="stylesheet" href="/css/admin-style.css">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.1.js" 
-            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" 
-            crossorigin="anonymous"></script>
-    <!-- Vue.js -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <!-- 페이지 변경 유틸리티 -->
-    <script src="/js/page-change.js"></script>
+    <!DOCTYPE html>
+    <html lang="ko">
 
-    <style>
-        .userEdit{
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);  
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>사용자관리</title>
+        <!-- 관리자 스타일시트 -->
+        <link rel="stylesheet" href="/css/admin-style.css">
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap"
+            rel="stylesheet">
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.7.1.js"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+        <!-- Vue.js -->
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <!-- 페이지 변경 유틸리티 -->
+        <script src="/js/page-change.js"></script>
 
-        .title{
-            font-size:30px;
-            font-weight: bold;
-            text-align: center;
-            color:#3E2723;
-            margin-bottom:23px;
+        <style>
+            .userEdit {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
 
-        }
-    </style>
+            .title {
+                font-size: 30px;
+                font-weight: bold;
+                text-align: center;
+                color: #3E2723;
+                margin-bottom: 23px;
+
+            }
+        </style>
     </head>
 
     <body>
@@ -48,31 +49,35 @@
 
                 <!--외쪽측 네이버바-->
                 <div class="navBar">
-                    <!---->
+                    <!-- Logo -->
+                    <div class="logo">
+                        <a href="javascript:;" onclick="location.href='/main.do'">
+                            <!--로고 클릭시 홈페이지 새로고침 -->
+                            <img src="/img/로고.png" alt="쇼핑몰 로고">
+                        </a>
+                    </div>
                     <div class="navButton">
                         <div>
-                            <button @click="fnAmdinMain()">대시보드</button>
+                            <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">전체 유저 관리</button>
                         </div>
                         <div>
-                            <button @click="fnBuyerManage()">사용자 관리</button>
+                            <button @click="fnSellerManage()" :class="{active: currentMenu==='seller'}">판매자관리</button>
                         </div>
                         <div>
-                            <button @click="fnSellerManage()">판매자관리</button>
+                            <button @click="fnSalesManage()" :class="{active: currentMenu==='money'}">매출관리</button>
                         </div>
                         <div>
-                            <button @click="fnSalesManage()">매출관리</button>
+                            <button @click="fnAdRequest()" :class="{active: currentMenu==='ad'}">광고관리</button>
                         </div>
                         <div>
-                            <button @click="fnAdRequest()">광고관리</button>
+                            <button @click="fnMembership()" :class="{active: currentMenu==='membership'}">맴버쉽관리</button>
                         </div>
                         <div>
-                            <button @click="fnMembership()">맴버쉽관리</button>
+                            <button @click="fnMonthlyFee()" :class="{active: currentMenu==='month'}">판매자 월 정산결과
+                                조회</button>
                         </div>
                         <div>
-                            <button @click="fnMonthlyFee()">판매자 월 정산결과 조회</button>
-                        </div>
-                        <div>
-                            <button @click="fnQandA()">Q&A</button>
+                            <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">Q&A</button>
                         </div>
                     </div>
 
@@ -86,7 +91,7 @@
                 </div>
 
                 <!--메인 페이지 바디 내용-->
-                <div class="userEdit">
+                <div class="userList">
                     <!--사용자수정 페이지-->
                     <div>
                         <!--구역이름-->
@@ -126,7 +131,7 @@
                                         <option value="O">활동</option>
                                         <option value="X">탈퇴</option>
                                     </select>
-                                </td>  
+                                </td>
                             </tr>
                             <tr>
                                 <th>가입일자</th>
@@ -138,17 +143,19 @@
                                     <span v-if="user.role==='S'">판매자</span>
                                     <span v-if="user.role==='C'">구매자</span>
                                     <span v-if="user.role==='A'">관리자</span>
-                                </td>  
+                                </td>
                             </tr>
                         </table>
+
+                    </div>
+                    <div>
+                        <button @click="fnEdit(userId)">
+                            수정
+                        </button>
                     </div>
                 </div>
 
-                <div>
-                    <button @click="fnEdit(userId)">
-                        수정
-                    </button>
-                </div>
+
 
             </div>
 
@@ -162,16 +169,17 @@
             data() {
                 return {
                     // 변수 - (key : value)
-                    userId:"${userId}",
-                    user:{},
-                    userName:"",
-                    phone:"",
-                    email:"",
-                    userAddr:"",
-                    userStatus:"",
-                    joinCdate:"",
-                    role:"", 
-                    storePass:""  
+                    userId: "${userId}",
+                    user: {},
+                    userName: "",
+                    phone: "",
+                    email: "",
+                    userAddr: "",
+                    userStatus: "",
+                    joinCdate: "",
+                    role: "",
+                    storePass: "",
+                    sessionId: "${sessionId}",
 
                 };
             },
@@ -180,7 +188,7 @@
                 fnUser: function () {
                     let self = this;
                     let param = {
-                        userId:self.userId
+                        userId: self.userId
                     };
                     $.ajax({
                         url: "/aduser/view.dox",
@@ -188,52 +196,52 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            self.user=data.user;
-                            self.userId=data.user.userId;
-                            self.userName=data.user.userName;
-                            self.phone=data.user.phone;
-                            self.email=data.user.email;
-                            self.userAddr=data.user.userAddr;
-                            self.userStatus=data.user.userStatus;
-                            self.joinCdate=data.user.joinCdate;
-                            self.role=data.user.role;
-                            
+                            self.user = data.user;
+                            self.userId = data.user.userId;
+                            self.userName = data.user.userName;
+                            self.phone = data.user.phone;
+                            self.email = data.user.email;
+                            self.userAddr = data.user.userAddr;
+                            self.userStatus = data.user.userStatus;
+                            self.joinCdate = data.user.joinCdate;
+                            self.role = data.user.role;
+
                         }
                     });
-            },
-            fnEdit: function () {
-                let self = this;
-                let param = {
-                    user:self.user,
-                    userId:self.userId,
-                    userName:self.userName,
-                    phone:self.phone,
-                    email:self.email,
-                    userAddr:self.userAddr,
-                    userStatus:self.userStatus,
-                    role:self.role, 
-                    storePass:self.storePass
-                };
-                $.ajax({
-                    url: "/aduser/update.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-                        alert("수정되었습니다.");
-                        self.fnBack();
-                    }
-                });
-            },
+                },
+                fnEdit: function () {
+                    let self = this;
+                    let param = {
+                        user: self.user,
+                        userId: self.userId,
+                        userName: self.userName,
+                        phone: self.phone,
+                        email: self.email,
+                        userAddr: self.userAddr,
+                        userStatus: self.userStatus,
+                        role: self.role,
+                        storePass: self.storePass
+                    };
+                    $.ajax({
+                        url: "/aduser/update.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            alert("수정되었습니다.");
+                            self.fnBack();
+                        }
+                    });
+                },
 
-            fnBack:function(){
-                location.href="/admin/userlist.do";
-            },
+                fnBack: function () {
+                    location.href = "/admin/userlist.do";
+                },
 
 
-                
 
-                fnAdminMain:function(){
+
+                fnAdminMain: function () {
                     location.href = "/admin/main.do";
                 },
 
@@ -267,8 +275,26 @@
                 },
 
                 fnLogout: function () {
-
-                }
+                    if (confirm("로그아웃 하시겠습니까?")) {
+                        let param = {};
+                        $.ajax({
+                            url: "/user/logout.dox",
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                if(data.result=="success"){
+                                    alert(data.msg+"! 홈페이지로 이동하겠습니다.");
+                                    location.href = "/main.do";
+                                }else{
+                                    alert("로그아웃하는 도중에 오류가 발생하였습니다.");
+                                }
+                                    
+                            }
+                            
+                        });
+                    }
+                },
 
 
 

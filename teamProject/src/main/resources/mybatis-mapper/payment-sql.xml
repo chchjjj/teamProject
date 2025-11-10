@@ -21,8 +21,8 @@
 		FROM ORDER_TBL O
         INNER JOIN ORDER_DETAIL_TBL OD ON O.ORDER_ID = OD.ORDER_ID 
         
-        <!--옵션 정보까지 불러올려면 아래 줄이 필요함-->
-        <!--INNER JOIN ORDER_OPTION_TBL OO ON OD.ORDER_DETAIL_ID = OO.ORDER_DETAIL_ID-->
+        <!--옵션 정보까지 불러올려면 아래 줄이 필요함--> 
+        INNER JOIN ORDER_OPTION_TBL OO ON OD.ORDER_DETAIL_ID = OO.ORDER_DETAIL_ID
 		
 		WHERE O.ORDER_ID IN
 		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
@@ -45,6 +45,13 @@
 		SET DELIVERY_TYPE = #{deliveryType}
 		WHERE ORDER_ID = #{orderId}
 	</update>
+	
+	<select id="selectOrderAddress" parameterType="hashmap" resultType="com.example.teamProject.payment.model.Payment"> 
+		SELECT * 
+		FROM ORDER_TBL
+		WHERE ORDER_ID = #{orderId}
+		
+	</select>
 	
 	<insert id="insertPayment" parameterType="hashmap">
 	    INSERT INTO PAYMENT_TBL 
@@ -94,7 +101,20 @@
 		UPDATE ORDER_TBL
 		SET STATUS = 'P'
 		WHERE ORDER_ID = #{orderId}
+	</update> 
+	
+	<update id="updateDeliveryWishDeli" parameterType="hashmap">
+	    UPDATE DELIVERY_TBL
+		SET WISH_DELI = TO_DATE(#{selectedDate}, 'YYYY-MM-DD HH24:MI')
+		WHERE ORDER_ID = #{orderId}
 	</update>
 	
+	<update id="updatePickUpDate" parameterType="hashmap">
+	    UPDATE PICKUP_TBL
+		SET 
+			PICKUP_DATE = TO_DATE(#{selectedDate}, 'YYYY-MM-DD HH24:MI'), 
+			PICK_TIME = TO_DATE(#{selectedDate}, 'YYYY-MM-DD HH24:MI')
+		WHERE ORDER_ID = #{orderId}
+	</update>
 	
 </mapper>

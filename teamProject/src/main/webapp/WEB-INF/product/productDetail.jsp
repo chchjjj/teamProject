@@ -47,13 +47,6 @@
                                         class="product-image" style="width: 100%; height: auto; border-radius: 10px;">
                                 </div>
 
-                                <div class="thumbnail-list">
-                                    <div class="thumbnail-item"></div>
-                                    <div class="thumbnail-item"></div>
-                                    <div class="thumbnail-item"></div>
-                                    <div class="thumbnail-item"></div>
-                                    <div class="thumbnail-item"></div>
-                                </div>
                             </div>
 
                             <div class="option-section">
@@ -63,7 +56,7 @@
                                 <div class="price-and-action">
                                     <p class="price">{{infoList.price}} 원~</p>
                                     <br>
-                                    <p class="shipping-fee">배송비 {{infoList.deliveryFee}}</p>
+                                    <p class="shipping-fee">배송비(포장비) {{infoList.deliveryFee}} </p>
 
                                     <span v-if="isWished">
                                         <img src="/img/좋아요누른후.png" alt="찜 완료" @click="fnwish" class="wish-icon">
@@ -198,14 +191,8 @@
                     selectedDate: null,
                     datePicker: null,
 
-                    // 💡 [수정] 오류의 원인: Flatpickr disable 옵션에서 참조하는 변수 추가
+                    // 판매자가 막은 날짜
                     disabledDates: [
-                        "2025-11-01",
-                        "2025-11-05",
-                        {
-                            from: "2025-11-10",
-                            to: "2025-11-15"
-                        }
                     ],
                     letteringText: "",
                     // 전체 상품 수량
@@ -370,13 +357,14 @@
                             data: param,
                             success: function (data) {
                                 if (data.result === "success") {
-                                    alert("주문이 완료되었습니다!");                            
+                                    alert("주문이 완료되었습니다!");
                                     alert(data.orderId);
-                                    if (self.deliveryType === 'D') {
-                                        pageChange("/payment/deliveryPayment.do", { orderId: data.orderId });
-                                    } else if (self.deliveryType === 'P') {
-                                        pageChange("/payment/pickUpPayment.do", { orderId: data.orderId });
-                                    }
+                                    pageChange("/payment/payment.do", { orderId: data.orderId });
+                                    // if (self.deliveryType === 'D') {
+                                    //     pageChange("/payment/deliveryPayment.do", { orderId: data.orderId });
+                                    // } else if (self.deliveryType === 'P') {
+                                    //     pageChange("/payment/pickUpPayment.do", { orderId: data.orderId });
+                                    // }
 
                                 } else {
                                     alert("주문 처리 중 오류가 발생했습니다.");
@@ -643,11 +631,11 @@
                     self.datePicker = flatpickr("#deliveryDateInput", {
                         locale: "ko",
 
-                        // 💡 핵심 1: 시간 선택 기능 활성화
+                        //  1: 시간 선택 기능 활성화
                         enableTime: true,
-                        // 💡 핵심 2: 시간 선택 시 캘린더가 닫히지 않도록(필수 아님)
+                        //  2: 시간 선택 시 캘린더가 닫히지 않도록(필수 아님)
                         closeOnSelect: false,
-                        // 💡 핵심 3: 날짜와 시간을 모두 포함하는 형식 지정 (Y-m-d H:i)
+                        //  3: 날짜와 시간을 모두 포함하는 형식 지정 (Y-m-d H:i)
                         dateFormat: "Y-m-d H:i",
 
                         inline: false,
@@ -666,6 +654,38 @@
                                 console.log("선택된 날짜 및 시간:", self.selectedDate);
                                 // 사용자가 '확인' 버튼을 누르거나(옵션) 수동으로 닫을 수 있도록 close() 제거
                                 // instance.close(); 
+                            }
+                        }
+                    });
+                },
+                disableDateInfo() {
+                    let self = this;
+                    $.ajax({
+                        url: "/product/disableDateInfo.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: { proNo: self.proNo },
+                        success: function (data) {
+                            // 객체 배열 → 날짜 문자열 배열로 변환
+                            self.disabledDates = Array.isArray(data.list) ?
+                                data.list.map(item => item.disabledDate) : [];
+
+                            console.log("disabledDates:", self.disabledDates);
+
+                            // Flatpickr 초기화 또는 기존 인스턴스에 적용
+                            if (self.datePicker) {
+                                self.datePicker.set('disable', self.disabledDates);
+                            } else {
+                                self.initFlatpickr();
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("disableDateInfo AJAX 에러:", error);
+                            self.disabledDates = [];
+                            if (self.datePicker) {
+                                self.datePicker.set('disable', self.disabledDates);
+                            } else {
+                                self.initFlatpickr();
                             }
                         }
                     });
@@ -762,6 +782,7 @@
                 self.fnAllOpt();
                 self.fnCheckWish();
                 self.fnUserInfo();
+
                 // 임시로, 모든 데이터가 로드될 시간을 주고 그룹화 함수 실행 (비동기 이슈 발생 가능)
                 setTimeout(() => {
                     self.groupOptions();
@@ -774,6 +795,8 @@
                     // 💡 Flatpickr 초기화 호출
                     self.initFlatpickr();
                 }, 300); // 0.5초 대기 후 그룹화
+
+                self.disableDateInfo();
             }
         });
 

@@ -13,12 +13,16 @@ public interface ProductMapper {
 	
 	// 제품 상세정보
 	Product proInfo(HashMap<String, Object> map);
-	
+	// 제품 상세정보 사진
+	Product proIMG(HashMap<String, Object> map);
 	// 유저 정보
 	Product userInfo(HashMap<String, Object> map);
 	
 	// 조회수 증가
 	int updateCnt(HashMap<String, Object> map);
+	
+	// 불가 날짜 가져오기
+	List<Product> disableDateinfo(HashMap<String, Object> map);
 	
 	// 상위옵션
 	List<Product> topOptList(HashMap<String, Object> map); 

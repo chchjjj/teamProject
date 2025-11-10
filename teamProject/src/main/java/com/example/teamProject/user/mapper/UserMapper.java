@@ -59,7 +59,10 @@ public interface UserMapper {
 	//주문형황 조회
 	List <User> selectOrder (HashMap<String, Object> map);
 	
-	// 아이디 찾기에서 사용
-	User userNameCheck(HashMap<String, Object> map);
+	//orderCount
+	int orderCount (HashMap<String, Object> map);
+	
+	//reviewInsert
+	int reviewInsert (HashMap<String, Object> map);
 	
 }

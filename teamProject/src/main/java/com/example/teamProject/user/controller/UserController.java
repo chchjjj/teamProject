@@ -89,6 +89,13 @@ public class UserController {
         return "/user/orderStatus";
 	}
 	
+	@RequestMapping("/user/reviewInsert.do")
+    public String reviewInsert(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{
+		request.setAttribute("orderId",map.get("orderId"));
+        return "/user/reviewInsert";
+       
+	}
+	
 	
 	@RequestMapping(value = "/user/login.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
@@ -127,14 +134,7 @@ public class UserController {
 
 		return new Gson().toJson(resultMap); 
 	}
-	@RequestMapping(value = "/user/NamePhonecheck.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public String NamePhonecheck(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap = userService.userNameCheck(map);
-
-		return new Gson().toJson(resultMap); 
-	}
+	
 	@RequestMapping(value = "/user/auth.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String auth(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
@@ -242,6 +242,19 @@ public class UserController {
 
 		
 		resultMap = userService.SelectChatList(map);
+		
+		System.out.println(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	
+
+	@RequestMapping(value = "/user/reviewInsert.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String reviewInsert(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = userService.InsertReview(map);
 		
 		System.out.println(map);
 		

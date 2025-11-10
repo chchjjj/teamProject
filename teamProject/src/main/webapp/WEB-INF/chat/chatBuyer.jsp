@@ -15,19 +15,9 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <style>
-    button {
-        padding: 8px 15px;
-        background-color: #555;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 14px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        height: 38px;
-        display: block;
-        margin: 20px auto;
-    }
+        body{
+                background-color: #f1f1f1;
+            }
     </style>
 </head>
 <body>
@@ -79,14 +69,15 @@
             <textarea v-model="newMessage" placeholder="메시지를 입력하세요" @keyup.enter="sendMessage"></textarea>
             <button @click="sendMessage">전송</button>
         </footer>
-        <div id="chatApp">
+        <div id="chatApp" class="chat-actions">
             <!-- 파일 선택 -->
             <input type="file" ref="imageInput" accept="image/*" style="display:none" @change="uploadImage">
             <button @click="$refs.imageInput.click()" class="addImage">사진 첨부</button>
+            <button @click="fnGoBack">돌아가기</button>
         </div>
 
     </div>
-    <div><button @click="fnGoBack">돌아가기</button></div>
+    <div></div>
 </div>
 <%@ include file="/WEB-INF/main/footer.jsp" %>
 

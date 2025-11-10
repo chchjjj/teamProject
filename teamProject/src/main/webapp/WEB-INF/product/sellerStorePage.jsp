@@ -339,9 +339,13 @@
                 <!-- html 코드는 id가 app인 태그 안에서 작업 -->
                 <div class="page-container">
 
-                    <div class="store-banner">
-                        가게 헤더 이미지 공간
+
+                    <div class="store-banner" v-if="!storeInfo.filePath || !storeInfo.fileName">
+                        판매자 등록 썸네일
                     </div>
+                    <img v-else :src="(storeInfo.filePath + storeInfo.fileName).trim()" alt="상품 이미지"
+                        class="product-image" style="width: 100%; height: auto; border-radius: 10px;">
+
 
                     <div class="main-content">
 
@@ -369,11 +373,10 @@
                             <div class="product-item" v-for="item in list" @click="fnProDetail(item.proNo)">
                                 <div class="product-image-wrapper">
                                     <div class="product-image-placeholder" v-if="!item.filePath || !item.fileName">
-                                            판매자 등록 썸네일
-                                        </div>
-                                        <img v-else :src="(item.filePath + item.fileName).trim()" alt="상품 이미지"
-                                            class="product-image"
-                                            style="width: 100%; height: auto; border-radius: 10px;">
+                                        판매자 등록 썸네일
+                                    </div>
+                                    <img v-else :src="(item.filePath + item.fileName).trim()" alt="상품 이미지"
+                                        class="product-image" style="width: 100%; height: auto; border-radius: 10px;">
                                     <!-- 멤버쉽 Y이면 추천 딱지 표시 -->
                                     <img v-if="item.membership === 'Y'" class="recommend-badge" src="/img/recommend.png"
                                         alt="추천 딱지">
@@ -433,7 +436,6 @@
                         success: function (data) {
                             self.storeInfo = data.info;
                             console.log(self.storeInfo);
-                            console.log(data.result);
                         }
                     });
                 },

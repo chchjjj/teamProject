@@ -37,6 +37,14 @@ public class ProductService {
 		resultMap.put("info", info);
 		return resultMap;
 	}
+	// 상품 상세사진
+	public HashMap<String, Object> getProImg(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		Product info = ProductMapper.proIMG(map);
+		resultMap.put("info", info);
+		return resultMap;
+	}
 	// 가게 정보
 		public HashMap<String, Object> getStoreInfo(HashMap<String, Object> map) {
 			// TODO Auto-generated method stub
@@ -87,7 +95,22 @@ public class ProductService {
 		}				
 		return resultMap;
 	}
-	
+	// 배송 불가날짜 가져오기
+	public HashMap<String, Object> DateInfo(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+			List<Product> list = ProductMapper.disableDateinfo(map);			
+			resultMap.put("list", list); 
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
+		}				
+		return resultMap;
+	}
 	// 장바구니 리스트
 	public HashMap<String, Object> getCartList(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub
@@ -354,6 +377,7 @@ public class ProductService {
 	            detailMap.put("proName", cart.get("proName"));
 	            detailMap.put("itemQty", cart.get("itemQty")); // 총수량
 	            detailMap.put("defPrice", cart.get("defPrice")); //개당가격
+	            detailMap.put("subtotal", cart.get("subtotal"));
 	            detailMap.put("totalPrice", totalPrice); // 총 가격
 	            detailMap.put("letteringWord", letteringWord);
 	            

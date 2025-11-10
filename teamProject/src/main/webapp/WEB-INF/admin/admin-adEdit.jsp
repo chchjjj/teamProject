@@ -30,8 +30,36 @@
             text-align: center;
             color:#3E2723;
             margin-bottom:23px;
-
         }
+
+        .info {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
+            margin-top: 10px;
+        }
+
+        .btnArea {
+    display: flex;
+    justify-content: center; /* 가로 가운데 정렬 */
+    gap: 20px; /* 버튼 사이 간격 */
+    margin-top: 20px;
+    }
+
+    .btnArea button {
+        padding: 8px 18px;
+        background-color: #795548;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .btnArea button:hover {
+        background-color: #5D4037;
+    }
+            
     </style>
     </head>
 
@@ -46,8 +74,9 @@
                 <div class="navBar">
                     <!-- Logo -->
                     <div class="logo">
-                        <img src="/images/logo.png" alt="Dessert Lab" style="max-width: 150px;">
-                        <p>Admin Panel</p>
+                        <a href="javascript:;" onclick="location.href='/main.do'">
+                            <img src="/img/로고.png" alt="쇼핑몰 로고">
+                        </a>
                     </div>
                     <div class="navButton">
                         <div>
@@ -126,19 +155,13 @@
                             </tr>
                         </table>
                     </div>
-                    <div>
-                    <button @click="fnEdit(adId)">
-                        수정
-                    </button>
+                <div class="btnArea">
+                    <button @click="fnEdit(adId)">수정</button>
+                    <button @click="fnEnd(adId)">강제종료</button>
                 </div>
-
-                <div>
-                    <button @click="fnEnd(adId)">
-                        강제종료
-                    </button>
+                <div class="info">※ 단가는 계약서 상 웹페이지에서 변경이 불가합니다.</div>
                 </div>
-                </div>
-
+                
             </div>
 
         </div>
@@ -151,6 +174,7 @@
             data() {
                 return {
                     // 변수 - (key : value)
+                    sessionId: "${sessionId}",
                     adId:"${adId}",
                     ad:{},
                     adName:"",
@@ -256,8 +280,26 @@
 
 
                 fnLogout: function () {
-
-                }
+                    if (confirm("로그아웃 하시겠습니까?")) {
+                        let param = {};
+                        $.ajax({
+                            url: "/user/logout.dox",
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                if(data.result=="success"){
+                                    alert(data.msg+"! 홈페이지로 이동하겠습니다.");
+                                    location.href = "/main.do";
+                                }else{
+                                    alert("로그아웃하는 도중에 오류가 발생하였습니다.");
+                                }
+                                    
+                            }
+                            
+                        });
+                    }
+                },
 
 
 

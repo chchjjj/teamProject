@@ -5,13 +5,43 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>광고관리</title>
+        <title>:: 광고 관리 ::</title>
         <link rel="stylesheet" href="/css/admin-style.css">
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <script src="/js/page-change.js"></script>
         <style>
+            th,
+            td {
+                padding: 10px 15px;
+                text-align: center;
+                border-bottom: 1px solid #ddd;
+            }
+
+            th {
+                background-color: #3E2723;
+                /* ESPRESSO 색상 */
+                color: #FFEDAC;
+                /* BUTTER 색상 */
+                font-weight: bold;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+            tr:hover {
+                background-color: #F4C9D6;
+                /* PEONY 색상 */
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            td {
+                color: #333;
+            }
+            
             /* 페이징 버튼 CSS */
             .paging {
                 margin-top: 20px;
@@ -64,6 +94,31 @@
                 color: #FFEDAC;
                 font-weight: bold;
             }
+
+            h3{
+                margin-top: 30px;
+            }
+
+            .info {
+                font-size: 14px;
+                color: #666;
+                margin-bottom: 30px;
+            }
+
+            .paging {
+                display: flex;
+                justify-content: center; /* 수평 가운데 정렬 */
+                align-items: center;     /* 수직 정렬 */
+                gap: 5px;                /* 버튼 간 간격 */
+                margin-top: 30px;
+            }
+
+            .section-title {
+            font-size: 20px !important;
+            font-weight: bold !important;
+            }
+
+            
         </style>
     </head>
 
@@ -80,7 +135,7 @@
                         </a>
                     </div>
                     <div class="navButton">
-                        <div><button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">구매자 관리</button>
+                        <div><button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">전체 유저 관리</button>
                         </div>
                         <div><button @click="fnSellerManage()" :class="{active: currentMenu==='seller'}">판매자 관리</button>
                         </div>
@@ -91,7 +146,7 @@
                                 :class="{active: currentMenu==='membership'}">맴버쉽관리</button></div>
                         <div><button @click="fnMonthlyFee()" :class="{active: currentMenu==='month'}">판매자 월 정산결과
                                 조회</button></div>
-                        <div><button @click="fnQandA()" :class="{active: currentMenu==='qna'}">Q&A</button></div>
+                        <div><button @click="fnQandA()" :class="{active: currentMenu==='qna'}">게시글 관리</button></div>
                     </div>
                     <div class="logOut">
                         <button @click="fnLogout()">Logout</button>
@@ -100,25 +155,36 @@
 
                 <!-- 광고 관리 영역 -->
                 <div class="adManagement">
-                    <h2>광고관리</h2>
+                    <div class="section-title">광고 관리</div>
 
                     <!-- 광고 추가 폼 -->
                     <div class="adAdd">
-                        <h3>광고 추가</h3>
+                        <h3>광고 추가 (배너)</h3>
+                        <div class="info">
+                            ※ 관리자께서는 계약서 내용을 참고하시어 오차없이 입력 바랍니다. <br>
+                            ※ 현재 배너광고는 한 달 기간 계약으로 진행중입니다. 현재 진행중인 계약이 끝나야 새로 추가가 가능합니다.
+                        </div>
+
                         <table>
                             <tr>
                                 <th>광고이름</th>
+                                <th>시작기간</th>
+                                <th>종료기간</th>
                                 <th>링크</th>
                                 <th>클릭당 비용(원)</th>
                             </tr>
                             <tr>
                                 <td><input type="text" v-model="adName"></td>
+                                <td><input type="date" v-model="startDate"></td>
+                                <td><input type="date" v-model="endDate"></td>
                                 <td><input type="text" v-model="urlLink"></td>
                                 <td><input type="text" v-model="clickUnitCost"></td>
                             </tr>
                         </table>
                         <button @click="fnAdAdd()" style="margin-top:10px;">추가</button>
                     </div>
+
+                    <hr class="divider">
 
                     <!-- 광고 리스트 -->
                     <div class="adList" style="margin-top:20px;">
@@ -134,7 +200,9 @@
                                     <th>클릭</th>
                                     <th>클릭당 비용(원)</th>
                                     <th>진행상태</th>
+                                    <th>비용발생(원)</th>
                                     <th>수정</th>
+                                    
                                 </tr>
                             </thead>
                             <tbody>
@@ -147,6 +215,7 @@
                                     <td>{{ad.clicks}}</td>
                                     <td>{{ad.clickUnitCost}}</td>
                                     <td>{{ad.status}}</td>
+                                    <td>{{formatNumber(ad.adCost)}}</td>
                                     <td>
                                         <span v-if="ad.status==='진행중'||ad.status==='예정'">
                                             <button @click="fnEdit(ad.adId)">수정</button>
@@ -158,7 +227,7 @@
                         </table>
 
                         <!-- 페이징 버튼 -->
-                        <div class="paging" style="margin-top: 15px; text-align: center;">
+                        <div class="paging" >
                             <span v-if="page>1">
                                 <button @click="fnPre()">◀</button>
                             </span>
@@ -198,7 +267,7 @@
                     clickUnitCost: 0,
                     status: "",
 
-                    //전에 진행중인 광고(시간이 만료되었을 때 만 새로운 추가가)
+                    //전에 진행중인 광고(시간이 만료되었을 때만 새로운 추가 가능)
 
 
                     //paging에 관한 모든 것
@@ -278,7 +347,7 @@
                             data: param,
                             success: function (data) {
                                 if (data.check > 0) {
-                                    alert("진행 중인 광고가 있습니다. 스케줄을 확인하시기 바람니다.");
+                                    alert("진행 중인 광고가 있습니다. 스케줄을 확인하시기 바랍니다.");
                                     reject();
                                 } else {
                                     resolve();
@@ -338,6 +407,11 @@
 
                 },
 
+                 formatNumber: function (num) {
+                    if (!num && num !== 0) return '0';
+                    return Number(num).toLocaleString('ko-KR');
+                },
+
 
 
                 fnBuyerManage: function () {
@@ -369,17 +443,23 @@
                 },
 
                 fnLogout: function () {
-                    param = {}
                     if (confirm("로그아웃 하시겠습니까?")) {
+                        let param = {};
                         $.ajax({
-                            url: "/user/logout.dox", // 로그아웃 url 주소
+                            url: "/user/logout.dox",
                             dataType: "json",
                             type: "POST",
                             data: param,
                             success: function (data) {
-                                alert(data.msg);
-                                location.href = "/main.do";
+                                if(data.result=="success"){
+                                    alert(data.msg+"! 홈페이지로 이동하겠습니다.");
+                                    location.href = "/main.do";
+                                }else{
+                                    alert("로그아웃하는 도중에 오류가 발생하였습니다.");
+                                }
+                                    
                             }
+                            
                         });
                     }
                 },

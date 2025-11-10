@@ -8,11 +8,10 @@
         <link rel="stylesheet" href="/css/admin-style.css">
         <title>사용자정보수정</title>
         <script src="https://code.jquery.com/jquery-3.7.1.js"
-        
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <style>
-                table {
+            table {
                 width: 100%;
                 border-collapse: collapse;
                 font-family: 'Arial', sans-serif;
@@ -211,28 +210,57 @@
                     <div>
                         <!--구역이름-->
                         <div>
-                             <span>{{user.userName }}</span>
-                             <span>의 구매내역</span>
+                            <span>{{user.userName }}</span>
+                            <span>의 구매내역</span>
                         </div>
                         <!--아이콘-->
                         <div></div>
                         <!--태이블-->
                         <table>
                             <tr>
+                                <th>주문번호</th>
                                 <th>상품번호</th>
                                 <th>상품명</th>
                                 <th>상품 종류</th>
                                 <th>배달된 주소</th>
-                                <th>총가격</th>
+                                <th>주문시간</th>
+                                <th>총가격(원)</th>
                             </tr>
                             <tr v-for="order in orderList">
+                                <td>{{order.orderId}}</td>
                                 <td>{{order.proNo}}</td>
                                 <td>{{order.proName}}</td>
                                 <td>{{order.proType}}</td>
                                 <td>{{order.fullAddress}}</td>
-                                <td>{{order.totalPrice}}</td>
+                                <td>{{order.orderDate}}</td>
+                                <td>{{formatNumber(order.totalPrice)}}</td>
                             </tr>
                         </table>
+                    </div>
+
+                    <!--페이징 구역-->
+                    <!--페이징 구역-->
+                    <div style="text-align:center; margin-top:25px;">
+                        <span v-if="page>1">
+                            <button @click="fnPre()"
+                                style="padding:6px 12px; border:1px solid #3E2723; background:#fff; color:#3E2723; border-radius:4px; cursor:pointer; transition:all 0.2s ease;">
+                                ◀
+                            </button>
+                        </span>
+
+                        <a href="javascript:;" v-for="num in pageRangeList" @click="fnChange(num)"
+                            :class="{active:page == num}"
+                            style="display:inline-block; margin:0 4px; padding:6px 12px; border:1px solid #3E2723; border-radius:4px; text-decoration:none; color:#3E2723; transition:all 0.2s ease;"
+                            :style="page==num ? 'background-color:#3E2723; color:#FFEDAC; font-weight:bold; box-shadow:0 2px 5px rgba(0,0,0,0.2);' : ''">
+                            {{num}}
+                        </a>
+
+                        <span v-if="page!=pageNum">
+                            <button @click="fnNext()"
+                                style="padding:6px 12px; border:1px solid #3E2723; background:#fff; color:#3E2723; border-radius:4px; cursor:pointer; transition:all 0.2s ease;">
+                                ▶
+                            </button>
+                        </span>
                     </div>
                 </div>
 
@@ -248,59 +276,118 @@
             data() {
                 return {
                     // 변수 - (key : value)
-                    userId:"${userId}",
-                    orderList:[], 
-                    user:{} ,
+                    userId: "${userId}",
+                    orderList: [],
+                    user: {},
+                    sessionId: "${sessionId}",
 
-                    currentMenu: "buyer"
+                    currentMenu: "buyer",
+
+                    //paging에 관한 모든 것
+                    totalRows: 0,//전체 목록의 총 행수
+                    pageRangeList: [],//화면 페이징을 하는 숫자들이 이루어진 리스트
+                    pageSize: 10,//뿌렸을 때 한 페이지에 몇 행
+                    page: 1,//지금 페이지
+                    pageRange: 5,//한 화면에 몇개 페이지 수 나오게 한다
+                    pageNum: 0//목록 전체를 가져오려면 합하여 몇 페지
+
                 };
             },
             methods: {
                 // 함수(메소드) - (key : function())
                 fnUser: function () {
-                let self = this;
-                let param = {
-                    userId:self.userId
-                };
-                $.ajax({
-                    url: "/aduser/order.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-                        self.orderList=data.orderList;
-                        self.userName=data.orderList[0].userName;
-                        
+                    let self = this;
+                    let param = {
+                        userId: self.userId,
+                        //paging에 관한 모든 것
+                        option: self.option,
+                        keyWord: self.keyWord,
+                        offset: (self.page - 1) * self.pageSize,
+                        fetchRows: self.pageSize,
+                    };
+                    $.ajax({
+                        url: "/aduser/order.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            self.orderList = data.orderList;
+                            self.userName = data.orderList[0].userName;
+                            self.userList = data.userList;
+                            self.totalRows = data.totalRows;
+                            self.pageNum = Math.ceil(self.totalRows / self.pageSize);
+                            self.fnpageRange();
+
+                        }
+                    });
+                },
+
+                fnUserName: function () {
+                    let self = this;
+                    let param = {
+                        userId: self.userId
+                    };
+                    $.ajax({
+                        url: "/aduser/view.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            self.user = data.user;
+
+                        }
+                    });
+                },
+
+
+                //페이징 메소드:화면에 나오는 페이지를 자동적으로 합산 모든 수량의 페이징을 처리
+                //이게 걱정할 필요가 없습니다. 원래 실습대로 다하면 자동적으로 계산됩니다.
+                fnpageRange: function () {
+                    let self = this;
+                    self.pageRangeList = [];
+                    // 만약에 한화면의 페이지수가 10이라면 0~9 범위에서 나온 값이 floor해서 하나의 숫자가 나오고, 1~10 범위를 만들고 싶다면 0~9에서 나온 값에 +1만 해주면 됩니다.
+                    // 화면에 떠있는 시작 페이지
+                    let startPage = Math.floor((self.page - 1) / self.pageRange) * self.pageRange + 1;
+                    // 화면에 떠있는 마지막 페이지
+                    let endPage = Math.min(startPage + self.pageRange - 1, self.pageNum);
+
+                    for (let i = startPage; i <= endPage; i++) {
+                        self.pageRangeList.push(i);
                     }
-                });
-            },
+                },
 
-            fnUserName: function () {
-                let self = this;
-                let param = {
-                    userId:self.userId
-                };
-                $.ajax({
-                    url: "/aduser/view.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function (data) {
-                        self.user=data.user;
-                        
+                fnChange: function (num) {
+                    let self = this;
+                    self.page = num;
+                    self.fnUser();
+                },
+
+                fnPre: function () {
+                    let self = this;
+                    if (self.page > 1) {
+                        self.page--;
                     }
-                });
-            },
-            
+                    self.fnUser();
+                },
 
-            fnBack:function(){
-                location.href="/admin/userlist.do";
-            },
+                fnNext: function () {
+                    let self = this;
+                    if (self.page < self.pageNum) {
+                        self.page++;
+                    }
+                    self.fnUser();
+
+                },
 
 
-                
+                fnBack: function () {
+                    location.href = "/admin/userlist.do";
+                },
 
-                fnAdminMain:function(){
+
+
+
+                fnAdminMain: function () {
                     location.href = "/admin/main.do";
                 },
 
@@ -329,25 +416,36 @@
                 fnQandA: function () {
                     location.href = "/admin/boardManage.do";
                 },
-                 fnMonthlyFee: function () {
+                fnMonthlyFee: function () {
                     location.href = "/admin/monthlyfee.do";
                 },
 
                 fnLogout: function () {
-                  param = {}
                     if (confirm("로그아웃 하시겠습니까?")) {
+                        let param = {};
                         $.ajax({
-                            url: "/user/logout.dox", // 로그아웃 url 주소
+                            url: "/user/logout.dox",
                             dataType: "json",
                             type: "POST",
                             data: param,
                             success: function (data) {
-                                alert(data.msg);
-                                location.href = "/main.do";
+                                if (data.result == "success") {
+                                    alert(data.msg + "! 홈페이지로 이동하겠습니다.");
+                                    location.href = "/main.do";
+                                } else {
+                                    alert("로그아웃하는 도중에 오류가 발생하였습니다.");
+                                }
+
                             }
+
                         });
                     }
-                }
+                },
+
+                formatNumber: function (num) {
+                    if (!num && num !== 0) return '0';
+                    return Number(num).toLocaleString('ko-KR');
+                },
 
 
 
