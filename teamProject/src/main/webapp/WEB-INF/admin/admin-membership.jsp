@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>멤버십관리</title>
+        <title>:: 멤버쉽 관리 ::</title>
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="/css/admin-style.css">
@@ -92,6 +92,34 @@
                 color: #FFEDAC;
                 border-color: #3E2723;
             }
+
+            .section-title {
+            font-size: 20px !important;
+            font-weight: bold !important;
+            }
+            .section-title {
+                font-weight: bold;
+                font-size: 18px;
+                padding: 10px 0;
+                border-bottom: 2px solid #3E2723; /* 진한 검은색 라인 */
+                margin-bottom: 15px; /* 아래 테이블과 여백 */
+            }
+
+            .paging {
+                display: flex;
+                justify-content: center; /* 가로 가운데 정렬 */
+                align-items: center;     /* 세로 가운데 정렬 */
+                gap: 5px;                /* 버튼과 숫자 간 간격 */
+                margin: 25px 0;          /* 위아래 여백 */
+            }
+
+            .info {
+                font-size: 14px;
+                color: #666;
+                margin-bottom: 30px;
+            }
+
+            
         </style>
     </head>
 
@@ -112,7 +140,7 @@
                     </div>
                     <div class="navButton">
                         <div>
-                            <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">구매자 관리</button>
+                            <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">전체 유저 관리</button>
                         </div>
                         <div>
                             <button @click="fnSellerManage()" :class="{active: currentMenu==='seller'}">판매자관리</button>
@@ -131,7 +159,7 @@
                                 조회</button>
                         </div>
                         <div>
-                            <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">Q&A</button>
+                            <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">게시글 관리</button>
                         </div>
                     </div>
 
@@ -149,19 +177,18 @@
                     <!--멤버십 리스트-->
                     <div>
                         <!--구역이름-->
-                        <div>
-                            멤버십 관리
+                        <div class="section-title">멤버쉽 관리</div>
+
+                        <div class="info">
+                            ※ 멤버쉽 가입/탈퇴는 판매자 마이페이지에서 개별 신청 및 반영됩니다.
                         </div>
-                        <!--아이콘-->
-                        <div></div>
-                        <!--선택사항-->
                         <div>
                             <select v-model="pageSize" @change="fnMembershipList">
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
+                                <option value="10">:: 10개씩 ::</option>
+                                <option value="15">:: 15개씩 ::</option>
+                                <option value="20">:: 20개씩 ::</option>
                             </select>
-                            <input type="text" v-model="keyWord">
+                            <input type="text" v-model="keyWord" @keyup.enter="fnMembershipList">
                             <button @click="fnMembershipList">사용자 아이디로 검색</button>
                         </div>
                         <!--태이블-->
@@ -183,7 +210,12 @@
                                     <span v-if="membership.membershipLevel==='G'">GOLD</span>
                                 </td>
                                 <td>{{membership.joinDate}}</td>
-                                <td>{{membership.membershipStatus}}</td>
+                                <!-- <td>{{membership.membershipStatus}}</td> -->
+                                <td>
+                                    <span v-if="membership.membershipStatus==='A'">구독중</span>
+                                    <span v-if="membership.membershipStatus==='B'">중단요청중</span>
+                                    <span v-if="membership.membershipStatus==='C'">최종중단</span>
+                                </td>
                                 <td>{{formatNumber(membership.monthlyFee)}}</td>
                                 <td>{{membership.expirationDate}}</td>
                             </tr>

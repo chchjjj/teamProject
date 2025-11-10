@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>판매자 월 정산결과 조회</title>
+        <title>:: 판매자 월 정산결과 조회 ::</title>
         <link rel="stylesheet" href="/css/admin-style.css">
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
@@ -13,7 +13,35 @@
         <script src="/js/page-change.js"></script>
 
         <style>
+            th,
+            td {
+                padding: 10px 15px;
+                text-align: center;
+                border-bottom: 1px solid #ddd;
+            }
 
+            th {
+                background-color: #3E2723;
+                /* ESPRESSO 색상 */
+                color: #FFEDAC;
+                /* BUTTER 색상 */
+                font-weight: bold;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+            tr:hover {
+                background-color: #F4C9D6;
+                /* PEONY 색상 */
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            td {
+                color: #333;
+            }
         </style>
     </head>
 
@@ -34,7 +62,7 @@
                     </div>
                     <div class="navButton">
                         <div>
-                            <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">구매자 관리</button>
+                            <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">전체 유저 관리</button>
                         </div>
                         <div>
                             <button @click="fnSellerManage()" :class="{active: currentMenu==='seller'}">판매자관리</button>
@@ -53,7 +81,7 @@
                                 조회</button>
                         </div>
                         <div>
-                            <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">Q&A</button>
+                            <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">게시글 관리</button>
                         </div>
                     </div>
 
@@ -79,16 +107,16 @@
                         <!--선택사항-->
                         <div>
                             <select v-model="pageSize" @change="fnSellerList">
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
+                                <option value="10">:: 10개씩 ::</option>
+                                <option value="15">:: 15개씩 ::</option>
+                                <option value="20">:: 20개씩 ::</option>
                             </select>
                             <select v-model="option">
-                                <option value="all">::전체::</option>
-                                <option value="storeId">가게아이디</option>
-                                <option value="storeName">가게이름</option>
+                                <option value="all">:: 전체 ::</option>
+                                <option value="storeId">가게 아이디</option>
+                                <option value="storeName">가게 이름</option>
                             </select>
-                            <input type="text" v-model="keyWord">
+                            <input type="text" v-model="keyWord" @keyup.enter="fnSellerList">
                             <button @click="fnSellerList">검색</button>
                         </div>
                         <!--태이블-->
@@ -127,7 +155,7 @@
                     </div>
 
 
-                    <div>
+                    <div style="text-align: left; margin-top: 10px;">
                         <button @click="fnRemoveAll">
                             선택 삭제
                         </button>

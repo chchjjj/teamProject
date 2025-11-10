@@ -90,15 +90,21 @@
    		SELECT STORE_ID,STORE_NAME,U.USER_ID,BUSINESS_NO,STORE_INTRO,STORE_ADDR,STORE_PASS,JOIN_CDATE,REJECT_REASON,GRADE_CODE, MEMBERSHIP,REG_DATE,STORE_MONTHLY_FEE, TO_CHAR(SYSDATE,'YYYY-MM') AS THIS_MONTH FROM SELLER_INFO_TBL S
 		LEFT JOIN USER_TBL U ON S.USER_ID=U.USER_ID
    		WHERE 1=1
-   		<if test="option=='all'">
-   			AND (STORE_ID =#{keyWord} OR STORE_NAME LIKE '%'||#{keyWord}||'%')
-   		</if>
-   		<if test="option=='storeId'">
-   			AND STORE_ID =#{keyWord}
-   		</if>
-   		<if test="option=='storeName'">
-   			AND STORE_NAME LIKE '%'||#{keyWord}||'%'
-   		</if>
+   		<!-- 검색어가 있을 때만 조건 추가 -->
+    <if test="keyWord != null and keyWord != ''">
+        <choose>
+            <when test="option == 'all'">
+                AND (STORE_ID LIKE '%' || #{keyWord} || '%' OR STORE_NAME LIKE '%' || #{keyWord} || '%')
+            </when>
+            <when test="option == 'storeId'">
+                AND STORE_ID LIKE '%' || #{keyWord} || '%'
+            </when>
+            <when test="option == 'storeName'">
+                AND STORE_NAME LIKE '%' || #{keyWord} || '%'
+            </when>
+        </choose>
+    </if>
+   		
    		<if test="flgApp=='true'">
    			AND STORE_PASS='G'
    		</if>
