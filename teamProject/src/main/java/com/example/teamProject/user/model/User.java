@@ -59,6 +59,7 @@ public class User {
 			
 			// 판매자 정보 (QnA 관련)	
 			private int questionId;
+			private String storeId;
 		    private String questionContent;
 		    private String questionDate;
 		    private String answerContent;

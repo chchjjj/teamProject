@@ -280,6 +280,93 @@
                 animation: fadeIn 0.3s ease;
             }
 
+            /* ==================== 페이징 스타일 (새로 추가) ==================== */
+            .paging {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 8px;
+                margin: 30px 0 40px 0;
+                padding: 20px;
+            }
+
+            .paging button {
+                min-width: 36px;
+                height: 36px;
+                border: 1px solid #e0e0e0;
+                background-color: var(--white);
+                color: var(--espresso);
+                border-radius: 6px;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .paging button:hover {
+                background-color: var(--espresso);
+                color: var(--white);
+                border-color: var(--espresso);
+                transform: translateY(-2px);
+                box-shadow: 0 2px 8px rgba(62, 39, 35, 0.2);
+            }
+
+            .paging button:active {
+                transform: translateY(0);
+            }
+
+            .paging button:disabled {
+                opacity: 0.3;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+            .paging a {
+                min-width: 36px;
+                height: 36px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                text-decoration: none;
+                color: #666;
+                font-size: 14px;
+                font-weight: 500;
+                border: 1px solid #e0e0e0;
+                background-color: var(--white);
+                border-radius: 6px;
+                transition: all 0.3s ease;
+            }
+
+            .paging a:hover {
+                background-color: var(--butter);
+                border-color: var(--butter);
+                color: var(--espresso);
+                transform: translateY(-2px);
+                box-shadow: 0 2px 8px rgba(255, 237, 172, 0.5);
+            }
+
+            .paging a.active {
+                background-color: var(--espresso);
+                color: var(--white);
+                border-color: var(--espresso);
+                font-weight: 600;
+                box-shadow: 0 2px 8px rgba(62, 39, 35, 0.3);
+            }
+
+            .paging a.active:hover {
+                transform: none;
+                cursor: default;
+            }
+
+            /* 페이지 번호 컨테이너 */
+            .pageNumbers {
+                display: flex;
+                gap: 4px;
+            }
+
             /* Responsive */
             @media (max-width: 768px) {
                 .orderContainer {
@@ -309,6 +396,20 @@
                     flex-direction: column;
                     align-items: flex-start;
                     gap: 5px;
+                }
+
+                /* 모바일 페이징 */
+                .paging {
+                    gap: 4px;
+                    padding: 15px 10px;
+                    flex-wrap: wrap;
+                }
+
+                .paging button,
+                .paging a {
+                    min-width: 32px;
+                    height: 32px;
+                    font-size: 13px;
                 }
             }
         </style>
@@ -453,9 +554,37 @@
                                     v-if="order.status==='P'">
                                     📋 주문현황
                                 </button>
+                                <button class="btnStatus" @click="fnInsertReview(order.orderId)"
+                                    v-if="order.status==='P'">
+                                    ✏️ 리뷰 작성하러 가기
+                                </button>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- 개선된 페이징 -->
+                <div class="paging" v-if="pageNum > 0">
+                    <!-- 이전 버튼 -->
+                    <button @click="fnPre()" :disabled="page <= 1">
+                        ◀
+                    </button>
+
+                    <!-- 페이지 번호들 -->
+                    <div class="pageNumbers">
+                        <a href="javascript:;" 
+                           v-for="num in pageRangeList" 
+                           :key="num"
+                           @click="fnChange(num)" 
+                           :class="{active: page == num}">
+                            {{num}}
+                        </a>
+                    </div>
+
+                    <!-- 다음 버튼 -->
+                    <button @click="fnNext()" :disabled="page >= pageNum">
+                        ▶
+                    </button>
                 </div>
             </div>
         </div>
@@ -469,13 +598,25 @@
                 return {
                     userId: "${sessionId}",
                     orderList: [],
-                    groupedOrdersList: []
+                    groupedOrdersList: [],
+
+                    //paging에 관한 모든 것
+                    totalRows: 0,//전체 목록의 총 행수
+                    pageRangeList: [],//화면 페이징을 하는 숫자들이 이루어진 리스트
+                    pageSize: 10,//뿌렸을 때 한 페이지에 몇 행
+                    page: 1,//지금 페이지
+                    pageRange: 10,//한 화면에 몇개 페이지 수 나오게 한다
+                    pageNum: 0,//목록 전체를 가져오려면 합하여 몇 페지
                 };
             },
             methods: {
                 fnOrderList: function () {
                     let self = this;
-                    let param = { userId: self.userId };
+                    let param = { 
+                        userId: self.userId,
+                        offset: (self.page - 1) * self.pageSize,
+                        fetchRows: self.pageSize,
+                    };
                     $.ajax({
                         url: "/user/orderHistory.dox",
                         dataType: "json",
@@ -485,6 +626,9 @@
                             self.orderList = data.list;
                             console.log(data.list);
                             self.fnGroupOrderList(self.orderList);
+                            self.totalRows = data.totalRows;
+                            self.pageNum = Math.ceil(self.totalRows / self.pageSize);
+                            self.fnpageRange();
                         },
                         error: function (xhr, status, error) {
                             console.error("주문내역 로드 실패:", status, error);
@@ -518,7 +662,7 @@
                                 status: order.status || "S",
                                 wishDeli: order.wishDeli || "시간 미지정",
                                 pickTime: order.pickTime || "시간 미지정",
-                                storeAddr:order.storeAddr,
+                                storeAddr: order.storeAddr,
                                 storeId: order.storeId,
                                 groupedDetails: {}
                             };
@@ -566,6 +710,39 @@
                     return Number(num).toLocaleString('ko-KR');
                 },
 
+                fnpageRange: function () {
+                    let self = this;
+                    self.pageRangeList = [];
+                    let startPage = Math.floor((self.page - 1) / self.pageRange) * self.pageRange + 1;
+                    let endPage = Math.min(startPage + self.pageRange - 1, self.pageNum);
+
+                    for (let i = startPage; i <= endPage; i++) {
+                        self.pageRangeList.push(i);
+                    }
+                },
+
+                fnChange: function (num) {
+                    let self = this;
+                    self.page = num;
+                    self.fnOrderList();
+                },
+
+                fnPre: function () {
+                    let self = this;
+                    if (self.page > 1) {
+                        self.page--;
+                        self.fnOrderList();
+                    }
+                },
+
+                fnNext: function () {
+                    let self = this;
+                    if (self.page < self.pageNum) {
+                        self.page++;
+                        self.fnOrderList();
+                    }
+                },
+
                 toggleMenu: function () {
                     document.querySelector('.navBar').classList.toggle('active');
                     document.body.classList.toggle('menu-open');
@@ -597,9 +774,9 @@
                     location.href = "/user/userEdit.do";
                 },
 
-                fnDeleteAccount:function(){ 
-                    if(confirm("회원을 탈퇴하겠습니까?")){
-                        location.href="/main.do";
+                fnDeleteAccount: function () {
+                    if (confirm("회원을 탈퇴하겠습니까?")) {
+                        location.href = "/main.do";
                     }
                     return;
                 },
@@ -613,15 +790,13 @@
                             type: "POST",
                             data: param,
                             success: function (data) {
-                                if(data.result=="success"){
-                                    alert(data.msg+"! 홈페이지로 이동하겠습니다.");
+                                if (data.result == "success") {
+                                    alert(data.msg + "! 홈페이지로 이동하겠습니다.");
                                     location.href = "/main.do";
-                                }else{
+                                } else {
                                     alert("로그아웃하는 도중에 오류가 발생하였습니다.");
                                 }
-                                    
                             }
-                            
                         });
                     }
                 },
@@ -638,6 +813,9 @@
                     pageChange("/payment/payment.do", { orderId: orderId });
                 },
 
+                fnInsertReview:function(orderId){
+                    pageChange("/user/reviewInsert.do", { orderId: orderId });
+                }
             },
 
             mounted() {

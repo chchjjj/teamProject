@@ -43,49 +43,72 @@
 	
 	<!--주문내역 가져오기-->
 	<!--머지 test용 아무의미 없음!-->
-	<select id="selectOrderList" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
-	      SELECT
-	    	SE.STORE_ID,
-	        O.STORE_NAME,
-	        P.PRO_NAME,
-	        T.OPTION_NAME,
-	        S.VALUE_NAME,
-	        OPT.ADD_QUANTITY,
-	        OPT.PRICE_DIFF,
-	        D.PRICE,
-	        D.QUANTITY,
-	        D.LETTERING_WORD,
-	        D.SUBTOTAL,
-	        O.ADD_OPTION_PRICE,
-	        O.DELIVERY_FEE,
-	        O.DELIVERY_TYPE,
-	        O.FULL_ADDRESS,
-            O.CHAT_YN,
-	        O.ORDER_DATE,
-	        O.TOTAL_PRICE,
-            O.STATUS,
-            C.CHAT_ID,
-            OPT.PRICE_DIFF*OPT.ADD_QUANTITY AS OPTION_TOTAL,
-            PI.PICK_TIME,
-            DELI.WISH_DELI,
-            SE.STORE_ADDR,
-	        O.ORDER_ID,
-	        D.ORDER_DETAIL_ID,
-	        OPT.ORDER_OPTION_ID
-	    FROM ORDER_TBL O
-	    LEFT JOIN ORDER_DETAIL_TBL D ON O.ORDER_ID = D.ORDER_ID
-	    LEFT JOIN ORDER_OPTION_TBL OPT ON OPT.ORDER_DETAIL_ID = D.ORDER_DETAIL_ID
-	    LEFT JOIN PRODUCT_TBL P ON D.PRO_NO = P.PRO_NO
-	    LEFT JOIN PRODUCT_OPTION_TBL T ON T.TOP_OPTION_ID = OPT.TOP_OPTION_ID
-	    LEFT JOIN PRODUCT_SUB_OPTION_TBL S ON S.SUB_OPTION_ID = OPT.SUB_OPTION_ID
-	    LEFT JOIN SELLER_INFO_TBL SE ON SE.STORE_NAME=O.STORE_NAME
-	    LEFT JOIN USER_TBL U ON U.USER_ID=O.USER_ID
-        LEFT JOIN CHAT_TBL C ON C.ORDER_ID=O.ORDER_ID
-        LEFT JOIN DELIVERY_TBL DELI ON DELI.ORDER_ID=O.ORDER_ID
-        LEFT JOIN PICKUP_TBL PI ON PI.ORDER_ID=O.ORDER_ID
-	    WHERE U.USER_ID = #{userId}
-    	ORDER BY O.ORDER_DATE DESC
-	</select>
+	<!-- orderListCount: 실제 주문 개수 -->
+<select id="orderCount" parameterType="hashmap" resultType="int">
+    SELECT COUNT(DISTINCT O.ORDER_ID)
+    FROM ORDER_TBL O
+    LEFT JOIN USER_TBL U ON U.USER_ID = O.USER_ID
+    WHERE U.USER_ID = #{userId}
+</select>
+
+<!-- selectOrderList: 주문 단위로 페이징 -->
+<select id="selectOrderList" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
+    WITH ORDERED_LIST AS (
+        SELECT DISTINCT O.ORDER_ID,
+               ROW_NUMBER() OVER (ORDER BY O.ORDER_DATE DESC) AS RN
+        FROM ORDER_TBL O
+        LEFT JOIN USER_TBL U ON U.USER_ID = O.USER_ID
+        WHERE U.USER_ID = #{userId}
+    )
+    SELECT
+        SE.STORE_ID,
+        O.STORE_NAME,
+        P.PRO_NAME,
+        T.OPTION_NAME,
+        S.VALUE_NAME,
+        OPT.ADD_QUANTITY,
+        OPT.PRICE_DIFF,
+        D.PRICE,
+        D.QUANTITY,
+        D.LETTERING_WORD,
+        D.SUBTOTAL,
+        O.ADD_OPTION_PRICE,
+        O.DELIVERY_FEE,
+        O.DELIVERY_TYPE,
+        O.FULL_ADDRESS,
+        O.CHAT_YN,
+        O.ORDER_DATE,
+        O.TOTAL_PRICE,
+        O.STATUS,
+        C.CHAT_ID,
+        OPT.PRICE_DIFF*OPT.ADD_QUANTITY AS OPTION_TOTAL,
+        PI.PICK_TIME,
+        DELI.WISH_DELI,
+        SE.STORE_ADDR,
+        O.ORDER_ID,
+        D.ORDER_DETAIL_ID,
+        OPT.ORDER_OPTION_ID,
+        T.TOP_OPTION_ID,
+        S.SUB_OPTION_ID
+    FROM ORDER_TBL O
+    LEFT JOIN ORDER_DETAIL_TBL D ON O.ORDER_ID = D.ORDER_ID
+    LEFT JOIN ORDER_OPTION_TBL OPT ON OPT.ORDER_DETAIL_ID = D.ORDER_DETAIL_ID
+    LEFT JOIN PRODUCT_TBL P ON D.PRO_NO = P.PRO_NO
+    LEFT JOIN PRODUCT_OPTION_TBL T ON T.TOP_OPTION_ID = OPT.TOP_OPTION_ID
+    LEFT JOIN PRODUCT_SUB_OPTION_TBL S ON S.SUB_OPTION_ID = OPT.SUB_OPTION_ID
+    LEFT JOIN SELLER_INFO_TBL SE ON SE.STORE_NAME = O.STORE_NAME
+    LEFT JOIN USER_TBL U ON U.USER_ID = O.USER_ID
+    LEFT JOIN CHAT_TBL C ON C.ORDER_ID = O.ORDER_ID
+    LEFT JOIN DELIVERY_TBL DELI ON DELI.ORDER_ID = O.ORDER_ID
+    LEFT JOIN PICKUP_TBL PI ON PI.ORDER_ID = O.ORDER_ID
+    INNER JOIN ORDERED_LIST OL ON OL.ORDER_ID = O.ORDER_ID
+    WHERE OL.RN BETWEEN #{offset, jdbcType=INTEGER} + 1 
+                    AND #{offset, jdbcType=INTEGER} + #{fetchRows, jdbcType=INTEGER}
+    ORDER BY O.ORDER_DATE DESC
+</select>
+	
+
+	
 	
 	<select id="selectOrder" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
 	      SELECT
@@ -94,6 +117,7 @@
 	        P.PRO_NAME,
 	        T.OPTION_NAME,
 	        S.VALUE_NAME,
+	        U.USER_NAME,
 	        OPT.ADD_QUANTITY,
 	        OPT.PRICE_DIFF,
 	        D.PRICE,
@@ -132,6 +156,8 @@
 	    WHERE O.ORDER_ID = #{orderId}
     	ORDER BY O.ORDER_DATE DESC
 	</select>
+	
+	
 	
 	<!--review-->
 	<select id="reviewListSelect" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
@@ -215,7 +241,31 @@
 		WHERE USER_ID=#{userId}
 	</update>
 	
-	
+	<insert id="reviewInsert" parameterType="hashmap">
+		INSERT INTO REVIEW_TBL (
+        REVIEW_ID,
+        ORDER_ID,
+        PRO_NO,
+        USER_ID,
+        STORE_ID,
+        STORE_NAME,
+        RATING,
+        REVIEW_CONTENT,
+        CDATETIME,
+        UDATETIME
+    ) VALUES (
+        REVIEW_SEQ.NEXTVAL,
+        #{orderId},
+        #{proNo},
+        #{userId},
+        #{storeId},
+        #{storeName},
+        #{rating},
+        #{reviewContent},
+        SYSDATE,
+        SYSDATE
+    )	
+	</insert>
 	
 	
 	
