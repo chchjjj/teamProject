@@ -5,13 +5,22 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>판매자관리</title>
+        <title>:: 판매자 관리 ::</title>
         <link rel="stylesheet" href="/css/admin-style.css">
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <script src="/js/page-change.js"></script>
         <style>
+
+            .section-title {
+                font-weight: bold;
+                font-size: 18px;
+                padding: 10px 0;
+                border-bottom: 2px solid #3E2723; /* 진한 검은색 라인 */
+                margin-bottom: 15px; /* 아래 테이블과 여백 */
+            }
+
             /* ===== 관리자 테이블 공통 스타일 ===== */
             table {
                 width: 100%;
@@ -114,6 +123,18 @@
                     font-size: 13px;
                 }
             }
+
+            
+            th, td {
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+
+            a{
+                text-decoration: none;
+                color : brown;
+            }
+
         </style>
     </head>
 
@@ -127,7 +148,7 @@
                         </a>
                     </div>
                     <div class="navButton">
-                        <div><button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">구매자 관리</button>
+                        <div><button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">전체 유저 관리</button>
                         </div>
                         <div><button @click="fnSellerManage()" :class="{active: currentMenu==='seller'}">판매자관리</button>
                         </div>
@@ -138,7 +159,7 @@
                                 :class="{active: currentMenu==='membership'}">맴버쉽관리</button></div>
                         <div><button @click="fnMonthlyFee()" :class="{active: currentMenu==='month'}">판매자 월 정산결과
                                 조회</button></div>
-                        <div><button @click="fnQandA()" :class="{active: currentMenu==='qna'}">Q&A</button></div>
+                        <div><button @click="fnQandA()" :class="{active: currentMenu==='qna'}">게시글 관리</button></div>
                     </div>
                     <div class="logOut">
                         <div><button @click="fnLogout()">Logout</button></div>
@@ -147,20 +168,20 @@
 
                 <div class="sellerList">
                     <div>
-                        <div>판매자관리</div>
+                        <div class="section-title">판매자관리</div>
                         <div></div>
                         <div>
                             <select v-model="pageSize" @change="fnSellerList">
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
+                                <option value="5">:: 5개씩 ::</option>
+                                <option value="15">:: 10개씩 ::</option>
+                                <option value="20">:: 20개씩 ::</option>
                             </select>
                             <select v-model="option">
                                 <option value="all">::전체::</option>
                                 <option value="storeId">가게번호</option>
                                 <option value="storeName">가게이름</option>
                             </select>
-                            <input type="text" v-model="keyWord">
+                            <input type="text" v-model="keyWord" @keyup.enter="fnSellerList">
                             <button @click="fnSellerList">검색</button>
                         </div>
                         <div style="font-size:15px"><input type="checkbox" @click="fnApp">입점신청서 관리</div>
@@ -252,7 +273,7 @@
                     //paging에 관한 모든 것
                     totalRows: 0,//전체 목록의 총 행수
                     pageRangeList: [],//화면 페이징을 하는 숫자들이 이루어진 리스트
-                    pageSize: 10,//뿌렸을 때 한 페이지에 몇 행
+                    pageSize: 5,//뿌렸을 때 한 페이지에 몇 행
                     page: 1,//지금 페이지
                     pageRange: 5,//한 화면에 몇개 페이지 수 나오게 한다
                     pageNum: 0,//목록 전체를 가져오려면 합하여 몇 페지

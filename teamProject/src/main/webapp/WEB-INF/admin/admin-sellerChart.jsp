@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
+        <title>:: 판매자별 실적 현황 ::</title>
         <link rel="stylesheet" href="/css/admin-style.css">
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
@@ -22,7 +22,7 @@
 
             /* 页面标题 */
             .pageTitle {
-                font-size: 28px;
+                font-size: 22px;
                 font-weight: bold;
                 color: #3E2723;
                 margin-bottom: 30px;
@@ -161,7 +161,7 @@
                     </div>
                     <div class="navButton">
                         <div>
-                            <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">구매자 관리</button>
+                            <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">전체 유저 관리</button>
                         </div>
                         <div>
                             <button @click="fnSellerManage()" :class="{active: currentMenu==='seller'}">판매자관리</button>
@@ -180,7 +180,7 @@
                                 조회</button>
                         </div>
                         <div>
-                            <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">Q&A</button>
+                            <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">게시글 관리</button>
                         </div>
                     </div>
 
@@ -193,7 +193,7 @@
 
                 <!-- 内容区域 (优化后) -->
                 <div class="contentArea">
-                    <div class="pageTitle">매출 관리</div>
+                    <div class="pageTitle">판매자별 매출 관리</div>
 
                     <!-- 月度销售图表 -->
                     <div class="chartContainer">

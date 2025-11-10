@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Trends Chart</title>
+    <title>:: 매출 관리 ::</title>
     <script src="https://code.jquery.com/jquery-3.7.1.js"
         integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -96,6 +96,13 @@
             margin-top: 20px;
             text-align: center;
         }
+
+
+        .section-title {
+            font-size: 20px !important;
+            font-weight: bold !important;
+        }
+
     </style>
 </head>
 
@@ -116,7 +123,7 @@
                     <!-- 메뉴 버튼 -->
                     <div class="navButton">
                         <div>
-                            <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">구매자 관리</button>
+                            <button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">전체 유저 관리</button>
                         </div>
                         <div>
                             <button @click="fnSellerManage()" :class="{active: currentMenu==='seller'}">판매자관리</button>
@@ -135,7 +142,7 @@
                                 조회</button>
                         </div>
                         <div>
-                            <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">Q&A</button>
+                            <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">게시글 관리</button>
                         </div>
                     </div>
 
@@ -149,6 +156,7 @@
 
                 <!-- 컨텐츠 영역 -->
                 <div class="contentArea">
+                    <div class="section-title">매출 관리</div>
                     <!-- 차트 -->
                     <div id="chart" style="margin-bottom: 40px;"></div>
 

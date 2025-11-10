@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>qna관리</title>
+        <title>:: 게시글 관리 ::</title>
         <!-- 관리자 스타일시트 -->
         <link rel="stylesheet" href="/css/admin-style.css">
         <link rel="stylesheet" href="/css/productDetail-style.css">
@@ -14,6 +14,22 @@
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <script src="/js/page-change.js"></script>
         <style>
+
+            .leftAlign {
+                text-align: left;
+                margin-bottom: 15px; /* 필요 시 */
+            }
+
+            .searchBar.leftAlign {
+                display: flex;
+                justify-content: flex-start; /* 왼쪽 정렬 */
+                align-items: center;         /* 수직 가운데 정렬 */
+                gap: 10px;                   /* 요소 간 간격 */
+                margin-bottom: 15px;
+            }
+
+            
+
             /* ===== 관리자 테이블 공통 스타일 ===== */
             table {
                 width: 100%;
@@ -155,6 +171,28 @@
             .userList label:hover {
                 color: #5D4037;
             }
+
+            .paging {
+                display: flex;
+                justify-content: center; /* 가로 가운데 정렬 */
+                align-items: center;     /* 세로 가운데 정렬 */
+                gap: 5px;                /* 버튼 간 간격 */
+                margin: 25px 0;          /* 위아래 여백 */
+               
+            }
+
+            .paging a,
+            .paging button {
+                display: inline-block;
+                margin: 0 3px;
+                padding: 5px 10px;
+                text-decoration: none;
+                color: #3E2723;
+                border: 1px solid #3E2723;
+                border-radius: 4px;
+                transition: all 0.2s ease;
+            }
+
         </style>
     </head>
 
@@ -170,7 +208,7 @@
                         </a>
                     </div>
                     <div class="navButton">
-                        <div><button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">구매자 관리</button>
+                        <div><button @click="fnBuyerManage()" :class="{active: currentMenu==='buyer'}">전체 유저 관리</button>
                         </div>
                         <div><button @click="fnSellerManage()" :class="{active: currentMenu==='seller'}">판매자관리</button>
                         </div>
@@ -181,7 +219,7 @@
                                 :class="{active: currentMenu==='membership'}">맴버쉽관리</button></div>
                         <div><button @click="fnMonthlyFee()" :class="{active: currentMenu==='month'}">판매자 월 정산결과
                                 조회</button></div>
-                        <div><button @click="fnQandA()" :class="{active: currentMenu==='qna'}">Q&A</button></div>
+                        <div><button @click="fnQandA()" :class="{active: currentMenu==='qna'}">게시글 관리</button></div>
                     </div>
                     <!-- logout button -->
                     <div class="logOut">
@@ -203,14 +241,14 @@
                     </div>
 
                     <!-- 검색바 영역 -->
-                    <div class="searchBar">
+                    <div class="searchBar leftAlign">
                         <select v-model="pageSize" @change="fnQnAList">
-                            <option value="10">10</option>
-                            <option value="15">15</option>
-                            <option value="20">20</option>
+                            <option value="10">:: 10개씩 ::</option>
+                            <option value="15">:: 15개씩 ::</option>
+                            <option value="20">:: 20개씩 ::</option>
                         </select>
                         <select v-model="option">
-                            <option value="all">::전체::</option>
+                            <option value="all">:: 전체 ::</option>
                             <option value="userId">질문자</option>
                             <option value="storeId">답변자</option>
                             <option value="questionContent">질문 내용</option>
@@ -248,10 +286,13 @@
 
                     <!-- 페이징 및 선택 삭제 -->
                     <div class="paging">
-                        <span v-if="page>1"><button @click="fnPre()">◀</button></span>
-                        <a href="javascript:;" v-for="num in pageRangeList" @click="fnChange(num)"
-                            :class="{active:page == num}">{{num}}</a>
-                        <span v-if="page!=pageNum"><button @click="fnNext()">▶</button></span>
+                        <span v-if="page > 1">
+                            <button @click="fnPre()">◀</button>
+                        </span>
+                        <a href="javascript:;" v-for="num in pageRangeList" @click="fnChange(num)">{{ num }}</a>
+                        <span v-if="page != pageNum">
+                            <button @click="fnNext()">▶</button>
+                        </span>
                     </div>
                     <div><button @click="fnRemoveAll">선택 삭제</button></div>
                 </div>
@@ -269,14 +310,14 @@
                     </div>
 
                     <!-- 검색바 영역 -->
-                    <div>
+                    <div class="searchBar leftAlign">
                         <select v-model="pageSize" @change="fnReviewList">
-                            <option value="10">10</option>
-                            <option value="15">15</option>
-                            <option value="20">20</option>
+                            <option value="10">:: 10개씩 ::</option>
+                            <option value="15">:: 15개씩 ::</option>
+                            <option value="20">:: 20개씩 ::</option>
                         </select>
                         <select v-model="option">
-                            <option value="all">::전체::</option>
+                            <option value="all">:: 전체 ::</option>
                             <option value="userId">구매자</option>
                             <option value="storeId">판매자</option>
                         </select>
@@ -319,15 +360,15 @@
                                 style="background-color: #3E2723; color: #FFEDAC; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; margin: 0 5px;">◀</button>
                         </span>
                         <a href="javascript:;" v-for="num in pageRangeList" @click="fnChange(num)" :style="{
-            margin: '0 5px',
-            padding: '8px 12px',
-            textDecoration: 'none',
-            color: page == num ? '#FFEDAC' : '#3E2723',
-            backgroundColor: page == num ? '#3E2723' : '#FFEDAC',
-            borderRadius: '5px',
-            fontWeight: 'bold',
-            display: 'inline-block'
-        }">
+                            margin: '0 5px',
+                            padding: '8px 12px',
+                            textDecoration: 'none',
+                            color: page == num ? '#FFEDAC' : '#3E2723',
+                            backgroundColor: page == num ? '#3E2723' : '#FFEDAC',
+                            borderRadius: '5px',
+                            fontWeight: 'bold',
+                            display: 'inline-block'
+                        }">
                             {{ num }}
                         </a>
                         <span v-if="page != pageNum">
@@ -336,7 +377,7 @@
                         </span>
                     </div>
 
-                    <div style="margin-top: 25px; text-align: center;">
+                    <div style="margin-top: 25px; text-align: left;">
                         <button @click="fnRemoveAll"
                             style="padding: 6px 14px; border: none; background-color: #3E2723; color: white; border-radius: 5px; cursor: pointer;">
                             선택 삭제

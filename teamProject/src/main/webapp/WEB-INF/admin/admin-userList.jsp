@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>사용자관리</title>
+        <title>:: 사용자 관리 ::</title>
         <link rel="stylesheet" href="/css/admin-style.css">
         <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
@@ -93,6 +93,11 @@
                 border-color: #3E2723;
             }
 
+            a{
+                text-decoration: none;
+                color : brown;
+            }
+
             
         </style>
     </head>
@@ -134,7 +139,7 @@
                                 조회</button>
                         </div>
                         <div>
-                            <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">Q&A</button>
+                            <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">게시글 관리</button>
                         </div>
                     </div>
 
@@ -160,16 +165,16 @@
                         <!--선택사항-->
                         <div>
                             <select v-model="pageSize" @change="fnUserList">
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
+                                <option value="10">:: 10개씩 ::</option>
+                                <option value="15">:: 15개씩 ::</option>
+                                <option value="20">:: 20개씩 ::</option>
                             </select>
                             <select v-model="option">
                                 <option value="all">::전체::</option>
                                 <option value="userId">사용자 아이디</option>
                                 <option value="userName">닉네임</option>
                             </select>
-                            <input type="text" v-model="keyWord">
+                            <input type="text" v-model="keyWord" @keyup.enter="fnUserList">
                             <button @click="fnUserList">검색</button>
                         </div>
                         <!--태이블-->

@@ -30,8 +30,36 @@
             text-align: center;
             color:#3E2723;
             margin-bottom:23px;
-
         }
+
+        .info {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
+            margin-top: 10px;
+        }
+
+        .btnArea {
+    display: flex;
+    justify-content: center; /* 가로 가운데 정렬 */
+    gap: 20px; /* 버튼 사이 간격 */
+    margin-top: 20px;
+    }
+
+    .btnArea button {
+        padding: 8px 18px;
+        background-color: #795548;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .btnArea button:hover {
+        background-color: #5D4037;
+    }
+            
     </style>
     </head>
 
@@ -127,19 +155,13 @@
                             </tr>
                         </table>
                     </div>
-                    <div>
-                    <button @click="fnEdit(adId)">
-                        수정
-                    </button>
+                <div class="btnArea">
+                    <button @click="fnEdit(adId)">수정</button>
+                    <button @click="fnEnd(adId)">강제종료</button>
                 </div>
-
-                <div>
-                    <button @click="fnEnd(adId)">
-                        강제종료
-                    </button>
+                <div class="info">※ 단가는 계약서 상 웹페이지에서 변경이 불가합니다.</div>
                 </div>
-                </div>
-
+                
             </div>
 
         </div>
