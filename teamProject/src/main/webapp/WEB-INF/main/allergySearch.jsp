@@ -17,6 +17,7 @@
         <!-- <script src="https://unpkg.com/mitt/dist/mitt.umd.js"></script>  -->
 
         <style>
+
             /* QnA 제목 스타일 */
             .title {
                 font-size: 28px;
@@ -32,6 +33,7 @@
 
             /* 새 목록 컨테이너 스타일 */
             .ingredient-list {
+                
                 display: flex;
                 flex-wrap: wrap;
                 /* 줄바꿈 허용 */
@@ -183,6 +185,11 @@
 
             body{
                 background-color: #f1f1f1;
+            }
+            .content-container{
+                border: 1px solid #a7a7a7;
+                border-radius: 10px;
+                background-color: #fff;
             }
         </style>
     </head>
