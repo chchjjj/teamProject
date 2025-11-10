@@ -409,6 +409,7 @@
 
                 },
 
+                // '입점신청서 보기' 눌렀을 때
                 fnApp: function () {
                     let self = this;
                     self.flgApp = !self.flgApp;

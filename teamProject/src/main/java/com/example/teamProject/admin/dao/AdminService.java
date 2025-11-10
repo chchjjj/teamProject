@@ -147,6 +147,7 @@ public class AdminService {
 			return resultMap;
 		}
 		
+		// 입점신청자 (판매자) 업데이트
 		@Transactional
 		public HashMap<String, Object> UpdateSeller(HashMap<String, Object> map) {
 			// TODO Auto-generated method stub
