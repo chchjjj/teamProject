@@ -289,7 +289,7 @@ body {
 
 /* 장바구니 버튼 클릭 시 액티브 효과 */
 .cart:active {
-    background-color: #388E3C;
+    /* background-color: #388E3C; */
     /* 누를 때 더 진한 초록색 */
     transform: scale(0.98);
     /* 살짝 눌리는 효과 */
@@ -297,7 +297,7 @@ body {
 
 /* 구매 버튼 클릭 시 액티브 효과 */
 .buy-btn:active {
-    background-color: #388E3C;
+    /* background-color: #388E3C; */
     transform: scale(0.98);
 }
 

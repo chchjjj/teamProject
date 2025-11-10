@@ -542,6 +542,8 @@ ul {
     color: #FFEDAC;
     /* box-shadow: 0 0 10px rgba(0,0,0,0.3); */
     border: 4px solid #FFEDAC; /* border 확실히 보이도록 */
+
+    
 }
 
 .category-btn:hover {
