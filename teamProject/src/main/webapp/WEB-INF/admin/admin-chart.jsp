@@ -13,21 +13,28 @@
     <style>
         /* ===== 관리자 테이블 공통 스타일 ===== */
         table {
-            width: 100%;
+            /* width: 100%; */
             border-collapse: collapse;
             font-family: 'Arial', sans-serif;
             margin-top: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #666;
         }
 
-        th,
-        td {
+        .monthlyRevenue table {
+            width: 80%;       /* 화면 대비 비율 */
+            max-width: 600px; /* 최대 너비 제한 */
+            margin: 0 ;
+        }
+
+        th,td {
             padding: 10px 15px;
             text-align: center;
             border-bottom: 1px solid #ddd;
         }
 
         th {
+            width: 200px;
             background-color: #3E2723;
             /* ESPRESSO 색상 */
             color: #FFEDAC;
@@ -47,6 +54,7 @@
         }
 
         td {
+            width: 500px;
             color: #333;
         }
 
@@ -101,6 +109,16 @@
         .section-title {
             font-size: 20px !important;
             font-weight: bold !important;
+        }
+
+        .info {
+                font-size: 14px;
+                color: #666;
+                margin-bottom: 30px;
+            }
+
+        .plusFee{
+            color: blue;
         }
 
     </style>
@@ -160,21 +178,34 @@
                     <!-- 차트 -->
                     <div id="chart" style="margin-bottom: 40px;"></div>
 
+                    <div class="info">
+                            ※ 차트 속 '월별 매출'은 '판매수익'만 포함됩니다. (배송비 제외)
+                        </div>
+
                     <!-- 이 달의 수익 테이블 -->
                     <div class="monthlyRevenue">
-                        <div style="font-weight:bold; font-size:18px; margin-bottom:10px;">이 달의 수익(원)</div>
+                        <div style="font-weight:bold; font-size:18px; margin-bottom:10px;">{{ selectedMonth }}월 수익(원)</div>
                         <table>
                             <tr>
-                                <th>판매 수익</th>
-                                <th>맴버십 수익</th>
-                                <th>광고 수익</th>
-                                <th>총합</th>
+                                <th>판매자 총 수익</th>
+                                <td>{{formatNumber(revenue.monthlyRevenue)}}</td>   
                             </tr>
                             <tr>
-                                <td>{{formatNumber(revenue.monthlyRevenue)}}</td>
-                                <td>{{formatNumber(revenue.membershipFee)}}</td>
-                                <td>{{formatNumber(revenue.monthlyAdRevenue)}}</td>
-                                <td>{{formatNumber(revenue.totalMonthlyRevenue)}}</td>
+                                <th>판매자 수수료</th>
+                                <td class="plusFee">{{formatNumber(revenue.commissionFee)}}</td>   
+                            </tr>
+
+                            <tr>
+                                <th>맴버십 수익</th>
+                                <td class="plusFee">{{formatNumber(revenue.membershipFee)}}</td>
+                            </tr>
+                            <tr>
+                                <th>광고 수익</th>
+                                <td class="plusFee">{{formatNumber(revenue.monthlyAdRevenue)}}</td>
+                            </tr>
+                            <tr>
+                                <th>총합</th>
+                                <td class="plusFee" style="font-weight: bold;">{{formatNumber(revenue.totalMonthlyRevenue)}}</td>
                             </tr>
                         </table>
                     </div>
@@ -192,6 +223,7 @@
             return {
                 sessionId: "${sessionId}",
                 revenue: {},
+                selectedMonth: new Date().getMonth() + 1, // 초기값 현재 월
                 currentMenu: "money",
                 chart: null,
                 options: {
@@ -203,6 +235,7 @@
                         height: 350,
                         type: 'line',
                         zoom: { enabled: false },
+                        selection: { enabled: true }, // 클릭 허용
                         toolbar: { show: false },
                         locales: [{
                             name: 'ko',
@@ -226,6 +259,17 @@
                             }
                         }],
                         defaultLocale: 'ko',
+                        // ★ 월별 추가 ★
+                        events: {
+                            dataPointSelection: function(event, chartContext, config) {
+                                const monthIndex = config.dataPointIndex; // 0부터 시작
+                                const month = monthIndex + 1; // 1월 = 1
+                                app.selectedMonth = month; // Vue 변수에 저장
+                                app.fnRevenueByMonth(month); // 월별 데이터 로드
+                                console.log("차트 클릭됨:", month);
+                            }
+                        },
+                        
                     },
                     dataLabels: {
                         enabled: true,
@@ -331,7 +375,7 @@
 
                             // Update the chart with new data
                             self.chart.updateSeries([{
-                                name: "Sales",
+                                name: "매출액",
                                 data: monthlyData
                             }]);
                         }
@@ -416,6 +460,21 @@
                 return Number(num).toLocaleString('ko-KR');
             },
 
+            // 수익 '월별'로 보기 (차트 월 클릭)
+            fnRevenueByMonth: function(month) {
+                let self = this;
+                let param = { month: month }; // 서버에서 YYYYMM 기준 조회
+                $.ajax({
+                    url: "/adrevenue/viewByMonth.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function(data) {
+                        self.revenue = data.revenue;
+                    }
+                });
+            },
+
 
         },
 
@@ -426,6 +485,7 @@
             // Initialize the chart and store reference
             self.chart = new ApexCharts(document.querySelector("#chart"), self.options);
             self.chart.render();
+
 
             // Load data
             self.fnList();

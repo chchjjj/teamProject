@@ -130,6 +130,7 @@ public class Admin {
     private double membershipFee;
     private double monthlyAdRevenue;
     private double totalMonthlyRevenue;
+    private double commissionFee;
     
 
 	

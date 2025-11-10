@@ -203,7 +203,7 @@
 
                     <!-- 热门商品列表 -->
                     <div class="hotProductSection">
-                        <div class="sectionTitle"> 가장 핫한 상품 TOP 10</div>
+                        <div class="sectionTitle">해당 판매자의 가장 핫한 상품 TOP</div>
                         <table v-if="productList && productList.length > 0">
                             <thead>
                                 <tr>

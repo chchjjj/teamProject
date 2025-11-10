@@ -422,6 +422,20 @@ public class AdminService {
 		}
 	  
 		
+		// 월별 광고 수익 조회
+		public HashMap<String, Object> SelectRevenueByMonth(HashMap<String, Object> map) {
+		    HashMap<String, Object> resultMap = new HashMap<>();
+		    try {
+		        List<HashMap> list = adminMapper.revenueByMonthSelect(map);
+		        resultMap.put("list", list);
+		        resultMap.put("result", "success");
+		    } catch (Exception e) {
+		        resultMap.put("result", "fail");
+		        System.out.println(e.getMessage());
+		    }
+		    return resultMap;
+		}
+		
 		
 	
 	

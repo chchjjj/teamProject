@@ -424,13 +424,18 @@ public class AdminController {
 	@ResponseBody
 	public String revenueview(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap = adminService.SelectRevenue(map);
-		
-		System.out.println(map);
-		
+		resultMap = adminService.SelectRevenue(map);		
+		System.out.println(map);		
 		return new Gson().toJson(resultMap);
 	}
-
+	
+	// 매출관리 차트 속 '월' 클릭시
+	@RequestMapping(value = "/adrevenue/viewByMonth.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String viewRevenueByMonth(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+	    HashMap<String, Object> resultMap = adminService.SelectRevenueByMonth(map);
+	    return new Gson().toJson(resultMap);
+	}
 
 
 

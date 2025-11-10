@@ -119,7 +119,7 @@ public interface AdminMapper {
 		//revenue
 		Admin revenueSelect(HashMap<String, Object> map);
 	 
-		
+		List<HashMap> revenueByMonthSelect(HashMap<String, Object> map);
 
 
 }
