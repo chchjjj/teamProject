@@ -15,7 +15,9 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <style>
-        
+        body{
+                background-color: #f1f1f1;
+            }
     </style>
 </head>
 <body>
