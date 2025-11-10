@@ -132,7 +132,6 @@
                     <div class="chat-body">
                         <div><strong>상품명:</strong> {{ chat.proName }} 등 상품</div>
                         <div><strong>주문번호:</strong> {{ chat.orderId }}</div>
-                        <div><strong>마지막 채팅:</strong> {{ chat.lastMsgAt }}</div>
                     </div>
 
                     <div v-if="chat.unreadCount > 0" class="unread-badge">{{ chat.unreadCount }}</div>
