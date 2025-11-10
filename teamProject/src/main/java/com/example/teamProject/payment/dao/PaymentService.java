@@ -140,11 +140,15 @@ public class PaymentService {
 //	        	String totalPrice = (String) order.get("totalPrice");
 	        	int orderId = Integer.parseInt(order.get("orderId").toString());
 	            int totalPrice = Integer.parseInt(order.get("totalPrice").toString());
+	            String selectedDate = (String) map.get("selectedDate");
+	            
+	            System.out.println("selectedDate 변환 결과:" + selectedDate);
 	        	
 	        	// payment_tbl로 넘길 데이터 구성
 	            HashMap<String, Object> paymentMap = new HashMap<>();
 	            paymentMap.put("orderId", orderId);
 	            paymentMap.put("totalPrice", totalPrice);
+	            paymentMap.put("selectedDate", selectedDate);
 	            
 	            
 	            paymentMapper.insertPayment(paymentMap);
@@ -182,11 +186,14 @@ public class PaymentService {
 //	        	String totalPrice = (String) order.get("totalPrice");
 	        	int orderId = Integer.parseInt(order.get("orderId").toString());
 	            int totalPrice = Integer.parseInt(order.get("totalPrice").toString());
+	            String selectedDate = (String) map.get("selectedDate");
+	            System.out.println("selectedDate 변환 결과:" + selectedDate);
 	        	
 	        	// payment_tbl로 넘길 데이터 구성
 	            HashMap<String, Object> paymentMap = new HashMap<>();
 	            paymentMap.put("orderId", orderId);
 	            paymentMap.put("totalPrice", totalPrice);
+	            paymentMap.put("selectedDate", selectedDate);
 	            
 	            
 	            paymentMapper.insertPayment(paymentMap);

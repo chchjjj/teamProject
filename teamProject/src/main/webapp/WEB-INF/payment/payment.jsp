@@ -334,6 +334,25 @@
     .btn-primary:hover {
         background-color: #5A473D;
     }
+    
+    .date-input{
+        display: none;
+    }
+
+    .delivery-date-btn{
+        background-color: transparent;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+        font-size: 18px; 
+        padding: 8px 16px;
+        margin-left: 10px;
+    }
+
+     .delivery-date-btn:hover {
+        background-color: var(--primary-color);
+        color: var(--card-bg-color);
+    }
+    
 </style>
 </head>
 <body>
@@ -377,11 +396,13 @@
 
                 <!-- 달력 여기부터 -->
                 <div class="info-row" v-if="orderId.length <= 0">
+                    날짜/시간:
+
                     <!-- 숨겨진 실제 input -->
-                    <input type="text" id="deliveryDateInput" class="date-input">
+                    <input type="text" id="deliveryDateInput" class="date-input" >
 
                     <!-- 사용자가 클릭하는 버튼 -->
-                    <button class="delivery-date-btn" @click="openCalendar">
+                    <button class="btn delivery-date-btn" @click="openCalendar">
                         {{ selectedDateDisplay }}
                     </button>
                 </div>
@@ -405,20 +426,6 @@
             
             <div class="btn-group">
                 <button @click="fnGoBack" class="btn btn-cancel">메인으로</button>
-                
-                <!-- 장바구니 x, 픽업 -->
-                <!-- <button v-if="deliveryType=='P' && orderId.length > 0" @click="fnCheck" class="btn btn-primary">결제하기</button> -->
-
-                <!-- 장바구니 x, 배송 -->
-                <!-- <button v-if="deliveryType=='D' && orderId.length > 0" @click="fnCheck" class="btn btn-primary">결제하기</button> -->
-
-                <!-- 장바구니 o, 픽업 -->
-                <!-- <button v-if="deliveryType=='P' && orderId.length <= 0" @click="fnCheck" class="btn btn-primary">결제하기</button> -->
-
-                <!-- 장바구니 o, 배송 -->
-                <!-- <button v-if="deliveryType=='D' && orderId.length <= 0" @click="fnCheck" class="btn btn-primary">결제하기</button> -->
-                
-                <!-- 결제 버튼 -->
                 <button @click="fnCheck" class="btn btn-primary">결제하기</button>
             </div>
 
@@ -453,6 +460,9 @@
                     ],
                     selectedDate: null, // 달력 정보
                     datePicker: null,   // flatpickr 객체를 저장할 변수
+
+                    //판매자가 지정한 날짜 비활성화 기능 적용하는법
+                    disabledDates: []
                 };
             },
 
@@ -540,7 +550,7 @@
                                 if(data.info.fullAddress != "주소없음" && data.info.fullAddress != null && data.info.fullAddress != ""){
                                     self.fnPayment();
                                 } else {
-                                    alert("배송지 정보를 먼저 선택해주세요!");
+                                    alert("배송지 정보를 선택해주세요!");
                                 }
                             }
                         });
@@ -605,6 +615,7 @@
                     //         //alert("성공");
                     //         console.log(rsp);
                             
+                            // 실제 구현용 여기부터
                             // if(self.orderId.length > 0){
                             //     self.fnPayHistory(rsp.imp_uid, rsp.paid_amount); //바로 결제하는 경우
                             // } else if(self.deliveryType == 'D'){
@@ -615,6 +626,8 @@
                             //     alert("잘못된 결제입니다!");
                             //     return;
                             // }
+                            // 실제 구현용 여기까지
+
 
                             //테스트 전용 여기부터
                                 if(self.orderId.length > 0){
@@ -640,8 +653,8 @@
                     let param = {
                         uid: uid,
                         amount: amount,
-                        orderList: JSON.stringify(self.orderList)
-                        // selectedDate: self.selectedDate
+                        orderList: JSON.stringify(self.orderList),
+                        //selectedDate: self.selectedDate
                         // 그 외 기타 등등
                     };
                     $.ajax({
@@ -654,7 +667,7 @@
                                 alert("결제되었습니다!");
                                 location.href="/main.do";
                             } else {
-                                alert("오류가 발생했습니다!");
+                                alert("fnPayHistory 오류가 발생했습니다!");
                                 location.href="/main.do";
                             }
                         }
@@ -681,7 +694,7 @@
                                 alert("결제되었습니다!");
                                 location.href="/main.do";
                             } else {
-                                alert("오류가 발생했습니다!");
+                                alert(" fnDeliPayHistory 오류가 발생했습니다!");
                                 location.href="/main.do";
                             }
                         }
@@ -708,7 +721,7 @@
                                 alert("결제되었습니다!");
                                 location.href="/main.do";
                             } else {
-                                alert("오류가 발생했습니다!");
+                                alert("fnPickPayHistory 오류가 발생했습니다!");
                                 location.href="/main.do";
                             }
                         }
@@ -834,7 +847,41 @@
                     if (this.datePicker) {
                         this.datePicker.open();
                     }
-                }
+                },
+
+                //판매자가 지정한 날짜 비활성화 기능
+                disableDateInfo() {
+                    let self = this;
+                    $.ajax({
+                        url: "/product/disableDateInfo.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: { proNo: self.proNo },
+                        success: function (data) {
+                            // 객체 배열 → 날짜 문자열 배열로 변환
+                            self.disabledDates = Array.isArray(data.list) ?
+                                data.list.map(item => item.disabledDate) : [];
+
+                            console.log("disabledDates:", self.disabledDates);
+
+                            // Flatpickr 초기화 또는 기존 인스턴스에 적용
+                            if (self.datePicker) {
+                                self.datePicker.set('disable', self.disabledDates);
+                            } else {
+                                self.initFlatpickr();
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("disableDateInfo AJAX 에러:", error);
+                            self.disabledDates = [];
+                            if (self.datePicker) {
+                                self.datePicker.set('disable', self.disabledDates);
+                            } else {
+                                self.initFlatpickr();
+                            }
+                        }
+                    });
+                },
                 
             }, // methods
             mounted() {
@@ -862,6 +909,7 @@
                 setTimeout(() => {
                     self.initFlatpickr(); // 캘린더 초기화
                 }, 300); // 0.3초 딜레이
+                
             }
         });
 
