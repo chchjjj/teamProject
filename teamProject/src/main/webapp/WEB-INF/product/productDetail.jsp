@@ -191,7 +191,7 @@
                     selectedDate: null,
                     datePicker: null,
 
-                    // 💡 [수정] 오류의 원인: Flatpickr disable 옵션에서 참조하는 변수 추가
+                    // 판매자가 막은 날짜
                     disabledDates: [
                     ],
                     letteringText: "",
@@ -631,11 +631,11 @@
                     self.datePicker = flatpickr("#deliveryDateInput", {
                         locale: "ko",
 
-                        // 💡 핵심 1: 시간 선택 기능 활성화
+                        //  1: 시간 선택 기능 활성화
                         enableTime: true,
-                        // 💡 핵심 2: 시간 선택 시 캘린더가 닫히지 않도록(필수 아님)
+                        //  2: 시간 선택 시 캘린더가 닫히지 않도록(필수 아님)
                         closeOnSelect: false,
-                        // 💡 핵심 3: 날짜와 시간을 모두 포함하는 형식 지정 (Y-m-d H:i)
+                        //  3: 날짜와 시간을 모두 포함하는 형식 지정 (Y-m-d H:i)
                         dateFormat: "Y-m-d H:i",
 
                         inline: false,
