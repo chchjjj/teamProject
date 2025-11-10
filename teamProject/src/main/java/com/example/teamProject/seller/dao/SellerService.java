@@ -541,4 +541,16 @@ public int checkStoreOwnership(String userId, int storeId) {
     return sellerMapper.checkStoreOwnership(userId, storeId);
 }
 
+public Map<String, Object> selectStoreInfoData(String storeId) { // 🟢 메서드 이름 변경
+    
+    if (storeId == null || storeId.trim().isEmpty()) {
+        return null;
+    }
+
+    // 🟢 Mapper 호출 메서드 이름 변경
+    Map<String, Object> storeInfo = sellerMapper.selectStoreInfoData(storeId); 
+    
+    return storeInfo;
+}
+
 }

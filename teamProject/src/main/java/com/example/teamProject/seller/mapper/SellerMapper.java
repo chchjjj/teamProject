@@ -132,8 +132,8 @@ public interface SellerMapper {
 	int deleteProduct(int proNo);
 	//회원정보
 	int updateMemberInfo(Map<String, Object> params) throws Exception;	
- 	
- 
+ 	//가게 정보 조회
+	public Map<String, Object> selectStoreInfoData(String storeId);
 	
 	
 }

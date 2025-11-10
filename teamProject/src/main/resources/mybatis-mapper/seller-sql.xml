@@ -383,31 +383,35 @@ ORDER BY T3.PRO_NAME
 	ORDER BY SI.STORE_ID ASC  FETCH FIRST 1 ROWS ONLY
 	</select>
 
-	<update id="updateStoreInfo" parameterType="map"> UPDATE SELLER_INFO_TBL <set>
-			<if test="storeName != null and storeName != ''">
-				STORE_NAME = #{storeName},
-			</if>
+	<update id="updateStoreInfo" parameterType="map"> 
+    UPDATE SELLER_INFO_TBL 
+    <set>
+        <if test="storeName != null and storeName != ''">
+            STORE_NAME = #{storeName},
+        </if>
         
-        <if
-				test="storeAddrMain != null and storeAddrMain != ''">
-				STORE_ADDR = #{storeAddrMain},
-			</if>
+        <if test="storeAddrMain != null and storeAddrMain != ''">
+            STORE_ADDR = #{storeAddrMain},
+        </if>
         
-        <if
-				test="storeIntro != null and storeIntro != ''">
-				STORE_INTRO = #{storeIntro},
-			</if>
+        <if test="storeIntro != null and storeIntro != ''">
+            STORE_INTRO = #{storeIntro},
+        </if>
         
-        <if
-				test="deliveryYn != null and deliveryYn != ''">
-				DELIVERY_YN = #{deliveryYn},
-			</if>
+        <if test="deliveryYn != null and deliveryYn != ''">
+            DELIVERY_YN = #{deliveryYn},
+        </if>
         
-        <if
-				test="chatYn != null and chatYn != ''">
-				IS_CHAT_ENABLED = #{chatYn},
-			</if> UDATE = SYSDATE </set>
-		WHERE USER_ID = #{userId} AND STORE_ID=#{storeId}</update>
+        <if test="chatYn != null and chatYn != ''">
+            IS_CHAT_ENABLED = #{chatYn},
+        </if> 
+        
+        UDATE = SYSDATE 
+    </set>
+    WHERE 
+        USER_ID = #{userId} 
+        AND STORE_ID = #{storeId, jdbcType=NUMERIC} 
+</update>
 
 	<insert id="insertProduct"
 		parameterType="com.example.teamProject.seller.model.Seller">
@@ -594,7 +598,11 @@ ORDER BY T3.PRO_NAME
     WHERE 
         USER_ID = #{USER_ID}
         </update>
-    
+    <select id="selectStoreInfoData" parameterType="String" resultType="Map">
+    SELECT
+        * FROM SELLER_INFO_TBL
+    WHERE STORE_ID = #{storeId}
+</select>
   
     
 

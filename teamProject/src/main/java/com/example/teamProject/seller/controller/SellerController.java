@@ -719,5 +719,37 @@ public class SellerController {
 	    
 	    return response;
 	}
+	
+	@PostMapping("/store/infoUpdate.dox")
+    @ResponseBody
+    public Map<String, Object> getStoreInfoForUpdate(@RequestParam("storeId") String storeId) {
+        Map<String, Object> resultMap = new HashMap<>();
+        
+        try {
+            // 🟢 [수정됨] sellerService를 사용하여 가게 정보를 조회합니다.
+            // 조회된 객체의 타입은 Map 또는 SellerInfoVO 등으로 가정합니다.
+            // 여기서는 유연하게 Map<String, Object> 타입으로 가정하겠습니다.
+        	Object storeInfo = sellerService.selectStoreInfoData(storeId); 
+
+            if (storeInfo != null) {
+                // 조회 성공 시, "store"라는 키로 데이터를 담아 JSON으로 반환합니다.
+                // 클라이언트 JavaScript가 data.store로 접근하는 것에 맞춥니다.
+                resultMap.put("store", storeInfo);
+                resultMap.put("success", true);
+                resultMap.put("message", "가게 정보 조회 성공");
+            } else {
+                // 가게 정보가 없을 경우
+                resultMap.put("success", false);
+                resultMap.put("message", "해당 STORE_ID로 등록된 가게 정보가 없습니다.");
+            }
+        } catch (Exception e) {
+            // 오류 발생 시
+            System.err.println("가게 정보 조회 중 오류 발생: " + e.getMessage());
+            resultMap.put("success", false);
+            resultMap.put("message", "서버 오류로 인해 정보를 조회할 수 없습니다.");
+        }
+
+        return resultMap;
+    }
 
 }
