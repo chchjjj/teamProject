@@ -134,7 +134,7 @@
    		<if test="option=='storeName'">
    			AND STORE_NAME LIKE '%'||#{keyWord}||'%'
    		</if>
-   		<if test="flgApp=='true'">
+   		<if test="flgApp=='true'"> <!-- 입점신청 진행자만 보기 -->
    			AND STORE_PASS='G'
    		</if>
 	</select>
@@ -162,7 +162,7 @@
 		WHERE STORE_ID=#{storeId}
 	</update>
 	
-	<!--입점 신청을 처리-->
+	<!--입점 신청 처리-->
 	<update id="sellerRoleUpdate" parameterType="hashmap">
 		UPDATE SELLER_INFO_TBL 
 		SET STORE_PASS=#{storePass}
@@ -170,9 +170,14 @@
 	</update>
 	
 	<update id="userRoleUpdate" parameterType="hashmap">
-		UPDATE USER_TBL 
-		SET ROLE='S'
-		WHERE USER_ID=#{userId}
+	    UPDATE USER_TBL
+	    SET ROLE = 'S'                <!-- 승인대기중 => 승인/거절 루트만 있다고 가정 -->
+	    WHERE USER_ID = #{userId}	  <!-- 거절 > 승인 또는 승인 > 거절 루트는 없음 -->
+	      AND USER_ID IN (
+	          SELECT USER_ID
+	          FROM SELLER_INFO_TBL
+	          WHERE STORE_PASS = 'P'
+	      )
 	</update>
 	
 	
