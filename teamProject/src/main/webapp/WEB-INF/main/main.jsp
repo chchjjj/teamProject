@@ -69,7 +69,7 @@
 
                         <section class="main-category">
                             <a href="#" class="category-btn" :class="{ active: selectedCategory === '' }"
-                                @click.prevent="selectedCategory = ''; page = 1; fnList()">전체</a>
+                                @click.prevent="selectedCategory = ''; page = 1; fnList()"></a>
 
                             <a href="#" class="category-btn" :class="{ active: selectedCategory === '케이크' }"
                                 @click.prevent="selectedCategory = '케이크'; page = 1; fnList()"></a>
@@ -77,7 +77,7 @@
                             <a href="#" class="category-btn" :class="{ active: selectedCategory === '쿠키' }"
                                 @click.prevent="selectedCategory = '쿠키'; page = 1; fnList()"></a>
 
-                            <a href="#" class="category-btn" :class="{ active: selectedCategory === '초콜릿/사탕' }"
+                            <a href="#" class="category-btn" :class="{ active: selectedCategory === '초콜렛' }"
                                 @click.prevent="selectedCategory = '초콜렛'; page = 1; fnList()"></a>
                         </section>
 

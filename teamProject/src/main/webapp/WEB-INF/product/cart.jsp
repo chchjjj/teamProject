@@ -128,7 +128,7 @@
                                             </div>
                                             <div class="item-right">
                                                 <p class="item-final-price">
-                                                    {{ formatNumber((group.totalPrice) + group.deliveryFee) }}원
+                                                    {{ formatNumber(group.finalPrice) }}원
                                                 </p>
                                                 <div class="quantity-control">
 
@@ -282,20 +282,25 @@
 
                 fnGroupCartList: function (list) {
                     const grouped = {};
+
                     if (!Array.isArray(list) || list.length === 0) {
                         this.groupedCartList = [];
                         console.log("장바구니 목록이 비어 있거나 올바르지 않아 그룹화하지 않습니다.");
                         return;
                     }
+
                     list.forEach(item => {
                         const cartId = item.cartId || item.CART_ID;
                         if (!cartId) return;
+
                         const defPrice = Number(item.defPrice || item.DEF_PRICE || 0);
                         const subOptPrice = Number(item.subOptPrice || item.SUB_OPT_PRICE || 0);
                         const optQty = Number(item.cartOptQuantity || item.CART_OPT_QUANTITY || 1);
                         const cartQuantity = Number(item.cartQuantity || item.CART_QUANTITY || 1);
-                        const deliveryFee = Number(item.deliveryFee || item.DELIVERY_FEE || 0); //배송비
+                        const deliveryFee = Number(item.deliveryFee || item.DELIVERY_FEE || 0);
                         const deliveryType = item.deliveryType || item.DELIVERY_TYPE || "기본배송";
+
+                        // 장바구니 그룹 초기화
                         if (!grouped[cartId]) {
                             grouped[cartId] = {
                                 userName: item.userName,
@@ -310,8 +315,8 @@
                                 proName: item.proName || item.PRO_NAME,
                                 defPrice: defPrice,
                                 options: [],
-                                totalPrice: item.defPrice,
-                                totalAddPrice: 0,
+                                totalPrice: defPrice, // 기본가격
+                                totalAddPrice: 0,     // 옵션 추가금
                                 itemQty: cartQuantity,
                                 cartOptQuantity: item.cartOptQuantity,
                                 letteringWord: item.letteringWord || item.LETTERING_WORD || "",
@@ -320,9 +325,14 @@
                                 deliveryType: deliveryType,
 
                                 filePath: item.filePath,
-                                fileName: item.fileName
+                                fileName: item.fileName,
+
+                                finalPrice: 0, // 화면에 표시되는 최종 금액 변수
+                                subtotal: 0 // 배송비 제외 금액
                             };
                         }
+
+                        // 옵션 정보 추가
                         grouped[cartId].options.push({
                             topOpt: item.topOpt || item.TOP_OPT,
                             subOpt: item.subOpt || item.SUB_OPT,
@@ -332,22 +342,35 @@
                             cartOptQuantity: optQty,
                         });
 
+                        // 옵션 추가금 계산
                         if (subOptPrice > 0) {
                             const addedAmount = subOptPrice * optQty;
                             grouped[cartId].totalPrice += addedAmount;
                             grouped[cartId].totalAddPrice += addedAmount;
                             grouped[cartId].optionPrice = grouped[cartId].totalPrice - grouped[cartId].defPrice;
-
                         }
                     });
+
+                    // 그룹별로 총합 및 화면 표시용 금액 계산
                     this.groupedCartList = Object.values(grouped);
                     for (let i = 0; i < this.groupedCartList.length; i++) {
-                        this.groupedCartList[i].totalPrice = this.groupedCartList[i].totalPrice * this.groupedCartList[i].itemQty;
-
+                        const group = this.groupedCartList[i];
+                        const subtotal = (group.defPrice + group.totalAddPrice) * group.itemQty;
+                        group.subtotal = subtotal;
+                        // 총 상품금액 = (기본가 + 옵션추가금) × 수량
+                        const totalProductPrice = (group.defPrice + group.totalAddPrice) * group.itemQty;
+                        group.totalPrice = totalProductPrice;
+                        // 최종 표시 금액 = 총 상품금액 + 배송비
+                        group.finalPrice = totalProductPrice + group.deliveryFee;
+                        group.totalPrice = group.finalPrice;
                     }
+
+                    // 최신 상품이 위로 오도록 정렬
                     this.groupedCartList = this.groupedCartList.slice().reverse();
+
                     console.log("그룹화된 장바구니 ===>", this.groupedCartList);
-                },
+                }
+                ,
                 fnChangeItemQuantity: function (cartId, amount) {
                     let self = this;
                     const group = self.groupedCartList.find(g => g.cartId === cartId);

@@ -56,7 +56,7 @@
                                 <div class="price-and-action">
                                     <p class="price">{{infoList.price}} 원~</p>
                                     <br>
-                                    <p class="shipping-fee">배송비 {{infoList.deliveryFee}}</p>
+                                    <p class="shipping-fee">배송비(포장비) {{infoList.deliveryFee}} </p>
 
                                     <span v-if="isWished">
                                         <img src="/img/좋아요누른후.png" alt="찜 완료" @click="fnwish" class="wish-icon">
@@ -193,12 +193,6 @@
 
                     // 💡 [수정] 오류의 원인: Flatpickr disable 옵션에서 참조하는 변수 추가
                     disabledDates: [
-                        "2025-11-01",
-                        "2025-11-05",
-                        {
-                            from: "2025-11-10",
-                            to: "2025-11-15"
-                        }
                     ],
                     letteringText: "",
                     // 전체 상품 수량
@@ -363,7 +357,7 @@
                             data: param,
                             success: function (data) {
                                 if (data.result === "success") {
-                                    alert("주문이 완료되었습니다!");                            
+                                    alert("주문이 완료되었습니다!");
                                     alert(data.orderId);
                                     pageChange("/payment/payment.do", { orderId: data.orderId });
                                     // if (self.deliveryType === 'D') {
@@ -664,6 +658,38 @@
                         }
                     });
                 },
+                disableDateInfo() {
+                    let self = this;
+                    $.ajax({
+                        url: "/product/disableDateInfo.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: { proNo: self.proNo },
+                        success: function (data) {
+                            // 객체 배열 → 날짜 문자열 배열로 변환
+                            self.disabledDates = Array.isArray(data.list) ?
+                                data.list.map(item => item.disabledDate) : [];
+
+                            console.log("disabledDates:", self.disabledDates);
+
+                            // Flatpickr 초기화 또는 기존 인스턴스에 적용
+                            if (self.datePicker) {
+                                self.datePicker.set('disable', self.disabledDates);
+                            } else {
+                                self.initFlatpickr();
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("disableDateInfo AJAX 에러:", error);
+                            self.disabledDates = [];
+                            if (self.datePicker) {
+                                self.datePicker.set('disable', self.disabledDates);
+                            } else {
+                                self.initFlatpickr();
+                            }
+                        }
+                    });
+                },
 
                 // 💡 버튼 클릭 시 달력 열기 메서드
                 openCalendar() {
@@ -756,6 +782,7 @@
                 self.fnAllOpt();
                 self.fnCheckWish();
                 self.fnUserInfo();
+
                 // 임시로, 모든 데이터가 로드될 시간을 주고 그룹화 함수 실행 (비동기 이슈 발생 가능)
                 setTimeout(() => {
                     self.groupOptions();
@@ -768,6 +795,8 @@
                     // 💡 Flatpickr 초기화 호출
                     self.initFlatpickr();
                 }, 300); // 0.5초 대기 후 그룹화
+
+                self.disableDateInfo();
             }
         });
 
