@@ -390,11 +390,7 @@
                             </div>
 
                             <!-- 개별 배송 버튼 -->
-                            <div v-if="deliveryType=='D'" style="margin-top:10px;">
-                                <button @click="fnDelivery(item.orderId)" class="btn btn-delivery">
-                                    배송지 선택/변경
-                                </button>
-                            </div>
+
 
                             <!-- 개별 달력 버튼 -->
                             <div class="info-row" v-if="orderId.length <= 0" style="margin-top:10px;">
@@ -416,9 +412,10 @@
 
                         <div v-if="deliveryType=='D'" class="info-row">
                             <span>배송 정보</span>
-                            <button @click="fnDelivery" class="btn btn-delivery">배송지 선택/변경</button>
+                            <button @click="fnDelivery(groupedOrdersList[0].orderId)" class="btn btn-delivery">
+                                배송지 선택/변경
+                            </button>
                         </div>
-
 
 
                         <div class="info-row">
@@ -491,7 +488,6 @@
 
                         methods: {
                             // 함수(메소드) - (key : function())
-
 
                             fnOrderList: function () {
                                 let self = this;
@@ -645,7 +641,6 @@
                                 // }
                                 // 실제 구현용 여기까지
 
-
                                 //테스트 전용 여기부터
                                 if (self.orderId.length > 0) {
                                     self.fnPayHistory(1, 1); //바로 결제하는 경우
@@ -658,7 +653,6 @@
                                     return;
                                 }
                                 //테스트 전용 여기까지
-
 
                                 //       } 
                                 // });
@@ -959,7 +953,6 @@
                                     self.initFlatpickr(i);
                                 }
                             }, 300);
-
 
                         }
                     });
