@@ -4,7 +4,7 @@
 
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
         <link rel="stylesheet" href="/css/productDetail-style.css">
         <link rel="stylesheet" href="/css/detail-qna.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -154,7 +154,10 @@
 
                     <div v-if="currentTab === 'review'"> <!--후기 탭-->
                         <section class="review-list">
-                            <div class="review-block" v-for="item in reviewList">
+                            <div v-if="reviewList.length <= 0">
+                                등록된 리뷰가 없습니다.
+                            </div>
+                            <div v-else class="review-block" v-for="item in reviewList">
                                 <!-- <div class="review-photo-area">
                                     후기사진
                                 </div> -->

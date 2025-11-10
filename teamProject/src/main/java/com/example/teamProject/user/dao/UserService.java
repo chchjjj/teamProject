@@ -52,13 +52,18 @@ public class UserService {
 					// 로그인 성공
 					// cnt값을 0으로 초기화
 					
-					message = "로그인 성공!";
+					message = user.getUserName() + " 님 환영합니다!";
 					result = "success";
 					
 					session.setAttribute("sessionId", user.getUserId());
 					session.setAttribute("sessionName", user.getUserName());
 					session.setAttribute("sessionRole", user.getRole());
 					session.setAttribute("sessionPhone", user.getPhone());
+					session.setAttribute("sessionAddress", user.getUserAddr());
+					
+					//세션 만료 시간 설정 (단위 초)
+					session.setMaxInactiveInterval(60 * 60);
+					
 					resultMap.put("url", "/main.do");
 					
 					//밑에 주석처리 한거는 혹시라도 관리자 여부에 따라 이동할 페이지를 다르게 하고 싶을 때 사용하면 된다.
