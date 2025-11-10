@@ -223,6 +223,50 @@ public class PaymentController {
 		return new Gson().toJson(resultMap);
 	}
 	
+	@RequestMapping(value = "/payment/deliPayment.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String deliPayment(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		// 2. Controller(.dox)에서 리스트 형태로 변경 후 map에 넣기
+		//String json = (String) map.get("cartItems");
+		String json = map.get("orderList").toString();
+		ObjectMapper mapper = new ObjectMapper();
+		List<Object> orderList = mapper.readValue(json, new TypeReference<List<Object>>() {});
+
+		//List<HashMap<String, Object>> list = mapper.readValue(json, new TypeReference<List<HashMap<String, Object>>>(){});
+
+		map.put("orderList", orderList);
+
+		System.out.println("payment map 안에 담긴 값은 ===>" + map);
+		
+		resultMap = paymentService.addDeliPayment(map);
+
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/payment/pickPayment.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String pickPayment(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		// 2. Controller(.dox)에서 리스트 형태로 변경 후 map에 넣기
+		//String json = (String) map.get("cartItems");
+		String json = map.get("orderList").toString();
+		ObjectMapper mapper = new ObjectMapper();
+		List<Object> orderList = mapper.readValue(json, new TypeReference<List<Object>>() {});
+
+		//List<HashMap<String, Object>> list = mapper.readValue(json, new TypeReference<List<HashMap<String, Object>>>(){});
+
+		map.put("orderList", orderList);
+
+		System.out.println("payment map 안에 담긴 값은 ===>" + map);
+		
+		resultMap = paymentService.addPickPayment(map);
+
+		return new Gson().toJson(resultMap);
+	}
+	
 	@RequestMapping(value = "/payment/addAddress.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String addAddress(Model model, @RequestParam HashMap<String, Object> map) throws Exception {

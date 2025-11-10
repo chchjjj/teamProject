@@ -220,6 +220,15 @@
             </div> 
         </div>
 
+        <div v-if="showAddrFrame" style="margin-top:10px; text-align:center;">
+            <iframe 
+                id="jusoFrame" 
+                src="/user/addr.do" 
+                style="width:100%; height:500px; border:1px solid #ccc;"
+            ></iframe>
+            <button @click="showAddrFrame=false" style="margin-top:10px;">닫기</button>
+        </div>
+
 
         <div class="address-card default-address-card">
             <div class="card-title">기본배송지</div>
@@ -244,11 +253,11 @@
         </div>
         
     </div>
+
 </body>
 </html>
 
 <script>
-    //주소 api 관련 여기부터
     function jusoCallBack(roadFullAddr, roadAddrPart1, addrDetail, roadAddrPart2, engAddr, jibunAddr, zipNo, admCd, rnMgtSn, bdMgtSn, detBdNmList, bdNm, bdKdcd, siNm, sggNm, emdNm, liNm, rn, udrtYn, buldMnnm, buldSlno, mtYn, lnbrMnnm, lnbrSlno, emdNo) {
                 console.log(roadFullAddr);
                 console.log(addrDetail);
@@ -283,21 +292,31 @@
                 phone3: "",
 
                 // 신규 배송지 입력 폼 표시 여부 (기본 true로 설정)
-                showAddForm: true 
+                showAddForm: true ,
+                showAddrFrame: false // iframe 표시 여부
 
             };
         },
         methods: {
             // 함수(메소드) - (key : function())
 
+            fnToggleAddrFrame: function(){
+                this.showAddrFrame = !this.showAddrFrame;
+            },
+
+            // iframe에서 postMessage로 받은 결과 처리
+            fnResult: function (roadFullAddr, addrDetail, zipNo) {
+                this.addr = roadFullAddr + " " + addrDetail;
+                this.showAddrFrame = false; // 닫기
+            },
             //주소 api 사용하기 여기부터
             fnSearchAddr: function(){
                 window.open("/user/addr.do", "addr", "width=500, height=500, top=100, left=900");
             },
-            fnResult: function (roadFullAddr, addrDetail, zipNo) {
-                    let self = this;
-                    self.addr = roadFullAddr;
-            },
+            // fnResult: function (roadFullAddr, addrDetail, zipNo) {
+            //         let self = this;
+            //         self.addr = roadFullAddr;
+            // },
             //주소 api 사용하기 여기까지
 
             // 신규 배송지 입력 폼 표시/숨김 토글
@@ -401,6 +420,20 @@
             let self = this;
             //스크립트에서 vue 내부의 데이터 접근 (주소 api 관련)
             window.vueObj = this;
+            window.addEventListener("message", (event) => {
+                // 보안 검증 (내 도메인에서만 허용)
+                if (event.origin !== window.location.origin) {
+                    console.warn("외부 origin의 메시지는 무시", event.origin);
+                    return;
+                }
+
+                // jusoPopup.jsp에서 보낸 데이터 받기
+                if (event.data && event.data.type === "jusoResult") {
+                    this.fnResult(event.data.roadFullAddr, event.data.addrDetail, event.data.zipNo);
+                }
+            });
+
+
             self.fnAddressList(); //주소 목록 출력(기본 주소 외에 추가 입력한 것)
             let str = "${orderIdList}";
              self.orderIdList = JSON.parse(str); //파싱을 해줘야 문자열을 리스트로 바꿀 수 있다.

@@ -9,6 +9,9 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
     <script src="/js/page-change.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
     <style>
     /* 1. CSS 변수 정의 (변경 없음) */
     :root {
@@ -331,6 +334,25 @@
     .btn-primary:hover {
         background-color: #5A473D;
     }
+    
+    .date-input{
+        display: none;
+    }
+
+    .delivery-date-btn{
+        background-color: transparent;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+        font-size: 18px; 
+        padding: 8px 16px;
+        margin-left: 10px;
+    }
+
+     .delivery-date-btn:hover {
+        background-color: var(--primary-color);
+        color: var(--card-bg-color);
+    }
+    
 </style>
 </head>
 <body>
@@ -364,12 +386,27 @@
                     </div>
                 </div>
             
-            <hr class="separator"> <div class="info-section">
+            <hr class="separator"> 
+            <div class="info-section">
                 
                 <div v-if="deliveryType=='D'" class="info-row">
                     <span>배송 정보</span>
                     <button @click="fnDelivery" class="btn btn-delivery">배송지 선택/변경</button>
                 </div>
+
+                <!-- 달력 여기부터 -->
+                <div class="info-row" v-if="orderId.length <= 0">
+                    날짜/시간:
+
+                    <!-- 숨겨진 실제 input -->
+                    <input type="text" id="deliveryDateInput" class="date-input" >
+
+                    <!-- 사용자가 클릭하는 버튼 -->
+                    <button class="btn delivery-date-btn" @click="openCalendar">
+                        {{ selectedDateDisplay }}
+                    </button>
+                </div>
+                <!-- 달력 여기까지 -->
                 
                 <div class="info-row">
                     <span>주문 고객:</span>
@@ -389,11 +426,7 @@
             
             <div class="btn-group">
                 <button @click="fnGoBack" class="btn btn-cancel">메인으로</button>
-                <button v-if="deliveryType=='D'" @click="fnCheckDelivery" class="btn btn-primary">결제하기</button>
-                <button v-else @click="fnPayment" class="btn btn-primary">결제하기</button>
-
-                <!-- 아랫줄은 간편 테스트용(결제 api를 우회할 수 있음) -->
-                <!-- <button @click="fnPayHistory(1, 1)" class="btn btn-primary">결제하기</button> -->
+                <button @click="fnCheck" class="btn btn-primary">결제하기</button>
             </div>
 
         </div>
@@ -417,9 +450,31 @@
                     //order_tbl 관련 변수
                     orderId : "${orderId}", //이전 페이지에서 orderId로 받을 때
                     orderIdList : [], //이 페이지에서 order 관련 테이블의 데이터에 접근할 때 사용
-                    groupedOrdersList: [] //주문들을 그룹화한 리스트
+                    groupedOrdersList: [], //주문들을 그룹화한 리스트
+
+                    //달력
+                    disabledDates: [
+                        "2025-11-01",
+                        "2025-11-05",
+                        { from: "2025-11-10", to: "2025-11-15" }
+                    ],
+                    selectedDate: null, // 달력 정보
+                    datePicker: null,   // flatpickr 객체를 저장할 변수
+
+                    //판매자가 지정한 날짜 비활성화 기능 적용하는법
+                    disabledDates: []
                 };
             },
+
+            computed: {
+                selectedDateDisplay() {
+                    if (this.selectedDate) {
+                        return this.selectedDate + ' (변경)';
+                    }
+                    return '픽업/배송 날짜 및 시간 선택';
+                }
+            },
+
             methods: {
                 // 함수(메소드) - (key : function())
 
@@ -473,24 +528,67 @@
                     window.open("/payment/addressPopUp.do?orderIdList="+self.orderIdList, "addressPopUp", "width=700, height=500, top=100, left=100");
                 },
 
-                fnCheckDelivery: function(){
+                //결제 진행전 유효성 검사
+                fnCheck: function(){
                     let self = this;
-                    let param = {
-                       orderId: self.groupedOrdersList[0].orderId
-                    };
-                    $.ajax({
-                        url: "/payment/checkDelivery.dox",
-                        dataType: "json",
-                        type: "POST",
-                        data: param,
-                        success: function (data) {
-                            if(data.info.fullAddress != "주소없음" && data.info.fullAddress != null && data.info.fullAddress != ""){
-                                self.fnPayment();
-                            } else {
-                                alert("배송지 정보를 먼저 선택해주세요!");
-                            }
+
+                    //장바구니 O, 배달하는 경우
+                    if(self.deliveryType=='D' && self.orderId.length <= 0){
+                        if ((self.selectedDate == null || self.selectedDate == "") && self.orderId.length < 1) {
+                            alert("날짜를 선택해주세요!");
+                            return;
                         }
-                    });
+                        let param = {
+                            orderId: self.groupedOrdersList[0].orderId
+                        };
+                        $.ajax({
+                            url: "/payment/checkDelivery.dox",
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                if(data.info.fullAddress != "주소없음" && data.info.fullAddress != null && data.info.fullAddress != ""){
+                                    self.fnPayment();
+                                } else {
+                                    alert("배송지 정보를 선택해주세요!");
+                                }
+                            }
+                        });
+                    }
+
+                    //장바구니 O, 픽업하는 경우
+                    if(self.deliveryType=='P' && self.orderId.length <= 0){
+                        if ((self.selectedDate == null || self.selectedDate == "") && self.orderId.length < 1) {
+                            alert("날짜를 선택해주세요!");
+                            return;
+                        }
+                        self.fnPayment();
+                    }
+
+                    //장바구니 X, 배달하는 경우
+                     if(self.deliveryType=='D' && self.orderId.length > 0){
+                        let param = {
+                            orderId: self.groupedOrdersList[0].orderId
+                        };
+                        $.ajax({
+                            url: "/payment/checkDelivery.dox",
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                if(data.info.fullAddress != "주소없음" && data.info.fullAddress != null && data.info.fullAddress != ""){
+                                    self.fnPayment();
+                                } else {
+                                    alert("배송지 정보를 먼저 선택해주세요!");
+                                }
+                            }
+                        });
+                     }
+
+                    //장바구니 X, 픽업하는 경우
+                     if(self.deliveryType=='P' && self.orderId.length > 0){
+                        self.fnPayment();
+                     }
                 },
 
                 //결제 버튼을 누르면 이 함수를 실행
@@ -503,25 +601,50 @@
                     } else{
                         proName = self.groupedOrdersList[0].proName;
                     }
-                    IMP.request_pay({
-                        pg: "html5_inicis",
-                        pay_method: "card",
-                        merchant_uid: "merchant_" + new Date().getTime(),
-                        name: proName, //상품이름, 대표로 제일 첫번째 상품명을 보여준다.
-                        amount: 1, //실제 결제금액은 1원, 원래는 self.paymentPrice
-                        buyer_tel: self.toPhone, // 구매자 휴대폰 번호
-                        buyer_name: self.toName // 구매자 성함
-                      } , function (rsp) { // callback
-                          if (rsp.success) {
-                            // 결제 성공 시
-                            //alert("성공");
-                            console.log(rsp);
-                            self.fnPayHistory(rsp.imp_uid, rsp.paid_amount);
-                          } else {
-                            // 결제 실패 시
-                            //alert("실패");
-                          }
-                    });
+                    // IMP.request_pay({
+                    //     pg: "html5_inicis",
+                    //     pay_method: "card",
+                    //     merchant_uid: "merchant_" + new Date().getTime(),
+                    //     name: proName, //상품이름, 대표로 제일 첫번째 상품명을 보여준다.
+                    //     amount: 1, //실제 결제금액은 1원, 원래는 self.paymentPrice
+                    //     buyer_tel: self.toPhone, // 구매자 휴대폰 번호
+                    //     buyer_name: self.toName // 구매자 성함
+                    //   } , function (rsp) { // callback
+                    //       if (rsp.success) {
+                    //         // 결제 성공 시
+                    //         //alert("성공");
+                    //         console.log(rsp);
+                            
+                            // 실제 구현용 여기부터
+                            // if(self.orderId.length > 0){
+                            //     self.fnPayHistory(rsp.imp_uid, rsp.paid_amount); //바로 결제하는 경우
+                            // } else if(self.deliveryType == 'D'){
+                            //     self.fnDeliPayHistory(rsp.imp_uid, rsp.paid_amount); //장바구니 거쳐서 배송 결제하는 경우
+                            // } else if(self.deliveryType == 'P'){
+                            //     self.fnPickPayHistory(rsp.imp_uid, rsp.paid_amount); //장바구니 거쳐서 픽업 결제하는 경우
+                            // } else {
+                            //     alert("잘못된 결제입니다!");
+                            //     return;
+                            // }
+                            // 실제 구현용 여기까지
+
+
+                            //테스트 전용 여기부터
+                                if(self.orderId.length > 0){
+                                    self.fnPayHistory(1, 1); //바로 결제하는 경우
+                                } else if(self.deliveryType == 'D'){
+                                    self.fnDeliPayHistory(1, 1); //장바구니 거쳐서 배송 결제하는 경우
+                                } else if(self.deliveryType == 'P'){
+                                    self.fnPickPayHistory(1, 1); //장바구니 거쳐서 픽업 결제하는 경우
+                                } else {
+                                    alert("잘못된 결제입니다!");
+                                    return;
+                                }
+                            //테스트 전용 여기까지
+
+
+                    //       } 
+                    // });
                 },
 
                 //PAYMENT_TBL에 결제내역을 추가하는 쿼리문
@@ -530,7 +653,8 @@
                     let param = {
                         uid: uid,
                         amount: amount,
-                        orderList: JSON.stringify(self.orderList)
+                        orderList: JSON.stringify(self.orderList),
+                        //selectedDate: self.selectedDate
                         // 그 외 기타 등등
                     };
                     $.ajax({
@@ -543,7 +667,61 @@
                                 alert("결제되었습니다!");
                                 location.href="/main.do";
                             } else {
-                                alert("오류가 발생했습니다!");
+                                alert("fnPayHistory 오류가 발생했습니다!");
+                                location.href="/main.do";
+                            }
+                        }
+                    });
+                },
+
+                //PAYMENT_TBL에 결제내역을 추가하는 쿼리문
+                fnDeliPayHistory: function(uid, amount){
+                    let self = this;
+                    let param = {
+                        uid: uid,
+                        amount: amount,
+                        orderList: JSON.stringify(self.orderList),
+                        selectedDate: self.selectedDate
+                        // 그 외 기타 등등
+                    };
+                    $.ajax({
+                        url: "/payment/deliPayment.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            if(data.result == "success"){
+                                alert("결제되었습니다!");
+                                location.href="/main.do";
+                            } else {
+                                alert(" fnDeliPayHistory 오류가 발생했습니다!");
+                                location.href="/main.do";
+                            }
+                        }
+                    });
+                },
+
+                //PAYMENT_TBL에 결제내역을 추가하는 쿼리문
+                fnPickPayHistory: function(uid, amount){
+                    let self = this;
+                    let param = {
+                        uid: uid,
+                        amount: amount,
+                        orderList: JSON.stringify(self.orderList),
+                        selectedDate: self.selectedDate
+                        // 그 외 기타 등등
+                    };
+                    $.ajax({
+                        url: "/payment/pickPayment.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            if(data.result == "success"){
+                                alert("결제되었습니다!");
+                                location.href="/main.do";
+                            } else {
+                                alert("fnPickPayHistory 오류가 발생했습니다!");
                                 location.href="/main.do";
                             }
                         }
@@ -633,6 +811,77 @@
                     }
                 },
 
+                initFlatpickr() {
+                    const self = this;
+                    self.datePicker = flatpickr("#deliveryDateInput", {
+                        locale: "ko",
+
+                        // 💡 핵심 1: 시간 선택 기능 활성화
+                        enableTime: true,
+                        // 💡 핵심 2: 시간 선택 시 캘린더가 닫히지 않도록(필수 아님)
+                        closeOnSelect: false,
+                        // 💡 핵심 3: 날짜와 시간을 모두 포함하는 형식 지정 (Y-m-d H:i)
+                        dateFormat: "Y-m-d H:i",
+
+                        inline: false,
+                        minDate: "today",
+                        disable: self.disabledDates,
+                        positionElement: document.querySelector(".delivery-date-btn"),
+                        onChange(selectedDates, dateStr) {
+                            if (selectedDates.length > 0) {
+                                self.selectedDate = dateStr;
+                            }
+                        },
+                        onChange: function (selectedDates, dateStr, instance) {
+                            if (selectedDates.length > 0) {
+                                // 선택된 날짜+시간 문자열을 Vue data에 저장
+                                self.selectedDate = dateStr;
+                                console.log("선택된 날짜 및 시간:", self.selectedDate);
+                                // 사용자가 '확인' 버튼을 누르거나(옵션) 수동으로 닫을 수 있도록 close() 제거
+                                // instance.close(); 
+                            }
+                        }
+                    });
+                },
+                openCalendar() {
+                    if (this.datePicker) {
+                        this.datePicker.open();
+                    }
+                },
+
+                //판매자가 지정한 날짜 비활성화 기능
+                disableDateInfo() {
+                    let self = this;
+                    $.ajax({
+                        url: "/product/disableDateInfo.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: { proNo: self.proNo },
+                        success: function (data) {
+                            // 객체 배열 → 날짜 문자열 배열로 변환
+                            self.disabledDates = Array.isArray(data.list) ?
+                                data.list.map(item => item.disabledDate) : [];
+
+                            console.log("disabledDates:", self.disabledDates);
+
+                            // Flatpickr 초기화 또는 기존 인스턴스에 적용
+                            if (self.datePicker) {
+                                self.datePicker.set('disable', self.disabledDates);
+                            } else {
+                                self.initFlatpickr();
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("disableDateInfo AJAX 에러:", error);
+                            self.disabledDates = [];
+                            if (self.datePicker) {
+                                self.datePicker.set('disable', self.disabledDates);
+                            } else {
+                                self.initFlatpickr();
+                            }
+                        }
+                    });
+                },
                 
             }, // methods
             mounted() {
@@ -655,6 +904,12 @@
 
                 console.log("최종적으로 사용할 orderIdList 값은 => " + self.orderIdList);
                 self.fnOrderList();
+
+                // 옵션 등 데이터 로드 후
+                setTimeout(() => {
+                    self.initFlatpickr(); // 캘린더 초기화
+                }, 300); // 0.3초 딜레이
+                
             }
         });
 

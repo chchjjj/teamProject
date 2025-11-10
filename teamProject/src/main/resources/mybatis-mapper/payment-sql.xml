@@ -101,7 +101,20 @@
 		UPDATE ORDER_TBL
 		SET STATUS = 'P'
 		WHERE ORDER_ID = #{orderId}
+	</update> 
+	
+	<update id="updateDeliveryWishDeli" parameterType="hashmap">
+	    UPDATE DELIVERY_TBL
+		SET WISH_DELI = TO_DATE(#{selectedDate}, 'YYYY-MM-DD HH24:MI')
+		WHERE ORDER_ID = #{orderId}
 	</update>
 	
+	<update id="updatePickUpDate" parameterType="hashmap">
+	    UPDATE PICKUP_TBL
+		SET 
+			PICKUP_DATE = TO_DATE(#{selectedDate}, 'YYYY-MM-DD HH24:MI'), 
+			PICK_TIME = TO_DATE(#{selectedDate}, 'YYYY-MM-DD HH24:MI')
+		WHERE ORDER_ID = #{orderId}
+	</update>
 	
 </mapper>
