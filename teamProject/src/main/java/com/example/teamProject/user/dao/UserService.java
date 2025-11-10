@@ -59,6 +59,7 @@ public class UserService {
 					session.setAttribute("sessionName", user.getUserName());
 					session.setAttribute("sessionRole", user.getRole());
 					session.setAttribute("sessionPhone", user.getPhone());
+					session.setAttribute("sessionAddress", user.getUserAddr()); 
 					
 					//세션 만료 시간 설정 (단위 초)
 					session.setMaxInactiveInterval(60 * 60);
