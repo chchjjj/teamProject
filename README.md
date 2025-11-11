@@ -71,7 +71,7 @@
 - **구현 기능** : Apex chart, 전체 사용자 및 게시글 CRUD, 멤버쉽관리, 수익 구조에 따른 수수료 정산 기능 / 구매목록(옵션 이력 불러오기), 결제 상태에 따른 리뷰 작성 기능 
 ***
 ## 📂 기타 산출물 링크
-▶ [회의록] (https://drive.google.com/drive/folders/18vpyLgd6Mx1mIT_zkIh0xsSvjM3JtQvL?usp=drive_link)
+▶ [회의록](https://drive.google.com/drive/folders/18vpyLgd6Mx1mIT_zkIh0xsSvjM3JtQvL?usp=drive_link)
    
 
 ***
