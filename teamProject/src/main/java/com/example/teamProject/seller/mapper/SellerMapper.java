@@ -137,5 +137,14 @@ public interface SellerMapper {
 	 //가게정보 업데이트
 	 int updateStoreInfo(Map<String, Object> paramMap);
 	
-	
+	 //  단일 상품 조회
+	 Map<String, Object> selectProductProNo(@Param("proNo") int proNo);
+
+	    //  옵션 조회 (상위 옵션 + 하위 옵션)
+	 List<Map<String, Object>> selectOptionsByProNo(@Param("proNo") int proNo);
+
+	    //  불가 날짜 조회
+	 List<String> selectDisabledDate(@Param("proNo") int proNo);
+	 
+	 
 }

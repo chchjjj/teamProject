@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.teamProject.product.model.Product;
 import com.example.teamProject.seller.mapper.ProductImgMapper;
 import com.example.teamProject.seller.mapper.SellerMapper;
 import com.example.teamProject.seller.model.Seller;
@@ -449,27 +450,62 @@ public Map<String, Object> getProductDataForEdit(int proNo) {
 
 @Transactional
 public void updateProduct(Seller seller) throws Exception {
-    // Controller에서 storeId와 userId가 이미 설정되어 넘어왔습니다.
     
+    // 🚨 1. 메서드 시작 및 입력 데이터 확인
+    System.out.println("========================================================================");
+    System.out.println(">>> [Service] updateProduct 트랜잭션 시작");
+    
+    // Controller에서 storeId와 userId가 이미 설정되어 넘어왔습니다.
     int proNo = seller.getProNo();
+    
+    // 🚨 2. 핵심 식별자 및 새 데이터 확인
+    System.out.println(">>> 수정 대상 PRO_NO: " + proNo);
+    System.out.println(">>> 새 PRO_NAME: " + seller.getProName());
+    // proInfo는 내용이 길 수 있으므로 일부만 출력
+    String proInfoPreview = seller.getProInfo() != null ? 
+                            seller.getProInfo().substring(0, Math.min(seller.getProInfo().length(), 50)) + "..." : "NULL/EMPTY";
+    System.out.println(">>> 새 PRO_INFO (미리보기): " + proInfoPreview);
     
     // 1. 제품 기본 정보 수정
     sellerMapper.updateProduct(seller);
+    System.out.println(">>> [DB] 제품 기본 정보 (PRODUCT_TBL) 수정 완료.");
     
     // 2. 기존 옵션 삭제 후 재등록
+    System.out.println(">>> [DB] 기존 옵션 삭제 시작 (PRO_NO: " + proNo + ")");
     sellerMapper.deleteProductOptions(proNo);
-    insertOptions(proNo, seller.getOptions());
+    System.out.println(">>> [DB] 기존 옵션 삭제 완료.");
+    
+    if (seller.getOptions() != null && !seller.getOptions().isEmpty()) {
+        System.out.println(">>> 등록할 옵션 개수: " + seller.getOptions().size() + "개");
+        insertOptions(proNo, seller.getOptions());
+        System.out.println(">>> [DB] 새 옵션 재등록 완료.");
+    } else {
+        System.out.println(">>> 등록할 옵션 없음.");
+    }
 
     // 3. 기존 불가 날짜 삭제 후 재등록
+    System.out.println(">>> [DB] 기존 불가 날짜 삭제 시작 (PRO_NO: " + proNo + ")");
     sellerMapper.deleteDisabledDates(proNo);
+    System.out.println(">>> [DB] 기존 불가 날짜 삭제 완료.");
+    
     if (seller.getDisabledDates() != null && !seller.getDisabledDates().isEmpty()) {
+        System.out.println(">>> 등록할 불가 날짜 개수: " + seller.getDisabledDates().size() + "개");
         for(String date : seller.getDisabledDates()) {
             sellerMapper.insertDisabledDate(proNo, date);
+            // 🚨 날짜 등록 로그
+            System.out.println("    - 불가 날짜 등록: " + date);
         }
+        System.out.println(">>> [DB] 새 불가 날짜 재등록 완료.");
+    } else {
+        System.out.println(">>> 등록할 불가 날짜 없음.");
     }
+    
+    // 🚨 3. 메서드 종료 확인
+    System.out.println(">>> [Service] updateProduct 트랜잭션 커밋 예정 (정상 종료).");
+    System.out.println("========================================================================");
 }
 
-//SellerService.java
+
 
 @Transactional
 public void registerProduct(Seller seller) throws Exception {
@@ -517,22 +553,49 @@ public void registerProduct(Seller seller) throws Exception {
 
 //옵션 등록을 위한 내부 유틸리티 메서드
 private void insertOptions(int proNo, List<Seller> options) {
-    if (options == null || options.isEmpty()) return;
+  // 🚨 1. 입력 데이터 확인
+  System.out.println("==================== insertOptions 시작 ====================");
+  System.out.println(">>> PRO_NO: " + proNo);
 
-    for (Seller topOpt : options) {
-        topOpt.setProNo(proNo); 
-        // 1. 상위 옵션 등록 (topOptionId 생성)
-        sellerMapper.insertTopOption(topOpt); 
-        int topOptionId = topOpt.getTopOptionId();
-        
-        // 2. 하위 옵션 등록
-        if (topOpt.getSubOptions() != null) {
-            for (Seller subOpt : topOpt.getSubOptions()) { 
-                subOpt.setTopOptionId(topOptionId); 
-                sellerMapper.insertSubOption(subOpt);
-            }
-        }
-    }
+  if (options == null || options.isEmpty()) {
+      System.out.println(">>> 등록할 옵션 리스트가 비어있거나 NULL입니다.");
+      return;
+  }
+
+  int topOptionIndex = 0;
+  for (Seller topOpt : options) {
+      topOpt.setProNo(proNo); 
+      
+      // 🚨 2. 상위 옵션 등록 직전, 핵심 필드 값 확인 (NULL 여부 확인)
+      System.out.println("--- [Top Option #" + (++topOptionIndex) + " 등록 시도] ---");
+      System.out.println("  OptionName: " + topOpt.getOptionName());
+      // ⚠️ ORA-01400의 원인: 이 값이 'null'로 찍힌다면 DTO/JSON 파싱 문제입니다.
+     
+      
+      // 1. 상위 옵션 등록 (topOptionId 생성)
+      sellerMapper.insertTopOption(topOpt); 
+      int topOptionId = topOpt.getTopOptionId();
+      
+      System.out.println("  [DB] 상위 옵션 등록 완료. TOP_OPTION_ID: " + topOptionId);
+      
+      // 2. 하위 옵션 등록
+      if (topOpt.getSubOptions() != null) {
+          System.out.println("  하위 옵션 개수: " + topOpt.getSubOptions().size() + "개");
+          
+          int subOptionIndex = 0;
+          for (Seller subOpt : topOpt.getSubOptions()) { 
+              subOpt.setTopOptionId(topOptionId); 
+              
+              // 🚨 3. 하위 옵션 등록 직전, 데이터 확인
+              System.out.println("  - Sub Option #" + (++subOptionIndex) + " ValueName: " + subOpt.getValueName());
+              
+              sellerMapper.insertSubOption(subOpt);
+          }
+      } else {
+          System.out.println("  하위 옵션 없음.");
+      }
+  }
+  System.out.println("==================== insertOptions 완료 ====================");
 }
 
 @Transactional // 💡 두 개의 Mapper 호출을 하나의 트랜잭션으로 묶어줍니다.
@@ -573,4 +636,23 @@ public Map<String, Object> selectStoreInfoData(int storeId) { // 🟢 storeId �
 
     return sellerMapper.selectStoreInfoData(storeId);
 }
+// 상품 조회
+public Map<String, Object> getProduct(int proNo) {
+    return sellerMapper.selectProductProNo(proNo); // XML id와 일치
+}
+
+// 옵션 조회
+public List<Map<String, Object>> getOptionsByProduct(int proNo) {
+    return sellerMapper.selectOptionsByProNo(proNo); // XML id와 일치
+}
+
+// 불가 날짜 조회
+public List<String> getDisabledDates(int proNo) {
+    return sellerMapper.selectDisabledDate(proNo); // XML id와 일치
+}
+
+
+
+
+
 }
