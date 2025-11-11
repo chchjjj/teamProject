@@ -374,7 +374,8 @@
                     
                     <div class="item-details">
                         <div class="pro-name">
-                            {{item.proName}} <span class="orderId">(주문번호: {{item.orderId}})</span>
+                            <div v-for="jitem in item.groupedDetails">{{jitem.proName}}</div>
+                            <span class="orderId">(주문번호: {{item.orderId}})</span>
                         </div>
                         
                         <div>
@@ -453,6 +454,7 @@
                     orderList: [], //배송 정보 확정 전 단계, ORDER_TBL + ORDER_DETAIL_TBL + ORDER_OPTION_TBL
                     deliveryType: "", //배달인지 픽업인지 (배달이면 D, 픽업이면 P)
                     paymentPrice: 0, //최종 결제금액
+                    proNameKind: 0, // 한 주문 안의 상품 종류
                     kind: 0, //상품 갯수
                     
                     //order_tbl 관련 변수
