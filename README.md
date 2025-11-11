@@ -75,16 +75,7 @@
 
 
 ### ▶ [설계자료](https://drive.google.com/drive/folders/1HRYHe-082Ryf2lZ_Q0S0jvKYqd4f1iZm?usp=drive_link)
-   
 
-***
- - 대표 이미지
- - 프로젝트 소개
- - 개발 기간(기간별 업무)
- - 팀원 구성
- - 사용 스킬
- - 발표 ppt 및 시연 영상 링크
- - 프로젝트 주요 기능 및 팀원별 역할 분담
- - 기타 산출물 링크(회의록, 설계 자료 등)
+   
 
    
