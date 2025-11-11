@@ -437,6 +437,27 @@ public class AdminService {
 		}
 		
 		
+		public HashMap<String, Object> SelectMonthlyFeeList(HashMap<String, Object> map) {
+			// TODO Auto-generated method stub
+			//adlist 
+			HashMap<String, Object> resultMap = new HashMap<String, Object>();
+			try {
+				List <Admin> sellerList= adminMapper.monthlyFeeCalculate(map);
+				resultMap.put("sellerList",sellerList);
+				int totalRows=adminMapper.sellerCount(map);
+				resultMap.put("totalRows",totalRows);
+				resultMap.put("result","success");
+			}catch(Exception e) {
+				resultMap.put("result","fail");
+				System.out.println(e.getMessage());		
+			}	
+			 return resultMap;
+					
+		}
+		
+		
+		
+		
 	
 	
 

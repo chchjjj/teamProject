@@ -308,136 +308,132 @@ public class ProductService {
 			}
 		
 		@Transactional
-	    public HashMap<String, Object> insertCartToOrder(HashMap<String, Object> map) {
-			HashMap<String, Object> resultMap = new HashMap<>();
+		public HashMap<String, Object> insertCartToOrder(HashMap<String, Object> map) {
+		    HashMap<String, Object> resultMap = new HashMap<>();
 
-	        List<HashMap<String, Object>> cartList = 
-	            (List<HashMap<String, Object>>) map.get("cartList");
-	        System.out.println("맵=>" +map);
-	        System.out.println("카트리스트=>" +cartList);
-	        if (cartList == null || cartList.isEmpty()) {
-	            resultMap.put("result", "fail");
-	            resultMap.put("message", "주문할 상품이 없습니다."); 
-	            return resultMap;
-	        }
+		    List<HashMap<String, Object>> cartList = 
+		        (List<HashMap<String, Object>>) map.get("cartList");
+		    
+		    System.out.println("맵=>" + map);
+		    System.out.println("카트리스트=>" + cartList);
+		    
+		    if (cartList == null || cartList.isEmpty()) {
+		        resultMap.put("result", "fail");
+		        resultMap.put("message", "주문할 상품이 없습니다."); 
+		        return resultMap;
+		    }
 
-	        List<Object> orderIdList = new ArrayList<>();
-	       
-	        
-	        for (int i = 0; i < cartList.size(); i++) {
-	            HashMap<String, Object> cart = cartList.get(i);
-	            // 공통 데이터
-	            String userId = (String) map.get("userId");
-	            String storeName = (String) cart.get("storeName");
-	            String letteringWord = (String) cart.get("letteringWord");
-	            int deliveryFee = Integer.parseInt(cart.get("deliveryFee").toString());
-	            int totalPrice = Integer.parseInt(cart.get("totalPrice").toString());
-	            String deliveryType = (String) cart.get("deliveryType");
-	            String chatYn = (String) cart.get("chatYn");
-	            
-	            // 새로 필요한 정보
-	            String userName = (String) cart.get("userName");
-		        String phone = (String) cart.get("phone");
-		        String userAddr = (String) cart.get("userAddr");
-		        String storeAddr = (String) cart.get("storeAddr");
-	            
+		    List<Object> orderIdList = new ArrayList<>();
+		   
+		    // cartList는 이제 store별로 그룹화된 데이터
+		    for (int i = 0; i < cartList.size(); i++) {
+		        HashMap<String, Object> storeOrder = cartList.get(i);
+		        
+		        // 공통 데이터 (store 레벨)
+		        String userId = (String) storeOrder.get("userId");
+		        String storeId = (String) storeOrder.get("storeId");
+		        String storeName = (String) storeOrder.get("storeName");
+		        String letteringWord = (String) storeOrder.get("letteringWord");
+		        int deliveryFee = ((Number) storeOrder.get("deliveryFee")).intValue();
+		        int orderTotalPrice = ((Number) storeOrder.get("orderTotalPrice")).intValue();
+		        int orderSubtotal = ((Number) storeOrder.get("orderSubtotal")).intValue();
+		        String deliveryType = (String) storeOrder.get("deliveryType");
+		        String chatYn = (String) storeOrder.get("chatYn");
+		        String userName = (String) storeOrder.get("userName");
+		        String phone = (String) storeOrder.get("phone");
+		        String fullAddress = (String) storeOrder.get("fullAddress");
+		        String storeAddr = (String) storeOrder.get("storeAddr");
 
-	            // order_tbl로 넘길 데이터 구성
-	            HashMap<String, Object> orderMap = new HashMap<>();
-	            orderMap.put("userId", userId);
-	            orderMap.put("storeName", storeName);
-	            orderMap.put("letteringWord", letteringWord);
-	            orderMap.put("deliveryFee", deliveryFee);
-	            orderMap.put("totalPrice", totalPrice);
-	            orderMap.put("deliveryType", deliveryType);
-	            orderMap.put("chatYn", chatYn);
-	            
-	            // 새로 필요한 정보
-	            orderMap.put("userName", userName);
-	            orderMap.put("phone", phone);
-	            orderMap.put("useraddress", userAddr);
-	            orderMap.put("storeAddr", storeAddr);
-	            
-	         
-	            
-// 실제 주문 order_tbl 인서트 호출
-	            ProductMapper.insertCartToOrder(orderMap);
-	            
-	            Object orderId = orderMap.get("orderId");
-	            orderIdList.add(orderId); // 리스트에 추가
-	            
-	            
+		        // ORDER_TBL 인서트용 데이터
+		        HashMap<String, Object> orderMap = new HashMap<>();
+		        orderMap.put("userId", userId);
+		        orderMap.put("storeName", storeName);
+		        orderMap.put("letteringWord", letteringWord);
+		        orderMap.put("deliveryFee", deliveryFee);
+		        orderMap.put("totalPrice", orderTotalPrice);  // 배송비 포함된 최종 금액
+		        orderMap.put("deliveryType", deliveryType);
+		        orderMap.put("chatYn", chatYn);
+		        orderMap.put("userName", userName);
+		        orderMap.put("phone", phone);
+		        orderMap.put("useraddress", fullAddress);
+		        orderMap.put("storeAddr", storeAddr);
+		        
+		        // ORDER_TBL 인서트
+		        ProductMapper.insertCartToOrder(orderMap);
+		        
+		        Object orderId = orderMap.get("orderId");
+		        orderIdList.add(orderId);
 
-	            
-	           // 상세 데이터 insert (ORDER_DETAIL_TBL)
-	            HashMap<String, Object> detailMap = new HashMap<>();
-	    
-	            detailMap.put("proNo", cart.get("proNo"));
-	            detailMap.put("storeId", cart.get("storeId"));
-	            detailMap.put("proName", cart.get("proName"));
-	            detailMap.put("itemQty", cart.get("itemQty")); // 총수량
-	            detailMap.put("defPrice", cart.get("defPrice")); //개당가격
-	            detailMap.put("subtotal", cart.get("subtotal"));
-	            detailMap.put("totalPrice", totalPrice); // 총 가격
-	            detailMap.put("letteringWord", letteringWord);
-	            
-	  
-//	            HashMap<String, Object> inputMap = detailMap;
-//				inputMap.put("orderDetailId", map.get("orderDetailId"));
-				detailMap.put("orderDetailId", map.get("orderDetailId"));
-				detailMap.put("orderId", orderMap.get("orderId"));
-				System.out.println("test 번째 맵 ==> " + detailMap);
-				ProductMapper.insertCartToOrderDt(detailMap);
-//				ProductMapper.insertDeliv(detailMap);
-				
-				
-	            // 옵션 insert (ORDER_OPTION_TBL)
-	            ObjectMapper mapper = new ObjectMapper();
-	            List<HashMap<String, Object>> optionList = mapper.convertValue(
-	                cart.get("options"), new TypeReference<List<HashMap<String, Object>>>() {}
-	            );
+		        // 상품 목록 처리 (items 배열)
+		        List<HashMap<String, Object>> items = 
+		            (List<HashMap<String, Object>>) storeOrder.get("items");
+		        
+		        if (items != null && !items.isEmpty()) {
+		            for (HashMap<String, Object> item : items) {
+		                // ORDER_DETAIL_TBL 인서트
+		                HashMap<String, Object> detailMap = new HashMap<>();
+		                detailMap.put("orderId", orderId);
+		                detailMap.put("proNo", item.get("proNo"));
+		                detailMap.put("storeId", item.get("storeId"));
+		                detailMap.put("proName", item.get("proName"));
+		                detailMap.put("itemQty", item.get("quantity"));  // quantity로 변경됨
+		                detailMap.put("defPrice", item.get("price"));     // price로 변경됨
+		                detailMap.put("subtotal", item.get("subtotal"));  // 계산된 subtotal
+		                detailMap.put("letteringWord", item.get("letteringWord"));
+		                
+		                System.out.println("detailMap ==> " + detailMap);
+		                ProductMapper.insertCartToOrderDt(detailMap);
+		                
+		                Object orderDetailId = detailMap.get("orderDetailId");
 
-	            for (HashMap<String, Object> opt : optionList) {
-	                HashMap<String, Object> optMap = new HashMap<>();
-	                optMap.put("orderDetailId", detailMap.get("orderDetailId"));
-	  
-	                optMap.put("topOptionId", opt.get("topOptionId"));
-	                optMap.put("subOptionId", opt.get("subOptionId"));
-	                optMap.put("priceDiff", opt.get("subOptPrice"));
-	                optMap.put("cartOptQuantity", opt.get("cartOptQuantity"));
-	                ProductMapper.insertCartToOrderOpt(optMap);
-	            }
-	            
-	            HashMap<String, Object> deliveryMap = new HashMap<>();
-	            deliveryMap.put("orderId", orderId);
-	            deliveryMap.put("userId", userId);
-	            deliveryMap.put("storeId", cart.get("storeId"));
-	            deliveryMap.put("deliveryFee", deliveryFee);
-	            
-	            deliveryMap.put("userName", userName);
-	            deliveryMap.put("phone", phone);
-	            deliveryMap.put("userAddr", userAddr);	            
-	            deliveryMap.put("storeAddr", storeAddr);
-	   
-		         // 배달 픽업 구별
-	            if ("D".equals(deliveryType)) {
-	                // 배달
-	                ProductMapper.insertDelivCart(deliveryMap);
-	            } else if ("P".equals(deliveryType)) {
-	                // 픽업
-	                ProductMapper.insertPickUpCart(deliveryMap);
-	            }
-	            // 채팅 선택한 경우 인서트
-	            if ("Y".equals(chatYn)) {
-	                // 배달
-	                ProductMapper.insertChat(deliveryMap);
-	            }
-	            
-	        }
-	        resultMap.put("orderIdList", orderIdList);
-	        resultMap.put("result", "success");
-	        
-	        return resultMap;
-	    }
+		                // ORDER_OPTION_TBL 인서트
+		                List<HashMap<String, Object>> options = 
+		                    (List<HashMap<String, Object>>) item.get("options");
+		                
+		                if (options != null && !options.isEmpty()) {
+		                    for (HashMap<String, Object> opt : options) {
+		                        HashMap<String, Object> optMap = new HashMap<>();
+		                        optMap.put("orderDetailId", orderDetailId);
+		                        optMap.put("topOptionId", opt.get("topOptionId"));
+		                        optMap.put("subOptionId", opt.get("subOptionId"));
+		                        optMap.put("priceDiff", opt.get("priceDiff"));
+		                        optMap.put("addQuantity", opt.get("addQuantity"));
+		                        
+		                        ProductMapper.insertCartToOrderOpt(optMap);
+		                    }
+		                }
+		            }
+		        }
+		        
+		        // 배송/픽업 정보 인서트
+		        HashMap<String, Object> deliveryMap = new HashMap<>();
+		        deliveryMap.put("orderId", orderId);
+		        deliveryMap.put("userId", userId);
+		        deliveryMap.put("storeId", storeId);
+		        deliveryMap.put("deliveryFee", deliveryFee);
+		        deliveryMap.put("userName", userName);
+		        deliveryMap.put("phone", phone);
+		        deliveryMap.put("userAddr", fullAddress);
+		        deliveryMap.put("storeAddr", storeAddr);
+
+		        if ("D".equals(deliveryType)) {
+		            ProductMapper.insertDelivCart(deliveryMap);
+		        } else if ("P".equals(deliveryType)) {
+		            ProductMapper.insertPickUpCart(deliveryMap);
+		        }
+
+		        // 채팅 선택 시
+		        if ("Y".equals(chatYn)) {
+		            ProductMapper.insertChat(deliveryMap);
+		        }
+		    }
+		    
+		    resultMap.put("orderIdList", orderIdList);
+		    resultMap.put("result", "success");
+		    
+		    return resultMap;
+		}
+		
+		
 		
 }

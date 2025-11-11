@@ -128,7 +128,7 @@
                                             </div>
                                             <div class="item-right">
                                                 <p class="item-final-price">
-                                                    {{ formatNumber(group.finalPrice) }}원
+                                                    {{ formatNumber((group.totalPrice) + group.deliveryFee) }}원
                                                 </p>
                                                 <div class="quantity-control">
 
@@ -171,16 +171,17 @@
                     cartList: [],
                     groupedCartList: [],
                     selectItem: [],
-                    chatYnFilter: 'N',
+                    chatYnFilter: 'N',//chatting过滤开关
                 };
             },
             computed: {
                 // ✅ 필터링된 목록 반환
-                filteredCartList() {
+                filteredCartList() {//筛选好的groupedcartlist
                     if (this.chatYnFilter === 'ALL') {
                         return this.groupedCartList;
                     }
-                    return this.groupedCartList.filter(item => item.chatYn === this.chatYnFilter);
+                    //过滤出用户指定的yn
+                    return this.groupedCartList.filter(item => item.chatYn === this.chatYnFilter);//chatyn是原来产品跟着的，chattnfilter是用户指定的
                 }
             },
             methods: {
@@ -188,6 +189,8 @@
                     this.chatYnFilter = filterValue;
                     this.selectItem = []; // ✅ 선택 초기화 (체크박스 해제)
                 },
+
+                //加载页面的所有cart
                 fnCart: function () {
                     let self = this;
                     let param = { userId: self.userId };
@@ -206,29 +209,43 @@
                         }
                     });
                 },
+
+                //点击购买
                 fnBuy: function () {
                     let self = this;
+                    //没选中的时候禁止购买
                     if (self.selectItem.length === 0) {
                         alert("주문할 상품을 선택해주세요.");
                         return;
                     }
+
                     // 1. 선택된 cartId에 해당하는 상품 정보(옵션 포함)를 필터링
                     const selectedItemsData = self.groupedCartList.filter(group =>
                         self.selectItem.includes(group.cartId)
                     );
+                    //配送和自取不能一起选择
+                    //some和filter的区别：some是遍历的过程中返现至少有一个符合条件就会停止寻找直接返回true，而filer是把所有符合条件的都返回
                     const hasDelivery = selectedItemsData.some(item => item.deliveryType === 'D');
                     const hasPickup = selectedItemsData.some(item => item.deliveryType === 'P');
-
+                    //假如配送和自取同时存在，就提示不能同时存在，然后中断order过程
                     if (hasDelivery && hasPickup) {
                         alert("픽업 상품과 배달 상품은 동시에 주문할 수 없습니다.");
                         return; //  주문 중단
                     }
                     // console.log("선택된 상품 데이터:", selectedItemsData);
 
+                    //在selectedItemsData的基础上再去group成order相关
+                    const selectedOrderList = self.fnGroupedOrderList(selectedItemsData);
+
                     let param = {
                         userId: self.userId,
-                        cartItems: JSON.stringify(selectedItemsData) //문자열로 전송
+                        cartItems: JSON.stringify(selectedOrderList) //문자열로 전송
                     };
+
+
+
+
+
                     console.log(param)
                     $.ajax({
                         url: "/product/cartToOrder.dox",
@@ -280,27 +297,187 @@
                     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 },
 
+                //将group好的selectedItemsData继续group为order相关
+                // fnGroupedOrderList: function(selectedItemsData) {
+                //     const stores = {};
+
+                //     selectedItemsData.forEach(cart => {
+                //         const storeId = cart.storeId;
+                //         if (!storeId) return;
+
+                //         if (!stores[storeId]) {
+                //             stores[storeId] = {
+                //                 userId: this.userId,
+                //                 storeId: storeId,
+                //                 storeName: cart.storeName,
+                //                 fullAddress: cart.userAddr || '주소없음',
+                //                 letteringWord: cart.letteringWord || '',
+                //                 deliveryFee: Number(cart.deliveryFee || 0),
+                //                 deliveryType: cart.deliveryType || 'P',
+                //                 chatYn: cart.chatYn || 'N',
+                //                 userName: cart.userName,
+                //                 phone: cart.phone,
+                //                 storeAddr: cart.storeAddr,
+                //                 items: [],
+                //                 addOptionPrice: 0,
+                //                 totalPrice: 0
+                //             };
+                //         }
+
+                //         const productDetail = {
+                //             proNo: cart.proNo,
+                //             storeId: cart.storeId,
+                //             proName: cart.proName,
+                //             quantity: cart.itemQty,
+                //             price: Number(cart.defPrice || 0),
+                //             letteringWord: cart.letteringWord || '',
+                //             subtotal:0,
+                //             options: []
+                //         };
+
+                //         if (cart.options && Array.isArray(cart.options)) {
+                //             cart.options.forEach(opt => {
+                //                 const optionData = {
+                //                     topOptionId: opt.topOptionId,
+                //                     subOptionId: opt.subOptionId,
+                //                     optionName: opt.topOpt || '',
+                //                     valueName: opt.subOpt || '',
+                //                     priceDiff: Number(opt.subOptPrice || 0),
+                //                     addQuantity: Number(opt.cartOptQuantity || 1),
+                //                     optionTotal: Number(opt.subOptPrice || 0) * Number(opt.cartOptQuantity || 1)
+                //                 };
+                //                 productDetail.options.push(optionData);
+                //                 stores[storeId].addOptionPrice += optionData.optionTotal;//claude把addOptionPrice当成普通option的price了
+                //             });
+                //         }
+
+                //         stores[storeId].items.push(productDetail);
+                //         stores[storeId].items.productDetail[subtotal] += Number(cart.totalPrice || 0);
+                //     });
+
+                //     // 计算总价
+                //     for (const storeId in stores) {
+                //         const store = stores[storeId];
+                //         store.orderTotalPrice = store.orderSubtotal + store.addOptionPrice + (store.deliveryType === 'D' ? store.deliveryFee : 0);
+                //     }
+
+                //     return Object.values(stores); 
+                // },
+
+
+                fnGroupedOrderList: function (selectedItemsData) {
+                    const stores = {};
+
+                    selectedItemsData.forEach(cart => {
+                        const storeId = cart.storeId;
+                        if (!storeId) return;
+
+                        if (!stores[storeId]) {
+                            stores[storeId] = {
+                                userId: this.userId,
+                                storeId: storeId,
+                                storeName: cart.storeName,
+                                fullAddress: cart.userAddr || '주소없음',
+                                letteringWord: cart.letteringWord || '',
+                                deliveryFee: Number(cart.deliveryFee || 0),
+                                deliveryType: cart.deliveryType || 'P',
+                                chatYn: cart.chatYn || 'N',
+                                // ✅ 添加缺失的字段
+                                userName: cart.userName,
+                                phone: cart.phone,
+                                storeAddr: cart.storeAddr,
+                                items: [],
+                                orderSubtotal: 0
+                            };
+                        }
+
+                        const productDetail = {
+                            proNo: cart.proNo,
+                            storeId: cart.storeId,
+                            proName: cart.proName,
+                            quantity: cart.itemQty,
+                            price: Number(cart.defPrice || 0),
+                            letteringWord: cart.letteringWord || '',
+                            options: [],
+                            subtotal: 0
+                        };
+
+                        // 计算所有选项的总价
+                        let optionsSum = 0;
+                        if (cart.options && Array.isArray(cart.options)) {
+                            cart.options.forEach(opt => {
+                                const priceDiff = Number(opt.subOptPrice || 0);
+                                const addQuantity = Number(opt.cartOptQuantity || 1);
+                                const optionTotal = priceDiff * addQuantity;
+
+                                productDetail.options.push({
+                                    topOptionId: opt.topOptionId,
+                                    subOptionId: opt.subOptionId,
+                                    optionName: opt.topOpt || '',
+                                    valueName: opt.subOpt || '',
+                                    priceDiff: priceDiff,
+                                    addQuantity: addQuantity,
+                                    optionTotal: optionTotal
+                                });
+
+                                optionsSum += optionTotal;
+                            });
+                        }
+
+                        // ✅ 核心公式：SUBTOTAL = (PRICE + SUM(PRICE_DIFF * ADD_QUANTITY)) * QUANTITY
+                        productDetail.subtotal = (productDetail.price + optionsSum) * productDetail.quantity;
+
+                        stores[storeId].items.push(productDetail);
+                        stores[storeId].orderSubtotal += productDetail.subtotal;
+                    });
+
+                    // 计算每个店铺的订单总价
+                    for (const storeId in stores) {
+                        const store = stores[storeId];
+                        // 总价 = 商品小计 + 配送费（仅配送类型为D时）
+                        store.orderTotalPrice = store.orderSubtotal +
+                            (store.deliveryType === 'D' ? store.deliveryFee : 0);
+                    }
+
+                    console.log("=== 최종 주문 데이터 ===");
+                    console.log(JSON.stringify(Object.values(stores), null, 2));
+
+                    return Object.values(stores);
+                },
+                // ```
+
+                // ## 计算逻辑解释
+
+                // 假设一个商品：
+                // - **基础价** (PRICE) = 100元
+                // - **选项1**: 价格差+20元，数量2个 → 20 × 2 = 40元
+                // - **选项2**: 价格差+10元，数量1个 → 10 × 1 = 10元  
+                // - **商品数量** (QUANTITY) = 3个
+
+                // 计算：
+                // // ```
+                // // optionsSum = 40 + 10 = 50元
+                // // SUBTOTAL = (100 + 50) × 3 = 450元
+
+
+
+
                 fnGroupCartList: function (list) {
                     const grouped = {};
-
                     if (!Array.isArray(list) || list.length === 0) {
                         this.groupedCartList = [];
                         console.log("장바구니 목록이 비어 있거나 올바르지 않아 그룹화하지 않습니다.");
                         return;
                     }
-
                     list.forEach(item => {
                         const cartId = item.cartId || item.CART_ID;
                         if (!cartId) return;
-
                         const defPrice = Number(item.defPrice || item.DEF_PRICE || 0);
                         const subOptPrice = Number(item.subOptPrice || item.SUB_OPT_PRICE || 0);
                         const optQty = Number(item.cartOptQuantity || item.CART_OPT_QUANTITY || 1);
                         const cartQuantity = Number(item.cartQuantity || item.CART_QUANTITY || 1);
-                        const deliveryFee = Number(item.deliveryFee || item.DELIVERY_FEE || 0);
+                        const deliveryFee = Number(item.deliveryFee || item.DELIVERY_FEE || 0); //배송비
                         const deliveryType = item.deliveryType || item.DELIVERY_TYPE || "기본배송";
-
-                        // 장바구니 그룹 초기화
                         if (!grouped[cartId]) {
                             grouped[cartId] = {
                                 userName: item.userName,
@@ -315,8 +492,8 @@
                                 proName: item.proName || item.PRO_NAME,
                                 defPrice: defPrice,
                                 options: [],
-                                totalPrice: defPrice, // 기본가격
-                                totalAddPrice: 0,     // 옵션 추가금
+                                totalPrice: item.defPrice,
+                                totalAddPrice: 0,
                                 itemQty: cartQuantity,
                                 cartOptQuantity: item.cartOptQuantity,
                                 letteringWord: item.letteringWord || item.LETTERING_WORD || "",
@@ -325,14 +502,9 @@
                                 deliveryType: deliveryType,
 
                                 filePath: item.filePath,
-                                fileName: item.fileName,
-
-                                finalPrice: 0, // 화면에 표시되는 최종 금액 변수
-                                subtotal: 0 // 배송비 제외 금액
+                                fileName: item.fileName
                             };
                         }
-
-                        // 옵션 정보 추가
                         grouped[cartId].options.push({
                             topOpt: item.topOpt || item.TOP_OPT,
                             subOpt: item.subOpt || item.SUB_OPT,
@@ -342,35 +514,24 @@
                             cartOptQuantity: optQty,
                         });
 
-                        // 옵션 추가금 계산
                         if (subOptPrice > 0) {
                             const addedAmount = subOptPrice * optQty;
                             grouped[cartId].totalPrice += addedAmount;
                             grouped[cartId].totalAddPrice += addedAmount;
                             grouped[cartId].optionPrice = grouped[cartId].totalPrice - grouped[cartId].defPrice;
+
                         }
                     });
-
-                    // 그룹별로 총합 및 화면 표시용 금액 계산
                     this.groupedCartList = Object.values(grouped);
                     for (let i = 0; i < this.groupedCartList.length; i++) {
-                        const group = this.groupedCartList[i];
-                        const subtotal = (group.defPrice + group.totalAddPrice) * group.itemQty;
-                        group.subtotal = subtotal;
-                        // 총 상품금액 = (기본가 + 옵션추가금) × 수량
-                        const totalProductPrice = (group.defPrice + group.totalAddPrice) * group.itemQty;
-                        group.totalPrice = totalProductPrice;
-                        // 최종 표시 금액 = 총 상품금액 + 배송비
-                        group.finalPrice = totalProductPrice + group.deliveryFee;
-                        group.totalPrice = group.finalPrice;
+                        this.groupedCartList[i].totalPrice = this.groupedCartList[i].totalPrice * this.groupedCartList[i].itemQty;
+
                     }
-
-                    // 최신 상품이 위로 오도록 정렬
                     this.groupedCartList = this.groupedCartList.slice().reverse();
-
                     console.log("그룹화된 장바구니 ===>", this.groupedCartList);
-                }
-                ,
+                },
+
+
                 fnChangeItemQuantity: function (cartId, amount) {
                     let self = this;
                     const group = self.groupedCartList.find(g => g.cartId === cartId);

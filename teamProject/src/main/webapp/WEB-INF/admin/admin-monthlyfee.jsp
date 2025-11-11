@@ -222,7 +222,7 @@
                         fetchRows: self.pageSize,
                     };
                     $.ajax({
-                        url: "/adseller/sellerlist.dox",
+                        url: "/admonthlyfee/selectmonthlyfeelist.dox",
                         dataType: "json",
                         type: "POST",
                         data: param,

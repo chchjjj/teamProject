@@ -95,6 +95,15 @@ public class Product {
 
 	    private int addQuantity;  // 추가 옵션 수량
 	    
+	    
+	 //  주문 관련 집계 필드
+	    private int orderSubtotal;      // 상품들의 subtotal 합계
+	    private int orderTotalPrice;    // 최종 주문 금액 (orderSubtotal + deliveryFee)
+	    private int itemQty;            // 상품 개별 수량 (quantity와 동일하지만 명확성을 위해)
+	    
+	    //  옵션 관련
+	    private int optionTotal;        // 단일 옵션의 총 가격 (priceDiff * addQuantity)
+	    
 	    //파일
 	    private String filePath;   // 파일 경로
 	    private String fileName;   // 파일 이름 
