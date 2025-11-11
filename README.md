@@ -22,8 +22,24 @@
 |조원정|https://github.com/dragonstudy9|
 |엄재준|https://github.com/jjeom101|
 |이미령|https://github.com/li33893|
+***
+## 🛠 사용 기술
+- Spring boot / MyBatis
+- JSP / Vue.js 3 / Oracle DB
+- 카카오맵 / 주소 / 결제(포트원) / 통합인증(포트원) API
+ ***
+ ## 📜 발표 PPT
+ ## 🎬 시연 영상
+ ***
+## 📌 주요 기능
+✔ 사용자 기능
+ - 테스트
+✔ 판매자 기능
+ - 테스트
+✔ 관리자 기능
+ - 테스트
 
-
+ 
  - 대표 이미지
  - 프로젝트 소개
  - 개발 기간(기간별 업무)
