@@ -155,9 +155,7 @@
                                 고객님 주변 5km 이내에는 등록된 가게가 없습니다.
                             </div>
                         </div>
-                        <section class="external-ad">
-                            <p>외부 광고</p>
-                        </section>
+                       
                     </main>
                 </div>
             </div>
