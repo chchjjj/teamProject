@@ -71,6 +71,11 @@ public class SellerController {
 
 		return "seller/sellerOrderHistory";
 	}
+	@RequestMapping("/seller/productinfo.do")
+	public String productinfo(Model model) throws Exception {
+
+		return "seller/productinfo";
+	}
 	@RequestMapping("/seller/productUpdate.do")
 	public String productUpdate(@RequestParam(value="proNo", required=false) Integer proNo, 
 	                            HttpSession session, Model model) {
@@ -800,5 +805,64 @@ public class SellerController {
 	}
 	
 	
+	@RequestMapping(value = "/seller/insertProductAllergy.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String DeleteList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		String json = map.get("ingreName").toString(); 
+		ObjectMapper mapper = new ObjectMapper();
+		List<Object> list = mapper.readValue(json, new TypeReference<List<Object>>(){});
+		map.put("list", list);
+		System.out.println(map);
+		resultMap=sellerService.insertProductAllergy(map);
+		
+		return new Gson().toJson(resultMap);
+		
+	}
+	
+//	@ResponseBody
+//    @RequestMapping(value = "/seller/insertProductAllergy.dox", method = RequestMethod.POST)
+//    public Map<String, Object> insertProductAllergy(
+//        @RequestParam("proNo") int proNo, 
+//        // 클라이언트에서 ingreId 배열을 보냈으므로 List<Integer>로 받고, 파라미터 이름에 '[]'를 명시합니다.
+//        @RequestParam(value = "ingreId[]") List<Integer> ingreId
+//    ) {
+//        Map<String, Object> resultMap = new HashMap<>();
+//
+//        // 1. 유효성 검사 (상품 번호)
+//        if (proNo <= 0) {
+//            resultMap.put("result", "fail");
+//            resultMap.put("message", "유효하지 않은 상품 번호입니다. (proNo: " + proNo + ")");
+//            return resultMap;
+//        }
+//
+//        // 2. 서비스로 데이터 전달 및 처리
+//        try {
+//            // 전달할 파라미터 Map 생성
+//            Map<String, Object> param = new HashMap<>();
+//            param.put("proNo", proNo);
+//            param.put("ingreIdList", ingreId); // List<Integer> 형태로 전달
+//
+//            // 서비스 메서드 호출 (실제 DB 처리 로직은 서비스 계층에 구현되어야 합니다.)
+//            // 이 메서드는 등록/갱신된 행의 개수를 반환한다고 가정합니다.
+//            int result = sellerService.insertProductAllergy(param); 
+//
+//            if (result > 0) {
+//                resultMap.put("result", "success");
+//                resultMap.put("message", "상품 번호 " + proNo + "에 총 " + result + "개의 알레르기 정보가 성공적으로 등록되었습니다.");
+//            } else {
+//                resultMap.put("result", "fail");
+//                resultMap.put("message", "등록된 알레르기 정보가 없거나 등록 처리 중 문제가 발생했습니다.");
+//            }
+//
+//        } catch (Exception e) {
+//            System.err.println("상품 알레르기 정보 등록 오류: " + e.getMessage());
+//            resultMap.put("result", "fail");
+//            resultMap.put("message", "서버 처리 중 예상치 못한 오류가 발생했습니다: " + e.getMessage());
+//        }
+//
+//        return resultMap;
+//    }
 
 }

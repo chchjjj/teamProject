@@ -78,23 +78,19 @@
 	<select id="selectOrderDetail" parameterType="java.util.HashMap"
 		resultType="java.util.HashMap">
 		SELECT
-		T1.USER_NAME, -- 1. 구매자 이름
-		T2.ORDER_ID, -- 2. 주문 번호
-		T3.PRO_NAME, -- 3. 주문 상품 이름
-		COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE) AS ORDER_OR_PICKUP_DATE, -- 4.
-		수령/주문 일자
-		T10.STORE_NAME, -- 5. 가게 이름
-		T2.TOTAL_PRICE, -- 6. 총 결제 금액
-		T3.PRICE AS PRODUCT_PRICE, -- 7. 상품 단가 (ORDER_DETAIL_TBL)
-		T2.ADD_OPTION_PRICE AS MANUAL_OPTION_PRICE, -- 8. 판매자가 직접 추가한 기타 옵션 금액
-		(ORDER_TBL)
-		T2.LETTERING_WORD, -- ⭐ 9. 레터링 문구 (ORDER_TBL) 추가
-		SUM(NVL(T6.PRICE_DIFF, 0)) AS AUTO_OPTION_PRICE_DIFF, -- 10. 시스템이 계산한 상품
-		옵션 차액 합계 (집계 함수)
+		T1.USER_NAME, 
+		T2.ORDER_ID, 
+		T3.PRO_NAME, 
+		COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE) AS ORDER_OR_PICKUP_DATE, 
+		T10.STORE_NAME, 
+		T2.TOTAL_PRICE, 
+		T3.PRICE AS PRODUCT_PRICE, 
+		T2.ADD_OPTION_PRICE AS MANUAL_OPTION_PRICE, 
+		T2.LETTERING_WORD, 
+		SUM(NVL(T6.PRICE_DIFF, 0)) AS AUTO_OPTION_PRICE_DIFF, -- 10번 칼럼 끝에 쉼표 추가!
 		LISTAGG(T4.OPTION_NAME || ': ' || T5.VALUE_NAME, ', ')
-		WITHIN GROUP (ORDER BY T6.ORDER_OPTION_ID) AS OPTION_DETAILS, -- 11. 옵션
-		상세 목록 (집계 함수)
-		T2.CHAT_YN -- 12. 채팅 여부
+		WITHIN GROUP (ORDER BY T6.ORDER_OPTION_ID) AS OPTION_DETAILS, -- 11번 칼럼 끝에 쉼표 추가!
+		T2.CHAT_YN 
 		FROM
 		ORDER_TBL T2
 		JOIN USER_TBL T1 ON T2.USER_ID = T1.USER_ID
@@ -119,7 +115,7 @@
 		T2.CHAT_YN,
 		T3.PRICE,
 		T2.ADD_OPTION_PRICE,
-		T2.LETTERING_WORD, -- ⭐ GROUP BY 절에 T2.LETTERING_WORD 추가
+		T2.LETTERING_WORD, 
 		T3.ORDER_DETAIL_ID
 		ORDER BY T3.PRO_NAME
 	</select>
@@ -578,6 +574,16 @@
     WHERE PRO_NO = #{proNo}
     ORDER BY DISABLED_DATE
 </select>
+
+<delete id="deleteProductAllergy" parameterType="int">
+        DELETE FROM PRODUCT_INGREDIENT_TBL
+        WHERE PRO_NO = #{proNo}
+    </delete>
+    
+    <insert id="insertProductAllergy" parameterType="map">
+        INSERT INTO PRODUCT_INGREDIENT_TBL (PRO_NO, INGREDIENT_ID)
+        VALUES (#{proNo}, #{ingreId})
+    </insert>
 
 </mapper>
 

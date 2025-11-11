@@ -134,6 +134,10 @@
                     </div>
                     <div class="product-actions">
                         <button class="modify-btn"
+                            :onclick="'location.href=\'/seller/productinfo.do?proNo=' + product.proNo + '\''">
+                            알르레기 표시 추가
+                        </button>
+                        <button class="modify-btn"
                             :onclick="'location.href=\'/seller/productUpdate.do?proNo=' + product.proNo + '\''">
                             수정
                         </button>
