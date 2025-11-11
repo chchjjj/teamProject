@@ -102,6 +102,8 @@ public class Product {
 	    
 	    private String disabledDate; // 배송 불가 날짜
 	    
-	    
+	    // 재료
+	    private String ingredientName;
+	    private String ingredientDescription;
 
 }

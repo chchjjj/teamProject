@@ -109,4 +109,7 @@ public interface ProductMapper {
  	
  	// 큐앤에이 등록
  	int insertQnA(HashMap<String, Object> map);
+ 	
+ 	// 재료와 상품 연결
+ 	List<Product> proingred(HashMap<String, Object> map);
 }

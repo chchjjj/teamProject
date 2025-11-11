@@ -19,35 +19,45 @@
         <style>
             /* QnA 제목 스타일 */
             .qna-title {
-                font-size: 28px;        
-                font-weight: 700;       
-                color: #333;          
-                margin-top: 30px;       
-                margin-bottom: 25px;    
-                padding-bottom: 10px;   /* 구분선과 텍스트 사이의 간격 */
-                text-align: left;       /* 왼쪽 정렬 */
+                font-size: 28px;
+                font-weight: 700;
+                color: #333;
+                margin-top: 30px;
+                margin-bottom: 25px;
+                padding-bottom: 10px;
+                /* 구분선과 텍스트 사이의 간격 */
+                text-align: left;
+                /* 왼쪽 정렬 */
             }
 
             table {
-                width: 100%; /* 테이블 전체 너비 */
-                border-collapse: collapse; /* 테이블 셀 경계선을 하나로 합침 */
-                table-layout: fixed; /* 컬럼 너비를 고정된 비율로 설정 */
+                width: 100%;
+                /* 테이블 전체 너비 */
+                border-collapse: collapse;
+                /* 테이블 셀 경계선을 하나로 합침 */
+                table-layout: fixed;
+                /* 컬럼 너비를 고정된 비율로 설정 */
                 margin-top: 20px;
                 font-size: 14px;
             }
 
             /* 2. 테이블 헤더와 셀 스타일 */
-            th, td {
-                padding: 15px 10px; /* 셀 내부 여백을 넓직하게 설정 */
-                border-bottom: 1px solid #eee; /* 하단에 옅은 회색 선 추가 */
-                text-align: center; /* 기본 텍스트는 가운데 정렬 */
+            th,
+            td {
+                padding: 15px 10px;
+                /* 셀 내부 여백을 넓직하게 설정 */
+                border-bottom: 1px solid #eee;
+                /* 하단에 옅은 회색 선 추가 */
+                text-align: center;
+                /* 기본 텍스트는 가운데 정렬 */
             }
 
             table .status-cell {
                 /* 완료, 대기 부분 */
-                text-align: center; 
+                text-align: center;
                 vertical-align: middle;
             }
+
             /* 제목은 왼쪽 정렬 */
             table td:nth-child(1) {
                 text-align: center;
@@ -56,17 +66,19 @@
 
             table td:nth-child(2) {
                 text-align: left;
-                white-space: nowrap;      /* 텍스트가 줄 바꿈 되는 것을 방지 */
+                white-space: nowrap;
+                /* 텍스트가 줄 바꿈 되는 것을 방지 */
             }
 
             /* 답변 p 태그 마진 제거 */
             table .answer-content p {
-                margin: 0; /* 기존 마진 제거 */
-                padding-left: 50px; 
+                margin: 0;
+                /* 기존 마진 제거 */
+                padding-left: 50px;
                 /* 필요에 따라 line-height를 조정하여 가독성을 높일 수 있습니다. */
-                /* line-height: 1.6; */ 
+                /* line-height: 1.6; */
             }
-            
+
 
             /* 5. 답변 상태 버튼 스타일 (이미지 '대기', '완료' 부분) */
             table .status-btn {
@@ -82,14 +94,18 @@
             }
 
             /* 답변 상태별 색상 */
-            table .status-btn.waiting { /* '대기' 상태 */
+            table .status-btn.waiting {
+                /* '대기' 상태 */
                 background-color: #f0f0f0;
                 color: #666;
             }
 
-            table .status-btn.completed { /* '완료' 상태 */
-                background-color: #e9f7ef; /* 옅은 녹색 */
-                color: #27ae60; /* 진한 녹색 */
+            table .status-btn.completed {
+                /* '완료' 상태 */
+                background-color: #e9f7ef;
+                /* 옅은 녹색 */
+                color: #27ae60;
+                /* 진한 녹색 */
                 border: 1px solid #27ae60;
             }
 
@@ -97,9 +113,11 @@
             .pageSelect {
                 padding: 8px 10px;
                 border: 1px solid #ccc;
-                border-radius: 4px; /* 살짝 둥근 모서리 */
+                border-radius: 4px;
+                /* 살짝 둥근 모서리 */
                 font-size: 13px;
-                height: 35px; /* 버튼, 입력창과 높이 맞추기 */
+                height: 35px;
+                /* 버튼, 입력창과 높이 맞추기 */
                 -moz-appearance: none;
                 appearance: none;
                 background-color: white;
@@ -112,11 +130,15 @@
 
             /* 검색 기능 컨테이너 스타일 */
             .search-area {
-                display: flex; /* 요소들을 한 줄에 정렬 */
-                gap: 10px; /* 요소들 사이의 간격 */
-                justify-content: center; /* 가운데 정렬 (페이지 하단에 적용 시) */
+                display: flex;
+                /* 요소들을 한 줄에 정렬 */
+                gap: 10px;
+                /* 요소들 사이의 간격 */
+                justify-content: center;
+                /* 가운데 정렬 (페이지 하단에 적용 시) */
                 align-items: center;
-                margin-top: 30px; /* 목록 위/아래 공간 확보 */
+                margin-top: 30px;
+                /* 목록 위/아래 공간 확보 */
                 margin-bottom: 30px;
             }
 
@@ -124,10 +146,13 @@
             .search-area select {
                 padding: 8px 10px;
                 border: 1px solid #ccc;
-                border-radius: 4px; /* 살짝 둥근 모서리 */
+                border-radius: 4px;
+                /* 살짝 둥근 모서리 */
                 font-size: 14px;
-                height: 38px; /* 버튼, 입력창과 높이 맞추기 */
-                -webkit-appearance: none; /* 기본 화살표 숨기기 */
+                height: 38px;
+                /* 버튼, 입력창과 높이 맞추기 */
+                -webkit-appearance: none;
+                /* 기본 화살표 숨기기 */
                 -moz-appearance: none;
                 appearance: none;
                 background-color: white;
@@ -139,15 +164,18 @@
                 border: 1px solid #ccc;
                 border-radius: 4px;
                 font-size: 14px;
-                flex-grow: 1; /* 남은 공간을 채우도록 너비 확장 */
-                max-width: 300px; /* 최대 너비 지정으로 너무 길어지는 것을 방지 */
+                flex-grow: 1;
+                /* 남은 공간을 채우도록 너비 확장 */
+                max-width: 300px;
+                /* 최대 너비 지정으로 너무 길어지는 것을 방지 */
                 height: 40px;
             }
 
             /* 검색 버튼 (button) 스타일 */
             .search-area button {
                 padding: 8px 15px;
-                background-color: #555; /* 어두운 계열 (헤더 QnA 버튼과 유사하게) */
+                background-color: #555;
+                /* 어두운 계열 (헤더 QnA 버튼과 유사하게) */
                 color: white;
                 border: none;
                 border-radius: 4px;
@@ -161,21 +189,39 @@
                 background-color: #333;
             }
 
-            .info{
+            .info {
                 margin-left: 30px;
                 font-size: 12px;
-                color:#666;
+                color: #666;
             }
 
-            .ad{
+            .ad {
                 width: 1000px;
-                height : 140px
+                height: 140px
             }
 
-            body{
+            body {
                 background-color: #f1f1f1;
             }
 
+            .move-btn {
+    display: inline-block;
+    padding: 6px 12px;           /* 가로/세로 여백 */
+    border-radius: 20px;          /* 50% 대신 px로 둥글게 */
+    background-color: #3e2723;
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+    line-height: 1;               /* 세로 정렬 최적화 */
+}
+
+.move-btn:hover {
+    background-color: #ffffff;
+    color: #3e2723;
+}
         </style>
     </head>
 
@@ -188,29 +234,29 @@
 
                 <div class="container">
 
-                    <main class="content-container">                        
+                    <main class="content-container">
                         <h1 class="qna-title">Q&A</h1>
                         <hr class="divider">
 
                         <!-- 게시글 페이징 (N개씩 보기) -->
                         <select v-model="pageSize" @change="fnPageSizeChange" class="pageSelect">
-                             <!-- 바꿀때마다 페이지 초기화 -->
+                            <!-- 바꿀때마다 페이지 초기화 -->
                             <option value="5">:: 5개씩 ::</option>
                             <option value="10">:: 10개씩 ::</option>
                             <option value="20">:: 20개씩 ::</option>
                         </select>
-                        <input type="checkbox" class="myQna" v-model="myQnaOnly" @change="fnQnaList"> 
+                        <input type="checkbox" class="myQna" v-model="myQnaOnly" @change="fnQnaList">
                         나의 질문
 
                         <span class="info">※ '나의 질문' 기능은 로그인 시에만 이용 가능합니다.</span>
 
                         <table>
                             <colgroup>
-                                <col style="width: 10%;">    
-                                <col style="width: 57%;">   
-                                <col style="width: 8%;">    
-                                <col style="width: 10%;">   
-                                <col style="width: 15%;">   
+                                <col style="width: 10%;">
+                                <col style="width: 57%;">
+                                <col style="width: 8%;">
+                                <col style="width: 10%;">
+                                <col style="width: 15%;">
                             </colgroup>
                             <thead>
                                 <tr>
@@ -219,6 +265,7 @@
                                     <th>작성자</th>
                                     <th>작성일</th>
                                     <th>답변 상태</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -238,44 +285,52 @@
                                                 대기
                                             </span>
                                         </td>
+                                        <td @click="fnProDetail(item.proNo)" style="text-align:center;">
+                                            <span class="move-btn">Go</span>
+                                        </td>
+
+
                                     </tr>
-                                    
+
                                     <tr v-if="item.answerContent" v-show="activeIndex === index" class="answer-row">
-                                        <td colspan="5" style="padding: 20px 30px 20px 60px; text-align: left; background-color: #f9f9f9;">
+                                        <td colspan="5"
+                                            style="padding: 20px 30px 20px 60px; text-align: left; background-color: #f9f9f9;">
                                             <div class="answer-content">
-                                                <strong style="color: #3498db;">A.</strong> 
+                                                <strong style="color: #3498db;">A.</strong>
                                                 <p style="margin-top: 5px;">{{item.answerContent}}</p>
                                             </div>
                                         </td>
                                     </tr>
                                 </template>
                             </tbody>
-                        </table>   
+                        </table>
 
-                         <!--페이징-->                        
-                         <div class="pagination">
+                        <!--페이징-->
+                        <div class="pagination">
                             <!-- 페이지 숫자 양옆 화살표 (fnMove) -->
                             <a href="#" @click="fnMove(-1)" v-if="page != 1">&lt;</a>
-                            <a href="#" v-for="num in index" :key="num" @click="fnPage(num)" :class="{ active : page == num }" >
-                                {{num}} 
+                            <a href="#" v-for="num in index" :key="num" @click="fnPage(num)"
+                                :class="{ active : page == num }">
+                                {{num}}
                             </a>
                             <a href="#" @click="fnMove(+1)" v-if="page != index">&gt;</a>
                         </div>
 
                         <!-- 검색기능 -->
                         <div class="search-area">
-                        <select v-model="searchOption">
-                            <option value="all">:: 전체 :: ▼</option>
-                            <option value="content">:: 내용 ::</option>
-                            <option value="id">:: 작성자 ::</option>
-                        </select>
-                        <input v-model="qnaKeyword" @keyup.enter="fnQnaList" placeholder="검색어를 입력해주세요.">
-                        <button @click="fnQnaList">검색</button>
+                            <select v-model="searchOption">
+                                <option value="all">:: 전체 :: ▼</option>
+                                <option value="content">:: 내용 ::</option>
+                                <option value="id">:: 작성자 ::</option>
+                            </select>
+                            <input v-model="qnaKeyword" @keyup.enter="fnQnaList" placeholder="검색어를 입력해주세요.">
+                            <button @click="fnQnaList">검색</button>
                         </div>
-                      
+
 
                         <section class="external-ad">
-                            <a href="/main/ad-link.do" target="_blank"><img class="ad" src="/img/아래광고배너.png" alt="아래 광고 배너"></a>
+                            <a href="/main/ad-link.do" target="_blank"><img class="ad" src="/img/아래광고배너.png"
+                                    alt="아래 광고 배너"></a>
                         </section>
                     </main>
                 </div>
@@ -298,27 +353,32 @@
                     list: [],
                     userId: "${sessionId}", // 로그인 했을 시 전달 받은 아이디
 
-                    proNo : "", // 상품번호
+                    proNo: "", // 상품번호
                     keyword: "", // 헤더 검색 키워드 변수 추가
 
                     activeIndex: -1, // 현재 열려 있는 Q&A의 인덱스 (-1은 아무것도 열려있지 않음)
 
-                    pageSize : 10, // 한 페이지에 출력할 게시글 개수 (10개로 기본값)
-                    page : 1, // 현재 페이지(위치) - 최초 1페이지부터 시작 (OFFSET 다음에 오는 숫자)
-                    index : 0, // 최대 페이지 값 (표현할 페이지 개수)
+                    pageSize: 10, // 한 페이지에 출력할 게시글 개수 (10개로 기본값)
+                    page: 1, // 현재 페이지(위치) - 최초 1페이지부터 시작 (OFFSET 다음에 오는 숫자)
+                    index: 0, // 최대 페이지 값 (표현할 페이지 개수)
 
                     myQnaOnly: false, // 나의 질문만 보기 여부
 
-                    qnaKeyword : "", // 화면 하단 QnA 검색 키워드
-                    searchOption : "all",
+                    qnaKeyword: "", // 화면 하단 QnA 검색 키워드
+                    searchOption: "all",
 
                 };
             },
 
             methods: {
                 // 함수(메소드) - (key : function())
-
-                fnPageSizeChange: function() {
+                // 리스트에서 상품 클릭시 상세페이지 이동
+                fnProDetail: function (proNo) {
+                    let self = this;
+                    console.log(proNo); // main 화면에서 클릭한 상품번호 출력(확인완료)
+                    pageChange("/productDetail.do", { proNo: proNo });  // 상세페이지로 proNo 넘겨줌            
+                },
+                fnPageSizeChange: function () {
                     let self = this;
                     self.page = 1; // 페이지 초기화
                     self.fnQnaList();
@@ -328,15 +388,15 @@
                     let self = this;
                     let param = {
                         qnaKeyword: self.qnaKeyword,
-                        searchOption : self.searchOption,
-                        pageSize : self.pageSize,
-                        page : (self.page-1) * self.pageSize
+                        searchOption: self.searchOption,
+                        pageSize: self.pageSize,
+                        page: (self.page - 1) * self.pageSize
                     };
 
                     // '나의 질문' 보기 체크 시(myQnaOnly가 true일 때) userId 추가
                     if (self.myQnaOnly && self.userId) {
                         param.userId = self.userId;
-                    } 
+                    }
 
                     $.ajax({
                         url: "/main/qna.dox", // QnA 리스트 조회주소 
@@ -346,7 +406,7 @@
                         success: function (data) {
                             console.log(data);
                             self.list = data.list; // data에 있는 list 값을 변수 list에 담기      
-                            self.index = Math.ceil(data.cnt / self.pageSize); 
+                            self.index = Math.ceil(data.cnt / self.pageSize);
                             // 게시글 총개수를 몇페이지씩 표시할지 기준으로 나누고, 소수점 발생시 올림처리 => index에 넣기
                         }
                     });
@@ -358,7 +418,7 @@
                     // 만약 이미 열려있는 항목을 다시 클릭하면 닫고 (-1로 설정)
                     if (self.activeIndex === index) {
                         self.activeIndex = -1;
-                    } 
+                    }
                     // 다른 항목을 클릭하면 새 항목을 열기
                     else {
                         self.activeIndex = index;
@@ -385,19 +445,19 @@
                 },
 
                 // 페이지 숫자 클릭시 리스트를 페이지에 맞게 갱신   
-                fnPage : function(num){ // 파라미터로 클릭한 num 보내주기
-                    let self = this; 
+                fnPage: function (num) { // 파라미터로 클릭한 num 보내주기
+                    let self = this;
                     self.page = num; // 현재 페이지를 num의 숫자로 반영
                     self.fnQnaList(); // 반영 후 기준으로 리스트 재호출
                 },
 
                 // 페이지 숫자 양옆 화살표 버튼 누르면 페이지 이동
-                fnMove : function(move){
-                    let self = this; 
+                fnMove: function (move) {
+                    let self = this;
                     self.page += move; // 현재 페이지를 -1 또는 +1 
                     self.fnQnaList();
                 },
-                                
+
 
             }, // methods
 
@@ -407,7 +467,7 @@
                 console.log("로그인 아이디 ===> " + self.userId); // 로그인한 아이디 잘 넘어오나 테스트
 
                 // QnA 목록 가져오기
-                self.fnQnaList();               
+                self.fnQnaList();
 
 
                 // 헤더에서 keyword (검색어) 이벤트 수신 (주석처리해도 되네?)
@@ -427,7 +487,7 @@
             }
         });
 
-    
+
 
         app.mount('#app');
     </script>

@@ -238,7 +238,7 @@
                         success: function (data) {
                             alert("주문이 완료되었습니다!");
                             // 결제 페이지로 이동 또는 주문 완료 페이지 이동
-                            alert(data.orderIdList);
+                            // alert(data.orderIdList);
                             self.fnAllRemove(true);
                             const deliveryType = selectedItemsData[0].deliveryType; // 선택한 상품들의 배송유형 동일함
                             const orderIdList = data.orderIdList; // 서버에서 반환한 주문 ID 리스트
