@@ -352,6 +352,13 @@
         background-color: var(--primary-color);
         color: var(--card-bg-color);
     }
+
+    .orderId{
+        font-size: 14px;
+        color: var(--text-color);
+        font-weight: normal;
+        margin-left: 10px;
+    }
     
 </style>
 </head>
@@ -367,8 +374,9 @@
                     
                     <div class="item-details">
                         <div class="pro-name">
-                            {{item.proName}}
+                            {{item.proName}} <span class="orderId">(주문번호: {{item.orderId}})</span>
                         </div>
+                        
                         <div>
                             판매처: {{item.storeName}}
                         </div>
@@ -390,7 +398,7 @@
             <div class="info-section">
                 
                 <div v-if="deliveryType=='D'" class="info-row">
-                    <span>배송 정보</span>
+                    <span>배송 정보: {{groupedOrdersList[0].fullAddress}}</span>
                     <button @click="fnDelivery" class="btn btn-delivery">배송지 선택/변경</button>
                 </div>
 
@@ -478,7 +486,7 @@
             methods: {
                 // 함수(메소드) - (key : function())
 
-                
+                //주문 목록 출력
                 fnOrderList: function(){
                     let self = this;
                     console.log("JSON.stringify 이전: " + self.orderIdList);
@@ -903,7 +911,7 @@
                 }
 
                 console.log("최종적으로 사용할 orderIdList 값은 => " + self.orderIdList);
-                self.fnOrderList();
+                self.fnOrderList(); //주문 목록 출력
 
                 // 옵션 등 데이터 로드 후
                 setTimeout(() => {
