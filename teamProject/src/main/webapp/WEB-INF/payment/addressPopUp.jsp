@@ -409,6 +409,7 @@
                     data: param,
                     success: function (data) {
                         alert("배송지가 선택되었습니다.");
+                        window.opener.location.reload(); // 부모페이지 새로고침
                         window.close();
                     }
                 });

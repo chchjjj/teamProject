@@ -398,7 +398,7 @@
             <div class="info-section">
                 
                 <div v-if="deliveryType=='D'" class="info-row">
-                    <span>배송 정보</span>
+                    <span>배송 정보: {{groupedOrdersList[0].fullAddress}}</span>
                     <button @click="fnDelivery" class="btn btn-delivery">배송지 선택/변경</button>
                 </div>
 
