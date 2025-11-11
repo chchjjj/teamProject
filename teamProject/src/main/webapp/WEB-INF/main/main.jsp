@@ -77,8 +77,8 @@
                             <a href="#" class="category-btn" :class="{ active: selectedCategory === '쿠키' }"
                                 @click.prevent="selectedCategory = '쿠키'; page = 1; fnList()"></a>
 
-                            <a href="#" class="category-btn" :class="{ active: selectedCategory === '초콜렛' }"
-                                @click.prevent="selectedCategory = '초콜렛'; page = 1; fnList()"></a>
+                            <a href="#" class="category-btn" :class="{ active: selectedCategory === '초콜릿' }"
+                                @click.prevent="selectedCategory = '초콜릿'; page = 1; fnList()"></a>
                         </section>
 
                         <hr class="divider">

@@ -215,6 +215,15 @@ public class ProductService {
 		resultMap.put("result", "success");
 		return resultMap;
 	}
+	// 상품과 알레르기 재료 연결
+	public HashMap<String, Object> proingred(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		List<Product> list = ProductMapper.proingred(map);
+		resultMap.put("list", list);
+		resultMap.put("result", "success");
+		return resultMap;
+	}
 	// 큐앤에이 등록
 	public HashMap<String, Object> qnaInsert(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub

@@ -362,7 +362,7 @@
                             success: function (data) {
                                 if (data.result === "success") {
                                     alert("주문이 완료되었습니다!");
-                                    alert(data.orderId);
+                                    // alert(data.orderId);
                                     pageChange("/payment/payment.do", { orderId: data.orderId });
                                     // if (self.deliveryType === 'D') {
                                     //     pageChange("/payment/deliveryPayment.do", { orderId: data.orderId });

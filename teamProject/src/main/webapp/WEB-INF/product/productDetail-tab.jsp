@@ -4,7 +4,7 @@
 
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/css/productDetail-style.css">
         <link rel="stylesheet" href="/css/detail-qna.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -149,7 +149,7 @@
                             판매자 등록 상세이미지
                         </div>
                         <img v-else :src="(imgInfo.filePath + imgInfo.fileName).trim()" alt="상품 이미지"
-                        style="width: 100%; height: auto; border-radius: 10px;">
+                            style="width: 100%; height: auto; border-radius: 10px;">
                     </div>
 
                     <div v-if="currentTab === 'review'"> <!--후기 탭-->
@@ -276,7 +276,27 @@
                         </div>
                     </div>
 
+                    <div>
+                        <table style="border: 1px solid #33333370; border-collapse: collapse; width: 100%;">
+                            <tr style="background-color: #e2e2e298;">
+                                <th colspan="2">주의 성분</th>
+                            </tr>
+                            <tr style="background-color: #e7e7e798;">
+                                <th>성분명</th>
+                                <th>설명</th>
+                            </tr>
+                            <template v-if="ingredientList.length > 0">
+                                <tr v-for="item in ingredientList" :key="item.ingredientName">
+                                    <th>{{item.ingredientName}}</th>
+                                    <th>{{ item.ingredientDescription ? item.ingredientDescription : '-' }}</th>
+                                </tr>
+                            </template>
+                            <tr v-else>
+                                <th colspan="2" style="text-align: center;">-</th>
+                            </tr>
+                        </table>
 
+                    </div>
                 </div>
             </div>
         </div>
@@ -314,11 +334,28 @@
                     showQnaModal: false, // 팝업 표시 여부
                     qnaContents: '',
                     infoList: {},
-                    imgInfo: {}
+                    imgInfo: {},
 
+                    ingredientList: {}
                 };
             },
             methods: {
+                fnAlg() {
+                    let self = this;
+                    let param = {
+                        proNo: self.proNo
+                    };
+                    $.ajax({
+                        url: "/product/ingred.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            self.ingredientList = data.list;
+                            console.log("알러지", data.list);
+                        }
+                    });
+                },
                 fnIII() {
                     let self = this;
                     let param = {
@@ -521,6 +558,7 @@
                 self.fnQnaList1();
                 self.fnReviewList();
                 self.fnInfo();
+                self.fnAlg();
                 // 헤더에서 keyword (검색어) 이벤트 수신 (주석처리해도 되네?)
                 // emitter.on('keyword', (keyword) => {
                 //     console.log("헤더에서 받은 검색어:", keyword);

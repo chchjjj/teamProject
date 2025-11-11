@@ -483,4 +483,11 @@ OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	WHERE PRO_NO = #{proNo}
 	
 	</select>
+	
+	<select id="proingred" parameterType="hashmap" resultType="com.example.teamProject.product.model.Product">
+	SELECT PRO_NO, INGREDIENT_NAME,INGREDIENT_DESCRIPTION
+	FROM PRODUCT_INGREDIENT_TBL P
+	LEFT JOIN INGREDIENT_TBL I ON P.INGREDIENT_ID = I.INGREDIENT_ID
+	WHERE PRO_NO = #{proNo}
+	</select>
 </mapper>
