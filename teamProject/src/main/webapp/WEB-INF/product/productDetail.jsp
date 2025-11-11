@@ -298,6 +298,8 @@
 
                             // 픽업 테이블에 넣을 것
                             storeAddr: self.infoList.storeAddr,
+
+                            subtotal : (self.totalPrice - finalDeliveryFee) // 배송비 제외금액
                         };
                         console.log("주문 데이터:", param);
                         $.ajax({
@@ -347,7 +349,9 @@
                             storeAddr: self.infoList.storeAddr,
 
 
-                            deliveryDate: self.selectedDate
+                            deliveryDate: self.selectedDate,
+
+                            subtotal : (self.totalPrice - finalDeliveryFee) // 배송비 제외금액
                         };
                         console.log("주문 데이터:", param);
                         $.ajax({
