@@ -1,3 +1,4 @@
+![대표사진](https://github.com/chchjjj/teamProject/blob/develop/mainPage.JPG)
 # 🍰 디저트 연구소 
 > 소비자도 판매자도 편리하게 이용하는 디저트 중개 플랫폼!
 ## 💡 프로젝트 소개
