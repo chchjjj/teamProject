@@ -202,6 +202,8 @@ public class UserService {
 		
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
+		System.out.println("넘겨 받은 phone 값은: "+ map.get("phone"));
+		
 		try {
 			User user = userMapper.selectFindId(map);
 			resultMap.put("result", "true");
@@ -211,9 +213,6 @@ public class UserService {
 			System.out.println(e.getMessage());
 		}
 		
-		
-		
-
 		return resultMap;
 	}
 	

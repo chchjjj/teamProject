@@ -226,6 +226,10 @@
                 text-decoration: underline;
                 font-weight: 500;
             }
+
+            .inputNum{
+                width: 100px;
+            }
         </style>
     </head>
 
@@ -272,6 +276,13 @@
                         <input class="small-input" v-model="phone1" maxlength="3"> -
                         <input class="small-input" v-model="phone2" maxlength="4"> -
                         <input class="small-input" v-model="phone3" maxlength="4">
+                        <template v-if="!sendMessageFlg">
+                            <button @click="fnSendSms">인증번호 받기</button>
+                        </template>
+                        <template v-else>
+                            <input v-model="inputNum" :placeholder="timer" class="inputNum">
+                            <button @click="fnSmsAuth">인증</button>
+                        </template>
                     </div>
 
                     <div class="btn-line">
@@ -445,10 +456,10 @@
                     //문자 인증이 완료되지 않으면 
                     //회원가입 불가능(안내문구 출력)
                     //최종본에서 주석 해제할 것
-                    // if(!self.smsFlg){
-                    //     alert("문자 인증을 진행해주세요.");
-                    //     return;
-                    // }
+                    if(!self.smsFlg){
+                        alert("문자 인증을 진행해주세요.");
+                        return;
+                    }
 
                     let param = {
                         userId: self.userId,

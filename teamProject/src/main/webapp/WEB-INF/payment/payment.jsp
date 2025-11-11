@@ -609,50 +609,50 @@
                     } else{
                         proName = self.groupedOrdersList[0].proName;
                     }
-                    // IMP.request_pay({
-                    //     pg: "html5_inicis",
-                    //     pay_method: "card",
-                    //     merchant_uid: "merchant_" + new Date().getTime(),
-                    //     name: proName, //상품이름, 대표로 제일 첫번째 상품명을 보여준다.
-                    //     amount: 1, //실제 결제금액은 1원, 원래는 self.paymentPrice
-                    //     buyer_tel: self.toPhone, // 구매자 휴대폰 번호
-                    //     buyer_name: self.toName // 구매자 성함
-                    //   } , function (rsp) { // callback
-                    //       if (rsp.success) {
-                    //         // 결제 성공 시
-                    //         //alert("성공");
-                    //         console.log(rsp);
+                    IMP.request_pay({
+                        pg: "html5_inicis",
+                        pay_method: "card",
+                        merchant_uid: "merchant_" + new Date().getTime(),
+                        name: proName, //상품이름, 대표로 제일 첫번째 상품명을 보여준다.
+                        amount: 1, //실제 결제금액은 1원, 원래는 self.paymentPrice
+                        buyer_tel: self.toPhone, // 구매자 휴대폰 번호
+                        buyer_name: self.toName // 구매자 성함
+                      } , function (rsp) { // callback
+                          if (rsp.success) {
+                            // 결제 성공 시
+                            //alert("성공");
+                            console.log(rsp);
                             
                             // 실제 구현용 여기부터
-                            // if(self.orderId.length > 0){
-                            //     self.fnPayHistory(rsp.imp_uid, rsp.paid_amount); //바로 결제하는 경우
-                            // } else if(self.deliveryType == 'D'){
-                            //     self.fnDeliPayHistory(rsp.imp_uid, rsp.paid_amount); //장바구니 거쳐서 배송 결제하는 경우
-                            // } else if(self.deliveryType == 'P'){
-                            //     self.fnPickPayHistory(rsp.imp_uid, rsp.paid_amount); //장바구니 거쳐서 픽업 결제하는 경우
-                            // } else {
-                            //     alert("잘못된 결제입니다!");
-                            //     return;
-                            // }
+                            if(self.orderId.length > 0){
+                                self.fnPayHistory(rsp.imp_uid, rsp.paid_amount); //바로 결제하는 경우
+                            } else if(self.deliveryType == 'D'){
+                                self.fnDeliPayHistory(rsp.imp_uid, rsp.paid_amount); //장바구니 거쳐서 배송 결제하는 경우
+                            } else if(self.deliveryType == 'P'){
+                                self.fnPickPayHistory(rsp.imp_uid, rsp.paid_amount); //장바구니 거쳐서 픽업 결제하는 경우
+                            } else {
+                                alert("잘못된 결제입니다!");
+                                return;
+                            }
                             // 실제 구현용 여기까지
 
 
                             //테스트 전용 여기부터
-                                if(self.orderId.length > 0){
-                                    self.fnPayHistory(1, 1); //바로 결제하는 경우
-                                } else if(self.deliveryType == 'D'){
-                                    self.fnDeliPayHistory(1, 1); //장바구니 거쳐서 배송 결제하는 경우
-                                } else if(self.deliveryType == 'P'){
-                                    self.fnPickPayHistory(1, 1); //장바구니 거쳐서 픽업 결제하는 경우
-                                } else {
-                                    alert("잘못된 결제입니다!");
-                                    return;
-                                }
+                                // if(self.orderId.length > 0){
+                                //     self.fnPayHistory(1, 1); //바로 결제하는 경우
+                                // } else if(self.deliveryType == 'D'){
+                                //     self.fnDeliPayHistory(1, 1); //장바구니 거쳐서 배송 결제하는 경우
+                                // } else if(self.deliveryType == 'P'){
+                                //     self.fnPickPayHistory(1, 1); //장바구니 거쳐서 픽업 결제하는 경우
+                                // } else {
+                                //     alert("잘못된 결제입니다!");
+                                //     return;
+                                // }
                             //테스트 전용 여기까지
 
 
-                    //       } 
-                    // });
+                          } 
+                    });
                 },
 
                 //PAYMENT_TBL에 결제내역을 추가하는 쿼리문

@@ -255,10 +255,10 @@
                         <input type="password" v-model="userPass" @keyup.enter="fnLogin">
                     </div>
 
-                    <div class="btn-box">
+                    <!-- <div class="btn-box">
                         <button class="social-btn">카카오 로그인</button>
                         <button class="social-btn">소셜 로그인</button>
-                    </div>
+                    </div> -->
 
                     <div class="link-box">
                         디저트 연구소 첫손님이신가요?
