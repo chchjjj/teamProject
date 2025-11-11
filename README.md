@@ -72,6 +72,7 @@
 ***
 ## 📂 기타 산출물 링크
 ▶ [회의록](https://drive.google.com/drive/folders/18vpyLgd6Mx1mIT_zkIh0xsSvjM3JtQvL?usp=drive_link)
+▶ [설계자료](https://drive.google.com/drive/folders/1HRYHe-082Ryf2lZ_Q0S0jvKYqd4f1iZm?usp=drive_link)
    
 
 ***
