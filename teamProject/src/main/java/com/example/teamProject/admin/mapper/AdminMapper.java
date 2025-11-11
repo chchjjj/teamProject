@@ -109,9 +109,13 @@ public interface AdminMapper {
 		int monthlyAdHistroyInsert ();
 		int monthlyAdHistroyUpdate ();
 		
-		// 8. 달말마다 수수료 정산
+		// 8. 달말마다 판매자 수익
 		List <Admin> monthlyFeeCalculate (HashMap<String, Object> map);
-//		int monthlyFeeCalculateCount ();
+		int monthlyFeeCalculateCount (HashMap<String, Object> map);
+		
+		
+		
+		
 		int monthlyFeeUpdate();
 //		int monthlyGradeUpdate();
 		

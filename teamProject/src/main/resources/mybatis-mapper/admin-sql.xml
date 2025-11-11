@@ -306,69 +306,72 @@
 	</select>
 	
 	<!--이번달 수익 조회-->
+	<!--이번달 수익 조회-->
 	<select id="revenueSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
-		SELECT
-		    (SELECT SUM(MONTHLY_FEE)
-		     FROM MEMBERSHIP_TBL
-		     WHERE TO_CHAR(JOIN_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')) AS MEMBERSHIP_FEE,
-		     
-		     <!-- 수수료 산출 추가 -->
-			(
-			    SELECT SUM(
-			               CASE 
-			                   WHEN S.GRADE_CODE = 'A' THEN (O.TOTAL_PRICE - O.DELIVERY_FEE) * 0.15
-			                   WHEN S.GRADE_CODE = 'S' THEN (O.TOTAL_PRICE - O.DELIVERY_FEE) * 0.07
-			                   ELSE 0
-			               END
-			           )
-			    FROM ORDER_TBL O
-			    JOIN ORDER_DETAIL_TBL OD ON O.ORDER_ID = OD.ORDER_ID
-			    JOIN SELLER_INFO_TBL S ON OD.STORE_ID = S.STORE_ID
-			    WHERE TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
-			      AND O.STATUS = 'P' AND S.STORE_PASS = 'P'
-			) AS COMMISSION_FEE,
-		
-		    (SELECT SUM(O.TOTAL_PRICE - O.DELIVERY_FEE)
-		     FROM SELLER_INFO_TBL S
-		     LEFT JOIN ORDER_TBL O ON S.STORE_NAME = O.STORE_NAME
-		     WHERE TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
-		       AND O.STATUS = 'P' AND S.STORE_PASS = 'P') AS MONTHLY_REVENUE,
-		
-		    (SELECT SUM(CLICKS*CLICK_UNIT_COST)
-		     FROM AD_TBL
-		     WHERE TO_CHAR(START_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')) AS MONTHLY_AD_REVENUE,
-		
-		    (  (SELECT SUM(MONTHLY_FEE)
-		        FROM MEMBERSHIP_TBL
-		        WHERE TO_CHAR(JOIN_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM'))
-		        
-		    <!-- + (SELECT SUM(O.TOTAL_PRICE - O.DELIVERY_FEE)
-		        FROM SELLER_INFO_TBL S
-		        LEFT JOIN ORDER_TBL O ON S.STORE_NAME = O.STORE_NAME
-		        WHERE TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
-		          AND O.STATUS = 'P') -->
-		     + (SELECT SUM(
-                CASE 
-                    WHEN S.GRADE_CODE = 'A' THEN (O.TOTAL_PRICE - O.DELIVERY_FEE) * 0.15
-                    WHEN S.GRADE_CODE = 'S' THEN (O.TOTAL_PRICE - O.DELIVERY_FEE) * 0.07
-                    ELSE 0
-                END
-		           )
-			     FROM SELLER_INFO_TBL S
-			     LEFT JOIN ORDER_TBL O ON S.STORE_NAME = O.STORE_NAME
-			     WHERE TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
-			       AND O.STATUS = 'P'AND S.STORE_PASS = 'P'
-			    )
-			     
-		     
-		     
-		          
-		     + (SELECT SUM(CLICKS*CLICK_UNIT_COST)
-		        FROM AD_TBL
-		        WHERE TO_CHAR(END_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM'))
-		    ) AS TOTAL_MONTHLY_REVENUE
-		FROM DUAL
+	    SELECT
+	     
+	        (SELECT SUM(MONTHLY_FEE)
+	         FROM MEMBERSHIP_TBL
+	         WHERE TO_CHAR(JOIN_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')) AS MEMBERSHIP_FEE,
+	         
+	     
+	        (SELECT SUM(TOTAL_NET * C.COMMISSION_RATE)
+	         FROM (
+	             SELECT S.STORE_ID,
+	                    SUM(O.TOTAL_PRICE - O.DELIVERY_FEE) AS TOTAL_NET
+	             FROM ORDER_TBL O
+	             JOIN SELLER_INFO_TBL S ON O.STORE_NAME = S.STORE_NAME
+	             WHERE O.STATUS = 'P'
+	               AND TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
+	               AND S.STORE_PASS = 'P'
+	             GROUP BY S.STORE_ID
+	         ) STORE_NET
+	         JOIN COMMISSION_GRADE_TBL C
+	              ON STORE_NET.TOTAL_NET BETWEEN C.LOSAL AND C.HISAL
+	        ) AS COMMISSION_FEE,
+	        
+	       
+	        (SELECT SUM(O.TOTAL_PRICE - O.DELIVERY_FEE)
+	         FROM SELLER_INFO_TBL S
+	         LEFT JOIN ORDER_TBL O ON S.STORE_NAME = O.STORE_NAME
+	         WHERE TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
+	           AND O.STATUS = 'P' AND S.STORE_PASS = 'P'
+	        ) AS MONTHLY_REVENUE,
+	        
+	 
+	        (SELECT SUM(CLICKS*CLICK_UNIT_COST)
+	         FROM AD_TBL
+	         WHERE TO_CHAR(START_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
+	        ) AS MONTHLY_AD_REVENUE,
+	        
+	     
+	        (
+	            (SELECT SUM(MONTHLY_FEE)
+	             FROM MEMBERSHIP_TBL
+	             WHERE TO_CHAR(JOIN_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM'))
+	             
+	          + (SELECT SUM(TOTAL_NET * C.COMMISSION_RATE)
+	             FROM (
+	                 SELECT S.STORE_ID,
+	                        SUM(O.TOTAL_PRICE - O.DELIVERY_FEE) AS TOTAL_NET
+	                 FROM ORDER_TBL O
+	                 JOIN SELLER_INFO_TBL S ON O.STORE_NAME = S.STORE_NAME
+	                 WHERE O.STATUS = 'P'
+	                   AND TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
+	                   AND S.STORE_PASS = 'P'
+	                 GROUP BY S.STORE_ID
+	             ) STORE_NET
+	             JOIN COMMISSION_GRADE_TBL C
+	                  ON STORE_NET.TOTAL_NET BETWEEN C.LOSAL AND C.HISAL
+	          )
+	          
+	          + (SELECT SUM(CLICKS*CLICK_UNIT_COST)
+	             FROM AD_TBL
+	             WHERE TO_CHAR(END_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM'))
+	        ) AS TOTAL_MONTHLY_REVENUE
+	    FROM DUAL
 	</select>
+
 	
 	
 	
@@ -663,76 +666,78 @@
 		GROUP BY S.STORE_NAME, S.STORE_ID
 		ORDER BY S.STORE_ID-->
 		
-		SELECT
-	        S.STORE_ID AS storeId,
-	        S.STORE_NAME AS storeName,
-	        NVL(MONTHLY_DATA.MONTHLY_FEE, 0) AS storeMonthlyFee,
-	        TO_CHAR(SYSDATE, 'YYYY-MM') AS thisMonth
-	    FROM SELLER_INFO_TBL S
-	    LEFT JOIN (   
-	        SELECT 
-	            STORE_ID,
-	            SUM(ORDER_TOTAL) AS MONTHLY_FEE
-	        FROM (
-	            SELECT DISTINCT
-	                D.STORE_ID,
-	                O.ORDER_ID,
-	                (O.TOTAL_PRICE - O.DELIVERY_FEE) AS ORDER_TOTAL
-	            FROM ORDER_DETAIL_TBL D
-	            JOIN ORDER_TBL O ON D.ORDER_ID = O.ORDER_ID
-	            WHERE O.STATUS = 'P'
-	              AND O.ORDER_DATE >= TRUNC(SYSDATE, 'MM')
-	              AND O.ORDER_DATE &lt; ADD_MONTHS(TRUNC(SYSDATE, 'MM'), 1)
-	        )
-	        GROUP BY STORE_ID
-	    ) MONTHLY_DATA ON S.STORE_ID = MONTHLY_DATA.STORE_ID
-	    WHERE S.STORE_PASS = 'P'
-	    
-	    <!-- 搜索条件 -->
-	    <if test="keyWord != null and keyWord != ''">
-	        <choose>
-	            <when test="option == 'all'">
-	                AND (S.STORE_ID LIKE '%' || #{keyWord} || '%' 
-	                     OR S.STORE_NAME LIKE '%' || #{keyWord} || '%')
-	            </when>
-	            <when test="option == 'storeId'">
-	                AND S.STORE_ID LIKE '%' || #{keyWord} || '%'
-	            </when>
-	            <when test="option == 'storeName'">
-	                AND S.STORE_NAME LIKE '%' || #{keyWord} || '%'
-	            </when>
-	        </choose>
-	    </if>
-	    
-	    ORDER BY S.STORE_ID
-	    
-	    <!-- 分页 -->
-	    <if test="offset != null and fetchRows != null">
-	        OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
-	    </if>
+		WITH STORE_NET AS (
+		    SELECT S.STORE_ID,
+		           S.STORE_NAME,
+		           SUM(O.TOTAL_PRICE - O.DELIVERY_FEE) AS TOTAL_NET
+		    FROM ORDER_TBL O
+		    JOIN SELLER_INFO_TBL S ON O.STORE_NAME = S.STORE_NAME
+		    WHERE O.STATUS = 'P'
+		      AND TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
+		      AND S.STORE_PASS = 'P'
+		    GROUP BY S.STORE_ID, S.STORE_NAME
+		)
+		SELECT TO_CHAR(SYSDATE,'YYYY-MM') AS THIS_MONTH,
+		       SN.STORE_ID,
+		       SN.STORE_NAME,
+		       SN.TOTAL_NET,
+		       SN.TOTAL_NET * C.COMMISSION_RATE AS STORE_MONTHLY_FEE
+		FROM STORE_NET SN
+		JOIN COMMISSION_GRADE_TBL C
+		     ON SN.TOTAL_NET BETWEEN C.LOSAL AND C.HISAL
+		WHERE 1=1
+		<if test="keyWord != null and keyWord != ''">
+		    <choose>
+		        <when test="option == 'all'">
+		            AND (SN.STORE_ID LIKE '%' || #{keyWord} || '%' 
+		                 OR SN.STORE_NAME LIKE '%' || #{keyWord} || '%')
+		        </when>
+		        <when test="option == 'storeId'">
+		            AND SN.STORE_ID LIKE '%' || #{keyWord} || '%'
+		        </when>
+		        <when test="option == 'storeName'">
+		            AND SN.STORE_NAME LIKE '%' || #{keyWord} || '%'
+		        </when>
+		    </choose>
+		</if>
+		ORDER BY SN.STORE_ID
+		<if test="offset != null and fetchRows != null">
+		    OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
+		</if>
    </select>
     
     <select id="monthlyFeeCalculateCount" resultType="int">
-         SELECT COUNT(*) FROM
-         (SELECT
-            TO_CHAR(SYSDATE,'YYYY-MM') AS THIS_MONTH,
-            T.STORE_NAME,
-            T.STORE_ID,
-            G.COMMISSION_RATE * T.MONTHLY_INCOME AS STORE_MONTHLY_FEE
-        FROM 
-        (
-            SELECT 
-                S.STORE_NAME,
-                S.STORE_ID,
-                SUM(O.TOTAL_PRICE - O.DELIVERY_FEE) AS MONTHLY_INCOME
-            FROM SELLER_INFO_TBL S
-            LEFT JOIN ORDER_TBL O 
-                ON S.STORE_NAME = O.STORE_NAME
-            WHERE TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
-            GROUP BY S.STORE_ID, S.STORE_NAME
-        ) T
-        LEFT JOIN COMMISSION_GRADE_TBL G
-            ON T.MONTHLY_INCOME BETWEEN G.LOSAL AND G.HISAL)
+         WITH STORE_NET AS (
+		    SELECT S.STORE_ID,
+		           S.STORE_NAME,
+		           SUM(O.TOTAL_PRICE - O.DELIVERY_FEE) AS TOTAL_NET
+		    FROM ORDER_TBL O
+		    JOIN SELLER_INFO_TBL S ON O.STORE_NAME = S.STORE_NAME
+		    WHERE O.STATUS = 'P'
+		      AND TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
+		      AND S.STORE_PASS = 'P'
+		    GROUP BY S.STORE_ID, S.STORE_NAME
+		)
+		SELECT COUNT(*) AS TOTAL_ROWS
+		FROM STORE_NET SN
+		JOIN COMMISSION_GRADE_TBL C
+		     ON SN.TOTAL_NET BETWEEN C.LOSAL AND C.HISAL
+		WHERE 1=1
+	<if test="keyWord != null and keyWord != ''">
+	    <choose>
+	        <when test="option == 'all'">
+	            AND (SN.STORE_ID LIKE '%' || #{keyWord} || '%' 
+	                 OR SN.STORE_NAME LIKE '%' || #{keyWord} || '%')
+	        </when>
+	        <when test="option == 'storeId'">
+	            AND SN.STORE_ID LIKE '%' || #{keyWord} || '%'
+	        </when>
+	        <when test="option == 'storeName'">
+	            AND SN.STORE_NAME LIKE '%' || #{keyWord} || '%'
+	        </when>
+	    </choose>
+	</if>
+
     </select>
 	
 	
