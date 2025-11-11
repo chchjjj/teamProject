@@ -338,7 +338,7 @@ OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
         #{proName},
         #{totalQuantity},
         #{productPrice},
-        #{totalPrice}, 
+        #{subtotal}, 
         #{letteringWord} 
     )
 	</insert>
