@@ -341,7 +341,7 @@
                 },
                 fnFind: function () {
                     let self = this;
-                    let phone = self.phone1.trim() + self.phone2.trim() + self.phone3.trim();
+                    let phone = self.phone1 + "-" + self.phone2 + "-" + self.phone3;
                     console.log("self.phone1.length: " + self.phone1.length);
                     console.log("self.phone2.length: " + self.phone2.length);
                     console.log("self.phone3.length: " + self.phone3.length);
