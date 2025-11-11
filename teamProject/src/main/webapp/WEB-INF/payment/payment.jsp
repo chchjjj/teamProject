@@ -275,13 +275,20 @@
         font-size: 22px; 
     }
     
-    .total-payment {
+    .total-payment-line {
         padding: 20px 0;
         border-top: 2px solid var(--border-color);
-        font-size: 28px; 
         font-weight: bold;
         text-align: right;
         color: var(--primary-color);
+
+        display: flex;
+        align-items: center;              /* 세로 중앙 정렬 */
+    }
+
+    .total-payment{
+        font-size: 28px; 
+        margin-left: auto; /* 👉 왼쪽 내용과 가능한 한 멀리 */
     }
 
     .btn {
@@ -359,6 +366,12 @@
         font-weight: normal;
         margin-left: 10px;
     }
+    .chat-instructions{
+        font-size: 12px;
+        flex: 1;
+        text-overflow: ellipsis;
+        margin-right: 50px;
+    }
     
 </style>
 </head>
@@ -374,7 +387,8 @@
                     
                     <div class="item-details">
                         <div class="pro-name">
-                            {{item.proName}} <span class="orderId">(주문번호: {{item.orderId}})</span>
+                            <div v-for="jitem in item.groupedDetails">{{jitem.proName}}</div>
+                            <span class="orderId">(주문번호: {{item.orderId}})</span>
                         </div>
                         
                         <div>
@@ -428,11 +442,15 @@
 
             </div>
             
-            <div class="total-payment">
-                총 결제 금액: {{paymentPrice.toLocaleString('ko-KR')}} 원
+            <div class="total-payment-line">
+                <span class="chat-instructions">
+                    ※ 채팅옵션을 선택한 고객께서는 필요시 결제 전 마이페이지 통해 문의 부탁드립니다.
+                </span>
+                <span class="total-payment">총 결제 금액: {{paymentPrice.toLocaleString('ko-KR')}} 원</span>
             </div>
             
             <div class="btn-group">
+                
                 <button @click="fnGoBack" class="btn btn-cancel">메인으로</button>
                 <button @click="fnCheck" class="btn btn-primary">결제하기</button>
             </div>
@@ -453,6 +471,7 @@
                     orderList: [], //배송 정보 확정 전 단계, ORDER_TBL + ORDER_DETAIL_TBL + ORDER_OPTION_TBL
                     deliveryType: "", //배달인지 픽업인지 (배달이면 D, 픽업이면 P)
                     paymentPrice: 0, //최종 결제금액
+                    proNameKind: 0, // 한 주문 안의 상품 종류
                     kind: 0, //상품 갯수
                     
                     //order_tbl 관련 변수
