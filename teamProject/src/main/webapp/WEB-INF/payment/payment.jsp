@@ -275,13 +275,20 @@
         font-size: 22px; 
     }
     
-    .total-payment {
+    .total-payment-line {
         padding: 20px 0;
         border-top: 2px solid var(--border-color);
-        font-size: 28px; 
         font-weight: bold;
         text-align: right;
         color: var(--primary-color);
+
+        display: flex;
+        align-items: center;              /* 세로 중앙 정렬 */
+    }
+
+    .total-payment{
+        font-size: 28px; 
+        margin-left: auto; /* 👉 왼쪽 내용과 가능한 한 멀리 */
     }
 
     .btn {
@@ -359,6 +366,12 @@
         font-weight: normal;
         margin-left: 10px;
     }
+    .chat-instructions{
+        font-size: 12px;
+        flex: 1;
+        text-overflow: ellipsis;
+        margin-right: 50px;
+    }
     
 </style>
 </head>
@@ -429,11 +442,15 @@
 
             </div>
             
-            <div class="total-payment">
-                총 결제 금액: {{paymentPrice.toLocaleString('ko-KR')}} 원
+            <div class="total-payment-line">
+                <span class="chat-instructions">
+                    ※ 채팅옵션을 선택한 고객께서는 필요시 결제 전 마이페이지 통해 문의 부탁드립니다.
+                </span>
+                <span class="total-payment">총 결제 금액: {{paymentPrice.toLocaleString('ko-KR')}} 원</span>
             </div>
             
             <div class="btn-group">
+                
                 <button @click="fnGoBack" class="btn btn-cancel">메인으로</button>
                 <button @click="fnCheck" class="btn btn-primary">결제하기</button>
             </div>
