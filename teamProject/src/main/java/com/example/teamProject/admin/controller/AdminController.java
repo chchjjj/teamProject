@@ -419,6 +419,21 @@ public class AdminController {
     }
 	
 	
+	@RequestMapping(value = "/admonthlyfee/selectmonthlyfeelist.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String monthlyFeeList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		
+		resultMap = adminService.SelectMonthlyFeeList(map);
+		
+		System.out.println(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	
 	//revenue
 	@RequestMapping(value = "/adrevenue/view.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody

@@ -220,20 +220,42 @@ public class ProductController {
 
 	    String userId = (String) map.get("userId");
 	    
-	    // JSON 문자열을 자바 객체로 변환
-	    String json = (String) map.get("cartItems");
-	    List<HashMap<String, Object>> cartList = mapper.readValue(
-	        json, new TypeReference<List<HashMap<String, Object>>>() {}
-	    );
-	 
-	    // cartList를 서비스에 전달하기 위해 map에 담기
-	    map.put("cartList", cartList);
-	    map.put("userId", userId);
-	    System.out.println("1맵"+map);
-	
-	    resultMap = ProductService.insertCartToOrder(map);
+	    // userId검증
+	    if (userId == null || userId.trim().isEmpty()) {
+	        resultMap.put("result", "fail");
+	        resultMap.put("message", "사용자 정보가 없습니다.");
+	        return mapper.writeValueAsString(resultMap);
+	    }
 
-	    return new ObjectMapper().writeValueAsString(resultMap);
+	    String json = (String) map.get("cartItems");
+	    
+	    // cartItems검증
+	    if (json == null || json.trim().isEmpty()) {
+	        resultMap.put("result", "fail");
+	        resultMap.put("message", "주문 데이터가 없습니다.");
+	        return mapper.writeValueAsString(resultMap);
+	    }
+
+	    try {
+	        List<HashMap<String, Object>> cartList = mapper.readValue(
+	            json, new TypeReference<List<HashMap<String, Object>>>() {}
+	        );
+
+	        map.put("cartList", cartList);
+	        map.put("userId", userId);
+	        
+	        System.out.println("주문 처리 시작 - 매장 수: " + cartList.size());
+	        
+	        resultMap = ProductService.insertCartToOrder(map);
+	        
+	    } catch (Exception e) {
+	        System.err.println("주문 처리 중 오류: " + e.getMessage());
+	        e.printStackTrace();
+	        resultMap.put("result", "fail");
+	        resultMap.put("message", "주문 처리 중 오류가 발생했습니다: " + e.getMessage());
+	    }
+
+	    return mapper.writeValueAsString(resultMap);
 	}
 	
 	// 파일 업로드 관련
