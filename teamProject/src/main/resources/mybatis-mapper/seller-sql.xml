@@ -402,7 +402,7 @@
 		</selectKey> INSERT
 		INTO PRODUCT_OPTION_TBL ( TOP_OPTION_ID, PRO_NO, OPTION_NAME,
 		IS_QUANTITY_SELECTABLE ) VALUES ( #{topOptionId}, #{proNo},
-		#{optionName}, #{isQuantitySelectAble} ) </insert>
+		#{optionName}, #{isQuantitySelectAble, jdbcType=VARCHAR} ) </insert>
 
 	<insert id="insertSubOption"
 		parameterType="com.example.teamProject.seller.model.Seller">
@@ -432,28 +432,25 @@
 		DELETE FROM DISABLED_DATE_TBL WHERE PRO_NO = #{proNo}
 	</delete>
 
-	<select id="selectProductByProNo" parameterType="int"
-		resultType="com.example.teamProject.seller.model.Seller">
-		SELECT
-		PRO_NO,
-		STORE_ID,
-		PRO_NAME,
-		PRO_TYPE,
-		PRO_INFO,
-		PRICE,
-		STOCK_QTY,
-		STATUS
-		-- USER_ID 컬럼이 없으므로 삭제
-		-- , USER_ID
-		FROM PRODUCT_TBL
-		WHERE PRO_NO = #{proNo}
-	</select>
-
-	<select id="selectProductFiles" parameterType="int" resultType="map">
-		SELECT FILE_PATH, FILE_TYPE
-		FROM PRODUCT_FILE_TBL
-		WHERE PRO_NO = #{proNo}
-	</select>
+	<select id="selectProductProNo" parameterType="int" resultType="map">
+    SELECT
+    PRO_NO,
+        PRO_NAME,
+        PRO_TYPE,
+        STORE_ID,
+        STORE_NAME,
+        PRICE,
+        DELIVERY_FEE,
+        STATUS,
+        PRO_INFO,
+       LETTERING,   
+        CNT,
+        SELL_COUNT,
+        CREATED_AT,
+        UPDATED_AT
+    FROM PRODUCT_TBL
+    WHERE PRO_NO = #{proNo}
+</select>
 
 	<select id="selectProductOptions" parameterType="int"
 		resultType="com.example.teamProject.seller.model.Seller">
@@ -559,7 +556,28 @@
 		* FROM SELLER_INFO_TBL
 		WHERE STORE_ID = #{storeId}
 	</select>
+	
 
+<select id="selectOptionsByProNo" parameterType="int" resultType="map">
+    SELECT
+        PO.TOP_OPTION_ID,
+        PO.PRO_NO,
+        PO.OPTION_NAME,
+        PO.IS_QUANTITY_SELECTABLE,
+        PSO.SUB_OPTION_ID,
+        PSO.VALUE_NAME,
+        PSO.PRICE_DIFF
+    FROM PRODUCT_OPTION_TBL PO
+    LEFT JOIN PRODUCT_SUB_OPTION_TBL PSO ON PO.TOP_OPTION_ID = PSO.TOP_OPTION_ID
+    WHERE PO.PRO_NO = #{proNo}
+    ORDER BY PO.TOP_OPTION_ID, PSO.SUB_OPTION_ID
+</select>
+<select id="selectDisabledDate" parameterType="int" resultType="string">
+    SELECT TO_CHAR(DISABLED_DATE, 'YYYY-MM-DD')
+    FROM DISABLED_DATE_TBL
+    WHERE PRO_NO = #{proNo}
+    ORDER BY DISABLED_DATE
+</select>
 
 </mapper>
 

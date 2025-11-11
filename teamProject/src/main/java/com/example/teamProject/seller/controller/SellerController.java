@@ -1,5 +1,6 @@
 package com.example.teamProject.seller.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,11 +23,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.teamProject.product.model.Product;
 import com.example.teamProject.seller.dao.FileService;
 import com.example.teamProject.seller.dao.SellerService;
 import com.example.teamProject.seller.model.Seller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.auth.oauth2.IdTokenProvider.Option;
 import com.google.gson.Gson;
 
 import jakarta.servlet.http.HttpSession;
@@ -69,14 +72,36 @@ public class SellerController {
 		return "seller/sellerOrderHistory";
 	}
 	@RequestMapping("/seller/productUpdate.do")
-	public String productUpdate(@RequestParam("proNo") int proNo, Model model) {
-	    // 1. URL에서 받은 proNo를 모델에 담아 View로 전달합니다.
-	    //    (View에서는 이 proNo를 사용하여 해당 상품의 상세 정보를 AJAX로 조회할 수 있습니다.)
-	    model.addAttribute("proNo", proNo);
+	public String productUpdate(@RequestParam(value="proNo", required=false) Integer proNo, 
+	                            HttpSession session, Model model) {
 
-	    // 2. View 파일의 경로를 반환합니다. (예: /WEB-INF/views/seller/productUpdate.jsp)
+	    Map<String, Object> product = new HashMap<>();
+	    List<Map<String, Object>> options = new ArrayList<>();
+	    String disabledDatesStr = "";
+
+	    if (proNo != null) {
+	        // 상품 정보 조회
+	        product = sellerService.getProduct(proNo); 
+
+	        // 옵션 정보 조회
+	        options = sellerService.getOptionsByProduct(proNo); 
+
+	        // 불가 날짜 문자열
+	        disabledDatesStr = String.join(",", sellerService.getDisabledDates(proNo)); 
+	    }
+
+	    model.addAttribute("pageTitle", proNo == null ? "제품 등록" : "제품 수정");
+	    model.addAttribute("proNo", proNo);
+	    model.addAttribute("sessionId", session.getAttribute("userId"));
+
+	    // Map과 List<Map> 그대로 JSON으로 변환
+	    model.addAttribute("productJson", new Gson().toJson(product));
+	    model.addAttribute("optionsJson", new Gson().toJson(options));
+	    model.addAttribute("disabledDatesStr", disabledDatesStr);
+
 	    return "/seller/productUpdate";
 	}
+
 
 	@RequestMapping("/seller/OrderHistoryViewDetail.do")
 	public String viewOrderHistory(
@@ -567,6 +592,8 @@ public class SellerController {
 	    @RequestParam(value = "detailFiles", required = false) List<MultipartFile> detailFiles,
 	    @RequestParam(value = "longFile", required = false) MultipartFile longFile,
 	    @RequestParam("storeId") int receivedStoreId, // 클라이언트가 전송한 Store ID (int로 받음)
+	    @RequestParam("optionsJson") String optionsJson,
+	    @RequestParam("disabledDatesStr") String disabledDatesStr,
 	    HttpSession session // jakarta.servlet.http.HttpSession 사용
 	) {
 	    Map<String, Object> result = new HashMap<>();
@@ -598,7 +625,10 @@ public class SellerController {
 	        
 	        // 4. 검증 통과: DTO에 최종 storeId 설정 (DB 타입이 String인 경우를 대비하여 String으로 변환)
 	        seller.setStoreId(String.valueOf(receivedStoreId));
-	        
+	        seller.setOptionsJson(optionsJson);
+	        seller.setDisabledDatesStr(disabledDatesStr);
+	        System.out.println("옵션 JSON: " + optionsJson.substring(0, Math.min(optionsJson.length(), 100)) + "...");
+	        System.out.println("불가 날짜: " + disabledDatesStr);
 	        // 5. 상품 데이터 유효성 검사 및 설정
 	        processProductData(seller);
 
@@ -641,6 +671,7 @@ public class SellerController {
 	@ResponseBody
 	public Map<String, Object> updateProduct(
 	    Seller seller, // 상품 정보를 담은 Seller DTO
+	    
 	    @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
 	    @RequestParam(value = "thumbnailUse", required = false) String thumbnailUse, 
 	    @RequestParam(value = "detailFiles", required = false) List<MultipartFile> detailFiles,
@@ -767,5 +798,7 @@ public class SellerController {
 
 	    return resultMap;
 	}
+	
+	
 
 }
