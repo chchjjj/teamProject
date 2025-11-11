@@ -159,31 +159,62 @@
 	</select>
 	
 	
+	<select id="selectOrderDetail" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
+	      SELECT * FROM 
+	      ORDER_DETAIL_TBL D
+	      LEFT JOIN PRODUCT_TBL P 
+	      ON D.PRO_NO=P.PRO_NO
+	      LEFT JOIN SELLER_INFO_TBL S
+	      ON S.STORE_ID=P.STORE_ID
+	      LEFT JOIN ORDER_TBL O 
+	      ON O.ORDER_ID=D.ORDER_ID 
+	      LEFT JOIN USER_TBL U 
+	      ON U.USER_ID=O.USER_ID
+	      WHERE D.ORDER_DETAIL_ID=#{orderDetailId}
+	</select>
+	
+	
 	
 	<!--review-->
 	<select id="reviewListSelect" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
-   		SELECT R.*,U.*,PRO.*,TO_CHAR(CDATETIME,'YYYY-MM-DD') AS C_DATE_TIME FROM REVIEW_TBL R
-   		LEFT JOIN PRODUCT_IMG_TBL P
-   		ON P.PRO_NO=R.PRO_NO
-   		LEFT JOIN USER_TBL U
-   		ON U.USER_ID=R.USER_ID 
-   		LEFT JOIN PRODUCT_TBL PRO
-   		ON PRO.PRO_NO=R.PRO_NO
-   		WHERE U.USER_ID=#{userId}
-		ORDER BY CDATETIME DESC
-		OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
+   		 SELECT 
+        R.REVIEW_ID,
+        R.ORDER_ID,
+        R.PRO_NO,
+        R.USER_ID,
+        R.STORE_ID,
+        R.STORE_NAME,
+        R.RATING,
+        R.REVIEW_CONTENT,
+        TO_CHAR(R.CDATETIME,'YYYY-MM-DD') AS C_DATE_TIME,
+        PRO.PRO_NAME,
+        U.USER_NAME
+    FROM REVIEW_TBL R
+    LEFT JOIN USER_TBL U ON U.USER_ID=R.USER_ID 
+    LEFT JOIN PRODUCT_TBL PRO ON PRO.PRO_NO=R.PRO_NO
+    WHERE U.USER_ID=#{userId}
+    ORDER BY R.CDATETIME DESC
+    OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
 	</select>
 	
 	
 	<select id="reviewCount" parameterType="hashmap" resultType="int">
-   		SELECT COUNT(*) FROM REVIEW_TBL R
-   		LEFT JOIN PRODUCT_IMG_TBL P
-   		ON P.PRO_NO=R.PRO_NO
-   		LEFT JOIN USER_TBL U
-   		ON U.USER_ID=R.USER_ID 
-   		LEFT JOIN PRODUCT_TBL PRO
-   		ON PRO.PRO_NO=R.PRO_NO
-   		WHERE U.USER_ID=#{userId}
+   		 SELECT 
+        R.REVIEW_ID,
+        R.ORDER_ID,
+        R.PRO_NO,
+        R.USER_ID,
+        R.STORE_ID,
+        R.STORE_NAME,
+        R.RATING,
+        R.REVIEW_CONTENT,
+        TO_CHAR(R.CDATETIME,'YYYY-MM-DD') AS C_DATE_TIME,
+        PRO.PRO_NAME,
+        U.USER_NAME
+    FROM REVIEW_TBL R
+    LEFT JOIN USER_TBL U ON U.USER_ID=R.USER_ID 
+    LEFT JOIN PRODUCT_TBL PRO ON PRO.PRO_NO=R.PRO_NO
+    WHERE U.USER_ID=#{userId}
 	</select>
 	
 	
@@ -243,7 +274,7 @@
 	</update>
 	
 	<insert id="reviewInsert" parameterType="hashmap">
-		INSERT INTO REVIEW_TBL (
+  INSERT INTO REVIEW_TBL (
         REVIEW_ID,
         ORDER_ID,
         PRO_NO,
@@ -265,7 +296,7 @@
         #{reviewContent},
         SYSDATE,
         SYSDATE
-    )	
+    )
 	</insert>
 	
 	

@@ -306,8 +306,8 @@ public class UserService {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
 		try {
-			List <User> list = userMapper.selectOrder(map);			
-			System.out.println(list);;
+			List <User> list = userMapper.selectOrder(map);
+			System.out.println(list);
 			resultMap.put("list", list); 
 			resultMap.put("result", "success");
 		} catch (Exception e) {
@@ -317,6 +317,23 @@ public class UserService {
 		}				
 		return resultMap;
 	}
+	
+	public HashMap<String, Object> SelectOrderDetail(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+			List <User> detailList=userMapper.selectOrderDetail(map);
+			resultMap.put("detailList", detailList);
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
+		}				
+		return resultMap;
+	}
+	
 	
 	public HashMap<String, Object> SelectChatList(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub

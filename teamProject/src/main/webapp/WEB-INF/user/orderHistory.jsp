@@ -367,6 +367,33 @@
                 gap: 4px;
             }
 
+            /* 리뷰 작성 버튼 전용 */
+            .btnReview {
+                background-color: #FFEDAC;
+                color: #3E2723;
+                border-radius: 12px;
+                padding: 10px 15px;
+                font-size: 13px;
+                font-weight: 600;
+                border: none;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                box-shadow: none;
+            }
+
+
+            .btnReview:hover {
+                background-color: #ffedacb0;
+                transform: translateY(0);
+                
+            }
+
+            .btnReview:active {
+                transform: scale(0.97);
+                background-color: #ffedacb0;
+            }
+
+
             /* Responsive */
             @media (max-width: 768px) {
                 .orderContainer {
@@ -511,10 +538,14 @@
                                     style="font-size: 14px; font-weight: 600; color: var(--espresso); border-top: 1px solid #e0e0e0; margin-top: 8px; padding-top: 8px;">
                                     <strong>소계:</strong> {{ formatNumber(orderDetail.subtotal) }}원
                                 </div>
+                                <button class="btnReview" @click="fnInsertReview(orderDetail.orderDetailId)"
+                                    v-if="order.status==='P'">
+                                    ✏️ 리뷰 작성하러 가기
+                                </button>
                             </div>
 
                             <!-- Order Summary -->
-                            <div class="summaryRow" v-if="order.chatYn==='Y'">
+                            <div class="summaryRow" v-if="order.chatYn==='Y'&& order.addOptionPrice!=0">
                                 <strong>채팅:</strong>
                                 <span>사용 (추가비: {{ formatNumber(order.addOptionPrice) }}원)</span>
                             </div>
@@ -543,7 +574,7 @@
 
                             <!-- Action Buttons -->
                             <div class="actionButtons" v-if="order.status!='C'">
-                                <button v-if="order.chatYn==='Y'" class="btnChat"
+                                <button v-if="order.chatYn==='Y' && order.addOptionPrice==0" class="btnChat"
                                     @click="fnChat(order.orderId, order.storeId)">
                                     💬 채팅방으로
                                 </button>
@@ -553,10 +584,6 @@
                                 <button class="btnStatus" @click="fnOrderStatus(order.orderId)"
                                     v-if="order.status==='P'">
                                     📋 주문현황
-                                </button>
-                                <button class="btnStatus" @click="fnInsertReview(order.orderId)"
-                                    v-if="order.status==='P'">
-                                    ✏️ 리뷰 작성하러 가기
                                 </button>
                             </div>
                         </div>
@@ -572,11 +599,8 @@
 
                     <!-- 페이지 번호들 -->
                     <div class="pageNumbers">
-                        <a href="javascript:;" 
-                           v-for="num in pageRangeList" 
-                           :key="num"
-                           @click="fnChange(num)" 
-                           :class="{active: page == num}">
+                        <a href="javascript:;" v-for="num in pageRangeList" :key="num" @click="fnChange(num)"
+                            :class="{active: page == num}">
                             {{num}}
                         </a>
                     </div>
@@ -612,7 +636,7 @@
             methods: {
                 fnOrderList: function () {
                     let self = this;
-                    let param = { 
+                    let param = {
                         userId: self.userId,
                         offset: (self.page - 1) * self.pageSize,
                         fetchRows: self.pageSize,
@@ -673,6 +697,7 @@
 
                         if (!groupedOrders[orderId].groupedDetails[orderDetailId]) {
                             groupedOrders[orderId].groupedDetails[orderDetailId] = {
+                                orderDetailId: order.orderDetailId,
                                 proName: order.proName,
                                 subtotal: Number(order.subtotal || 0),
                                 price: Number(order.price || 0),
@@ -813,8 +838,8 @@
                     pageChange("/payment/payment.do", { orderId: orderId });
                 },
 
-                fnInsertReview:function(orderId){
-                    pageChange("/user/reviewInsert.do", { orderId: orderId });
+                fnInsertReview: function (orderDetailId) {
+                    pageChange("/user/reviewInsert.do", { orderDetailId: orderDetailId });
                 }
             },
 

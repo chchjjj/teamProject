@@ -48,7 +48,6 @@
                 color: #666;
                 margin-bottom: 30px;
             }
-
         </style>
     </head>
 
@@ -131,7 +130,7 @@
                         <table>
                             <tr>
                                 <th>
-                                    <div><input type="checkbox" @click="fnSelectAll"></div>
+                                    <div><input type="checkbox" @click="fnSelectAll()"></div>
                                 </th>
                                 <th>시간</th>
                                 <th>가게아이디</th>
@@ -139,7 +138,9 @@
                                 <th>월판매(원)</th>
                                 <th>월말정산결과(원)</th>
                             </tr>
-                            <tr v-for="seller in sellerList">
+
+                            <!-- 데이터 행 -->
+                            <tr v-for="seller in sellerList" :key="seller.storeId">
                                 <td><input type="checkbox" :value="seller.storeId" v-model="selectItem"></td>
                                 <td>{{seller.thisMonth}}</td>
                                 <td>{{seller.storeId}}</td>
@@ -147,7 +148,18 @@
                                 <td>{{formatNumber(seller.totalNet)}}</td>
                                 <td>{{formatNumber(seller.storeMonthlyFee)}}</td>
                             </tr>
+
+                            <!-- 합계 행 -->
+                            <tr class="total-row">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>총합</td>
+                                <td>{{formatNumber(totalNetSum)}}</td>
+                                <td>{{formatNumber(storeMonthlyFeeSum)}}</td>
+                            </tr>
                         </table>
+
                     </div>
 
 
@@ -211,6 +223,15 @@
 
                 };
             },
+            computed: {
+                totalNetSum() {
+                    return this.sellerList.reduce((sum, seller) => sum + (seller.totalNet || 0), 0);
+                },
+                storeMonthlyFeeSum() {
+                    return this.sellerList.reduce((sum, seller) => sum + (seller.storeMonthlyFee || 0), 0);
+                }
+            },
+
             methods: {
                 // 함수(메소드) - (key : function())
                 fnSellerList: function () {
@@ -228,7 +249,7 @@
                         dataType: "json",
                         type: "POST",
                         data: param,
-                        success: function (data) {                           
+                        success: function (data) {
                             self.sellerList = data.sellerList;
                             self.totalRows = data.totalRows;
                             self.pageNum = Math.ceil(self.totalRows / self.pageSize);
@@ -343,7 +364,7 @@
                 //     return Number(num).toLocaleString('ko-KR');
                 // },
 
-                formatNumber: function(num) {
+                formatNumber: function (num) {
                     if (num === null || num === undefined) return '0';
                     return Number(num).toLocaleString('ko-KR');
                 },
