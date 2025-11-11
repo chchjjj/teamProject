@@ -136,6 +136,7 @@
                                 <th>시간</th>
                                 <th>가게아이디</th>
                                 <th>가게이름</th>
+                                <th>월판매(원)</th>
                                 <th>월말정산결과(원)</th>
                             </tr>
                             <tr v-for="seller in sellerList">
@@ -143,6 +144,7 @@
                                 <td>{{seller.thisMonth}}</td>
                                 <td>{{seller.storeId}}</td>
                                 <td>{{seller.storeName}}</td>
+                                <td>{{formatNumber(seller.totalNet)}}</td>
                                 <td>{{formatNumber(seller.storeMonthlyFee)}}</td>
                             </tr>
                         </table>

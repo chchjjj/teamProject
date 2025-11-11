@@ -444,7 +444,7 @@ public class AdminService {
 			try {
 				List <Admin> sellerList= adminMapper.monthlyFeeCalculate(map);
 				resultMap.put("sellerList",sellerList);
-				int totalRows=adminMapper.sellerCount(map);
+				int totalRows=adminMapper.monthlyFeeCalculateCount(map);
 				resultMap.put("totalRows",totalRows);
 				resultMap.put("result","success");
 			}catch(Exception e) {

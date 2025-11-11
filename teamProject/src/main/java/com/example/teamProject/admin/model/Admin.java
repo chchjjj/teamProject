@@ -132,6 +132,9 @@ public class Admin {
     private double totalMonthlyRevenue;
     private double commissionFee;
     
+    //판매자별 월 판매량
+    private double totalNet;
+    
 
 	
     
