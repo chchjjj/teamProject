@@ -91,7 +91,7 @@ public class UserController {
 	
 	@RequestMapping("/user/reviewInsert.do")
     public String reviewInsert(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{
-		request.setAttribute("orderId",map.get("orderId"));
+		request.setAttribute("orderDetailId",map.get("orderDetailId"));
         return "/user/reviewInsert";
        
 	}
@@ -231,6 +231,14 @@ public class UserController {
 	public String orderStatus(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
 	    resultMap = userService.SelectOrder(map);
+	    return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/user/orderDetail.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String orderDetail(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    resultMap = userService.SelectOrderDetail(map);
 	    return new Gson().toJson(resultMap);
 	}
 	

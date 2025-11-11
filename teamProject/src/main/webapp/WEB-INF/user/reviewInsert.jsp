@@ -141,11 +141,11 @@
         
         .btn-submit {
             background:  #F4C9D6;
-            color: white;
+            color: black;
         }
         
         .btn-submit:hover {
-            background: #3a7bc8;
+            background: #eba3b9fd;
         }
         
         .btn-cancel:hover {
@@ -261,7 +261,7 @@
         data() {
             return {
                 order: {},
-                orderId: "${orderId}",
+                orderDetailId: "${orderDetailId}",
                 userId: "${sessionId}",
                 rating: 0,
                 reviewContent: ""
@@ -269,20 +269,21 @@
         },
         methods: {
             fnOrderSelect: function () {
+                
                 let self = this;
                 let param = {
                     userId: self.userId,
-                    orderId: self.orderId
+                    orderDetailId: self.orderDetailId
                 };
                 $.ajax({
-                    url: "/user/orderStatus.dox",
+                    url: "/user/orderDetail.dox",
                     dataType: "json",
                     type: "POST",
                     data: param,
                     success: function (data) {
                         console.log("주문 데이터:", data);
-                        if (data.list && data.list.length > 0) {
-                            self.order = data.list[0];
+                        if (data.detailList && data.detailList.length > 0) {
+                            self.order = data.detailList[0];
                             console.log("order.proNo:", self.order.proNo);
                             console.log("order.storeId:", self.order.storeId);
                         }
@@ -305,7 +306,8 @@
                 }
                 
                 let param = {
-                    orderId: self.orderId,
+                    orderId:self.order.orderId,
+                    orderDetailId: self.orderDetailId,
                     proNo: self.order.proNo,
                     userId: self.userId,
                     storeId: self.order.storeId,
@@ -372,6 +374,7 @@
         mounted() {
             let self = this;
             self.fnOrderSelect();
+            console.log("전달할 orderDetailId:", self.orderDetailId); 
         }
     });
 

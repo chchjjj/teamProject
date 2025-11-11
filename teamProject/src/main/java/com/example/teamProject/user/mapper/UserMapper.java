@@ -58,6 +58,7 @@ public interface UserMapper {
 	
 	//주문형황 조회
 	List <User> selectOrder (HashMap<String, Object> map);
+	List <User> selectOrderDetail (HashMap<String, Object> map);
 	
 	//orderCount
 	int orderCount (HashMap<String, Object> map);
