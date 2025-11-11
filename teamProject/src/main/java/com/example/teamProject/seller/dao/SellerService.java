@@ -376,23 +376,45 @@ public Map<String, Object> getStoreInfo(String userId) {
     return (Map<String, Object>) sellerMapper.selectStoreInfo(userId); // userId를 통해 DB에서 가게 정보를 조회
 }
 
-// 가게 정보 수정
-public boolean updateStoreInfo(String userId, String storeName, String storeZipcode, 
-        String storeAddrMain, String storeAddrDetail, String storeId, String storeIntro, String deliveryYn, String chatYn) {
-    // 서비스 로직 수행 (DB에 업데이트)
-    Map<String, String> params = new HashMap<>();
-    params.put("userId", userId);
-    params.put("storeId", storeId);
-    params.put("storeName", storeName);
-    params.put("storeZipcode", storeZipcode);
-    params.put("storeAddrMain", storeAddrMain);
-    params.put("storeAddrDetail", storeAddrDetail);
-    params.put("storeIntro", storeIntro);
-    params.put("deliveryYn", deliveryYn);
-    params.put("chatYn", chatYn);
+public boolean updateStoreInfo(Map<String, Object> paramMap) {
+    try {
+        // 1. 필수 컬럼 검증
+        if (paramMap.get("userId") == null || paramMap.get("storeId") == null) {
+            return false;
+        }
 
-    return sellerMapper.updateStoreInfo(params);
+        // 2. storeId 숫자 변환 (NUMBER 컬럼)
+        Object storeIdObj = paramMap.get("storeId");
+        int storeId;
+        if (storeIdObj instanceof String) {
+            storeId = Integer.parseInt((String) storeIdObj);
+        } else if (storeIdObj instanceof Number) {
+            storeId = ((Number) storeIdObj).intValue();
+        } else {
+            return false;
+        }
+        paramMap.put("storeId", storeId);
+
+        // 3. null 값 처리 (VARCHAR2/CHAR 컬럼)
+        paramMap.put("storeName", paramMap.getOrDefault("storeName", ""));
+        paramMap.put("storeAddr", paramMap.getOrDefault("storeAddr", ""));
+        paramMap.put("storeIntro", paramMap.getOrDefault("storeIntro", ""));
+        paramMap.put("deliveryYn", paramMap.getOrDefault("deliveryYn", "N"));
+        paramMap.put("isChatEnabled", paramMap.getOrDefault("isChatEnabled", "N"));
+
+        // 4. Mapper 호출
+        int updateCount = sellerMapper.updateStoreInfo(paramMap);
+        return updateCount > 0;
+
+    } catch (NumberFormatException nfe) {
+        nfe.printStackTrace();
+        return false;
+    } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+    }
 }
+
 
 
 
@@ -542,16 +564,13 @@ public int checkStoreOwnership(String userId, int storeId) {
     return sellerMapper.checkStoreOwnership(userId, storeId);
 }
 
-public Map<String, Object> selectStoreInfoData(String storeId) { // 🟢 메서드 이름 변경
-    
-    if (storeId == null || storeId.trim().isEmpty()) {
+public Map<String, Object> selectStoreInfoData(int storeId) { // 🟢 storeId 타입을 int로 변경
+
+    // storeId가 유효한지 확인
+    if (storeId <= 0) {
         return null;
     }
 
-    // 🟢 Mapper 호출 메서드 이름 변경
-    Map<String, Object> storeInfo = sellerMapper.selectStoreInfoData(storeId); 
-    
-    return storeInfo;
+    return sellerMapper.selectStoreInfoData(storeId);
 }
-
 }

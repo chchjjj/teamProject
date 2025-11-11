@@ -30,32 +30,12 @@
 		ORDER BY STORE_ID
 	</select>
 
-	<update id="updateStoreName">
-		UPDATE SELLER_INFO_TBL
-		SET STORE_NAME = #{storeName}, UDATE = SYSDATE
-		WHERE STORE_ID = #{storeId}
-	</update>
-
-	<update id="updateStoreIntro">
-		UPDATE SELLER_INFO_TBL
-		SET STORE_INTRO = #{storeIntro}, UDATE = SYSDATE
-		WHERE STORE_ID = #{storeId}
-	</update>
-
-	<update id="updateChatInfo">
-		UPDATE SELLER_INFO_TBL
-		SET IS_CHAT_ENABLED = #{isChatEnabled},
-		CHAT_START = #{chatStart},
-		CHAT_END = #{chatEnd},
-		UDATE = SYSDATE
-		WHERE STORE_ID = #{storeId}
-	</update>
 
 	<select id="selectMonthlySalesByUser" parameterType="string"
 		resultType="map"> SELECT s.STORE_NAME, TO_CHAR(o.ORDER_DATE, 'YYYY-MM')
 		AS ORDER_MONTH, COUNT(o.ORDER_ID) AS ORDER_COUNT, SUM(o.TOTAL_PRICE) AS
 		TOTAL_SALES FROM SELLER_INFO_TBL s JOIN ORDER_TBL o ON s.STORE_NAME =
-		o.STORE_NAME WHERE s.USER_ID = #{userId} <!-- 로그인한 사용자 파라미터 --> GROUP BY s.STORE_NAME,
+		o.STORE_NAME WHERE s.USER_ID = #{userId} GROUP BY s.STORE_NAME,
 		TO_CHAR(o.ORDER_DATE, 'YYYY-MM') ORDER BY ORDER_MONTH </select>
 
 	<select id="selectMonthlySales" resultType="hashmap" parameterType="hashmap">
@@ -95,49 +75,54 @@
 
 	</select>
 
-<select id="selectOrderDetail" parameterType="java.util.HashMap"
+	<select id="selectOrderDetail" parameterType="java.util.HashMap"
 		resultType="java.util.HashMap">
-	SELECT
-    T1.USER_NAME,                 -- 1. 구매자 이름
-    T2.ORDER_ID,                  -- 2. 주문 번호
-    T3.PRO_NAME,                  -- 3. 주문 상품 이름
-    COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE) AS ORDER_OR_PICKUP_DATE, -- 4. 수령/주문 일자
-    T10.STORE_NAME,               -- 5. 가게 이름
-    T2.TOTAL_PRICE,               -- 6. 총 결제 금액
-    T3.PRICE AS PRODUCT_PRICE,    -- 7. 상품 단가 (ORDER_DETAIL_TBL)
-    T2.ADD_OPTION_PRICE AS MANUAL_OPTION_PRICE, -- 8. 판매자가 직접 추가한 기타 옵션 금액 (ORDER_TBL)
-    T2.LETTERING_WORD,            -- ⭐ 9. 레터링 문구 (ORDER_TBL) 추가
-    SUM(NVL(T6.PRICE_DIFF, 0)) AS AUTO_OPTION_PRICE_DIFF, -- 10. 시스템이 계산한 상품 옵션 차액 합계 (집계 함수)
-    LISTAGG(T4.OPTION_NAME || ': ' || T5.VALUE_NAME, ', ')
-        WITHIN GROUP (ORDER BY T6.ORDER_OPTION_ID) AS OPTION_DETAILS, -- 11. 옵션 상세 목록 (집계 함수)
-    T2.CHAT_YN                    -- 12. 채팅 여부
-FROM
-    ORDER_TBL T2
-JOIN USER_TBL T1 ON T2.USER_ID = T1.USER_ID
-JOIN ORDER_DETAIL_TBL T3 ON T2.ORDER_ID = T3.ORDER_ID
-JOIN PRODUCT_TBL T8 ON T3.PRO_NO = T8.PRO_NO
-JOIN SELLER_INFO_TBL T10 ON T8.STORE_ID = T10.STORE_ID
-LEFT JOIN ORDER_OPTION_TBL T6 ON T3.ORDER_DETAIL_ID = T6.ORDER_DETAIL_ID
-LEFT JOIN PRODUCT_OPTION_TBL T4 ON T6.TOP_OPTION_ID = T4.TOP_OPTION_ID
-LEFT JOIN PRODUCT_SUB_OPTION_TBL T5 ON T6.SUB_OPTION_ID = T5.SUB_OPTION_ID
-LEFT JOIN DELIVERY_TBL T7 ON T2.ORDER_ID = T7.ORDER_ID 
-LEFT JOIN PICKUP_TBL T9 ON T2.ORDER_ID = T9.ORDER_ID
-WHERE
-    T2.ORDER_ID =  #{orderId}
-GROUP BY
-    T1.USER_NAME,
-    T2.ORDER_ID,
-    T3.PRO_NAME,
-    COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE),
-    T10.STORE_NAME,
-    T2.TOTAL_PRICE,
-    T2.CHAT_YN,
-    T3.PRICE,
-    T2.ADD_OPTION_PRICE,
-    T2.LETTERING_WORD,        -- ⭐ GROUP BY 절에 T2.LETTERING_WORD 추가
-    T3.ORDER_DETAIL_ID
-ORDER BY T3.PRO_NAME
-</select>
+		SELECT
+		T1.USER_NAME, -- 1. 구매자 이름
+		T2.ORDER_ID, -- 2. 주문 번호
+		T3.PRO_NAME, -- 3. 주문 상품 이름
+		COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE) AS ORDER_OR_PICKUP_DATE, -- 4.
+		수령/주문 일자
+		T10.STORE_NAME, -- 5. 가게 이름
+		T2.TOTAL_PRICE, -- 6. 총 결제 금액
+		T3.PRICE AS PRODUCT_PRICE, -- 7. 상품 단가 (ORDER_DETAIL_TBL)
+		T2.ADD_OPTION_PRICE AS MANUAL_OPTION_PRICE, -- 8. 판매자가 직접 추가한 기타 옵션 금액
+		(ORDER_TBL)
+		T2.LETTERING_WORD, -- ⭐ 9. 레터링 문구 (ORDER_TBL) 추가
+		SUM(NVL(T6.PRICE_DIFF, 0)) AS AUTO_OPTION_PRICE_DIFF, -- 10. 시스템이 계산한 상품
+		옵션 차액 합계 (집계 함수)
+		LISTAGG(T4.OPTION_NAME || ': ' || T5.VALUE_NAME, ', ')
+		WITHIN GROUP (ORDER BY T6.ORDER_OPTION_ID) AS OPTION_DETAILS, -- 11. 옵션
+		상세 목록 (집계 함수)
+		T2.CHAT_YN -- 12. 채팅 여부
+		FROM
+		ORDER_TBL T2
+		JOIN USER_TBL T1 ON T2.USER_ID = T1.USER_ID
+		JOIN ORDER_DETAIL_TBL T3 ON T2.ORDER_ID = T3.ORDER_ID
+		JOIN PRODUCT_TBL T8 ON T3.PRO_NO = T8.PRO_NO
+		JOIN SELLER_INFO_TBL T10 ON T8.STORE_ID = T10.STORE_ID
+		LEFT JOIN ORDER_OPTION_TBL T6 ON T3.ORDER_DETAIL_ID = T6.ORDER_DETAIL_ID
+		LEFT JOIN PRODUCT_OPTION_TBL T4 ON T6.TOP_OPTION_ID = T4.TOP_OPTION_ID
+		LEFT JOIN PRODUCT_SUB_OPTION_TBL T5 ON T6.SUB_OPTION_ID =
+		T5.SUB_OPTION_ID
+		LEFT JOIN DELIVERY_TBL T7 ON T2.ORDER_ID = T7.ORDER_ID
+		LEFT JOIN PICKUP_TBL T9 ON T2.ORDER_ID = T9.ORDER_ID
+		WHERE
+		T2.ORDER_ID = #{orderId}
+		GROUP BY
+		T1.USER_NAME,
+		T2.ORDER_ID,
+		T3.PRO_NAME,
+		COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE),
+		T10.STORE_NAME,
+		T2.TOTAL_PRICE,
+		T2.CHAT_YN,
+		T3.PRICE,
+		T2.ADD_OPTION_PRICE,
+		T2.LETTERING_WORD, -- ⭐ GROUP BY 절에 T2.LETTERING_WORD 추가
+		T3.ORDER_DETAIL_ID
+		ORDER BY T3.PRO_NAME
+	</select>
 	<select id="selectChatPass" parameterType="java.util.HashMap"
 		resultType="java.util.HashMap">
 		SELECT *
@@ -225,24 +210,25 @@ ORDER BY T3.PRO_NAME
 	</select>
 
 	<update id="updateOrderOptions" parameterType="map">
-    UPDATE ORDER_TBL
-    SET
-        LETTERING_WORD = #{letteringWord},
-        
-        -- ⭐ 1. 기존 TOTAL_PRICE에서 이전 ADD_OPTION_PRICE 값을 빼줍니다.
-        -- ⭐ 2. 새로 전송된 ADD_OPTION_PRICE 값을 더해줍니다.
-        --    (NVL을 사용하여 null 값이 들어와도 0으로 처리, 하지만 JS에서 이미 0 이상으로 처리하고 있습니다.)
-        TOTAL_PRICE = (TOTAL_PRICE - NVL(ADD_OPTION_PRICE, 0)) + NVL(#{addOptionPrice}, 0),
+		UPDATE ORDER_TBL
+		SET
+		LETTERING_WORD = #{letteringWord},
 
-        -- ⭐ 새로운 ADD_OPTION_PRICE 값으로 필드를 업데이트합니다.
-        ADD_OPTION_PRICE = NVL(#{addOptionPrice}, 0),
+		-- ⭐ 1. 기존 TOTAL_PRICE에서 이전 ADD_OPTION_PRICE 값을 빼줍니다.
+		-- ⭐ 2. 새로 전송된 ADD_OPTION_PRICE 값을 더해줍니다.
+		-- (NVL을 사용하여 null 값이 들어와도 0으로 처리, 하지만 JS에서 이미 0 이상으로 처리하고 있습니다.)
+		TOTAL_PRICE = (TOTAL_PRICE - NVL(ADD_OPTION_PRICE, 0)) +
+		NVL(#{addOptionPrice}, 0),
 
-        -- STATUS를 'C'로 업데이트합니다. (기존 쿼리 유지)
-        STATUS = 'C'
+		-- ⭐ 새로운 ADD_OPTION_PRICE 값으로 필드를 업데이트합니다.
+		ADD_OPTION_PRICE = NVL(#{addOptionPrice}, 0),
 
-    WHERE
-        ORDER_ID = #{orderId}
-</update>
+		-- STATUS를 'C'로 업데이트합니다. (기존 쿼리 유지)
+		STATUS = 'C'
+
+		WHERE
+		ORDER_ID = #{orderId}
+	</update>
 
 	<select id="selectPickupSchedule"
 		parameterType="java.util.HashMap"
@@ -282,16 +268,14 @@ ORDER BY T3.PRO_NAME
 		S.MEMBERSHIP
 		FROM USER_TBL U
 		JOIN SELLER_INFO_TBL S ON U.USER_ID = S.USER_ID
-		WHERE U.USER_ID = #{userId} 
-		ORDER BY S.STORE_ID ASC  FETCH FIRST 1 ROWS ONLY
+		WHERE U.USER_ID = #{userId}
+		ORDER BY S.STORE_ID ASC FETCH FIRST 1 ROWS ONLY
 	</select>
 
 	<select id="selectStoreInfoStoreId" parameterType="string"
 		resultType="hashmap">
 		SELECT * FROM SELLER_INFO_TBL WHERE STORE_ID = #{storeId}
 	</select>
-	
-	
 
 
 	<!-- 사용자 정보 수정 -->
@@ -371,46 +355,30 @@ ORDER BY T3.PRO_NAME
 	<select id="selectStoreInfo" resultType="map">
 		SELECT
 		SI.STORE_NAME,
-		SI.STORE_ADDR, 
+		SI.STORE_ADDR,
 		SI.STORE_INTRO,
 		SI.DELIVERY_YN,
-		SI.IS_CHAT_ENABLED AS CHAT_YN, 
+		SI.IS_CHAT_ENABLED AS CHAT_YN,
 		SI.MEMBERSHIP AS IS_MEMBERSHIP,
-		M.MEMBERSHIP_LEVEL 
-	FROM SELLER_INFO_TBL SI
-	LEFT JOIN MEMBERSHIP_TBL M ON SI.USER_ID = M.USER_ID
-	WHERE SI.USER_ID = #{userId} 
-	ORDER BY SI.STORE_ID ASC  FETCH FIRST 1 ROWS ONLY
+		M.MEMBERSHIP_LEVEL
+		FROM SELLER_INFO_TBL SI
+		LEFT JOIN MEMBERSHIP_TBL M ON SI.USER_ID = M.USER_ID
+		WHERE SI.USER_ID = #{userId}
+		ORDER BY SI.STORE_ID ASC FETCH FIRST 1 ROWS ONLY
 	</select>
 
-	<update id="updateStoreInfo" parameterType="map"> 
-    UPDATE SELLER_INFO_TBL 
-    <set>
-        <if test="storeName != null and storeName != ''">
-            STORE_NAME = #{storeName},
-        </if>
-        
-        <if test="storeAddrMain != null and storeAddrMain != ''">
-            STORE_ADDR = #{storeAddrMain},
-        </if>
-        
-        <if test="storeIntro != null and storeIntro != ''">
-            STORE_INTRO = #{storeIntro},
-        </if>
-        
-        <if test="deliveryYn != null and deliveryYn != ''">
-            DELIVERY_YN = #{deliveryYn},
-        </if>
-        
-        <if test="chatYn != null and chatYn != ''">
-            IS_CHAT_ENABLED = #{chatYn},
-        </if> 
-        
-        UDATE = SYSDATE 
-    </set>
-    WHERE 
-        USER_ID = #{userId} 
-        AND STORE_ID = #{storeId, jdbcType=NUMERIC} 
+	<update id="updateStoreInfo" parameterType="map">
+    UPDATE SELLER_INFO_TBL
+    SET
+        STORE_NAME = #{storeName, jdbcType=VARCHAR},
+        STORE_ADDR = #{storeAddr, jdbcType=VARCHAR},
+        STORE_INTRO = #{storeIntro, jdbcType=VARCHAR},
+        DELIVERY_YN = #{deliveryYn, jdbcType=CHAR},
+        IS_CHAT_ENABLED = #{isChatEnabled, jdbcType=CHAR},
+        UDATE = SYSDATE
+    WHERE
+        STORE_ID = #{storeId, jdbcType=NUMERIC}
+        AND USER_ID = #{userId, jdbcType=VARCHAR}
 </update>
 
 	<insert id="insertProduct"
@@ -425,7 +393,7 @@ ORDER BY T3.PRO_NAME
 		jdbcType=VARCHAR}, #{price}, #{deliveryFee, jdbcType=NUMERIC}, #{status,
 		jdbcType=CHAR}, #{lettering, jdbcType=CHAR}, #{cnt}, #{sellCount},
 		SYSDATE, SYSDATE, #{storeName, jdbcType=VARCHAR} ) </insert>
-	
+
 
 	<insert id="insertTopOption"
 		parameterType="com.example.teamProject.seller.model.Seller">
@@ -437,23 +405,13 @@ ORDER BY T3.PRO_NAME
 		#{optionName}, #{isQuantitySelectAble} ) </insert>
 
 	<insert id="insertSubOption"
-    parameterType="com.example.teamProject.seller.model.Seller">
-    <selectKey keyProperty="subOptionId" resultType="int" order="BEFORE">
-        SELECT SUB_OPTION_SEQ.NEXTVAL FROM DUAL
-    </selectKey>
-
-    INSERT INTO PRODUCT_SUB_OPTION_TBL (  
-        SUB_OPTION_ID,          
-        TOP_OPTION_ID,          
-        VALUE_NAME,             
-        PRICE_DIFF 
-    ) VALUES (
-        #{subOptionId},
-        #{topOptionId},
-        #{valueName, jdbcType=VARCHAR},
-        #{priceDiff, jdbcType=NUMERIC}
-    )
-</insert>
+		parameterType="com.example.teamProject.seller.model.Seller">
+		<selectKey keyProperty="subOptionId" resultType="int" order="BEFORE">
+		SELECT SUB_OPTION_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO PRODUCT_SUB_OPTION_TBL ( SUB_OPTION_ID, TOP_OPTION_ID,
+		VALUE_NAME, PRICE_DIFF ) VALUES ( #{subOptionId}, #{topOptionId},
+		#{valueName, jdbcType=VARCHAR}, #{priceDiff, jdbcType=NUMERIC} ) </insert>
 
 	<delete id="deleteProductOptions" parameterType="int">
 		DELETE FROM PRODUCT_SUB_OPTION_TBL WHERE TOP_OPTION_ID IN (
@@ -521,90 +479,87 @@ ORDER BY T3.PRO_NAME
 		SELECT STORE_NAME
 		FROM SELLER_INFO_TBL WHERE STORE_ID = #{storeId}
 	</select>
-	
-	<select id="selectProductList" parameterType="hashmap" resultType="com.example.teamProject.seller.model.Seller">
-    SELECT
-        P.PRO_NO,
-        P.PRO_NAME,
-        P.PRO_TYPE,
-        P.PRICE,
-        P.STATUS,
-        P.CNT AS STOCK_QTY, 
-        P.SELL_COUNT,
-        P.CREATED_AT
-    FROM
-        PRODUCT_TBL P
-    WHERE
-        P.STORE_ID = #{storeId} 
-    ORDER BY
-        P.CREATED_AT DESC
-</select>
-    
-    <delete id="deleteProduct" parameterType="int">
-    DELETE FROM PRODUCT_TBL
-    WHERE PRO_NO = #{proNo}
-</delete>
 
-<select id="checkStoreOwnership" resultType="int">
-   SELECT COUNT(*)
-    FROM seller_info_tbl
-    WHERE user_id = #{userId} AND store_id = #{storeId}
-</select>
+	<select id="selectProductList" parameterType="hashmap"
+		resultType="com.example.teamProject.seller.model.Seller">
+		SELECT
+		P.PRO_NO,
+		P.PRO_NAME,
+		P.PRO_TYPE,
+		P.PRICE,
+		P.STATUS,
+		P.CNT AS STOCK_QTY,
+		P.SELL_COUNT,
+		P.CREATED_AT
+		FROM
+		PRODUCT_TBL P
+		WHERE
+		P.STORE_ID = #{storeId}
+		ORDER BY
+		P.CREATED_AT DESC
+	</select>
+
+	<delete id="deleteProduct" parameterType="int">
+		DELETE FROM PRODUCT_TBL
+		WHERE PRO_NO = #{proNo}
+	</delete>
+
+	<select id="checkStoreOwnership" resultType="int">
+		SELECT COUNT(*)
+		FROM seller_info_tbl
+		WHERE user_id = #{userId} AND store_id = #{storeId}
+	</select>
 
 
+	<update id="updateProduct" parameterType="hashmap">
+		UPDATE PRODUCT_TBL
+		SET
+		PRO_NAME = #{proName},
+		PRO_TYPE = #{proType},
+		STORE_ID = #{storeId}, STORE_NAME = #{storeName},
+		PRICE = #{price},
+		DELIVERY_FEE = #{deliveryFee},
+		STATUS = #{status},
+		PRO_INFO = #{proInfo},
+		LETTERING = #{lettering},
+		UPDATED_AT = SYSDATE WHERE PRO_NO = #{proNo}
+	</update>
+	<update id="updateMemberInfo" parameterType="map"> UPDATE USER_TBL <set>
+			<if test="USER_PASS != null and USER_PASS != ''">
+				USER_PASS = #{USER_PASS},
+			</if>
+        
+        <if
+				test="USER_NAME != null and USER_NAME != ''">
+				USER_NAME = #{USER_NAME},
+			</if>
+        
+        <if
+				test="EMAIL != null and EMAIL != ''">
+				EMAIL = #{EMAIL},
+			</if>
+        
+        <if
+				test="USER_ADDR != null and USER_ADDR != ''">
+				USER_ADDR = #{USER_ADDR},
+			</if>
+        
+        <if
+				test="PHONE != null and PHONE != ''">
+				PHONE = #{PHONE},
+			</if>
+        
+        <if
+				test="USER_STATUS != null and USER_STATUS != ''">
+				USER_STATUS = #{USER_STATUS},
+			</if> UDATE =
+		SYSDATE, </set> WHERE USER_ID = #{USER_ID} </update>
+	<select id="selectStoreInfoData" parameterType="int" resultType="Map">
+		SELECT
+		* FROM SELLER_INFO_TBL
+		WHERE STORE_ID = #{storeId}
+	</select>
 
-    <update id="updateProduct" parameterType="hashmap">
-        UPDATE PRODUCT_TBL
-        SET
-            PRO_NAME = #{proName},
-            PRO_TYPE = #{proType},
-            STORE_ID = #{storeId},        STORE_NAME = #{storeName},
-            PRICE = #{price},
-            DELIVERY_FEE = #{deliveryFee},
-            STATUS = #{status},
-            PRO_INFO = #{proInfo},
-            LETTERING = #{lettering},
-            UPDATED_AT = SYSDATE         WHERE PRO_NO = #{proNo}
-    </update>
-	<update id="updateMemberInfo" parameterType="map">
-    UPDATE USER_TBL
-    <set>
-        <if test="USER_PASS != null and USER_PASS != ''">
-            USER_PASS = #{USER_PASS},
-        </if>
-        
-        <if test="USER_NAME != null and USER_NAME != ''">
-            USER_NAME = #{USER_NAME},
-        </if>
-        
-        <if test="EMAIL != null and EMAIL != ''">
-            EMAIL = #{EMAIL},
-        </if>
-        
-        <if test="USER_ADDR != null and USER_ADDR != ''">
-            USER_ADDR = #{USER_ADDR},
-        </if>
-        
-        <if test="PHONE != null and PHONE != ''">
-            PHONE = #{PHONE},
-        </if>
-        
-        <if test="USER_STATUS != null and USER_STATUS != ''">
-            USER_STATUS = #{USER_STATUS},
-        </if>
-        
-        UDATE = SYSDATE,
-    </set>
-    WHERE 
-        USER_ID = #{USER_ID}
-        </update>
-    <select id="selectStoreInfoData" parameterType="String" resultType="Map">
-    SELECT
-        * FROM SELLER_INFO_TBL
-    WHERE STORE_ID = #{storeId}
-</select>
-  
-    
 
 </mapper>
 
