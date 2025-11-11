@@ -73,7 +73,7 @@ public interface SellerMapper {
 	//가게 정보 가져오기
 	Map<String, Object> selectStoreInfo(String userId);
 	//가게 정보 업데이트
-	boolean updateStoreInfo(Map<String, String> params);
+
 	
 	
 	//  제품 등록
@@ -133,7 +133,9 @@ public interface SellerMapper {
 	//회원정보
 	int updateMemberInfo(Map<String, Object> params) throws Exception;	
  	//가게 정보 조회
-	public Map<String, Object> selectStoreInfoData(String storeId);
+	 Map<String, Object> selectStoreInfoData(int storeId);
+	 //가게정보 업데이트
+	 int updateStoreInfo(Map<String, Object> paramMap);
 	
 	
 }

@@ -463,14 +463,10 @@
                                         <div class="form-group address-group">
                                             <label>개인 주소</label>
                                             <div class="address-line">
-                                                <input type="text" id="zipcode" name="zipcode" placeholder="우편번호">
+                                                <input type="text" id="user-addr" name="userAddr"
+                                                    placeholder="우편번호, 기본 주소, 상세 주소를 모두 포함합니다." readonly>
                                                 <button type="button" class="btn-secondary"
                                                     onclick="fnSearchAddress()">주소 검색</button>
-                                                <input type="text" id="main-addr" name="addrMain" placeholder="기본 주소">
-                                            </div>
-                                            <div class="address-line detail-addr">
-                                                <input type="text" id="detail-addr" name="addrDetail"
-                                                    placeholder="상세 주소">
                                             </div>
                                             <button type="button" class="btn-action address-btn"
                                                 onclick="fnUpdateAddress()">수정</button>
@@ -490,7 +486,7 @@
                 const CURRENT_USER_ID = "${sessionId}";
 
                 /**
-                 * 1. 회원 정보 조회 및 화면 바인딩 함수 (주소 분리 로직 수정 반영)
+                 * 1. 회원 정보 조회 및 화면 바인딩 함수
                  */
                 function fnGetMemberInfo() {
                     if (!CURRENT_USER_ID) {
@@ -502,42 +498,18 @@
                         url: "/seller/info.dox",
                         dataType: "json",
                         type: "POST",
-                        // 조회 시에도 키를 통일하여 보내는 것을 권장하지만, 서버에서 'userId'를 받는다면 유지해도 무방합니다.
                         data: { userId: CURRENT_USER_ID },
                         success: function (data) {
                             if (data && data.info) {
                                 const member = data.info;
 
-                                // 조회된 데이터의 키가 대문자(USER_ID, PHONE 등)라고 가정하고 바인딩합니다.
                                 $('#user-id').val(member.USER_ID || CURRENT_USER_ID);
                                 $('#user-name').val(member.USER_NAME || '');
                                 $('#email').val(member.EMAIL || '');
                                 $('#phone').val(member.PHONE || '');
 
-                                // 💡 주소 정보 분리 바인딩
-                                const fullAddress = member.USER_ADDR || '';
-                                let zipCode = '';
-                                let mainAddress = '';
-                                let detailAddress = '';
-
-                                const addressParts = fullAddress.trim().split(/\s+/);
-
-                                if (addressParts.length >= 3) {
-                                    zipCode = addressParts[0];
-                                    mainAddress = addressParts[1];
-                                    detailAddress = addressParts.slice(2).join(' ');
-                                } else if (addressParts.length === 2) {
-                                    zipCode = addressParts[0];
-                                    mainAddress = addressParts[1];
-                                } else if (addressParts.length === 1 && fullAddress.includes('-')) {
-                                    zipCode = addressParts[0];
-                                } else {
-                                    mainAddress = fullAddress;
-                                }
-
-                                $('#zipcode').val(zipCode);
-                                $('#main-addr').val(mainAddress);
-                                $('#detail-addr').val(detailAddress);
+                                // 💡 주소 정보 통합 바인딩: USER_ADDR 값을 하나의 필드에 바로 입력
+                                $('#user-addr').val(member.USER_ADDR || '');
 
                                 console.log("✅ 회원 정보 화면 바인딩 성공:", member);
                             } else {
@@ -563,16 +535,17 @@
                         oncomplete: function (data) {
                             let fullAddr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
 
-                            $('#zipcode').val(data.zonecode);
-                            $('#main-addr').val(fullAddr);
+                            // 우편번호와 기본 주소를 합쳐서 하나의 필드에 입력
+                            const combinedAddress = `(${data.zonecode}) ${fullAddr} `; // 예: (06000) 서울특별시 강남구 
 
-                            $('#detail-addr').val('');
-                            $('#detail-addr').focus();
+                            $('#user-addr').val(combinedAddress);
+                            $('#user-addr').prop('readonly', false); // 검색 후 상세 주소를 직접 입력할 수 있도록 readonly 해제
+                            $('#user-addr').focus();
                         }
                     }).open();
                 }
 
-                // 개별 수정 버튼 함수들은 전체 수정 버튼을 사용하도록 안내합니다.
+                // 개별 수정 버튼 함수들은 전체 수정 버튼을 사용하도록 안내합니다. (기존 유지)
                 function fnUpdateField(fieldName) { alert("이제 '전체 정보 수정하기' 버튼을 사용해 주세요."); }
                 function fnUpdatePassword() { alert("이제 '전체 정보 수정하기' 버튼을 사용해 주세요."); }
                 function fnUpdateAddress() { alert("이제 '전체 정보 수정하기' 버튼을 사용해 주세요."); }
@@ -582,9 +555,8 @@
                  * 3. ✨ 전체 정보 수정하기 (버튼 클릭 시 실행) - 통합 로직
                  */
                 function fnUpdateMemberInfo() {
-                    const form = $('#memberEditForm');
+                    // ... (비밀번호 유효성 검사 로직은 변경 없이 유지) ...
 
-                    // --- 비밀번호 유효성 검사 및 데이터 준비 ---
                     const currentPw = $('#current-pw').val();
                     const newPw = $('#new-pw').val();
                     const confirmPw = $('#confirm-pw').val();
@@ -606,28 +578,16 @@
                         }
                     }
 
-                    // --- 주소 필드 통합 및 데이터 준비 ---
-                    const zipcode = $('#zipcode').val();
-                    const addrMain = $('#main-addr').val();
-                    const addrDetail = $('#detail-addr').val();
-
-                    let userAddr = '';
-                    if (zipcode && addrMain) {
-                        // 주소 정보를 MyBatis의 USER_ADDR에 저장할 단일 문자열 형태로 만듭니다.
-                        userAddr = zipcode + " " + addrMain + " " + (addrDetail.trim() || '');
-                    } else if (zipcode || addrMain) {
-                        alert("주소를 수정하려면 우편번호와 기본 주소를 모두 입력해야 합니다.");
-                        return;
-                    }
+                    // --- 주소 필드 통합 및 데이터 준비 (핵심 수정) ---
+                    const userAddr = $('#user-addr').val().trim();
 
                     // --- 최종 데이터 구성: 서버(Controller/Mapper)의 기대 키와 일치하도록 대문자 키 사용 ---
                     const updateData = {
-                        // 🚨 핵심 수정 부분: USER_ID로 키 변경
                         USER_ID: CURRENT_USER_ID,
-
                         USER_NAME: $('#user-name').val(),
                         EMAIL: $('#email').val(),
                         PHONE: $('#phone').val(),
+                        // 💡 단일 주소 컬럼에 저장할 통합된 주소 문자열
                         USER_ADDR: userAddr
                     };
 
@@ -637,7 +597,7 @@
                         updateData.CURRENT_PWD = currentPw;
                     }
 
-                    // --- AJAX 전송 ---
+                    // --- AJAX 전송 --- (기존 유지)
                     $.ajax({
                         url: "/member/update.dox",
                         type: "POST",
@@ -661,7 +621,7 @@
                     });
                 }
 
-                // 페이지 로드 완료 후 정보 조회 함수 실행
+                // 페이지 로드 완료 후 정보 조회 함수 실행 (기존 유지)
                 $(document).ready(function () {
                     fnGetMemberInfo();
                 });

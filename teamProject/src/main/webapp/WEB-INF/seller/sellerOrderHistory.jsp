@@ -120,11 +120,7 @@
                                 </div>
 
                                 <div class="order-detail-flex">
-                                    <div class="product-image">
-                                        <img v-if="order.productImage" :src="order.productImage" alt="상품 이미지"
-                                            style="max-width:100%; max-height:100%;">
-                                        <div v-else>상품 이미지</div>
-                                    </div>
+                                 
 
                                     <div class="product-info">
                                         <strong>{{ order.proName }}</strong>
