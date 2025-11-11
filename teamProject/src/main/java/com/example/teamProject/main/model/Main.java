@@ -49,6 +49,7 @@ public class Main {
     private String filePath;
     private String fileName;
     
+    private int ingredientId;
     
 	
 }

@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.teamProject.product.model.Product;
 import com.example.teamProject.seller.mapper.ProductImgMapper;
 import com.example.teamProject.seller.mapper.SellerMapper;
 import com.example.teamProject.seller.model.Seller;
@@ -19,10 +19,12 @@ import com.example.teamProject.seller.model.Seller;
 public class SellerService {
 	@Autowired
 	SellerMapper sellerMapper;
-	
+	@Autowired
+    private SqlSessionTemplate sqlSessionTemplate;
 	@Autowired
     private ProductImgMapper productImgMapper; // 이미지 삭제를 위해 필요
-
+	
+	private static final String ALLERGY_MAPPER_NAMESPACE = "com.example.teamProject.seller.mapper.SellerMapper";
 	// 판매자 가게 리스트 불러오기
 	public HashMap<String, Object> getStoreList(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
@@ -651,8 +653,52 @@ public List<String> getDisabledDates(int proNo) {
     return sellerMapper.selectDisabledDate(proNo); // XML id와 일치
 }
 
+public HashMap<String, Object> insertProductAllergy(HashMap<String, Object> map) throws Exception {
+	// TODO Auto-generated method stub
+	
+	HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	List<Object> list = (List<Object>) map.get("list");
+	for(int i=0; i<list.size(); i++) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("proNo", map.get("proNo"));
+		param.put("ingreId", (Integer) list.get(i));
+		sellerMapper.insertProductAllergy(param);
+	}
+	resultMap.put("result","success");
+	return resultMap;
+}
 
 
+//@Transactional(rollbackFor = Exception.class) 
+//public int insertProductAllergy(Map<String, Object> param) throws Exception {
+//    
+//    // Map에서 proNo와 List를 추출합니다.
+//    int proNo = (int) param.get("proNo");
+//    @SuppressWarnings("unchecked")
+//    List<Integer> ingreIdList = (List<Integer>) param.get("ingreIdList");
+//    
+//    System.out.println("LOG: [AllergyService] 상품 번호: " + proNo + ", 등록할 재료 개수: " + (ingreIdList != null ? ingreIdList.size() : 0));
+//
+//    // 1. 기존 알레르기 정보 삭제 (DELETE)
+//    // SellerMapper.xml의 deleteProductAllergy ID를 호출
+//    sqlSessionTemplate.delete(ALLERGY_MAPPER_NAMESPACE + ".deleteProductAllergy", proNo); 
+//    System.out.println("LOG: [AllergyService] 기존 알레르기 정보 삭제 완료 (proNo: " + proNo + ")");
+//
+//
+//    int insertCount = 0;
+//    
+//    // 2. 새 알레르기 정보 등록 (INSERT)
+//    if (ingreIdList != null && !ingreIdList.isEmpty()) {
+//        // SellerMapper.xml의 insertProductAllergy ID를 호출
+//        insertCount = sqlSessionTemplate.insert(ALLERGY_MAPPER_NAMESPACE + ".insertProductAllergy", param);
+//        System.out.println("LOG: [AllergyService] 새 알레르기 정보 " + insertCount + "개 등록 완료.");
+//    } else {
+//         System.out.println("LOG: [AllergyService] 등록할 알레르기 재료 없음.");
+//    }
+//    
+//    // 최종적으로 등록된 행 개수를 반환합니다.
+//    return insertCount;
+//}
 
 
 }

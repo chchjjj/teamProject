@@ -355,8 +355,7 @@
                                                     <div v-for="(topOpt, topIndex) in options" :key="topOpt.id"
                                                         class="top-option-item">
                                                         <div class="top-option-header">
-                                                            <h4>상위 옵션 {{ topIndex + 1 }} : {{ topOpt.optionName || "이름
-                                                                없음" }}</h4>
+                                                            <h4>상위 옵션 {{ topIndex + 1 }} : {{ topOpt.optionName || "이름 없음" }}</h4>
                                                             <div>
                                                                 <label>수량 선택 가능:
                                                                     <input type="checkbox"

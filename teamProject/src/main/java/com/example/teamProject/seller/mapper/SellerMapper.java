@@ -145,6 +145,6 @@ public interface SellerMapper {
 
 	    //  불가 날짜 조회
 	 List<String> selectDisabledDate(@Param("proNo") int proNo);
-	 
-	 
+	 //알르레기 등록
+	 int insertProductAllergy(Map<String, Object> param) throws Exception;
 }

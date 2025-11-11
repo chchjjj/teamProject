@@ -422,7 +422,7 @@ const app = Vue.createApp({
 
     // 3. 서버에 AJAX 요청 (수정 요청이므로 PUT 또는 POST 사용)
     $.ajax({
-        url: '/seller/product/update.dox', // 실제 서버 수정 엔드포인트
+        url: '/seller/product/newupdate.dox', // 실제 서버 수정 엔드포인트
         type: 'POST', // 스프링/JSP 환경에서 PUT 대신 POST를 많이 사용
         data: formData,
         contentType: false, // 파일 전송 시 필수
