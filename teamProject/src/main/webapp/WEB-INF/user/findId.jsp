@@ -177,7 +177,6 @@
             }
 
             .result-text {
-                margin-top: 20px;
                 font-size: 1.1rem;
                 color: #3E2723;
                 text-align: center;
@@ -194,6 +193,10 @@
                 text-decoration: underline;
                 font-weight: 500;
             }
+            .inputNum{
+                width: 100px;
+            }
+            
         </style>
     </head>
 
@@ -218,30 +221,28 @@
                         <input class="small-input" v-model="phone1" maxlength="3"> -
                         <input class="small-input" v-model="phone2" maxlength="4"> -
                         <input class="small-input" v-model="phone3" maxlength="4">
-                    <span class="cert-box" v-if="!checkResult">
-                        <button @click="fnNamePhoneCheck">인증</button>
-                    </span>
-                    </div>
+                        <!-- 문자 인증 실제 적용 버전 여기부터 -->
+                        <div v-if="!smsFlg">
                     
-                    <!-- 여기부터 -->
-                    <!-- <div v-if="checkResult && !smsFlg">
-                        <template v-if="!sendMessageFlg">
-                            <div class="cert-box">
-                                <button @click="fnSendSms">문자인증</button>
-                            </div>
-                        </template>
-                        <template v-else>
-                            <div class="cert-box">
-                                <input v-model="inputNum" :placeholder="timer">
-                                <button @click="fnSmsAuth">확인</button>
-                            </div>
-                        </template>
-                    </div>
+                            <template v-if="!sendMessageFlg">
+                                <div class="cert-box">
+                                    <button @click="fnSendSms">문자인증</button>
+                                </div>
+                            </template>
+                            <template v-else>
+                                <div class="cert-box">
+                                    <input v-model="inputNum" :placeholder="timer" class="inputNum">
+                                    <button @click="fnSmsAuth">확인</button>
+                                </div>
+                            </template>
+                        </div>
 
-                    <div v-else class="result-text" v-if="smsFlg">
-                        {{userName}}님의 아이디는 <b>{{info.userId}}</b> 입니다.
-                    </div> -->
-                    <!-- 여기까지 -->
+                        <div v-else class="result-text">
+                            <button @click="fnFind">아이디 찾기</button>
+                            <div v-if="findResult">{{userName}}님의 아이디는 <b>{{info.userId}}</b> 입니다.</div>
+                        </div>
+                        <!-- 문자 인증 실제 적용 버전 여기까지 -->
+                    </div>  
                     <div class="back-link">
                         <a href="/user/login.do">로그인으로 돌아가기</a>
                     </div>
@@ -269,38 +270,21 @@
                     smsFlg: false, //문자 인증 유무
                     ranStr: "", //문자 인증 번호
 
-                    checkResult: false
+                    findResult: false //최종 찾기 성공 여부
                 };
             },
             methods: {
                 // 함수(메소드) - (key : function())
-                fnNamePhoneCheck: function () {
-                    let self = this;
-                    let phone = self.phone1 + "-" + self.phone2 + "-" + self.phone3;
-                    console.log(phone);
-                    let param = {
-                        userName: self.userName,
-                        phone: phone
-                    };
-                    $.ajax({
-                        url: "/user/NamePhonecheck.dox",
-                        dataType: "json",
-                        type: "POST",
-                        data: param,
-                        success: function (data) {
-                            if (data.result === "true") { 
-                                alert("인증이 완료되었습니다.");
-                                self.checkResult = true; 
-                            } else {
-                                alert("존재하지 않는 유저정보입니다.");
-                                self.checkResult = false;
-                            }
-                        }
-                    });
-                },
                 fnSendSms: function () {
                     let self = this;
-                    let phone = self.phone1 + self.phone2 + self.phone3;
+                    let phone = self.phone1.trim() + self.phone2.trim() + self.phone3.trim();
+                    console.log("self.phone1.length: " + self.phone1.length);
+                    console.log("self.phone2.length: " + self.phone2.length);
+                    console.log("self.phone3.length: " + self.phone3.length);
+                     if (self.phone1.length != 3 || self.phone2.length != 4 || self.phone3.length != 4) {
+                        alert("휴대폰 형식이 맞지 않습니다.");
+                        return;
+                    }
                     console.log(phone);
                     let param = {
                         phone: phone
@@ -350,14 +334,27 @@
                     if (self.ranStr == self.inputNum) {
                         alert("문자인증이 완료되었습니다.");
                         self.smsFlg = true;
-                        self.fnFind(); //db에서 id 가져오는 함수 실행
+                        //self.fnFind();
                     } else {
                         alert("문자인증에 실패했습니다.");
                     }
                 },
                 fnFind: function () {
                     let self = this;
-                    let phone = self.phone1 + "-" + self.phone2 + "-" + self.phone3;
+                    let phone = self.phone1.trim() + self.phone2.trim() + self.phone3.trim();
+                    console.log("self.phone1.length: " + self.phone1.length);
+                    console.log("self.phone2.length: " + self.phone2.length);
+                    console.log("self.phone3.length: " + self.phone3.length);
+                     if (self.phone1.length != 3 || self.phone2.length != 4 || self.phone3.length != 4) {
+                        alert("휴대폰 형식이 맞지 않습니다.");
+                        return;
+                    }
+
+                    if (self.userName.length < 1) {
+                        alert("성함을 적어주세요.");
+                        return;
+                    }
+
                     let param = {
                         phone: phone,
                         userName: self.userName
@@ -370,6 +367,7 @@
                         success: function (data) {
                             console.log(data);
                             self.info = data.info;
+                            self.findResult = true;
                         }
                     });
                 }

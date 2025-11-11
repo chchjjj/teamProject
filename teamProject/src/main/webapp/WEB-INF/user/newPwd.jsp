@@ -204,31 +204,32 @@
                         <input v-model="phone" placeholder="-를 제외하고 입력해주세요.">
 
                         <!-- 여기 밑 세 줄을 문자인증 도입하면 주석 처리 -->
-                        <button @click="fnAuth">인증</button>
-                    </div>
+                        <!-- <button @click="fnAuth">인증</button> -->
 
-                    <!-- 문자 인증 도입하기 전에는 밑에 줄 주석처리 여기부터 -->
-                    <!-- <div v-if="!smsFlg">
-            문자인증 : <input v-model="inputNum" :placeholder="timer">
-            <template v-if="!sendMessageFlg">
-                <button @click="fnSendSms">인증번호 전송</button>
-            </template>
-            <template v-else>
-                <button @click="fnSmsAuth">문자인증</button>
-            </template>
-        </div>
-        <div v-else>
-            <button @click="fnAuth">사용자인증</button>
-        </div> -->
+                        <!-- 문자 인증 도입하기 전에는 밑에 줄 주석처리 여기부터 -->
+                        <div v-if="!smsFlg">
+                            <template v-if="!sendMessageFlg">
+                                <button @click="fnSendSms">인증번호 전송</button>
+                            </template>
+                            <template v-else>
+                                <label>문자인증</label>
+                                <input v-model="inputNum" :placeholder="timer">
+                                <button @click="fnSmsAuth">문자인증</button>
+                            </template>
+                        </div>
+                        <div v-else>
+                            <button @click="fnAuth">사용자인증</button>
+                        </div>
+                    </div>
                     <!-- 여기까지 -->
 
                     <!-- 인증 후 -->
                     <div v-else>
                         <label>새 비밀번호</label>
-                        <input v-model="userPass" placeholder="영문, 숫자, 특수기호 조합 8자리 이상">
+                        <input type="password" v-model="userPass" placeholder="영문, 숫자, 특수기호 조합 8자리 이상">
 
                         <label>비밀번호 확인</label>
-                        <input v-model="userPass2" placeholder="비밀번호를 다시 입력하세요">
+                        <input type="password" v-model="userPass2" placeholder="비밀번호를 다시 입력하세요">
 
                         <button @click="fnChangePwd">비밀번호 수정</button>
                     </div>
@@ -238,7 +239,7 @@
                     <a href="/user/login.do">로그인으로 돌아가기</a>
                 </div>
             </div>
-
+        </div>
     </body>
 
     </html>
