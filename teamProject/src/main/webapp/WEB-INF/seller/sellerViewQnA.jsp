@@ -11,139 +11,388 @@
                 integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
             <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
-            <style>
-                /* (기존 CSS 스타일 유지) */
-                body {
-                    margin: 0;
-                    font-family: 'Malgun Gothic', sans-serif;
-                    background-color: #f4f4f4;
-                }
+           <style>
+    /* ---------------------------------------------------- */
+    /* 1. Color Variables & Global Styles (Espresso Theme) */
+    /* ---------------------------------------------------- */
+    :root {
+        --espresso: #3E2723; /* 주요 색상: 짙은 갈색 */
+        --peony: #F4C9D6; /* 보조 색상: 분홍색 */
+        --butter: #FFEDAC; /* 배경 및 하이라이트: 버터색 */
+        --light-bg: #F4F4F4; /* 밝은 배경 */
+        --white: #FFFFFF;
+        --primary-color: var(--espresso);
+        --secondary-color: var(--peony);
+    }
 
-                .main-wrapper {
-                    display: flex;
-                    min-height: 100vh;
-                }
+    body {
+        margin: 0;
+        font-family: 'Malgun Gothic', sans-serif;
+        background-color: var(--light-bg);
+    }
 
-                .content-area {
-                    flex-grow: 1;
-                    padding: 30px;
-                    background-color: white;
-                    margin-left: 220px;
-                    box-sizing: border-box;
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding-top: 30px;
-                }
+    /* ---------------------------------------------------- */
+    /* 2. Layout & Header & Sidebar */
+    /* ---------------------------------------------------- */
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: var(--white);
+        border-bottom: 1px solid #ddd;
+    }
 
-                .page-title {
-                    font-size: 24px;
-                    font-weight: 700;
-                    margin-bottom: 20px;
-                    color: #333;
-                }
+    .search-area {
+        display: flex;
+        align-items: center;
+    }
 
-                .qna-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 20px;
-                    font-size: 14px;
-                }
+    .search-area input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        margin-right: 5px;
+        border-radius: 4px;
+    }
+    
+    .main-wrapper {
+        display: flex;
+        min-height: calc(100vh - 50px);
+    }
 
-                .qna-table th,
-                .qna-table td {
-                    border: 1px solid #ddd;
-                    padding: 12px;
-                    text-align: center;
-                }
+    .sidebar {
+        width: 220px;
+        background-color: var(--butter);
+        flex-shrink: 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        padding-top: 20px;
+    }
 
-                .qna-table th {
-                    background-color: #f8f8f8;
-                    font-weight: 600;
-                    color: #555;
-                }
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
 
-                .qna-table td {
-                    color: #333;
-                }
+    .sidebar-menu li {
+        margin: 0;
+        padding: 0;
+    }
 
-                .status-cell {
-                    text-align: center;
-                }
+    .sidebar-menu a {
+        display: block;
+        padding: 15px 20px;
+        text-decoration: none;
+        color: var(--espresso);
+        font-weight: bold;
+        transition: background-color 0.2s, color 0.2s;
+    }
 
-                .status-btn {
-                    padding: 5px 10px;
-                    border-radius: 4px;
-                    color: white;
-                    font-weight: bold;
-                }
+    .sidebar-menu a:hover {
+        background-color: var(--espresso);
+        color: var(--white);
+    }
 
-                .completed {
-                    background-color: #28a745;
-                }
+    .sidebar-menu .active a {
+        background-color: var(--espresso);
+        color: var(--white);
+        border-left: 5px solid var(--peony);
+        padding-left: 15px;
+    }
 
-                .waiting {
-                    background-color: #dc3545;
-                }
+    .content-area {
+        flex-grow: 1;
+        padding: 30px;
+        background-color: var(--light-bg);
+        margin-left: 220px;
+        box-sizing: border-box;
+        /* 추가된 중앙 정렬 스타일은 제거했습니다. (사이드바가 있을 경우) */
+        /* max-width: 1200px; */
+        /* margin: 0 auto; */
+        /* padding-top: 30px; */
+    }
 
-                .qna-table .content-col {
-                    text-align: left;
-                }
+    .page-title {
+        font-size: 24px;
+        font-weight: 300;
+        /* font-weight를 300으로 변경 */
+        margin-bottom: 20px;
+        color: var(--espresso);
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--espresso);
+    }
 
-                .action-button {
-                    background-color: #007bff;
-                    color: white;
-                    border: none;
-                    padding: 8px 15px;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    transition: background-color 0.2s;
-                }
+    /* ---------------------------------------------------- */
+    /* 3. Q&A Table Styles (New Design 적용) */
+    /* ---------------------------------------------------- */
+    .qna-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-size: 14px;
+        background-color: var(--white);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
 
-                .action-button:hover {
-                    background-color: #0056b3;
-                }
+    .qna-table th,
+    .qna-table td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: center;
+        border-left: none;
+        border-right: none;
+    }
+    
+    .qna-table th:first-child,
+    .qna-table td:first-child {
+        border-left: 1px solid #ddd;
+    }
 
-                .answer-row {
-                    background-color: #f9f9f9;
-                }
+    .qna-table th:last-child,
+    .qna-table td:last-child {
+        border-right: 1px solid #ddd;
+    }
 
-                .answer-content {
-                    padding: 15px;
-                }
+    .qna-table th {
+        background-color: var(--butter);
+        /* 버터색 배경 */
+        font-weight: 600;
+        color: var(--espresso);
+        /* 에스프레소 폰트 */
+        border-top: 2px solid var(--espresso);
+        /* 에스프레소 상단선 */
+        border-bottom: 2px solid var(--espresso);
+        /* 에스프레소 하단선 */
+    }
 
-                .answer-content strong {
-                    color: #3498db;
-                }
+    .qna-table td {
+        color: #333;
+        transition: background-color 0.2s;
+    }
+    
+    .qna-table tbody tr:hover {
+        background-color: #fcfcfc;
+        /* 호버 효과 */
+        cursor: pointer;
+    }
+    
+    /* 4. Status Tags (상태 배지) */
+    .status-cell {
+        text-align: center;
+    }
 
-                /* 추가된 스타일 */
-                .answer-form-area {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 10px;
-                    margin-top: 10px;
-                }
+    .status-btn {
+        padding: 5px 10px;
+        border-radius: 15px;
+        /* 알약 모양 */
+        color: var(--espresso);
+        /* 글자색을 에스프레소로 통일 */
+        font-weight: 600;
+        font-size: 12px;
+        min-width: 60px;
+        display: inline-block;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
 
-                .answer-form-area textarea {
-                    width: 100%;
-                    min-height: 100px;
-                    padding: 10px;
-                    border: 1px solid #ccc;
-                    border-radius: 4px;
-                    box-sizing: border-box;
-                    resize: vertical;
-                }
+    .completed {
+        background-color: var(--peony);
+        /* 답변 완료: 피오니 */
+        border: 1px solid #f0b8ca;
+    }
 
-                .answer-form-area button {
-                    align-self: flex-end;
-                    /* 버튼을 오른쪽으로 정렬 */
-                    background-color: #ff9800;
-                    /* 주황색 버튼 */
-                }
+    .waiting {
+        background-color: var(--butter);
+        /* 답변 대기: 버터 */
+        border: 1px solid #ffde7b;
+    }
 
-                .answer-form-area button:hover {
-                    background-color: #e68900;
-                }
-            </style>
+    .qna-table .content-col {
+        text-align: left;
+    }
+    
+    /* 5. Action Button (질문 보기/답변하기) */
+    .action-button {
+        background-color: var(--primary-color);
+        /* 에스프레소 버튼 */
+        color: var(--white);
+        border: none;
+        padding: 8px 15px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.2s;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .action-button:hover {
+        background-color: #5D4037;
+        /* 약간 어두운 에스프레소 */
+        transform: translateY(-1px);
+    }
+
+    /* 6. Answer Area (답변 내용) */
+    .answer-row {
+        background-color: var(--peony);
+        /* 답변 행 배경을 피오니로 설정 */
+    }
+
+    .answer-content {
+        padding: 15px;
+        text-align: left !important;
+        /* 답변 내용은 왼쪽 정렬 유지 */
+        font-size: 14px;
+        color: var(--primary-color);
+        /* 답변 내용 글자색 에스프레소 */
+    }
+
+    .answer-content strong {
+        color: var(--primary-color);
+        /* 강조 글자색 에스프레소 */
+        font-weight: 700;
+    }
+
+    /* 7. Answer Form (답변 작성 폼) */
+    .answer-form-area {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .answer-form-area textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 10px;
+        border: 1px solid var(--primary-color);
+        /* 에스프레소 테두리 */
+        border-radius: 4px;
+        box-sizing: border-box;
+        resize: vertical;
+        background-color: var(--white);
+    }
+
+    .answer-form-area button {
+        align-self: flex-end;
+        background-color: var(--secondary-color);
+        /* 피오니 버튼 */
+        color: var(--primary-color);
+        /* 에스프레소 글자색 */
+        border: 1px solid var(--secondary-color);
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .answer-form-area button:hover {
+        background-color: #f0b8ca;
+        /* 약간 어두운 피오니 */
+        transform: translateY(-1px);
+    }
+
+    /* ---------------------------------------------------- */
+    /* 8. Responsive adjustments */
+    /* ---------------------------------------------------- */
+    @media (max-width: 768px) {
+        /* 사이드바는 이전 요청과 동일하게 100% 너비로 고정 해제 */
+        .sidebar {
+            position: static;
+            width: 100%;
+            height: auto;
+            padding-top: 10px;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 0 10px;
+        }
+
+        .sidebar-menu a {
+            padding: 10px 15px;
+            text-align: center;
+            border-left: none !important;
+            border-bottom: 3px solid transparent;
+        }
+
+        .sidebar-menu .active a {
+            border-left: none;
+            border-bottom: 3px solid var(--peony);
+            padding-left: 15px;
+        }
+
+        .content-area {
+            margin-left: 0;
+            padding: 20px 15px;
+        }
+
+        .qna-table,
+        .qna-table thead,
+        .qna-table tbody,
+        .qna-table th,
+        .qna-table td,
+        .qna-table tr {
+            display: block;
+        }
+        
+        .qna-table thead tr {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+        
+        .qna-table tr {
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: var(--white);
+        }
+        
+        .qna-table td {
+            border: none;
+            position: relative;
+            padding-left: 50%;
+            text-align: right;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .qna-table td:before {
+            content: attr(data-label);
+            position: absolute;
+            left: 10px;
+            width: 45%;
+            padding-right: 10px;
+            white-space: nowrap;
+            text-align: left;
+            font-weight: bold;
+            color: var(--espresso);
+        }
+
+        .qna-table .content-col {
+            text-align: right; /* 모바일에서는 내용도 오른쪽 정렬 */
+        }
+        
+        .status-cell {
+            text-align: right !important; /* 모바일에서 상태도 오른쪽 정렬 */
+        }
+        
+        .action-button {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .answer-content {
+            border-top: 2px solid var(--espresso);
+            /* 답변 내용 구분선 강조 */
+        }
+    }
+</style>
         </head>
 
         <body>

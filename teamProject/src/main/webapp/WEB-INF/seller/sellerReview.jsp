@@ -12,137 +12,337 @@
         integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     
-    <style>
-        body { margin: 0; font-family: 'Malgun Gothic', sans-serif; background-color: #f4f4f4; }
+   <style>
+    /* ---------------------------------------------------- */
+    /* 1. Color Variables & Global Styles (Espresso Theme) */
+    /* ---------------------------------------------------- */
+    :root {
+        --espresso: #3E2723; /* 주요 색상: 짙은 갈색 */
+        --peony: #F4C9D6; /* 보조 색상: 분홍색 */
+        --butter: #FFEDAC; /* 배경 및 하이라이트: 버터색 */
+        --light-bg: #F4F4F4; /* 밝은 배경 */
+        --white: #FFFFFF;
+        --primary-color: var(--espresso);
+        --secondary-color: var(--peony);
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Malgun Gothic', sans-serif;
+        background-color: var(--light-bg);
+    }
+
+    /* ---------------------------------------------------- */
+    /* 2. Layout & Header & Sidebar */
+    /* ---------------------------------------------------- */
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: var(--white);
+        /* 흰색 적용 */
+        border-bottom: 1px solid #ddd;
+    }
+
+    .search-area {
+        display: flex;
+        align-items: center;
+    }
+
+    .search-area input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        margin-right: 5px;
+        border-radius: 4px;
+    }
+
+    .main-wrapper {
+        display: flex;
+        /* min-height를 100vh로 설정하여 푸터가 없어도 전체 화면을 차지하게 함 */
+        min-height: calc(100vh - 50px);
+        /* 헤더 높이만큼 조정 */
+    }
+
+    .sidebar {
+        width: 220px;
+        background-color: var(--butter);
+        /* 버터색 적용 */
+        flex-shrink: 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        padding-top: 20px;
+    }
+
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar-menu li {
+        margin: 0;
+        padding: 0;
+    }
+
+    .sidebar-menu a {
+        display: block;
+        padding: 15px 20px;
+        text-decoration: none;
+        color: var(--espresso);
+        font-weight: bold;
+        transition: background-color 0.2s, color 0.2s;
+    }
+
+    .sidebar-menu a:hover {
+        background-color: var(--espresso);
+        color: var(--white);
+    }
+
+    .sidebar-menu .active a {
+        background-color: var(--espresso);
+        color: var(--white);
+        border-left: 5px solid var(--peony);
+        padding-left: 15px;
+    }
+
+    .content-area {
+        flex-grow: 1;
+        padding: 30px;
+        background-color: var(--light-bg);
+        /* light-bg로 유지 */
+        margin-left: 220px;
+        box-sizing: border-box;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 300;
+        margin-bottom: 20px;
+        color: var(--espresso);
+        /* 제목 색상 적용 */
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--espresso);
+    }
+
+
+    /* ---------------------------------------------------- */
+    /* 3. Review Card Styles (New Design 적용) */
+    /* ---------------------------------------------------- */
+    .review-card {
+        display: flex;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        background-color: var(--white);
+        /* 흰색 배경으로 변경 */
+        border: 1px solid #e0e0e0;
+        /* 테두리 추가 */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        /* 그림자 강화 */
+        transition: all 0.3s ease;
+    }
+
+    .review-card:hover {
+        box-shadow: 0 4px 15px rgba(62, 39, 35, 0.1);
+        border-color: var(--peony);
+        /* 호버 시 피오니색 강조 */
+    }
+
+    .review-image-area {
+        width: 120px;
+        /* 크기 약간 줄임 */
+        height: 120px;
+        /* 크기 약간 줄임 */
+        background-color: var(--butter);
+        /* 버터색 배경 적용 */
+        border: 1px solid var(--peony);
+        /* 피오니색 테두리 적용 */
+        margin-right: 20px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--espresso);
+        /* 에스프레소 폰트 */
+        font-weight: bold;
+        flex-shrink: 0;
+        font-size: 13px;
+    }
+
+    .review-content-area {
+        flex-grow: 1;
+        position: relative;
+    }
+
+    .review-meta {
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: var(--primary-color);
+        /* 에스프레소 색상 적용 */
+        padding-bottom: 5px;
+        border-bottom: 1px dashed var(--butter);
+        /* 버터색 점선 구분선 */
+    }
+
+    .review-meta strong {
+        margin-right: 15px;
+        color: var(--primary-color);
+    }
+
+    .review-meta span {
+        color: #666;
+    }
+
+    .review-body {
+        font-size: 16px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+        /* 간격 조정 */
+        color: #333;
+    }
+
+    .review-rating {
+        font-size: 22px;
+        /* 폰트 크기 키움 */
+        font-weight: bold;
+        color: var(--peony);
+        /* 피오니색으로 별점 강조 */
+        display: block;
+        /* 별점 단독 줄 사용 */
+    }
+
+    .delete-button {
+        position: absolute;
+        top: 0px;
+        /* 위치 조정 */
+        right: 0px;
+        padding: 8px 12px;
+        /* 버튼 크기 조정 */
+        border: 1px solid var(--primary-color);
+        /* 에스프레소 테두리 */
+        background-color: var(--white);
+        /* 흰색 배경 */
+        color: var(--primary-color);
+        /* 에스프레소 글자색 */
+        cursor: pointer;
+        border-radius: 6px;
+        /* 둥근 모서리 */
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .delete-button:hover {
+        background-color: var(--peony);
+        border-color: var(--peony);
+        color: var(--primary-color);
+        transform: translateY(-1px);
+    }
+
+    /* ---------------------------------------------------- */
+    /* 4. Pagination (New Design 적용) */
+    /* ---------------------------------------------------- */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .pagination a {
+        margin: 0 5px;
+        padding: 10px 15px;
+        /* 크기 조정 */
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+
+        /* 기본 스타일: 에스프레소 테두리/글자, 흰색 배경 */
+        background-color: var(--white);
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+    }
+
+    .pagination a:hover {
+        background-color: var(--primary-color);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(62, 39, 35, 0.3);
+    }
+
+    .pagination .current {
+        background-color: var(--secondary-color);
+        /* 현재 페이지는 피오니색으로 강조 */
+        color: var(--primary-color);
+        border: 1px solid var(--secondary-color);
+        box-shadow: 0 2px 8px rgba(244, 201, 214, 0.4);
+    }
+
+    /* ---------------------------------------------------- */
+    /* 5. Responsive adjustments */
+    /* ---------------------------------------------------- */
+    @media (max-width: 768px) {
+        body {
+            flex-direction: column;
+        }
         
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: white;
-            border-bottom: 1px solid #ddd;
+        /* 사이드바는 이전 요청과 동일하게 100% 너비로 고정 해제 */
+        .sidebar {
+            position: static;
+            width: 100%;
+            height: auto;
+            padding-top: 10px;
         }
 
-        .search-area {
+        .sidebar-menu {
             display: flex;
-            align-items: center;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 0 10px;
         }
 
-        .search-area input {
-            padding: 8px;
-            border: 1px solid #ccc;
-            margin-right: 5px;
+        .sidebar-menu a {
+            padding: 10px 15px;
+            text-align: center;
+            border-left: none !important;
+            border-bottom: 3px solid transparent;
         }
 
-        .main-wrapper {
-            display: flex;
-            min-height: 100vh;
+        .sidebar-menu .active a {
+            border-left: none;
+            border-bottom: 3px solid var(--peony);
+            padding-left: 15px;
         }
-        
+
         .content-area {
-            flex-grow: 1;
-            padding: 30px;
-            background-color: white;
-            margin-left: 220px; 
-            box-sizing: border-box;
+            margin-left: 0;
+            padding: 20px 15px;
         }
 
-        .page-title {
-            font-size: 24px;
-            font-weight: 300;
-            margin-bottom: 20px;
-        }
-
+        /* 리뷰 카드 모바일 레이아웃 조정 */
         .review-card {
-            display: flex;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            background-color: #e0e0e0; 
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
 
         .review-image-area {
-            width: 150px;
-            height: 150px;
-            background-color: #ccc; 
-            margin-right: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #555;
-            font-weight: bold;
-            flex-shrink: 0;
+            margin-right: 0;
+            margin-bottom: 15px;
         }
 
-        .review-content-area {
-            flex-grow: 1;
-            position: relative;
-        }
-
-        .review-meta {
-            margin-bottom: 10px;
-            font-size: 14px;
-            color: #333;
-        }
-
-        .review-meta strong {
-             margin-right: 15px;
-        }
-
-        .review-meta span {
-            color: #666;
-        }
-
-        .review-body {
-            font-size: 16px;
-            margin-top: 5px;
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .review-rating {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-        }
-        
         .delete-button {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            padding: 5px 10px;
-            border: 1px solid #c0c0c0;
-            background-color: #f0f0f0; 
-            color: #555;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 12px;
+            position: static;
+            /* 모바일에서 상대 위치로 변경 */
+            margin-top: 10px;
+            width: calc(100% - 24px);
+            /* 중앙 정렬을 위해 전체 너비 조정 */
         }
-        
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 30px;
-        }
-        .pagination a {
-            margin: 0 5px;
-            padding: 5px 10px;
-            text-decoration: none;
-            color: #333;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            min-width: 20px;
-            text-align: center;
-            cursor: pointer;
-        }
-        .pagination .current {
-            background-color: #555;
-            color: white;
-            border: 1px solid #555;
-        }
-    </style>
+    }
+</style>
 </head>
 
 <body>

@@ -14,90 +14,104 @@
         <!-- Google Charts -->
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
-        <style>
-            body {
-                margin: 0;
-                font-family: 'Malgun Gothic', sans-serif;
-                background: #f4f4f4;
-                display: flex;
-            }
+      <style>
+    /* (기존 1. Color Variables & Global Styles 유지) */
+    :root {
+        --espresso: #3E2723;
+        --peony: #F4C9D6;
+        --butter: #FFEDAC;
+        --light-bg: #F4F4F4;
+        --white: #FFFFFF;
+        --primary-color: var(--espresso);
+        --secondary-color: var(--peony);
+        --table-header-bg: var(--espresso);
+        --table-row-stripe: #f9f9f9; /* 격자 무늬 배경 */
+    }
+    
+    /* (기존 2. Layout 유지) */
 
-            .sidebar {
-                width: 220px;
-                background: #e9e9e9;
-                padding: 20px 0;
-                flex-shrink: 0;
-                position: fixed;
-                top: 0;
-                bottom: 0;
-            }
+    /* ---------------------------------------------------- */
+    /* 6. Data Table Styles (새로 추가) */
+    /* ---------------------------------------------------- */
+    
+    .data-table-container {
+        /* 테이블이 넓을 경우 가로 스크롤 허용 */
+        
+        overflow-x: auto;
+        margin-top: 20px;
+        background-color: var(--white);
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        padding: 10px;
+        /* .content-area 내에서 중앙 정렬을 원한다면 max-width 설정 */
+        /* max-width: 1000px; */
+        /* margin: 0 auto; */ 
+    }
 
-            .content-area {
-                flex-grow: 1;
-                margin-left: 220px;
-                padding: 30px;
-                background: #fff;
-            }
+    .data-table {
+        width: 100%;
+        border-collapse: collapse; /* 테두리 병합 */
+        text-align: left;
+        font-size: 14px;
+        min-width: 500px; /* 테이블이 너무 작아지는 것 방지 */
+    }
 
-            .page-title {
-                font-size: 24px;
-                font-weight: 300;
-                margin-bottom: 20px;
-            }
+    /* 테이블 헤더 스타일 */
+    .data-table thead {
+        background-color: var(--table-header-bg); /* 에스프레소 배경 */
+        color: var(--white); /* 흰색 글자 */
+    }
 
-            .store-card {
-                border: 1px solid #ddd;
-                padding: 20px;
-                margin-bottom: 20px;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            }
+    .data-table th {
+        padding: 12px 15px;
+        font-weight: 600;
+        text-transform: uppercase;
+        border: none; /* 헤더의 기본 테두리 제거 */
+    }
+    
+    /* 테이블 본문 셀 스타일 */
+    .data-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #eeeeee; /* 얇은 구분선 */
+        color: #333;
+        vertical-align: middle;
+    }
+    
+    /* 테이블 본문: 격자 무늬(Zebra Striping) */
+    .data-table tbody tr:nth-child(even) {
+        background-color: var(--table-row-stripe);
+    }
 
-            .store-header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                margin-bottom: 15px;
-            }
+    /* 테이블 본문: 호버 효과 (Peony 강조) */
+    .data-table tbody tr:hover {
+        background-color: var(--peony);
+        cursor: pointer;
+        color: var(--espresso);
+        /* 폰트 굵기를 살짝 조정하여 호버 강조 */
+        font-weight: 500; 
+    }
 
-            .store-name-section {
-                display: flex;
-                align-items: center;
-            }
+    /* 버튼 스타일 (테이블 내부에 버튼이 있을 경우) */
+    .data-table .table-action-btn {
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: 500;
+        border-radius: 4px;
+        background-color: var(--white);
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+        transition: background-color 0.2s;
+    }
 
-            .store-name-section h3 {
-                margin: 0 15px 0 0;
-                font-size: 18px;
-            }
+    .data-table .table-action-btn:hover {
+        background-color: var(--primary-color);
+        color: var(--white);
+        transform: none; /* 테이블 호버와 충돌 방지 */
+        box-shadow: none;
+    }
 
-            .membership-info {
-                font-size: 14px;
-                color: #666;
-            }
-
-            .store-intro p {
-                background: #f9f9f9;
-                padding: 15px;
-                border-radius: 4px;
-                color: #555;
-                margin: 10px 0 20px 0;
-            }
-
-            .management-buttons button {
-                padding: 8px 15px;
-                border: 1px solid #ccc;
-                background: #fff;
-                cursor: pointer;
-                margin-right: 5px;
-                border-radius: 4px;
-            }
-
-            .management-buttons .primary-btn {
-                background: #007bff;
-                color: #fff;
-                border: 1px solid #007bff;
-            }
-        </style>
+    
+</style>
     </head>
 
     <body>
