@@ -269,6 +269,7 @@
                     count: 180,
                     smsFlg: false, //문자 인증 유무
                     ranStr: "", //문자 인증 번호
+                    smsTimeOverFlg: false, //문자 인증 시간초과 여부
 
                     findResult: false //최종 찾기 성공 여부
                 };
@@ -311,19 +312,22 @@
                 fnTimer: function () {
                     let self = this;
                     let interval = setInterval(() => {
-                        if (self.count == 0) {
-                            clearInterval(interval);
-                            alert("시간이 만료되었습니다.");
-                        } else {
-                            let min = parseInt(self.count / 60);
-                            let sec = self.count % 60;
-                            min = min < 10 ? "0" + min : min;
-                            sec = sec < 10 ? "0" + sec : sec;
-                            self.timer = min + " : " + sec;
+                            if (self.count == 0) {
+                                clearInterval(interval);
+                                self.smsTimeOverFlg = true;
+                                alert("시간이 만료되었습니다.");
+                            } else if(!self.smsFlg){
+                                let min = parseInt(self.count / 60);
+                                let sec = self.count % 60;
+                                min = min < 10 ? "0" + min : min;
+                                sec = sec < 10 ? "0" + sec : sec;
+                                self.timer = min + " : " + sec;
 
-                            self.count--;
-                        }
-                    }, 1000);
+                                self.count--;
+                            } else {
+                                clearInterval(interval);
+                            }
+                        }, 1000);
                 },
                 fnSmsAuth: function () {
                     let self = this;
@@ -331,10 +335,17 @@
                         alert("문자 인증을 진행해주세요.");
                         return;
                     }
+
+                    if (self.smsTimeOverFlg) {
+                        alert("문자 인증 시간이 초과 되었습니다.");
+                        return;
+                    }
+
                     if (self.ranStr == self.inputNum) {
                         alert("문자인증이 완료되었습니다.");
                         self.smsFlg = true;
-                        //self.fnFind();
+                        
+                        
                     } else {
                         alert("문자인증에 실패했습니다.");
                     }
