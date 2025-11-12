@@ -71,8 +71,8 @@
 		LEFT JOIN PICKUP_TBL T9 ON T2.ORDER_ID = T9.ORDER_ID
 		WHERE T10.USER_ID = #{userId}
 		GROUP BY T1.USER_NAME, T2.ORDER_ID
-		ORDER BY T2.ORDER_ID
-
+		
+		ORDER BY PICKUP_DELIVERY_DATE DESC, T2.ORDER_ID DESC
 	</select>
 
 	<select id="selectOrderDetail" parameterType="java.util.HashMap"
