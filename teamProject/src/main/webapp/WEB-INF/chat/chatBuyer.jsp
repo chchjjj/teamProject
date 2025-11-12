@@ -110,19 +110,20 @@ const app = Vue.createApp({
             }
         },
         connect() {
-            const socket = new SockJS(window.location.origin + '/ws-chat');
+            const socket = new SockJS('/ws-chat');
             this.stompClient = Stomp.over(socket);
             this.stompClient.connect({}, frame => {
-                // 🔥 chatId 기준으로 구독 채널 분리
-                this.stompClient.subscribe('/topic/chat/' + this.chatId, message => {
+                this.stompClient.subscribe('/topic/public', message => {
                     const msg = JSON.parse(message.body);
 
+                    // 일반 메시지 수신
                     if (msg.messageType === 'TEXT' || msg.messageType === 'IMAGE') {
+                        // 자기 메시지는 화면에 추가하지 않음
                         if (msg.sender !== this.userId) this.messages.push(msg);
                         this.$nextTick(() => this.scrollToBottom());
                     }
 
-                    // 읽음 알림
+                    // 읽음 알림 수신
                     if (msg.messageIds && msg.readerId) {
                         this.messages = this.messages.map(m => {
                             if (msg.messageIds.includes(m.id)) return { ...m, isRead: 'Y' };
