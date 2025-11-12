@@ -14,7 +14,7 @@
         <!-- Google Charts -->
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
-      <style>
+<style>
     /* (기존 1. Color Variables & Global Styles 유지) */
     :root {
         --espresso: #3E2723;
@@ -144,7 +144,7 @@
 
             <!-- 월별 매출 그래프 -->
             <h2>User04의 월별 매출 그래프</h2>
-            <div id="chart_div" style="width:100%; height:500px;"></div>
+            <div id="chart_div" style="width:90%; height:500px;"></div>
         </div>
 
         <script>
@@ -189,7 +189,7 @@
                             legend: { position: 'none' },
                             vAxis: { format: '₩#,###' },
                             height: 500,
-                            bar: { groupWidth: '60%' }
+                            bar: { groupWidth: '30%' }
                         };
 
                         var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
