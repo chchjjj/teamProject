@@ -80,7 +80,7 @@ public interface SellerMapper {
     void registerProduct(Seller seller, MultipartFile thumbnailFile, List<MultipartFile> detailFiles, MultipartFile longFile) throws Exception;
 
     //  제품 수정
-    void updateProduct(Seller seller, MultipartFile thumbnailFile, List<MultipartFile> detailFiles, MultipartFile longFile) throws Exception;
+//    void updateProduct(Seller seller, MultipartFile thumbnailFile, List<MultipartFile> detailFiles, MultipartFile longFile) throws Exception;
     
     //  제품 수정 데이터 로드 (다음 섹션)
     Map<String, Object> getProductDataForEdit(int proNo);
@@ -92,7 +92,13 @@ public interface SellerMapper {
 
  	// 상품 기본 정보 수정
  	int updateProduct(Seller seller);
+ 	int updateProduct(HashMap<String, Object> map);
+ 	
+ 	int deleteProductDate(HashMap<String, Object> map);
+ 	int insertProductDate(HashMap<String, Object> map);
 
+ 	Seller selectProductImg(@Param("proNo") int proNo);
+ 	
  	// 상위 옵션 등록 (topOptionId는 객체에 자동으로 담김)
  	void insertTopOption(Seller topOpt);
 

@@ -688,6 +688,29 @@ public HashMap<String, Object> insertProductAllergy(HashMap<String, Object> map)
 	return resultMap;
 }
 
+public HashMap<String, Object> productUpdate(HashMap<String, Object> map) throws Exception {
+	// TODO Auto-generated method stub
+	
+	HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	sellerMapper.updateProduct(map);
+	List<Object> dateList = (List<Object>) map.get("dateList");
+	sellerMapper.deleteProductDate(map);
+	for(int i=0; i<dateList.size(); i++) {
+		HashMap<String, Object> param = map;
+		System.out.println((String) dateList.get(i));
+		param.put("date", (String) dateList.get(i));
+		sellerMapper.insertProductDate(map);
+	}
+	resultMap.put("result","success");
+	return resultMap;
+}
+
+
+public Seller getProductImg(int proNo) {
+    return sellerMapper.selectProductImg(proNo); // XML id와 일치
+}
+
+
 
 //@Transactional(rollbackFor = Exception.class) 
 //public int insertProductAllergy(Map<String, Object> param) throws Exception {

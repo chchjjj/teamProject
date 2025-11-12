@@ -75,6 +75,7 @@ public class Seller {
 	private String isRead;
 	private String senderId; // 발신자 구분용
 	private String filePath; // 이미지 경로
+	private String fileName; // 이미지 이름
 
 	private Long questionId; // 1. 질문 고유 ID (QUESTION_ID) - PK
 

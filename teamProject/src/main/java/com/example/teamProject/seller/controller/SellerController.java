@@ -23,13 +23,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.teamProject.product.model.Product;
 import com.example.teamProject.seller.dao.FileService;
 import com.example.teamProject.seller.dao.SellerService;
 import com.example.teamProject.seller.model.Seller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.auth.oauth2.IdTokenProvider.Option;
 import com.google.gson.Gson;
 
 import jakarta.servlet.http.HttpSession;
@@ -83,14 +81,18 @@ public class SellerController {
 	    Map<String, Object> product = new HashMap<>();
 	    List<Map<String, Object>> options = new ArrayList<>();
 	    String disabledDatesStr = "";
+	    String imgPath = "";
 
 	    if (proNo != null) {
 	        // 상품 정보 조회
 	        product = sellerService.getProduct(proNo); 
 
 	        // 옵션 정보 조회
-	        options = sellerService.getOptionsByProduct(proNo); 
-
+	        options = sellerService.getOptionsByProduct(proNo);
+	        
+	        // 상품 이미지 조회
+	        imgPath = sellerService.getProductImg(proNo).getFilePath() + sellerService.getProductImg(proNo).getFileName();
+//	        System.out.println(imgPath);
 	        // 불가 날짜 문자열
 	        disabledDatesStr = String.join(",", sellerService.getDisabledDates(proNo)); 
 	    }
@@ -103,6 +105,7 @@ public class SellerController {
 	    model.addAttribute("productJson", new Gson().toJson(product));
 	    model.addAttribute("optionsJson", new Gson().toJson(options));
 	    model.addAttribute("disabledDatesStr", disabledDatesStr);
+	    model.addAttribute("imgPath", imgPath);
 
 	    return "/seller/productUpdate";
 	}
@@ -677,12 +680,18 @@ public class SellerController {
 	public String DeleteSellerList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
-		String json = map.get("selectItem").toString(); 
+		String json = map.get("disabledDates").toString(); 
 		ObjectMapper mapper = new ObjectMapper();
 		List<Object> list = mapper.readValue(json, new TypeReference<List<Object>>(){});
-		map.put("list", list);
+		map.put("dateList", list);
+		
+		String json2 = map.get("options").toString(); 
+		ObjectMapper mapper2 = new ObjectMapper();
+		List<HashMap<String, Object>> options = mapper2.readValue(json2, new TypeReference<List<HashMap<String, Object>>>(){});
+		map.put("optionList", options);
+		
 		System.out.println(map);
-//		resultMap = sellerService.DeleteUserList(map);
+		resultMap = sellerService.productUpdate(map);
 		return new Gson().toJson(resultMap);
 		
 	}
