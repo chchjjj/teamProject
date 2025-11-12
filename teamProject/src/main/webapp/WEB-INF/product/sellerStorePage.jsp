@@ -435,7 +435,7 @@
                         data: param,
                         success: function (data) {
                             self.storeInfo = data.info;
-                            console.log(self.storeInfo);
+                            // console.log(self.storeInfo);
                         }
                     });
                 },
@@ -460,7 +460,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data);
+                            // console.log(data);
                             self.list = data.list; // data에 있는 list 값을 변수 list에 담기      
                             self.index = Math.ceil(data.cnt / self.pageSize);
                         }
@@ -468,14 +468,14 @@
                 },
                 fnProDetail: function (proNo) {
                     let self = this;
-                    console.log(proNo); // main 화면에서 클릭한 상품번호 출력(확인완료)
+                    // console.log(proNo); // main 화면에서 클릭한 상품번호 출력(확인완료)
                     pageChange("/productDetail.do", { proNo: proNo });  // 상세페이지로 proNo 넘겨줌            
                 },
             }, // methods
             mounted() {
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
-                console.log(self.storeId);
+                // console.log(self.storeId);
                 self.fnStoreInfo();
                 self.fnList();
             }

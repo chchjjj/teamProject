@@ -301,7 +301,7 @@
 
                             subtotal : (self.totalPrice - finalDeliveryFee) // 배송비 제외금액
                         };
-                        console.log("주문 데이터:", param);
+                        // console.log("주문 데이터:", param);
                         $.ajax({
                             url: "/product/orderInsert.dox", // 서버 주문 처리 URL
                             type: "POST",
@@ -353,7 +353,7 @@
 
                             subtotal : (self.totalPrice - finalDeliveryFee) // 배송비 제외금액
                         };
-                        console.log("주문 데이터:", param);
+                        // console.log("주문 데이터:", param);
                         $.ajax({
                             url: "/product/orderInsert.dox", // 서버 주문 처리 URL
                             type: "POST",
@@ -411,7 +411,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data.list);
+                            // console.log(data.list);
                             self.topList = data.list;
 
                         }
@@ -534,8 +534,8 @@
                             // 픽업 테이블에 넣을 것
                             storeAddr: self.infoList.storeAddr,
                         };
-                        console.log("장바구니 전송 데이터:", param);
-                        console.log("subOptionList", subOptionList);
+                        // console.log("장바구니 전송 데이터:", param);
+                        // console.log("subOptionList", subOptionList);
                         $.ajax({
                             url: "/product/cartInsert.dox",
                             dataType: "json",
@@ -568,8 +568,8 @@
                             // 픽업 테이블에 넣을 것
                             storeAddr: self.infoList.storeAddr,
                         };
-                        console.log("장바구니 전송 데이터:", param);
-                        console.log("subOptionList", subOptionList);
+                        // console.log("장바구니 전송 데이터:", param);
+                        // console.log("subOptionList", subOptionList);
                         $.ajax({
                             url: "/product/cartInsert.dox",
                             dataType: "json",
@@ -613,7 +613,7 @@
 
                     // Map의 값을 배열로 변환하여 화면 출력용 데이터에 저장
                     this.groupedOptions = Array.from(grouped.values());
-                    console.log("옵션 그룹화 완료:", this.groupedOptions);
+                    // console.log("옵션 그룹화 완료:", this.groupedOptions);
                 },
                 // 수량 조절 함수
                 increaseQuantity(topOptionId) {
@@ -655,7 +655,7 @@
                             if (selectedDates.length > 0) {
                                 // 선택된 날짜+시간 문자열을 Vue data에 저장
                                 self.selectedDate = dateStr;
-                                console.log("선택된 날짜 및 시간:", self.selectedDate);
+                                // console.log("선택된 날짜 및 시간:", self.selectedDate);
                                 // 사용자가 '확인' 버튼을 누르거나(옵션) 수동으로 닫을 수 있도록 close() 제거
                                 // instance.close(); 
                             }
@@ -674,7 +674,7 @@
                             self.disabledDates = Array.isArray(data.list) ?
                                 data.list.map(item => item.disabledDate) : [];
 
-                            console.log("disabledDates:", self.disabledDates);
+                            // console.log("disabledDates:", self.disabledDates);
 
                             // Flatpickr 초기화 또는 기존 인스턴스에 적용
                             if (self.datePicker) {
@@ -780,7 +780,7 @@
             mounted() {
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
-                console.log(self.proNo)
+                // console.log(self.proNo)
                 self.fnInfo();
                 self.fnTopOpt();
                 self.fnAllOpt();

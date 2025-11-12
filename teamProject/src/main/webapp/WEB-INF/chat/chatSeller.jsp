@@ -124,8 +124,8 @@
                         if (res.data) {
                             this.chatId = res.data.chatId;
                             this.storeId = res.data.storeId;
-                            console.log("조회된 chatId: " + this.chatId);
-                            console.log("조회된 storeId: " + this.storeId);
+                            // console.log("조회된 chatId: " + this.chatId);
+                            // console.log("조회된 storeId: " + this.storeId);
 
                         } else {
                             console.warn("채팅방이 존재하지 않습니다. chatId: null");
@@ -193,7 +193,7 @@
                         dataType: 'json',
                         context: this,
                         success: function(response) {
-                            console.log("채팅 기록 로드 성공:", response);
+                            // console.log("채팅 기록 로드 성공:", response);
                             
                             // 💡 화살표 함수(Arrow Function)를 사용하여 this 스코프 문제 해결
                             this.messages = response.map((msg) => {
@@ -272,7 +272,7 @@
 
                     if (unreadMsgIds.length === 0) return;
 
-                    console.log("읽음 처리할 메시지 ID 목록:", unreadMsgIds);
+                    // console.log("읽음 처리할 메시지 ID 목록:", unreadMsgIds);
 
                     axios.post('/api/chat/markAsRead', {
                         chatId: this.chatId,
@@ -280,7 +280,7 @@
                         readerId: this.userId
                     })
                     .then(res => {
-                        console.log("읽음 처리 완료:", res.data);
+                        // console.log("읽음 처리 완료:", res.data);
 
                         // 1) 화면에서도 바로 반영
                         this.messages = this.messages.map(msg => {
@@ -297,7 +297,7 @@
                                 messageIds: unreadMsgIds,
                                 readerId: this.userId
                             };
-                            console.log("읽음 알림 전송:", readNotification);
+                            // console.log("읽음 알림 전송:", readNotification);
                             this.stompClient.send("/app/readMessage", {}, JSON.stringify(readNotification));
                         }
                     })
@@ -346,10 +346,10 @@
                 await this.loadChatId(); // ✅ chatId를 먼저 조회
                 this.connect();               //  WebSocket 연결
                                 
-                console.log("로그인 아이디 ==> " + this.userId); // 로그인한 아이디 잘 넘어오나 테스트
-                console.log("주문번호 ==> " + this.orderId); // 주문번호 잘 넘어오나 테스트
-                console.log("채팅방 id ==> " + this.chatId); // 채팅방번호 잘 넘어오나 테스트
-                console.log("가게 id ==> " + this.storeId); // 채팅방번호 잘 넘어오나 테스트
+                // console.log("로그인 아이디 ==> " + this.userId); // 로그인한 아이디 잘 넘어오나 테스트
+                // console.log("주문번호 ==> " + this.orderId); // 주문번호 잘 넘어오나 테스트
+                // console.log("채팅방 id ==> " + this.chatId); // 채팅방번호 잘 넘어오나 테스트
+                // console.log("가게 id ==> " + this.storeId); // 채팅방번호 잘 넘어오나 테스트
 
                 if (this.orderId) {
                     this.loadChatHistory();

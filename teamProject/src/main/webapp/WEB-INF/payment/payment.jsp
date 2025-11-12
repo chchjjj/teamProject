@@ -508,9 +508,9 @@
                 //주문 목록 출력
                 fnOrderList: function(){
                     let self = this;
-                    console.log("JSON.stringify 이전: " + self.orderIdList);
+                    // console.log("JSON.stringify 이전: " + self.orderIdList);
                     let orderIdList = JSON.stringify(self.orderIdList);
-                    console.log("JSON.stringify 이후: " + orderIdList);
+                    // console.log("JSON.stringify 이후: " + orderIdList);
                     let param = {
                         orderIdList : orderIdList
                     };
@@ -520,12 +520,12 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log("Order 리스트 출력");// 테스트용
-                            console.log(data);// 테스트용
+                            // console.log("Order 리스트 출력");// 테스트용
+                            // console.log(data);// 테스트용
                             self.orderList = data.list;
                             self.fnGroupOrderList(self.orderList);
                             self.deliveryType = data.list[0].deliveryType; //배달인지 픽업인지
-                            console.log("self.deliveryType[0] ===> " + data.list[0].deliveryType);
+                            // console.log("self.deliveryType[0] ===> " + data.list[0].deliveryType);
                         }
                     });
                 },
@@ -543,8 +543,8 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log("장바구니 비우기");// 테스트용
-                            console.log(data);// 테스트용
+                            // console.log("장바구니 비우기");// 테스트용
+                            // console.log(data);// 테스트용
                         }
                     });
                 },
@@ -640,7 +640,7 @@
                           if (rsp.success) {
                             // 결제 성공 시
                             //alert("성공");
-                            console.log(rsp);
+                            // console.log(rsp);
                             
                             // 실제 구현용 여기부터
                             if(self.orderId.length > 0){
@@ -829,12 +829,12 @@
                     });
                     self.groupedOrdersList = Object.values(groupedOrders);
                     self.groupedOrdersList = self.groupedOrdersList.slice().reverse();
-                    console.log("최종 주문 목록:", self.groupedOrdersList);
+                    // console.log("최종 주문 목록:", self.groupedOrdersList);
                     self.kind = self.groupedOrdersList.length; // 상품 종류 갯수
-                    console.log("상품 종류 갯수: " + self.kind + "개");
+                    // console.log("상품 종류 갯수: " + self.kind + "개");
                     for(let i=0; i<self.groupedOrdersList.length; i++){ // 총 결제가격 구하기
                         self.paymentPrice += self.groupedOrdersList[i].totalPrice;
-                        console.log("self.groupedOrdersList[i].totalPrice:" + self.groupedOrdersList[i].totalPrice);
+                        // console.log("self.groupedOrdersList[i].totalPrice:" + self.groupedOrdersList[i].totalPrice);
                     }
                 },
 
@@ -863,7 +863,7 @@
                             if (selectedDates.length > 0) {
                                 // 선택된 날짜+시간 문자열을 Vue data에 저장
                                 self.selectedDate = dateStr;
-                                console.log("선택된 날짜 및 시간:", self.selectedDate);
+                                // console.log("선택된 날짜 및 시간:", self.selectedDate);
                                 // 사용자가 '확인' 버튼을 누르거나(옵션) 수동으로 닫을 수 있도록 close() 제거
                                 // instance.close(); 
                             }
@@ -889,7 +889,7 @@
                             self.disabledDates = Array.isArray(data.list) ?
                                 data.list.map(item => item.disabledDate) : [];
 
-                            console.log("disabledDates:", self.disabledDates);
+                            // console.log("disabledDates:", self.disabledDates);
 
                             // Flatpickr 초기화 또는 기존 인스턴스에 적용
                             if (self.datePicker) {
@@ -918,7 +918,7 @@
 
                 //주문번호를 장바구니에서 받지 않은 경우
                 if(orderId && orderId.length > 0) {
-                    console.log("orderId 값이 존재하며 orderId 값은 => " + self.orderId);
+                    // console.log("orderId 값이 존재하며 orderId 값은 => " + self.orderId);
                     self.orderIdList.push(orderId);
                 } 
                 
@@ -929,7 +929,7 @@
                     
                 }
 
-                console.log("최종적으로 사용할 orderIdList 값은 => " + self.orderIdList);
+                // console.log("최종적으로 사용할 orderIdList 값은 => " + self.orderIdList);
                 self.fnOrderList(); //주문 목록 출력
 
                 // 옵션 등 데이터 로드 후

@@ -353,7 +353,7 @@
                         data: param,
                         success: function (data) {
                             self.ingredientList = data.list;
-                            console.log("알러지", data.list);
+                            // console.log("알러지", data.list);
                         }
                     });
                 },
@@ -369,7 +369,7 @@
                         data: param,
                         success: function (data) {
                             self.imgInfo = data.info;
-                            console.log(data.info);
+                            // console.log(data.info);
                         }
                     });
                 },
@@ -401,7 +401,7 @@
                         data: param,
                         success: function (data) {
                             self.reviewList = data.list
-                            console.log(data.result);
+                            // console.log(data.result);
                         }
                     });
                 },
@@ -433,7 +433,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data);
+                            // console.log(data);
                             self.list = data.list; // data에 있는 list 값을 변수 list에 담기      
                             self.index = Math.ceil(data.cnt / self.pageSize);
                             // 게시글 총개수를 몇페이지씩 표시할지 기준으로 나누고, 소수점 발생시 올림처리 => index에 넣기
@@ -466,7 +466,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data.list);
+                            // console.log(data.list);
                             self.list = data.list; // data에 있는 list 값을 변수 list에 담기      
 
                         }
@@ -569,7 +569,7 @@
 
                 // 헤더 메뉴 중 '카테고리' 하위 메뉴 클릭 이벤트 수신
                 emitter.on('categoryClick', (categoryName) => {
-                    console.log("카테고리 클릭:", categoryName);
+                    // console.log("카테고리 클릭:", categoryName);
                     self.selectedCategory = categoryName;
                     self.fnList(); // 해당 카테고리 상품만 조회
                 });

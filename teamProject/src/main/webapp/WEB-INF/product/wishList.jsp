@@ -360,7 +360,7 @@
                         data: param,
                         success: function (data) {
                             self.list = data.wishList;
-                            console.log(data.wishList);
+                            // console.log(data.wishList);
                         }
                     });
                 },
@@ -385,7 +385,7 @@
                 },
                 fnProDt: function (proNo) {
                     let self = this;
-                    console.log(proNo); // main 화면에서 클릭한 상품번호 출력(확인완료)
+                    // console.log(proNo); // main 화면에서 클릭한 상품번호 출력(확인완료)
                     pageChange("/productDetail.do", { proNo: proNo });  // 상세페이지로 proNo 넘겨줌
 
                 },

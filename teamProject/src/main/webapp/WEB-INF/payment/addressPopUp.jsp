@@ -259,9 +259,9 @@
 
 <script>
     function jusoCallBack(roadFullAddr, roadAddrPart1, addrDetail, roadAddrPart2, engAddr, jibunAddr, zipNo, admCd, rnMgtSn, bdMgtSn, detBdNmList, bdNm, bdKdcd, siNm, sggNm, emdNm, liNm, rn, udrtYn, buldMnnm, buldSlno, mtYn, lnbrMnnm, lnbrSlno, emdNo) {
-                console.log(roadFullAddr);
-                console.log(addrDetail);
-                console.log(zipNo);
+                // console.log(roadFullAddr);
+                // console.log(addrDetail);
+                // console.log(zipNo);
 
                 window.vueObj.fnResult(roadFullAddr, addrDetail, zipNo);
     }
@@ -369,7 +369,7 @@
                     type: "POST",
                     data: param,
                     success: function (data) {
-                        console.log(data);
+                        // console.log(data);
                         self.addressList = data.list;
                     }
                 });
@@ -439,8 +439,8 @@
             let str = "${orderIdList}";
              self.orderIdList = JSON.parse(str); //파싱을 해줘야 문자열을 리스트로 바꿀 수 있다.
             //self.orderIdList = JSON.parse("$orderIdList"); //파싱을 해줘야 문자열을 리스트로 바꿀 수 있다.
-            console.log("self.orderIdList: " + self.orderIdList);
-            console.log("최종적으로 사용할 orderIdList 값은 => " + self.orderIdList);
+            // console.log("self.orderIdList: " + self.orderIdList);
+            // console.log("최종적으로 사용할 orderIdList 값은 => " + self.orderIdList);
         }
     });
 
