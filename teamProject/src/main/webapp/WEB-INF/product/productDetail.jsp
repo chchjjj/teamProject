@@ -309,7 +309,7 @@
                             data: param,
                             success: function (data) {
                                 if (data.result === "success") {
-                                    alert("주문이 완료되었습니다!");
+                                    // alert("주문이 완료되었습니다!");
                                     // 결제 페이지로 이동 또는 주문 완료 페이지 이동
                                     // pageChange("/order/complete.do", { orderId: data.orderId });
                                 } else {
@@ -361,7 +361,7 @@
                             data: param,
                             success: function (data) {
                                 if (data.result === "success") {
-                                    alert("주문이 완료되었습니다!");
+                                    alert("결제페이지로 넘어갑니다. 결제를 바로 진행하지 않으셔도, 마이페이지에서 언제든지 구매하실 수 있습니다.");
                                     // alert(data.orderId);
                                     pageChange("/payment/payment.do", { orderId: data.orderId });
                                     // if (self.deliveryType === 'D') {
