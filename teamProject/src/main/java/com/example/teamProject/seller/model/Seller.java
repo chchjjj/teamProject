@@ -101,9 +101,9 @@ public class Seller {
 
 	// 클라이언트에서 넘어오는 임시 ID (새 옵션 구분을 위해)
 	private String id;
-
+//
 	private String optionsJson;
-
+//
 	private List<Seller> subOptions;
 	private String status = "N";
 

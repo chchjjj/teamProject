@@ -91,7 +91,7 @@ public interface SellerMapper {
  	void insertProduct(Seller seller);
 
  	// 상품 기본 정보 수정
- 	void updateProduct(Seller seller);
+ 	int updateProduct(Seller seller);
 
  	// 상위 옵션 등록 (topOptionId는 객체에 자동으로 담김)
  	void insertTopOption(Seller topOpt);
@@ -147,4 +147,8 @@ public interface SellerMapper {
 	 List<String> selectDisabledDate(@Param("proNo") int proNo);
 	 //알르레기 등록
 	 int insertProductAllergy(Map<String, Object> param) throws Exception;
+	 //상품정보 수정
+//	 int newUpdateProduct(String productJsonStr, String optionsJsonStr) throws Exception;
+//
+//	 Seller readValue(String productJsonStr, Class<Seller> class1);
 }
