@@ -266,7 +266,6 @@
                                 const month = monthIndex + 1; // 1월 = 1
                                 app.selectedMonth = month; // Vue 변수에 저장
                                 app.fnRevenueByMonth(month); // 월별 데이터 로드
-                                console.log("차트 클릭됨:", month);
                             }
                         },
                         
@@ -397,7 +396,6 @@
                     type: "POST",
                     data: param,
                     success: function (data) {
-                        console.log(data.revenue);
                         self.revenue = data.revenue;
 
                     }

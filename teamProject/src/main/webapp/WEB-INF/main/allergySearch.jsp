@@ -320,7 +320,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data);
+                            // console.log(data);
                             self.ingreList = data.list; // data에 있는 list 값을 변수 list에 담기                                 
                         }
                     });
@@ -330,7 +330,7 @@
                 fnIngreProList: function () {
                     let self = this;
                     
-                     console.log("선택된 원재료:", self.ingreName); // ← 여기 확인
+                    //  console.log("선택된 원재료:", self.ingreName); // ← 여기 확인
                     // 배열이 아닐 때 강제로 배열로 변환 
                     let names = Array.isArray(self.ingreName) ? self.ingreName : [self.ingreName];
 
@@ -346,7 +346,7 @@
                         traditional: true, // ★★ 매우 중요 (배열 전송시 HashMap으로 인식시키기)
                         data: param,
                         success: function (data) {
-                            console.log(data);
+                            // console.log(data);
                             self.proList = data.list; // data에 있는 list 값을 변수 list에 담기 
                             self.index = Math.ceil(data.cnt / self.pageSize);
 
@@ -363,7 +363,7 @@
                 // 리스트에서 상품 클릭시 상세페이지 이동
                 fnProDetail: function (proNo) {
                     let self = this;
-                    console.log(proNo); // main 화면에서 클릭한 상품번호 출력(확인완료)
+                    // console.log(proNo); // main 화면에서 클릭한 상품번호 출력(확인완료)
                     pageChange("/productDetail.do", { proNo: proNo });  // 상세페이지로 proNo 넘겨줌            
                 },
 
@@ -380,7 +380,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data);
+                            // console.log(data);
                             self.list = data.list; // data에 있는 list 값을 변수 list에 담기      
 
                         }
@@ -415,7 +415,7 @@
             mounted() {
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
-                console.log("로그인 아이디 ===> " + self.userId); // 로그인한 아이디 잘 넘어오나 테스트
+                // console.log("로그인 아이디 ===> " + self.userId); // 로그인한 아이디 잘 넘어오나 테스트
 
                 // 원재료 목록 가져오기
                 self.fnIngreList();
@@ -432,7 +432,7 @@
 
                 // 헤더 메뉴 중 '카테고리' 하위 메뉴 클릭 이벤트 수신
                 emitter.on('categoryClick', (categoryName) => {
-                    console.log("카테고리 클릭:", categoryName);
+                    // console.log("카테고리 클릭:", categoryName);
                     self.selectedCategory = categoryName;
                     self.fnList(); // 해당 카테고리 상품만 조회
                 });

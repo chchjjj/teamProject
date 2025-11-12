@@ -14,21 +14,24 @@
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <script src="/js/page-change.js"></script>
         <style>
-
             .leftAlign {
                 text-align: left;
-                margin-bottom: 15px; /* 필요 시 */
+                margin-bottom: 15px;
+                /* 필요 시 */
             }
 
             .searchBar.leftAlign {
                 display: flex;
-                justify-content: flex-start; /* 왼쪽 정렬 */
-                align-items: center;         /* 수직 가운데 정렬 */
-                gap: 10px;                   /* 요소 간 간격 */
+                justify-content: flex-start;
+                /* 왼쪽 정렬 */
+                align-items: center;
+                /* 수직 가운데 정렬 */
+                gap: 10px;
+                /* 요소 간 간격 */
                 margin-bottom: 15px;
             }
 
-            
+
 
             /* ===== 관리자 테이블 공통 스타일 ===== */
             table {
@@ -174,11 +177,15 @@
 
             .paging {
                 display: flex;
-                justify-content: center; /* 가로 가운데 정렬 */
-                align-items: center;     /* 세로 가운데 정렬 */
-                gap: 5px;                /* 버튼 간 간격 */
-                margin: 25px 0;          /* 위아래 여백 */
-               
+                justify-content: center;
+                /* 가로 가운데 정렬 */
+                align-items: center;
+                /* 세로 가운데 정렬 */
+                gap: 5px;
+                /* 버튼 간 간격 */
+                margin: 25px 0;
+                /* 위아래 여백 */
+
             }
 
             .paging a,
@@ -192,7 +199,6 @@
                 border-radius: 4px;
                 transition: all 0.2s ease;
             }
-
         </style>
     </head>
 
@@ -285,75 +291,6 @@
                     </table>
 
                     <!-- 페이징 및 선택 삭제 -->
-                    <div class="paging">
-                        <span v-if="page > 1">
-                            <button @click="fnPre()">◀</button>
-                        </span>
-                        <a href="javascript:;" v-for="num in pageRangeList" @click="fnChange(num)">{{ num }}</a>
-                        <span v-if="page != pageNum">
-                            <button @click="fnNext()">▶</button>
-                        </span>
-                    </div>
-                    <div><button @click="fnRemoveAll">선택 삭제</button></div>
-                </div>
-
-                <!-- 2. 리뷰 리스트 -->
-                <div class="userList" v-if="selectedTable==='review'">
-                    <!-- 라디오 버튼 그룹: 테이블 바로 위 -->
-                    <div class="boardSelect">
-                        <input type="radio" id="tab-qna" name="boardManage" value="qnA" v-model="selectedTable">
-                        <label for="tab-qna">QnA</label>
-
-                        <input type="radio" id="tab-review" name="boardManage" value="review" v-model="selectedTable">
-                        <label for="tab-review">리뷰</label>
-
-                    </div>
-
-                    <!-- 검색바 영역 -->
-                    <div class="searchBar leftAlign">
-                        <select v-model="pageSize" @change="fnReviewList">
-                            <option value="10">:: 10개씩 ::</option>
-                            <option value="15">:: 15개씩 ::</option>
-                            <option value="20">:: 20개씩 ::</option>
-                        </select>
-                        <select v-model="option">
-                            <option value="all">:: 전체 ::</option>
-                            <option value="userId">구매자</option>
-                            <option value="storeId">판매자</option>
-                        </select>
-                        <input type="text" v-model="keyWord">
-                        <button @click="fnReviewList">검색</button>
-                    </div>
-
-                    <!-- 리뷰 테이블 -->
-                    <table>
-                        <tr>
-                            <th><input type="checkbox" @click="fnSelectAll"></th>
-                            <th>리뷰번호</th>
-                            <th>주문번호</th>
-                            <th>상품</th>
-                            <th>작성자</th>
-                            <th>판매자</th>
-                            <th>평점</th>
-                            <th>내용</th>
-                            <th>작성시간</th>
-                            <th>수정시간</th>
-                        </tr>
-                        <tr v-for="review in reviewList">
-                            <td><input type="checkbox" :value="review.reviewId" v-model="selectItem"></td>
-                            <td>{{review.reviewId}}</td>
-                            <td>{{review.orderId}}</td>
-                            <td>{{review.proNo}}</td>
-                            <td>{{review.userId}}</td>
-                            <td>{{review.storeId}}</td>
-                            <td>{{review.rating}}</td>
-                            <td>{{review.reviewContent}}</td>
-                            <td>{{review.cDateTime}}</td>
-                            <td>{{review.uDateTime}}</td>
-                        </tr>
-                    </table>
-
-                    <!-- 페이징 및 선택 삭제 -->
                     <div class="paging" style="margin-top: 25px; margin-bottom: 20px; text-align: center;">
                         <span v-if="page > 1">
                             <button @click="fnPre()"
@@ -377,18 +314,99 @@
                         </span>
                     </div>
 
-                    <div style="margin-top: 25px; text-align: left;">
-                        <button @click="fnRemoveAll"
-                            style="padding: 6px 14px; border: none; background-color: #3E2723; color: white; border-radius: 5px; cursor: pointer;">
-                            선택 삭제
-                        </button>
+                    <!-- 2. 리뷰 리스트 -->
+                    <div class="userList" v-if="selectedTable==='review'">
+                        <!-- 라디오 버튼 그룹: 테이블 바로 위 -->
+                        <div class="boardSelect">
+                            <input type="radio" id="tab-qna" name="boardManage" value="qnA" v-model="selectedTable">
+                            <label for="tab-qna">QnA</label>
+
+                            <input type="radio" id="tab-review" name="boardManage" value="review"
+                                v-model="selectedTable">
+                            <label for="tab-review">리뷰</label>
+
+                        </div>
+
+                        <!-- 검색바 영역 -->
+                        <div class="searchBar leftAlign">
+                            <select v-model="pageSize" @change="fnReviewList">
+                                <option value="10">:: 10개씩 ::</option>
+                                <option value="15">:: 15개씩 ::</option>
+                                <option value="20">:: 20개씩 ::</option>
+                            </select>
+                            <select v-model="option">
+                                <option value="all">:: 전체 ::</option>
+                                <option value="userId">구매자</option>
+                                <option value="storeId">판매자</option>
+                            </select>
+                            <input type="text" v-model="keyWord">
+                            <button @click="fnReviewList">검색</button>
+                        </div>
+
+                        <!-- 리뷰 테이블 -->
+                        <table>
+                            <tr>
+                                <th><input type="checkbox" @click="fnSelectAll"></th>
+                                <th>리뷰번호</th>
+                                <th>주문번호</th>
+                                <th>상품</th>
+                                <th>작성자</th>
+                                <th>판매자</th>
+                                <th>평점</th>
+                                <th>내용</th>
+                                <th>작성시간</th>
+                                <th>수정시간</th>
+                            </tr>
+                            <tr v-for="review in reviewList">
+                                <td><input type="checkbox" :value="review.reviewId" v-model="selectItem"></td>
+                                <td>{{review.reviewId}}</td>
+                                <td>{{review.orderId}}</td>
+                                <td>{{review.proNo}}</td>
+                                <td>{{review.userId}}</td>
+                                <td>{{review.storeId}}</td>
+                                <td>{{review.rating}}</td>
+                                <td>{{review.reviewContent}}</td>
+                                <td>{{review.cDateTime}}</td>
+                                <td>{{review.uDateTime}}</td>
+                            </tr>
+                        </table>
+
+                        <!-- 페이징 및 선택 삭제 -->
+                        <div class="paging" style="margin-top: 25px; margin-bottom: 20px; text-align: center;">
+                            <span v-if="page > 1">
+                                <button @click="fnPre()"
+                                    style="background-color: #3E2723; color: #FFEDAC; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; margin: 0 5px;">◀</button>
+                            </span>
+                            <a href="javascript:;" v-for="num in pageRangeList" @click="fnChange(num)" :style="{
+                            margin: '0 5px',
+                            padding: '8px 12px',
+                            textDecoration: 'none',
+                            color: page == num ? '#FFEDAC' : '#3E2723',
+                            backgroundColor: page == num ? '#3E2723' : '#FFEDAC',
+                            borderRadius: '5px',
+                            fontWeight: 'bold',
+                            display: 'inline-block'
+                        }">
+                                {{ num }}
+                            </a>
+                            <span v-if="page != pageNum">
+                                <button @click="fnNext()"
+                                    style="background-color: #3E2723; color: #FFEDAC; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; margin: 0 5px;">▶</button>
+                            </span>
+                        </div>
+
+                        <div style="margin-top: 25px; text-align: left;">
+                            <button @click="fnRemoveAll"
+                                style="padding: 6px 14px; border: none; background-color: #3E2723; color: white; border-radius: 5px; cursor: pointer;">
+                                선택 삭제
+                            </button>
+                        </div>
+
+
+                        <!-- 3. 게시판 리스트 (board) -->
+                        <!--  -->
                     </div>
-
-
-                    <!-- 3. 게시판 리스트 (board) -->
-                    <!--  -->
                 </div>
-            </div>
 
     </body>
 

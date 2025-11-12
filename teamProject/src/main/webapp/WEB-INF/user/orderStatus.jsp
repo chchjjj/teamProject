@@ -521,7 +521,6 @@
                         data: param,
                         success: function (data) {
                             self.orderList = data.list;
-                            console.log(data.list);
                             self.fnGroupOrderList(self.orderList);
                         },
                         error: function (xhr, status, error) {
@@ -596,7 +595,6 @@
                     });
 
                     this.groupedOrdersList = Object.values(groupedOrders);
-                    console.log("최종 주문 목록:", this.groupedOrdersList);
                 },
 
                 getProgressWidth: function(order) {

@@ -122,7 +122,7 @@
                             </tr>
                             <tr>
                                 <th>주소</th>
-                                <td><input type="text" v-model="userAddr"></td>
+                                <td><input type="text" v-model="userAddr"><button @click="fnAddr">주소선택</button></td>
                             </tr>
                             <tr>
                                 <th>활동탈퇴여부</th>
@@ -165,7 +165,13 @@
     </html>
 
     <script>
+        function jusoCallBack(roadFullAddr, roadAddrPart1, addrDetail, roadAddrPart2, engAddr, jibunAddr, zipNo, admCd, rnMgtSn, bdMgtSn, detBdNmList, bdNm, bdKdcd, siNm, sggNm, emdNm, liNm, rn, udrtYn, buldMnnm, buldSlno, mtYn, lnbrMnnm, lnbrSlno, emdNo) {
+           
+
+            window.vueObj.fnResult(roadFullAddr, addrDetail, zipNo);
+        }
         const app = Vue.createApp({
+            
             data() {
                 return {
                     // 변수 - (key : value)
@@ -184,6 +190,9 @@
                 };
             },
             methods: {
+                 fnAddr() {
+                    window.open("/user/addr.do", "addr", "width=500,height=500,top=100,left=100");
+                },
                 // 함수(메소드) - (key : function())
                 fnUser: function () {
                     let self = this;
@@ -305,6 +314,7 @@
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
                 self.fnUser();
+                window.vueObj = this;
 
             }
         });
