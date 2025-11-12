@@ -67,7 +67,7 @@
                             <ul class="submenu">
                                 <li><a href="#" @click="fnCategory('케이크')">케이크</a></li>
                                 <li><a href="#" @click="fnCategory('쿠키')">쿠키</a></li>
-                                <li><a href="#" @click="fnCategory('초콜렛')">초콜릿/사탕</a></li>
+                                <li><a href="#" @click="fnCategory('초콜릿')">초콜릿/사탕</a></li>
                             </ul>
                         </li>
                         <!-- <li class="menu-item dropdown">
