@@ -272,7 +272,7 @@
             mounted() {
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
-                console.log(self.userId); // 로그인 아이디 있나 콘솔 찍어보기
+                // console.log(self.userId); // 로그인 아이디 있나 콘솔 찍어보기
                 self.setUserIcon(); // 로그인/로그아웃 아이콘 반영
             }
         });

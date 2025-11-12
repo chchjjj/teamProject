@@ -281,11 +281,8 @@
                     type: "POST",
                     data: param,
                     success: function (data) {
-                        console.log("주문 데이터:", data);
                         if (data.detailList && data.detailList.length > 0) {
                             self.order = data.detailList[0];
-                            console.log("order.proNo:", self.order.proNo);
-                            console.log("order.storeId:", self.order.storeId);
                         }
                     }
                 });
@@ -316,7 +313,6 @@
                     reviewContent: self.reviewContent
                 };
                 
-                console.log("전송할 데이터:", param);
                 
                 $.ajax({
                     url: "/user/reviewInsert.dox",
@@ -374,7 +370,6 @@
         mounted() {
             let self = this;
             self.fnOrderSelect();
-            console.log("전달할 orderDetailId:", self.orderDetailId); 
         }
     });
 

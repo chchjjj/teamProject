@@ -375,7 +375,7 @@
                 // 리스트에서 상품 클릭시 상세페이지 이동
                 fnProDetail: function (proNo) {
                     let self = this;
-                    console.log(proNo); // main 화면에서 클릭한 상품번호 출력(확인완료)
+                    // console.log(proNo); // main 화면에서 클릭한 상품번호 출력(확인완료)
                     pageChange("/productDetail.do", { proNo: proNo });  // 상세페이지로 proNo 넘겨줌            
                 },
                 fnPageSizeChange: function () {
@@ -404,7 +404,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data);
+                            // console.log(data);
                             self.list = data.list; // data에 있는 list 값을 변수 list에 담기      
                             self.index = Math.ceil(data.cnt / self.pageSize);
                             // 게시글 총개수를 몇페이지씩 표시할지 기준으로 나누고, 소수점 발생시 올림처리 => index에 넣기
@@ -437,7 +437,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data);
+                            // console.log(data);
                             self.list = data.list; // data에 있는 list 값을 변수 list에 담기      
 
                         }
@@ -464,7 +464,7 @@
             mounted() {
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
-                console.log("로그인 아이디 ===> " + self.userId); // 로그인한 아이디 잘 넘어오나 테스트
+                // console.log("로그인 아이디 ===> " + self.userId); // 로그인한 아이디 잘 넘어오나 테스트
 
                 // QnA 목록 가져오기
                 self.fnQnaList();
@@ -479,7 +479,7 @@
 
                 // 헤더 메뉴 중 '카테고리' 하위 메뉴 클릭 이벤트 수신
                 emitter.on('categoryClick', (categoryName) => {
-                    console.log("카테고리 클릭:", categoryName);
+                    // console.log("카테고리 클릭:", categoryName);
                     self.selectedCategory = categoryName;
                     self.fnList(); // 해당 카테고리 상품만 조회
                 });

@@ -216,7 +216,6 @@
                                 fetchRows: self.pageSize
                             },
                             success(data) {
-                                console.log(data.reviewList);
                                 self.reviewList = data.reviewList;
                                 self.totalRows = data.totalRows;
                                 self.pageNum = Math.ceil(self.totalRows / self.pageSize);

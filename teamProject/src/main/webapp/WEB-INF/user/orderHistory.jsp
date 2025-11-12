@@ -648,7 +648,6 @@
                         data: param,
                         success: function (data) {
                             self.orderList = data.list;
-                            console.log(data.list);
                             self.fnGroupOrderList(self.orderList);
                             self.totalRows = data.totalRows;
                             self.pageNum = Math.ceil(self.totalRows / self.pageSize);
@@ -727,7 +726,6 @@
                     });
                     this.groupedOrdersList = Object.values(groupedOrders);
                     this.groupedOrdersList = this.groupedOrdersList.slice().reverse();
-                    console.log("최종 주문 목록:", this.groupedOrdersList);
                 },
 
                 formatNumber: function (num) {

@@ -224,7 +224,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data);
+                            // console.log(data);
                             self.list = data.list; // data에 있는 list 값을 변수 list에 담기      
                             //self.index = Math.ceil(data.cnt / self.pageSize);
                             self.index = Math.max(1, Math.ceil(data.cnt / self.pageSize)); //최소 1페이지 보장
@@ -295,7 +295,7 @@
                 // 리스트에서 상품 클릭시 상세페이지 이동
                 fnProDetail: function (proNo) {
                     let self = this;
-                    console.log(proNo); // main 화면에서 클릭한 상품번호 출력(확인완료)
+                    // console.log(proNo); // main 화면에서 클릭한 상품번호 출력(확인완료)
                     pageChange("/productDetail.do", { proNo: proNo });  // 상세페이지로 proNo 넘겨줌            
                 },
 
@@ -332,7 +332,7 @@
                         data: param,
                         success: function (data) {
                             self.adInfo = data.info;
-                            console.log("진행중 광고ID:", self.adInfo.adId); // 광고 ID 몇번인지(시퀀스)
+                            // console.log("진행중 광고ID:", self.adInfo.adId); // 광고 ID 몇번인지(시퀀스)
                         }
                     });
                 },
@@ -349,7 +349,7 @@
                         data: param,
                         success: function (data) {
                             self.adHistoryInfo = data.info;
-                            console.log("현재월:", self.adHistoryInfo.perMonth); // 광고진행월 PER_MONTH 컬럼값 찾기
+                            // console.log("현재월:", self.adHistoryInfo.perMonth); // 광고진행월 PER_MONTH 컬럼값 찾기
                         }
                     });
                 },
@@ -377,7 +377,7 @@
             mounted() {
                 // 처음 시작할 때 실행되는 부분
                 let self = this;
-                console.log("로그인 아이디 ===> " + self.userId); // 로그인한 아이디 잘 넘어오나 테스트
+                // console.log("로그인 아이디 ===> " + self.userId); // 로그인한 아이디 잘 넘어오나 테스트
 
                 // Vue가 DOM 렌더링 완료 후 실행
                 self.$nextTick(() => {
@@ -398,7 +398,7 @@
                     self.fnList();           // fnList 실행
                 } else if (category) {
                     //  3. 또는 카테고리 파라미터가 있을 때
-                    console.log("URL에서 받은 category:", category);
+                    // console.log("URL에서 받은 category:", category);
                     self.selectedCategory = category;
                     self.fnList();
                 }
@@ -410,14 +410,14 @@
 
                 // 헤더에서 keyword (검색어) 이벤트 수신
                 window.emitter.on('keyword', (keyword) => {
-                    console.log("헤더에서 받은 검색어:", keyword);
+                    // console.log("헤더에서 받은 검색어:", keyword);
                     self.keyword = keyword;
                     self.fnList(); // 메인에서 검색 실행
                 });
 
                 // 헤더 메뉴 중 '카테고리' 하위 메뉴 클릭 이벤트 수신
                 window.emitter.on('categoryClick', (categoryName) => {
-                    console.log("카테고리 클릭:", categoryName);
+                    // console.log("카테고리 클릭:", categoryName);
                     self.selectedCategory = categoryName;
                     self.fnList(); // 해당 카테고리 상품만 조회
                 });
