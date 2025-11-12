@@ -247,7 +247,9 @@
                     location.href = "/admin/userlist.do";
                 },
 
-
+                fnResult(roadFullAddr) {
+                    this.userAddr = roadFullAddr;
+                },
 
 
                 fnAdminMain: function () {
