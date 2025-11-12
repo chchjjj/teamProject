@@ -11,98 +11,240 @@
         integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
-        /* 기존 CSS는 유지하되, 상품 리스트에 맞게 일부 추가/수정 */
-        body {
-            margin: 0;
-            font-family: 'Malgun Gothic', sans-serif;
-            background-color: #f4f4f4;
+    /* ---------------------------------------------------- */
+    /* 1. Color Variables & Global Styles (Espresso Theme) */
+    /* ---------------------------------------------------- */
+    :root {
+        --espresso: #3E2723; /* 주요 색상: 짙은 갈색 */
+        --peony: #F4C9D6; /* 보조 색상: 분홍색 */
+        --butter: #FFEDAC; /* 배경 및 하이라이트: 버터색 */
+        --light-bg: #F4F4F4; /* 밝은 배경 */
+        --white: #FFFFFF;
+        --primary-color: var(--espresso); /* 주요 버튼 색상 */
+        --secondary-color: var(--peony); /* 보조 버튼/강조 색상 */
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Malgun Gothic', sans-serif;
+        background-color: var(--light-bg);
+    }
+
+    /* ---------------------------------------------------- */
+    /* 2. Layout (Wrapper & Sidebar & Content) */
+    /* ---------------------------------------------------- */
+    .main-wrapper {
+        display: flex;
+        min-height: 100vh; /* 전체 높이 사용 */
+    }
+
+    /* 사이드바 스타일 (고정) */
+    .sidebar {
+        width: 220px;
+        background-color: var(--butter);
+        flex-shrink: 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        padding-top: 20px;
+    }
+
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar-menu a {
+        display: block;
+        padding: 15px 20px;
+        text-decoration: none;
+        color: var(--espresso);
+        font-weight: bold;
+        transition: background-color 0.2s, color 0.2s;
+    }
+
+    .sidebar-menu a:hover {
+        background-color: var(--espresso);
+        color: var(--white);
+    }
+
+    .sidebar-menu .active a {
+        background-color: var(--espresso);
+        color: var(--white);
+        border-left: 5px solid var(--peony);
+        padding-left: 15px;
+    }
+
+    /* 콘텐츠 영역 */
+    .content-area {
+        flex-grow: 1;
+        padding: 30px;
+        background-color: var(--light-bg);
+        margin-left: 220px; /* 사이드바 너비만큼 공간 확보 */
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 300;
+        margin-bottom: 20px;
+        color: var(--primary-color);
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--primary-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* ---------------------------------------------------- */
+    /* 3. Product Card & Buttons (New Design 적용) */
+    /* ---------------------------------------------------- */
+    .product-card {
+        /* 상품 카드 디자인 업데이트 */
+        border: 1px solid #e0e0e0;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: var(--white); /* 흰색 배경 */
+        transition: all 0.3s ease;
+    }
+
+    .product-card:hover {
+        box-shadow: 0 3px 15px rgba(62, 39, 35, 0.1);
+        border-color: var(--peony);
+    }
+
+    .product-info {
+        flex-grow: 1;
+    }
+
+    .product-info h4 {
+        margin: 0 0 5px 0;
+        font-size: 17px;
+        color: var(--primary-color); /* 에스프레소 색상 */
+        font-weight: 600;
+    }
+
+    .product-details {
+        font-size: 13px;
+        color: #777;
+    }
+
+    .product-details span {
+        margin-right: 15px;
+    }
+    
+    .product-details strong {
+        color: var(--espresso);
+    }
+
+    /* 일반 버튼 스타일 (공통) */
+    .product-actions button,
+    button {
+        padding: 8px 15px;
+        border: 1px solid var(--primary-color);
+        background-color: var(--white);
+        color: var(--primary-color);
+        cursor: pointer;
+        margin-left: 5px;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    
+    .product-actions button:hover,
+    button:hover {
+        background-color: var(--primary-color);
+        color: var(--white);
+        transform: translateY(-1px);
+    }
+
+    /* 수정/강조 버튼 스타일 (Peony 사용) */
+    .product-actions .modify-btn {
+        background-color: var(--secondary-color); /* 피오니 배경색 */
+        color: var(--primary-color); /* 에스프레소 글자색 */
+        border: 1px solid var(--secondary-color);
+    }
+
+    .product-actions .modify-btn:hover {
+        background-color: #f0b8ca; /* 약간 어두운 피오니 */
+        color: var(--primary-color);
+    }
+
+    /* 상품 등록 버튼 (Page Title 옆) */
+    .add-product-btn {
+        padding: 10px 20px;
+        background-color: var(--primary-color); /* 에스프레소 배경색 */
+        color: var(--white);
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .add-product-btn:hover {
+        background-color: #5d4037; /* 약간 어두운 에스프레소 */
+    }
+    
+    /* ---------------------------------------------------- */
+    /* 4. Responsive adjustments */
+    /* ---------------------------------------------------- */
+    @media (max-width: 768px) {
+        .sidebar {
+            position: static;
+            width: 100%;
+            height: auto;
+            padding-top: 10px;
         }
 
-        .main-wrapper {
+        .sidebar-menu {
             display: flex;
-            min-height: calc(100vh - 50px);
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 0 10px;
         }
 
-        /* 우측 콘텐츠 영역 (기존 코드와 동일) */
+        .sidebar-menu a {
+            padding: 10px 15px;
+            text-align: center;
+            border-left: none !important;
+            border-bottom: 3px solid transparent;
+        }
+
+        .sidebar-menu .active a {
+            border-left: none;
+            border-bottom: 3px solid var(--peony);
+            padding-left: 15px;
+        }
+
         .content-area {
-            flex-grow: 1;
-            padding: 30px;
-            background-color: white;
-            margin-left: 220px;
+            margin-left: 0;
+            padding: 20px 15px;
         }
-
-        .page-title {
-            font-size: 24px;
-            font-weight: 300;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* --- 상품 카드 관련 스타일 --- */
+        
         .product-card {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+        }
+        
+        .product-actions {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #fff;
+            gap: 8px;
+            width: 100%;
         }
-
-        .product-info {
-            flex-grow: 1;
-        }
-
-        .product-info h4 {
-            margin: 0 0 5px 0;
-            font-size: 16px;
-            color: #333;
-        }
-
-        .product-details {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .product-details span {
-            margin-right: 15px;
-        }
-
+        
         .product-actions button {
-            padding: 6px 12px;
-            border: 1px solid #ccc;
-            background-color: #f0f0f0;
-            cursor: pointer;
-            margin-left: 5px;
-            border-radius: 4px;
+            flex: 1;
+            margin-left: 0;
         }
-
-        .product-actions .modify-btn {
-            background-color: #007bff;
-            color: white;
-            border-color: #007bff;
-        }
-
-        /* 상단 상품 등록 버튼 */
-        .add-product-btn {
-            padding: 10px 20px;
-            background-color: #28a745;
-            /* 녹색 */
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .add-product-btn:hover {
-            background-color: #218838;
-        }
-    </style>
+    }
+</style>
 </head>
 
 <body>

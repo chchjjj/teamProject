@@ -14,138 +14,272 @@
     <!--페이지 이동-->
     <script src="/js/page-change.js"></script>
 
-    <style>
-        /* (스타일 시트 내용은 그대로 유지) */
-        .content-area {
-            flex-grow: 1;
-            padding: 30px;
-            background-color: #f4f4f4;
-            margin-left: 220px;
-        }
+  <style>
+    /* ---------------------------------------------------- */
+    /* 1. Color Variables & Global Styles (Espresso/Peony Theme) */
+    /* ---------------------------------------------------- */
+    :root {
+        /* 새로운 색상 변수 정의 */
+        --espresso: #3E2723;
+        --peony: #F4C9D6;
+        --butter: #FFEDAC;
+        --primary-color: var(--espresso); /* 주요 색상: 에스프레소 */
+        --secondary-color: var(--peony); /* 보조 색상: 피오니 */
+        --light-accent: #f7f7ff; /* 메모 박스 배경용 연한 색상 (기존 퍼플 라이트 대신) */
 
-        .page-title {
-            color: #5d5ddb;
-            font-size: 24px;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        --accent-green: #28a745; /* 완료/성공 (Green) - 유지 */
+        --accent-red: #dc3545; /* 대기/위험 (Red) - 유지 */
+        --light-bg: #f4f4f4; /* 밝은 배경 - 유지 */
+        --white: #FFFFFF;
+        --text-dark: #333;
+        --border-color: #ccc;
+    }
 
-        .detail-card {
-            max-width: 600px;
-            margin: 0 auto;
-            border: 1px solid #ccc;
-            padding: 25px;
-            border-radius: 10px;
-            background-color: white;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
+    body {
+        margin: 0;
+        font-family: 'Malgun Gothic', sans-serif;
+        background-color: var(--light-bg);
+    }
+    
+    .main-wrapper {
+        display: flex;
+        min-height: 100vh;
+    }
 
-        .order-header {
-            font-weight: bold;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-            color: #333;
-            font-size: 16px;
-        }
+    /* 사이드바는 이전 스타일 기준으로 가정하고 content-area에만 집중 */
+    .content-area {
+        flex-grow: 1;
+        padding: 30px;
+        background-color: var(--light-bg);
+        margin-left: 220px;
+        box-sizing: border-box;
+        max-width: 1200px;
+        margin: 0 auto; /* 중앙 정렬 */
+        padding-top: 30px;
+    }
 
-        .product-area {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-            align-items: flex-start;
-        }
+    .page-title {
+        font-size: 24px;
+        font-weight: 900;
+        margin-bottom: 30px;
+        color: var(--primary-color);
+        /* 에스프레소 색상 적용 */
+        text-align: center;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--primary-color);
+    }
 
-        .product-image {
-            width: 150px;
-            height: 150px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            flex-shrink: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 14px;
-            color: #999;
-            border-radius: 5px;
-        }
+    /* ---------------------------------------------------- */
+    /* 2. Detail Card Styles (주문 상세 카드) */
+    /* ---------------------------------------------------- */
+    .detail-card {
+        max-width: 800px;
+        margin: 0 auto;
+        border: 1px solid var(--border-color);
+        padding: 20px;
+        border-radius: 10px;
+        background-color: var(--white);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+    }
+    
+    .detail-card:hover {
+        transform: translateY(-2px);
+    }
 
-        .options-list {
-            flex-grow: 1;
-        }
+    .order-header {
+        font-weight: bold;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--primary-color);
+        /* 에스프레소 색상 적용 */
+        color: var(--text-dark);
+        font-size: 12px;
+    }
 
-        .options-list div {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-            border-bottom: 1px dashed #eee;
-            font-size: 14px;
-            color: #555;
-        }
+    .product-area {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+        align-items: flex-start;
+    }
 
-        .options-list div:last-of-type {
-            border-bottom: none;
-            margin-bottom: 10px;
-        }
+    .product-image {
+        width: 150px;
+        height: 150px;
+        background-color: #f0f0f0;
+        border: 1px solid var(--border-color);
+        flex-shrink: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 14px;
+        color: #999;
+        border-radius: 5px;
+    }
 
-        .option-value {
-            font-weight: bold;
-            color: #333;
-        }
+    .options-list {
+        flex-grow: 1;
+    }
 
-        .total-price-area {
-            text-align: right;
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-            padding-top: 10px;
-            border-top: 2px solid #5d5ddb;
-        }
+    .options-list div {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px dashed #eee;
+        font-size: 10px;
+        color: #555;
+    }
 
-        .chat-button {
-            display: block;
-            width: 150px;
-            padding: 10px;
-            margin-left: auto;
-            margin-top: 15px;
-            background-color: #5d5ddb;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-align: center;
-            font-weight: bold;
-        }
+    .options-list div:last-of-type {
+        border-bottom: none;
+        margin-bottom: 10px;
+    }
 
-        .memo-box {
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-top: 15px;
-            border-radius: 5px;
-            background-color: #fffaf0;
-        }
+    .option-value {
+        font-weight: bold;
+        color: var(--text-dark);
+    }
 
-        .memo-box strong {
-            display: block;
-            font-size: 14px;
-            color: #555;
-            margin-bottom: 5px;
-        }
+    .total-price-area {
+        text-align: right;
+        margin-top: 20px;
+        font-size: 22px;
+        font-weight: bold;
+        color: var(--primary-color);
+        /* 에스프레소 색상 적용 */
+        padding-top: 10px;
+        border-top: 3px solid var(--primary-color);
+    }
 
-        .memo-content {
-            font-size: 15px;
-            color: #333;
-        }
+    .memo-box {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 5px;
+        background-color: var(--light-accent);
+        /* 연한 퍼플 계열 배경 -> 연한 에스프레소/피오니 계열로 대체 */
+        border-left: 5px solid var(--primary-color);
+        /* 에스프레소 강조선 */
+    }
 
-        .button-group {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 15px;
-        }
-    </style>
+    .memo-box strong {
+        display: block;
+        font-size: 14px;
+        color: var(--primary-color);
+        /* 에스프레소 색상 적용 */
+        margin-bottom: 5px;
+    }
+
+    .memo-content {
+        font-size: 15px;
+        color: var(--text-dark);
+    }
+
+    /* ---------------------------------------------------- */
+    /* 3. Button Styles (Q&A/Order Action Buttons) */
+    /* ---------------------------------------------------- */
+    .chat-button,
+    .action-button {
+        display: block;
+        width: 100%;
+        max-width: 150px;
+        /* 버튼 최대 너비 제한 */
+        padding: 10px;
+        margin-left: auto;
+        margin-top: 15px;
+        background-color: var(--primary-color);
+        /* 에스프레소 색상 적용 */
+        color: var(--white);
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: center;
+        font-weight: bold;
+        transition: background-color 0.2s, transform 0.2s;
+    }
+
+    .chat-button:hover,
+    .action-button:hover {
+        background-color: #5d4037;
+        /* 에스프레소보다 약간 밝게 (호버 효과) */
+        transform: translateY(-1px);
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    /* 4. Q&A Status & Form Styles (통합) */
+    .status-btn {
+        padding: 5px 10px;
+        border-radius: 4px;
+        color: var(--white);
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+    .completed {
+        background-color: var(--accent-green);
+        /* 완료/성공 - 녹색 유지 */
+    }
+
+    .waiting {
+        background-color: var(--accent-red);
+        /* 대기/경고 - 빨간색 유지 */
+    }
+    
+    .answer-row {
+        background-color: #fffaf0; /* 버터색보다 연한 배경 */
+    }
+
+    .answer-content {
+        padding: 15px;
+    }
+
+    .answer-content strong {
+        color: var(--primary-color);
+        /* 강조 글자 에스프레소 */
+    }
+
+    .answer-form-area {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .answer-form-area textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 10px;
+        border: 1px solid var(--primary-color);
+        /* 에스프레소 테두리 */
+        border-radius: 4px;
+        box-sizing: border-box;
+        resize: vertical;
+    }
+    
+    .answer-form-area button {
+        align-self: flex-end;
+        background-color: var(--primary-color);
+        /* 에스프레소 버튼 */
+        color: var(--white);
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .answer-form-area button:hover {
+        background-color: #5d4037;
+        /* 에스프레소보다 약간 밝게 (호버 효과) */
+    }
+</style>
     
 </head>
 <body>

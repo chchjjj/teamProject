@@ -10,152 +10,293 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js"
         integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Malgun Gothic', sans-serif;
-            background-color: #f4f4f4;
-        }
+   <style>
+                /* Page Specific Styles (새로운 디자인 적용) */
+                :root {
+                    --espresso: #3E2723;
+                    --peony: #F4C9D6;
+                    --butter: #FFEDAC;
+                    --light-bg: #F4F4F4;
+                    --white: #FFFFFF;
+                    --primary-color: var(--espresso);
+                    /* 주요 버튼 색상을 에스프레소로 통일 */
+                    --secondary-color: var(--peony);
+                    /* 보조 버튼 색상을 피오니로 통일 */
+                }
 
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: white;
-            border-bottom: 1px solid #ddd;
-        }
+                body {
+                    margin: 0;
+                    font-family: 'Malgun Gothic', sans-serif;
+                    background-color: var(--light-bg);
+                }
 
-        .search-area {
-            display: flex;
-            align-items: center;
-        }
+                /* 1. Header (기존 스타일 유지 및 색상 변수 적용) */
+                .header-container {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 10px 20px;
+                    background-color: var(--white);
+                    border-bottom: 1px solid #ddd;
+                }
 
-        .search-area input {
-            padding: 8px;
-            border: 1px solid #ccc;
-            margin-right: 5px;
-        }
+                .search-area {
+                    display: flex;
+                    align-items: center;
+                }
 
-        .main-wrapper {
-            display: flex;
-            min-height: calc(100vh - 50px);
-        }
+                .search-area input {
+                    padding: 8px;
+                    border: 1px solid #ccc;
+                    margin-right: 5px;
+                    border-radius: 4px;
+                }
 
-        .sidebar {
-            width: 220px;
-            background-color: #ffedac;
-            flex-shrink: 0;
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            padding-top: 20px;
-        }
+                /* 2. Main Wrapper & Sidebar (색상 변수 적용) */
+                .main-wrapper {
+                    display: flex;
+                    min-height: calc(100vh - 50px);
+                    /* 헤더 높이만큼 조정 */
+                }
 
-        .sidebar-menu li {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
+                .sidebar {
+                    width: 220px;
+                    background-color: var(--butter);
+                    /* 버터색 적용 */
+                    flex-shrink: 0;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    bottom: 0;
+                    padding-top: 20px;
+                }
 
-        .sidebar-menu a {
-            display: block;
-            padding: 15px 20px;
-            text-decoration: none;
-            color: white;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
+                .sidebar-menu {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                }
 
-        .sidebar-menu a:hover {
-            background-color: #3e2723;
-        }
+                .sidebar-menu li {
+                    margin: 0;
+                    padding: 0;
+                }
 
-        .sidebar-menu .active a {
-            background-color: #3e2723;
-            color: white;
-            border-left: 5px solid #000;
-            padding-left: 15px;
-        }
+                .sidebar-menu a {
+                    display: block;
+                    padding: 15px 20px;
+                    text-decoration: none;
+                    color: var(--espresso);
+                    /* 글자색을 에스프레소로 변경 */
+                    font-weight: bold;
+                    transition: background-color 0.2s, color 0.2s;
+                }
 
-        .content-area {
-            flex-grow: 1;
-            padding: 30px;
-            background-color: white;
-            margin-left: 220px;
-        }
+                .sidebar-menu a:hover {
+                    background-color: var(--espresso);
+                    color: var(--white);
+                }
 
-        .page-title {
-            font-size: 24px;
-            font-weight: 300;
-            margin-bottom: 20px;
-        }
+                .sidebar-menu .active a {
+                    background-color: var(--espresso);
+                    color: var(--white);
+                    border-left: 5px solid var(--peony);
+                    /* 활성 표시 색상을 피오니로 변경 */
+                    padding-left: 15px;
+                }
 
-        .store-card {
-            border: 1px solid #ddd;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
+                /* 3. Content Area */
+                .content-area {
+                    flex-grow: 1;
+                    padding: 30px;
+                    background-color: var(--light-bg);
+                    /* 배경색을 light-bg로 유지 */
+                    margin-left: 220px;
+                }
 
-        .store-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
+                .page-title {
+                    font-size: 24px;
+                    font-weight: 300;
+                    margin-bottom: 20px;
+                    color: var(--espresso);
+                    /* 제목 색상 적용 */
+                    padding-bottom: 10px;
+                    border-bottom: 2px solid var(--espresso);
+                }
 
-        .store-name-section {
-            display: flex;
-            align-items: center;
-        }
+                /* 4. Store Card (orderCard 스타일 반영) */
+                .store-card {
+                    background-color: var(--white);
+                    border: 1px solid #e0e0e0;
+                    border-radius: 8px;
+                    padding: 20px;
+                    margin-bottom: 20px;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+                }
 
-        .store-name-section h3 {
-            margin: 0;
-            font-size: 18px;
-            margin-right: 15px;
-        }
+                .store-card:hover {
+                    box-shadow: 0 3px 15px rgba(62, 39, 35, 0.1);
+                    border-color: var(--espresso);
+                }
 
-        .membership-info {
-            font-size: 14px;
-            color: #666;
-        }
+                .store-header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 15px;
+                    padding-bottom: 12px;
+                    border-bottom: 2px solid var(--butter);
+                    /* 버터색 구분선 적용 */
+                }
 
-        .store-intro p {
-            background-color: #f9f9f9;
-            padding: 15px;
-            border-radius: 4px;
-            color: #555;
-            margin-top: 10px;
-            margin-bottom: 20px;
-        }
+                .store-name-section {
+                    display: flex;
+                    align-items: center;
+                }
 
-        .management-buttons button {
-            padding: 8px 15px;
-            border: 1px solid #ccc;
-            background-color: white;
-            cursor: pointer;
-            margin-right: 5px;
-            border-radius: 4px;
-        }
+                .store-name-section h3 {
+                    margin: 0;
+                    font-size: 18px;
+                    color: var(--espresso);
+                    /* 상점 이름 색상 적용 */
+                    margin-right: 15px;
+                }
 
-        .management-buttons .primary-btn {
-            background-color: #007bff;
-            color: white;
-            border: 1px solid #007bff;
-        }
+                .membership-info span {
+                    /* statusBadge 컨셉 적용 */
+                    display: inline-block;
+                    padding: 4px 10px;
+                    border-radius: 15px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    background-color: var(--peony);
+                    /* 피오니 배경색 */
+                    color: var(--espresso);
+                    /* 에스프레소 글자색 */
+                }
 
-        button {
-            padding: 5px 10px;
-            border: 1px solid #ccc;
-            background-color: #f0f0f0;
-            cursor: pointer;
-            margin-left: 5px;
-            border-radius: 4px;
-        }
-    </style>
+                .store-intro p {
+                    background-color: #fafafa;
+                    border-left: 3px solid var(--peony);
+                    /* 피오니색 강조선 적용 */
+                    padding: 15px;
+                    border-radius: 4px;
+                    color: #555;
+                    margin-top: 10px;
+                    margin-bottom: 20px;
+                    font-size: 14px;
+                }
+
+                /* 5. Buttons (actionButtons 스타일 반영) */
+                .management-buttons {
+                    display: 200px;
+                    gap: 8px;
+                    margin-top: 15px;
+                    padding-top: 15px;
+                    border-top: 1px solid #f0f0f0;
+                }
+
+                .management-buttons button {
+                    flex: 1;
+                    padding: 10px 15px;
+                    border: 1px solid #ccc;
+                    border-radius: 6px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    background-color: var(--white);
+                    color: var(--primary-color);
+                    border: 1px solid var(--primary-color);
+                }
+
+                .management-buttons button:hover {
+                    background-color: var(--primary-color);
+                    color: var(--white);
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(62, 39, 35, 0.3);
+                }
+
+                .management-buttons .primary-btn {
+                    /* 수정하기 버튼 (강조) */
+                    background-color: var(--secondary-color);
+                    /* 피오니 배경색 */
+                    color: var(--primary-color);
+                    /* 에스프레소 글자색 */
+                    border: 1px solid var(--secondary-color);
+                }
+
+                .management-buttons .primary-btn:hover {
+                    background-color: #f0b8ca;
+                    /* 약간 어두운 피오니 */
+                    color: var(--primary-color);
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(244, 201, 214, 0.4);
+                }
+
+                /* 일반 버튼 (검색 버튼 등에 사용될 수 있는 스타일) */
+                button {
+                    padding: 8px 15px;
+                    /* 약간 더 크게 조정 */
+                    border: 1px solid #ccc;
+                    background-color: #f0f0f0;
+                    cursor: pointer;
+                    margin-left: 5px;
+                    border-radius: 4px;
+                    font-weight: 500;
+                    transition: all 0.2s ease;
+                }
+
+                button:hover {
+                    background-color: #e0e0e0;
+                }
+
+                /* Responsive adjustments (새로운 CSS의 미디어 쿼리 적용) */
+                @media (max-width: 768px) {
+                    .sidebar {
+                        position: static;
+                        width: 100%;
+                        height: auto;
+                        padding-top: 10px;
+                    }
+
+                    .sidebar-menu {
+                        display: flex;
+                        flex-wrap: wrap;
+                        justify-content: space-around;
+                        padding: 0 10px;
+                    }
+
+                    .sidebar-menu a {
+                        padding: 10px 15px;
+                        text-align: center;
+                        border-left: none !important;
+                        border-bottom: 3px solid transparent;
+                    }
+
+                    .sidebar-menu .active a {
+                        border-left: none;
+                        border-bottom: 3px solid var(--peony);
+                        padding-left: 15px;
+                    }
+
+                    .content-area {
+                        margin-left: 0;
+                        padding: 20px 15px;
+                    }
+
+                    .management-buttons {
+                        flex-direction: column;
+                    }
+
+                    .store-header {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: 10px;
+                    }
+                }
+            </style>
 </head>
 
 <body>

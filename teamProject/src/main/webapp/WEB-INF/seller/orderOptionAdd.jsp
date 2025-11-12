@@ -12,84 +12,143 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
-    <style>
-        /* (기존 CSS 스타일 유지) */
-        .content-area {
-            flex-grow: 1;
-            padding: 30px;
-            background-color: #f4f4f4;
-            margin-left: 220px;
-        }
+ <style>
+    /* ---------------------------------------------------- */
+    /* Color Variables (Espresso/Peony Theme) */
+    /* ---------------------------------------------------- */
+    :root {
+        --espresso: #3E2723;
+        --peony: #F4C9D6;
+        --butter: #FFEDAC;
+        --primary-color: var(--espresso); /* 주요 색상: 에스프레소 */
+        --secondary-color: var(--peony); /* 보조 색상: 피오니 */
+        --light-bg: #f4f4f4; /* 밝은 배경 */
+        --white: #FFFFFF;
+        --text-dark: #333;
+    }
 
-        .page-title {
-            color: #5d5ddb;
-            font-size: 24px;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 30px;
-        }
+    /* ---------------------------------------------------- */
+    /* 1. 중앙 정렬 및 전체 레이아웃 수정 */
+    /* ---------------------------------------------------- */
+    body, html {
+        height: 100%;
+        margin: 0;
+        font-family: 'Malgun Gothic', sans-serif;
+        background-color: var(--light-bg);
+    }
+    
+    /* 화면 전체를 아우르는 컨테이너 (사이드바가 없다고 가정하고 중앙 정렬) */
+    .main-container {
+        display: flex;
+        justify-content: center; /* 수평 중앙 정렬 */
+        align-items: center; /* 수직 중앙 정렬 */
+        min-height: 100vh;
+        width: 100%;
+        padding: 0;
+    }
 
-        .detail-card {
-            max-width: 600px;
-            margin: 0 auto;
-            border: 1px solid #ccc;
-            padding: 25px;
-            border-radius: 10px;
-            background-color: white;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
+    .content-area {
+        /* flex-grow: 1; 이 속성 대신 중앙 정렬을 위해 수정 */
+        padding: 30px;
+        background-color: var(--light-bg);
+        margin: auto; /* 상하좌우 auto로 설정하여 flex 컨테이너 내부에서 중앙 정렬 */
+        /* min-width: 300px; */ /* 중앙 정렬을 위해 max-width는 detail-card에 맡기고, content-area는 중앙에 위치하도록 함 */
+    }
+    /* ---------------------------------------------------- */
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+    .page-title {
+        color: var(--primary-color);
+        /* 에스프레소 색상 적용 */
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 30px;
+    }
 
-        .form-group label {
-            display: block;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 8px;
-            font-size: 16px;
-        }
+    .detail-card {
+        max-width: 600px;
+        /* 이전에 이미 중앙 정렬됨 */
+        margin: 0 auto; 
+        border: 1px solid #ccc;
+        padding: 25px;
+        border-radius: 10px;
+        background-color: var(--white);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
 
-        .form-group input[type="number"],
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-sizing: border-box;
-            font-size: 15px;
-        }
+    .form-group {
+        margin-bottom: 20px;
+    }
 
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
+    .form-group label {
+        display: block;
+        font-weight: bold;
+        color: var(--text-dark);
+        /* 기본 텍스트 색상 유지 */
+        margin-bottom: 8px;
+        font-size: 16px;
+    }
 
-        .button-group {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 30px;
-        }
+    .form-group input[type="number"],
+    .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+        font-size: 15px;
+    }
+    /* 입력 필드에 포커스 시 에스프레소 테두리 적용 */
+    .form-group input[type="number"]:focus,
+    .form-group textarea:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 5px rgba(62, 39, 35, 0.3); /* 에스프레소 쉐도우 */
+    }
 
-        .action-button {
-            width: 120px;
-            padding: 10px;
-            background-color: #5d5ddb;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-align: center;
-            font-weight: bold;
-            font-size: 14px;
-        }
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
 
-        .cancel-button {
-            background-color: #6c757d;
-        }
-    </style>
+    .button-group {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 30px;
+    }
+
+    .action-button {
+        width: 120px;
+        padding: 10px;
+        background-color: var(--primary-color);
+        /* 에스프레소 색상 적용 */
+        color: var(--white);
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: center;
+        font-weight: bold;
+        font-size: 14px;
+        transition: background-color 0.2s, transform 0.2s;
+    }
+
+    .action-button:hover {
+        background-color: #5d4037;
+        /* 에스프레소보다 약간 밝게 (호버 효과) */
+        transform: translateY(-1px);
+    }
+
+    .cancel-button {
+        background-color: #6c757d;
+        /* 취소 버튼은 차분한 회색 유지 */
+    }
+
+    .cancel-button:hover {
+        background-color: #5a6268;
+        transform: translateY(-1px);
+    }
+</style>
 </head>
 
 <body>
