@@ -177,8 +177,8 @@
                 }
 
                 // ⭐ 디버깅 로그 확인
-                console.log("AJAX로 보낼 userId:", userId);
-                console.log("AJAX로 보낼 storeName:", currentStoreName);
+                // console.log("AJAX로 보낼 userId:", userId);
+                // console.log("AJAX로 보낼 storeName:", currentStoreName);
 
                 $.ajax({
                     url: '/getStoreIdByUserId.dox',
@@ -193,7 +193,7 @@
                         this.searched = true; // 조회 완료 상태 업데이트
                         if (response.success && response.storeId) {
                             this.storeId = response.storeId;
-                            console.log("가게 번호 조회 성공:", response.storeId);
+                            // console.log("가게 번호 조회 성공:", response.storeId);
                         } else {
                             this.storeId = null;
                             alert(response.message || '가게 번호 조회에 실패했습니다.');

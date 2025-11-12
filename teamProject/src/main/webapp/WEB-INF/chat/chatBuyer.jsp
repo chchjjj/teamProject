@@ -223,7 +223,7 @@ const app = Vue.createApp({
 
                     if (unreadMsgIds.length === 0) return;
 
-                    console.log("읽음 처리할 메시지 ID 목록:", unreadMsgIds);
+                    // console.log("읽음 처리할 메시지 ID 목록:", unreadMsgIds);
 
                     axios.post('/api/chat/markAsRead', {
                         chatId: this.chatId,
@@ -231,7 +231,7 @@ const app = Vue.createApp({
                         readerId: this.userId
                     })
                     .then(res => {
-                        console.log("읽음 처리 완료:", res.data);
+                        // console.log("읽음 처리 완료:", res.data);
 
                         // 1) 화면에서도 바로 반영
                         this.messages = this.messages.map(msg => {
@@ -248,7 +248,7 @@ const app = Vue.createApp({
                                 messageIds: unreadMsgIds,
                                 readerId: this.userId
                             };
-                            console.log("읽음 알림 전송:", readNotification);
+                            // console.log("읽음 알림 전송:", readNotification);
                             this.stompClient.send("/app/readMessage", {}, JSON.stringify(readNotification));
                         }
                     })

@@ -293,7 +293,7 @@
                                         // 🌟 Vue 데이터에 주소 값 반영
                                         self.formData.storeAddr = mainAddr;
 
-                                        console.log("✅ 주소 검색 완료 (storeAddr에 전체 주소 반영):", mainAddr);
+                                        // console.log("✅ 주소 검색 완료 (storeAddr에 전체 주소 반영):", mainAddr);
                                     }
                                 }).open({
                                     // 팝업 중앙 정렬 옵션 (모바일 대응에 유리)
@@ -336,7 +336,7 @@
                                     storeData.chatEnd = '00:00:00';
                                 }
 
-                                console.log("AJAX 전송 데이터:", storeData);
+                                // console.log("AJAX 전송 데이터:", storeData);
 
                                 $.ajax({
                                     url: '/saveStoreInfo',
