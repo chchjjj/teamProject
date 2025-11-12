@@ -139,38 +139,25 @@
                 connect() {
                     const socket = new SockJS('/ws-chat');
                     this.stompClient = Stomp.over(socket);
-
-                    this.stompClient.connect({}, (frame) => {
-                        console.log("WebSocket 연결 성공: " + frame);
-                        this.stompClient.subscribe('/topic/public', (message) => {
+                    this.stompClient.connect({}, frame => {
+                        // 🔥 chatId 기준으로 구독 채널 분리
+                        this.stompClient.subscribe('/topic/chat/' + this.chatId, message => {
                             const msg = JSON.parse(message.body);
-                            // 1️⃣ 일반 채팅 메시지 수신
-                            // if (msg.content) {
-                            //     this.messages.push(msg);
-                            //     this.$nextTick(() => this.scrollToBottom());
-                            // }
 
-                            // 1️⃣ 일반 채팅 & 이미지 메시지 수신
                             if (msg.messageType === 'TEXT' || msg.messageType === 'IMAGE') {
-                                this.messages.push(msg);
+                                if (msg.sender !== this.userId) this.messages.push(msg);
                                 this.$nextTick(() => this.scrollToBottom());
                             }
 
-                            // 2️⃣ 읽음 상태 알림 수신
+                            // 읽음 알림
                             if (msg.messageIds && msg.readerId) {
-                                console.log("읽음 알림 수신:", msg);
-
                                 this.messages = this.messages.map(m => {
-                                    if (msg.messageIds.includes(m.id)) {
-                                        return { ...m, isRead: 'Y' };
-                                    }
+                                    if (msg.messageIds.includes(m.id)) return { ...m, isRead: 'Y' };
                                     return m;
                                 });
                             }
                         });
-                    }, (error) => {
-                        console.error("WebSocket 연결 실패: ", error);
-                    });
+                    }, error => console.error("WebSocket 연결 실패:", error));
                 },
                 sendMessage() {
                     if (!this.newMessage.trim()) return;
