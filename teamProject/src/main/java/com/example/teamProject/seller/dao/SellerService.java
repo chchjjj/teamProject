@@ -14,15 +14,21 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.teamProject.seller.mapper.ProductImgMapper;
 import com.example.teamProject.seller.mapper.SellerMapper;
 import com.example.teamProject.seller.model.Seller;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 @Service
 public class SellerService {
 	@Autowired
-	SellerMapper sellerMapper;
+	private SellerMapper sellerMapper;
 	@Autowired
     private SqlSessionTemplate sqlSessionTemplate;
 	@Autowired
     private ProductImgMapper productImgMapper; // 이미지 삭제를 위해 필요
+	
+	public SellerService(SellerMapper sellerMapper) {
+        this.sellerMapper = sellerMapper;
+    }
+	
 	
 	private static final String ALLERGY_MAPPER_NAMESPACE = "com.example.teamProject.seller.mapper.SellerMapper";
 	// 판매자 가게 리스트 불러오기
@@ -450,61 +456,75 @@ public Map<String, Object> getProductDataForEdit(int proNo) {
 
 
 
-@Transactional
-public void updateProduct(Seller seller) throws Exception {
+@Transactional(rollbackFor = Exception.class) // 🌟 모든 예외 발생 시 롤백 보장
+public void updateProduct(Seller seller) { // Exception을 던지지 않고 RuntimeException으로 처리
     
     // 🚨 1. 메서드 시작 및 입력 데이터 확인
     System.out.println("========================================================================");
     System.out.println(">>> [Service] updateProduct 트랜잭션 시작");
     
-    // Controller에서 storeId와 userId가 이미 설정되어 넘어왔습니다.
     int proNo = seller.getProNo();
     
-    // 🚨 2. 핵심 식별자 및 새 데이터 확인
-    System.out.println(">>> 수정 대상 PRO_NO: " + proNo);
-    System.out.println(">>> 새 PRO_NAME: " + seller.getProName());
-    // proInfo는 내용이 길 수 있으므로 일부만 출력
-    String proInfoPreview = seller.getProInfo() != null ? 
-                            seller.getProInfo().substring(0, Math.min(seller.getProInfo().length(), 50)) + "..." : "NULL/EMPTY";
-    System.out.println(">>> 새 PRO_INFO (미리보기): " + proInfoPreview);
-    
-    // 1. 제품 기본 정보 수정
-    sellerMapper.updateProduct(seller);
-    System.out.println(">>> [DB] 제품 기본 정보 (PRODUCT_TBL) 수정 완료.");
-    
-    // 2. 기존 옵션 삭제 후 재등록
-    System.out.println(">>> [DB] 기존 옵션 삭제 시작 (PRO_NO: " + proNo + ")");
-    sellerMapper.deleteProductOptions(proNo);
-    System.out.println(">>> [DB] 기존 옵션 삭제 완료.");
-    
-    if (seller.getOptions() != null && !seller.getOptions().isEmpty()) {
-        System.out.println(">>> 등록할 옵션 개수: " + seller.getOptions().size() + "개");
-        insertOptions(proNo, seller.getOptions());
-        System.out.println(">>> [DB] 새 옵션 재등록 완료.");
-    } else {
-        System.out.println(">>> 등록할 옵션 없음.");
-    }
-
-    // 3. 기존 불가 날짜 삭제 후 재등록
-    System.out.println(">>> [DB] 기존 불가 날짜 삭제 시작 (PRO_NO: " + proNo + ")");
-    sellerMapper.deleteDisabledDates(proNo);
-    System.out.println(">>> [DB] 기존 불가 날짜 삭제 완료.");
-    
-    if (seller.getDisabledDates() != null && !seller.getDisabledDates().isEmpty()) {
-        System.out.println(">>> 등록할 불가 날짜 개수: " + seller.getDisabledDates().size() + "개");
-        for(String date : seller.getDisabledDates()) {
-            sellerMapper.insertDisabledDate(proNo, date);
-            // 🚨 날짜 등록 로그
-            System.out.println("    - 불가 날짜 등록: " + date);
+    try {
+        // 🚨 2. 핵심 식별자 및 새 데이터 확인
+        System.out.println(">>> 수정 대상 PRO_NO: " + proNo);
+        System.out.println(">>> 새 PRO_NAME: " + seller.getProName());
+        String proInfoPreview = seller.getProInfo() != null ? 
+                                seller.getProInfo().substring(0, Math.min(seller.getProInfo().length(), 50)) + "..." : "NULL/EMPTY";
+        System.out.println(">>> 새 PRO_INFO (미리보기): " + proInfoPreview);
+        
+        // 1. 제품 기본 정보 수정
+        int updatedRows = sellerMapper.updateProduct(seller); // 🌟 수정된 행 수 확인
+        System.out.println(">>> [DB] 제품 기본 정보 (PRODUCT_TBL) 수정 완료. 수정된 행: " + updatedRows);
+        
+        if (updatedRows == 0) {
+            // 🌟 수정된 행이 0개라면 트랜잭션을 롤백하고 오류 발생
+            System.out.println("❌ 오류: PRO_NO(" + proNo + ") 또는 STORE_ID가 일치하는 수정 대상이 DB에 없습니다.");
+            throw new RuntimeException("DB 수정 대상이 없습니다. (PRO_NO 또는 STORE_ID 확인 필요)");
         }
-        System.out.println(">>> [DB] 새 불가 날짜 재등록 완료.");
-    } else {
-        System.out.println(">>> 등록할 불가 날짜 없음.");
+        
+        // 2. 기존 옵션 삭제 후 재등록
+        System.out.println(">>> [DB] 기존 옵션 삭제 시작 (PRO_NO: " + proNo + ")");
+        sellerMapper.deleteProductOptions(proNo);
+        System.out.println(">>> [DB] 기존 옵션 삭제 완료.");
+        
+        if (seller.getOptions() != null && !seller.getOptions().isEmpty()) {
+            System.out.println(">>> 등록할 옵션 개수: " + seller.getOptions().size() + "개");
+            // insertOptions 내부에서 Batch Insert를 사용하면 효율적
+            insertOptions(proNo, seller.getOptions());
+            System.out.println(">>> [DB] 새 옵션 재등록 완료.");
+        } else {
+            System.out.println(">>> 등록할 옵션 없음.");
+        }
+
+        // 3. 기존 불가 날짜 삭제 후 재등록
+        System.out.println(">>> [DB] 기존 불가 날짜 삭제 시작 (PRO_NO: " + proNo + ")");
+        sellerMapper.deleteDisabledDates(proNo);
+        System.out.println(">>> [DB] 기존 불가 날짜 삭제 완료.");
+        
+        if (seller.getDisabledDates() != null && !seller.getDisabledDates().isEmpty()) {
+            System.out.println(">>> 등록할 불가 날짜 개수: " + seller.getDisabledDates().size() + "개");
+            // 🌟 for문 대신 Batch Insert 권장 (현재는 로깅을 위해 for문 유지)
+            for(String date : seller.getDisabledDates()) {
+                sellerMapper.insertDisabledDate(proNo, date);
+                System.out.println("    - 불가 날짜 등록: " + date);
+            }
+            System.out.println(">>> [DB] 새 불가 날짜 재등록 완료.");
+        } else {
+            System.out.println(">>> 등록할 불가 날짜 없음.");
+        }
+        
+        // 🚨 3. 메서드 종료 확인
+        System.out.println(">>> [Service] updateProduct 트랜잭션 커밋 예정 (정상 종료).");
+        System.out.println("========================================================================");
+        
+    } catch (Exception e) {
+        // 🌟 예외 발생 시 무조건 스택 트레이스 출력 및 롤백 유도
+        System.err.println("❌ FATAL ERROR: 상품 수정 중 예외 발생. 트랜잭션이 롤백됩니다.");
+        e.printStackTrace(); 
+        // RuntimeException을 던져서 @Transactional이 롤백을 확실히 수행하도록 함
+        throw new RuntimeException("상품 수정 서비스 처리 중 오류 발생: " + e.getMessage(), e); 
     }
-    
-    // 🚨 3. 메서드 종료 확인
-    System.out.println(">>> [Service] updateProduct 트랜잭션 커밋 예정 (정상 종료).");
-    System.out.println("========================================================================");
 }
 
 

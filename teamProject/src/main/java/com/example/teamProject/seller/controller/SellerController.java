@@ -672,80 +672,118 @@ public class SellerController {
 	    return result;
 	}
 	
-	@RequestMapping(value = "/seller/product/update.dox", method = RequestMethod.POST)
+	@RequestMapping(value = "/seller/product/update.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	public Map<String, Object> updateProduct(
-	    Seller seller, // 상품 정보를 담은 Seller DTO
-	    
-	    @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
-	    @RequestParam(value = "thumbnailUse", required = false) String thumbnailUse, 
-	    @RequestParam(value = "detailFiles", required = false) List<MultipartFile> detailFiles,
-	    @RequestParam(value = "longFile", required = false) MultipartFile longFile,
-	    @RequestParam("storeId") int receivedStoreId, // 클라이언트가 전송한 Store ID (int로 받음)
-	    HttpSession session // jakarta.servlet.http.HttpSession 사용
-	) {
-	    Map<String, Object> result = new HashMap<>();
-	    
-	    // 1. 세션에서 로그인된 사용자 ID 확인
-	    String loggedInUserId = (String) session.getAttribute("sessionId");
-	    
-	    if (loggedInUserId == null || loggedInUserId.isEmpty()) {
-	        result.put("success", false);
-	        result.put("message", "처리 실패: 세션에서 판매자 ID를 찾을 수 없습니다. 다시 로그인해 주십시오."); 
-	        return result;
-	    }
-	    
-	    // 2. DTO에 userId 설정
-	    seller.setUserId(loggedInUserId); 
-	    
-	    try {
-	        // 3. 🌟 핵심 보안 검증: userId와 storeId의 소유권 일치 여부 확인
-	        // [필수 가정]: sellerService.checkStoreOwnership(userId, storeId)가 1(소유) 또는 0(미소유)을 반환한다고 가정
-	        int isOwner = sellerService.checkStoreOwnership(loggedInUserId, receivedStoreId);
-	        
-	        if (isOwner != 1) { // 소유권이 없거나, userId와 storeId 쌍이 매핑되지 않으면
-	            result.put("success", false);
-	            result.put("message", "전달된 상점 ID(" + receivedStoreId + ")에 대한 접근 권한이 없습니다. (보안 오류)");
-	            return result;
-	        }
-
-	        // 4. 검증 통과: DTO에 최종 storeId 설정
-	        seller.setStoreId(String.valueOf(receivedStoreId));
-	        
-	        // 5. JSON 데이터 파싱 및 DTO 설정
-	        processProductData(seller);
-
-	        if (seller.getProNo() == 0) {
-	            result.put("success", false);
-	            result.put("message", "제품 번호가 누락되어 수정할 수 없습니다.");
-	            return result;
-	        }
-	        
-            // 💡 제품 수정 시: 해당 제품이 정말 이 storeId 소유인지 추가 검증이 필요할 수 있습니다.
-            // (예: sellerService.checkProductOwnership(seller.getProNo(), receivedStoreId))
-
-	        // 6. 상품 DB 정보 수정 
-	        sellerService.updateProduct(seller);
-	        
-	        // 7. 파일 수정/업로드 처리
-	        fileService.updateProductImages(
-	            seller.getProNo(), 
-	            thumbnailFile, 
-	            thumbnailUse,
-	            detailFiles, 
-	            longFile
-	        );
-
-	        result.put("success", true);
-	        result.put("message", "제품 수정 성공");
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        result.put("success", false);
-	        result.put("message", "제품 수정 중 서버 오류 발생: " + e.getMessage());
-	    }
-	    return result;
+	public String DeleteSellerList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		String json = map.get("selectItem").toString(); 
+		ObjectMapper mapper = new ObjectMapper();
+		List<Object> list = mapper.readValue(json, new TypeReference<List<Object>>(){});
+		map.put("list", list);
+		System.out.println(map);
+//		resultMap = sellerService.DeleteUserList(map);
+		return new Gson().toJson(resultMap);
+		
 	}
+	
+//	@RequestMapping(value = "/seller/product/update.dox", method = RequestMethod.POST)
+//	@ResponseBody
+//	public Map<String, Object> updateProduct(
+//	    Seller seller, // 상품 정보를 담은 Seller DTO
+//	    
+//	    @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
+//	    @RequestParam(value = "thumbnailUse", required = false) String thumbnailUse, 
+//	    @RequestParam(value = "detailFiles", required = false) List<MultipartFile> detailFiles,
+//	    @RequestParam(value = "longFile", required = false) MultipartFile longFile,
+//	    @RequestParam("storeId") int receivedStoreId, // 클라이언트가 전송한 Store ID (int로 받음)
+//	    HttpSession session // jakarta.servlet.http.HttpSession 사용
+//	) {
+//	    Map<String, Object> result = new HashMap<>();
+//	    
+//	    // 1. 세션에서 로그인된 사용자 ID 확인
+//	    String loggedInUserId = (String) session.getAttribute("sessionId");
+//	    System.out.println("--- 상품 수정 요청 처리 시작 ---"); // 🚀 시작 로그
+//	    System.out.println("1. 세션에서 확인된 로그인 ID: " + loggedInUserId);
+//	    System.out.println("   클라이언트로부터 받은 Store ID: " + receivedStoreId);
+//	    
+//	    if (loggedInUserId == null || loggedInUserId.isEmpty()) {
+//	        System.out.println("❌ 처리 실패: 세션 ID 없음. 로그인 필요.");
+//	        result.put("success", false);
+//	        result.put("message", "처리 실패: 세션에서 판매자 ID를 찾을 수 없습니다. 다시 로그인해 주십시오."); 
+//	        return result;
+//	    }
+//	    
+//	    // 2. DTO에 userId 설정
+//	    seller.setUserId(loggedInUserId); 
+//	    System.out.println("2. Seller DTO에 userId 설정 완료: " + loggedInUserId);
+//	    
+//	    try {
+//	        // 3. 🌟 핵심 보안 검증: userId와 storeId의 소유권 일치 여부 확인
+//	        // [필수 가정]: sellerService.checkStoreOwnership(userId, storeId)가 1(소유) 또는 0(미소유)을 반환한다고 가정
+//	        
+//	        // *******************************************************************
+//	        // 가정된 checkStoreOwnership 호출 (실제 값을 가정하여 출력)
+//	        int isOwner = 1; // 💡 검증 성공 가정
+//	        // int isOwner = sellerService.checkStoreOwnership(loggedInUserId, receivedStoreId); 
+//	        // *******************************************************************
+//	        
+//	        System.out.println("3. Store Ownership 검증 결과 (isOwner): " + isOwner);
+//	        
+//	        if (isOwner != 1) { // 소유권이 없거나, userId와 storeId 쌍이 매핑되지 않으면
+//	            System.out.println("❌ 보안 오류: 로그인 사용자(" + loggedInUserId + ")는 Store ID(" + receivedStoreId + ")의 소유자가 아닙니다.");
+//	            result.put("success", false);
+//	            result.put("message", "전달된 상점 ID(" + receivedStoreId + ")에 대한 접근 권한이 없습니다. (보안 오류)");
+//	            return result;
+//	        }
+//
+//	        // 4. 검증 통과: DTO에 최종 storeId 설정
+//	        seller.setStoreId(String.valueOf(receivedStoreId));
+//	        System.out.println("4. 소유권 검증 통과. DTO에 storeId 설정: " + receivedStoreId);
+//	        
+//	        // 5. JSON 데이터 파싱 및 DTO 설정
+//	        // 가정된 processProductData 호출 (실제 값을 가정하여 출력)
+//	        // processProductData(seller); 
+//	        
+//	        
+//	        System.out.println("5. 상품 데이터 처리 및 DTO 설정 완료. ProNo: " + seller.getProNo());
+//
+//	        if (seller.getProNo() == 0) {
+//	            System.out.println("❌ 처리 실패: 제품 번호(ProNo)가 누락되었습니다.");
+//	            result.put("success", false);
+//	            result.put("message", "제품 번호가 누락되어 수정할 수 없습니다.");
+//	            return result;
+//	        }
+//	        
+//	        // 💡 제품 수정 시: 해당 제품이 정말 이 storeId 소유인지 추가 검증이 필요할 수 있습니다.
+//	        // (예: sellerService.checkProductOwnership(seller.getProNo(), receivedStoreId))
+//	        // *******************************************************************
+//	        // 추가 보안 검증 지점 (필요 시)
+//	        // int isProductOwner = sellerService.checkProductOwnership(seller.getProNo(), receivedStoreId);
+//	        // if (isProductOwner != 1) { ... 접근 거부 처리 ... }
+//	        // *******************************************************************
+//
+//	        // 6. 상품 DB 정보 수정 
+//	        // sellerService.updateProduct(seller);
+//	        System.out.println("6. sellerService.updateProduct(" + seller.getProNo() + ") 호출 (DB 수정)");
+//	        
+//	        // 7. 파일 수정/업로드 처리
+//	        // fileService.updateProductImages(...)
+//	        System.out.println("7. fileService.updateProductImages 호출 (파일 처리)");
+//
+//	        result.put("success", true);
+//	        result.put("message", "제품 수정 성공");
+//	        System.out.println("✅ 최종 성공 응답");
+//
+//	    } catch (Exception e) {
+//	        System.out.println("⚠️ 예외 발생: " + e.getMessage());
+//	        e.printStackTrace(); // 예외 스택 트레이스 출력
+//	        result.put("success", false);
+//	        result.put("message", "제품 수정 중 서버 오류 발생: " + e.getMessage());
+//	    }
+//	    System.out.println("--- 상품 수정 요청 처리 종료 ---"); // 🛑 종료 로그
+//	    return result;
+//	}
 	
 
 	@RequestMapping(value = "/seller/productDelete.dox", method = RequestMethod.POST)
@@ -864,5 +902,7 @@ public class SellerController {
 //
 //        return resultMap;
 //    }
+	
+
 
 }

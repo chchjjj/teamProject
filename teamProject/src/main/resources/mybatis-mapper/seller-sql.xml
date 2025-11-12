@@ -388,7 +388,8 @@
 		jdbcType=VARCHAR}, #{proType, jdbcType=VARCHAR}, #{proInfo,
 		jdbcType=VARCHAR}, #{price}, #{deliveryFee, jdbcType=NUMERIC}, #{status,
 		jdbcType=CHAR}, #{lettering, jdbcType=CHAR}, #{cnt}, #{sellCount},
-		SYSDATE, SYSDATE, #{storeName, jdbcType=VARCHAR} ) </insert>
+		SYSDATE, SYSDATE, #{storeName, jdbcType=VARCHAR} ) 
+		</insert>
 
 
 	<insert id="insertTopOption"
@@ -504,19 +505,7 @@
 	</select>
 
 
-	<update id="updateProduct" parameterType="hashmap">
-		UPDATE PRODUCT_TBL
-		SET
-		PRO_NAME = #{proName},
-		PRO_TYPE = #{proType},
-		STORE_ID = #{storeId}, STORE_NAME = #{storeName},
-		PRICE = #{price},
-		DELIVERY_FEE = #{deliveryFee},
-		STATUS = #{status},
-		PRO_INFO = #{proInfo},
-		LETTERING = #{lettering},
-		UPDATED_AT = SYSDATE WHERE PRO_NO = #{proNo}
-	</update>
+	
 	<update id="updateMemberInfo" parameterType="map"> UPDATE USER_TBL <set>
 			<if test="USER_PASS != null and USER_PASS != ''">
 				USER_PASS = #{USER_PASS},
@@ -584,6 +573,37 @@
         INSERT INTO PRODUCT_INGREDIENT_TBL (PRO_NO, INGREDIENT_ID)
         VALUES (#{proNo}, #{ingreId})
     </insert>
+    
+    <!-- 20251112 -->
+    <update id="updateProduct" parameterType="hashmap">
+		UPDATE PRODUCT_TBL
+		SET
+		PRO_NAME = #{proName},
+		PRO_TYPE = #{proType},
+		STORE_ID = #{storeId}, STORE_NAME = #{storeName},
+		PRICE = #{price},
+		DELIVERY_FEE = #{deliveryFee},
+		STATUS = #{status},
+		PRO_INFO = #{proInfo},
+		LETTERING = #{lettering},
+		UPDATED_AT = SYSDATE WHERE PRO_NO = #{proNo}
+	</update>
+   
+    
+    <update id="updateProductOption" parameterType="hashmap">
+		UPDATE PRODUCT_OPTION_TBL
+		SET
+		OPTION_NAME = #{optionName}, IS_QUANTITY_SELECTABLE =
+		#{isQuantitySelectable} WHERE
+		TOP_OPTION_ID = #{topOptionId} AND PRO_NO = #{proNo}
+		 </update>
 
+	<update id="updateProductSubOption" parameterType="hashmap">
+		UPDATE PRODUCT_SUB_OPTION_TBL
+		SET
+		VALUE_NAME = #{valueName}, PRICE_DIFF = #{priceDiff} WHERE
+		SUB_OPTION_ID = #{subOptionId} AND TOP_OPTION_ID = #{topOptionId} 
+		</update>
+ <!-- 상품 업데이트  -->
 </mapper>
 

@@ -575,10 +575,10 @@
                         formData.append('optionsJson', optionsJson);
                         formData.append('disabledDatesStr', this.disabledDates.join(','));
 
-                        const url = this.proNo ? "/seller/product/update.dox" : "/seller/product/register.dox";
+                        
 
                         $.ajax({
-                            url: url,
+                            url: "/seller/product/register.dox",
                             type: "POST",
                             data: formData,
                             processData: false,
