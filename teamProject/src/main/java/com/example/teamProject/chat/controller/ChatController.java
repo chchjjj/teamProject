@@ -121,7 +121,7 @@ public class ChatController {
 	        chatService.insertChatMsg(message);
 	        System.out.println("메시지 저장 완료: " + message.getContent());
 
-	        // 🔥 특정 채팅방으로만 메시지 전송
+	        // 특정 채팅방으로만 메시지 전송
 	        messagingTemplate.convertAndSend("/topic/chat/" + message.getChatId(), message);
 
 	    } catch (Exception e) {

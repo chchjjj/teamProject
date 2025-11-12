@@ -110,7 +110,7 @@ const app = Vue.createApp({
             }
         },
         connect() {
-            const socket = new SockJS('/ws-chat');
+            const socket = new SockJS(window.location.origin + '/ws-chat');
             this.stompClient = Stomp.over(socket);
             this.stompClient.connect({}, frame => {
                 // 🔥 chatId 기준으로 구독 채널 분리
