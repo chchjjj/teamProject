@@ -340,7 +340,18 @@ try {
 
 
 const app = Vue.createApp({
-    data() {
+    data() {function getQueryParam(name) {
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(window.location.href);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+// URL에서 'proNo' 값을 가져와서 숫자로 변환합니다.
+// URL: http://localhost:8087/seller/productUpdate.do?proNo=118
+const proNoFromURL = parseInt(getQueryParam('proNo')) || 0;
         return {
             storeId: initialProduct.storeId || 0,
             proNo: initialProduct.proNo || proNoFromJSP,
@@ -353,7 +364,8 @@ const app = Vue.createApp({
                 deliveryFee: initialProduct.deliveryFee || 0,
                 proType: initialProduct.proType || '케이크',
                 lettering: initialProduct.lettering || 'N',
-                status: initialProduct.status || 'Y'
+                status: initialProduct.status || 'Y',
+                proNo: proNoFromURL,
             },
             thumbnailFile: null,
             detailFiles: [],
@@ -411,7 +423,7 @@ const app = Vue.createApp({
     const formData = new FormData();
     // 2. FormData 객체를 생성하여 파일과 데이터를 담음
     formData.append('storeId', this.storeId);
-    
+    formData.append('proNo', this.proNo);
     formData.append('productJson', JSON.stringify(productData));
     formData.append('optionsJson', JSON.stringify(optionData));
     formData.append('disabledDates', this.disabledDates.join(','));
@@ -422,18 +434,18 @@ const app = Vue.createApp({
 
     // 3. 서버에 AJAX 요청 (수정 요청이므로 PUT 또는 POST 사용)
     $.ajax({
-        url: '/seller/product/newupdate.dox', // 실제 서버 수정 엔드포인트
+        url: '/seller/product/update.dox', // 실제 서버 수정 엔드포인트
         type: 'POST', // 스프링/JSP 환경에서 PUT 대신 POST를 많이 사용
         data: formData,
         contentType: false, // 파일 전송 시 필수
         processData: false, // 파일 전송 시 필수
         success: (response) => {
-            alert('제품 수정이 성공적으로 완료되었습니다.');
+            alert('아직 준비중입니다.');
             location.href = '/seller/storeList.do'; // 목록 페이지로 이동
         },
         error: (error) => {
             console.error('제품 수정 오류:', error);
-            alert('제품 수정에 실패했습니다. 관리자에게 문의하세요.');
+            alert('아직 준비중입니다.');
         }
     });
 },

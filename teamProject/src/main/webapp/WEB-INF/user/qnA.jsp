@@ -172,7 +172,7 @@
                         </div>
                         <div class="qna-answer" :class="{show: qnA.showAnswer}">
                             <template v-if="qnA.answerContent">
-                                <strong>답변자:</strong> {{ qnA.storeId }}<br>
+                                <strong>답변자:</strong> {{ qnA.storeName }}<br>
                                 <span>{{ qnA.answerContent }}</span><br>
                                 <small style="color:#888;">{{ qnA.answerDate }}</small>
                             </template>
