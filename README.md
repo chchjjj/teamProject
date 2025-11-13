@@ -28,7 +28,7 @@
 |이미령|https://github.com/li33893|
 ***
 ## 🛠 사용 기술
-- Spring boot / MyBatis / JQuery / AJAX / Oracle DB
+- Spring boot / MyBatis / JQuery / AJAX / Json / Oracle DB
 - JSP / Vue.js 3
 - 카카오맵 / 주소 / 달력 / 결제(포트원) / 문자인증(coolsms) API
  ***
