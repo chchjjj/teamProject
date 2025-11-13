@@ -10,7 +10,7 @@
         <!-- jQuery & Vue -->
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-
+        
         <!-- Google Charts -->
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
@@ -175,26 +175,88 @@
                         });
                     },
                     drawChart() {
-                        if (!Array.isArray(this.salesData) || this.salesData.length === 0) return;
+    if (!Array.isArray(this.salesData) || this.salesData.length === 0) return;
 
-                        let chartData = [['월', '매출']];
-                        this.salesData.forEach(item => {
-                            chartData.push([item.MONTH, Number(item.TOTAL)]);
-                        });
+    let chartData = [['월', '매출']];
+    this.salesData.forEach(item => {
+        chartData.push([item.MONTH, Number(item.TOTAL)]);
+    });
 
-                        var data = google.visualization.arrayToDataTable(chartData);
+    var data = google.visualization.arrayToDataTable(chartData);
 
-                        var options = {
-                            title: `${user.userId}의 월별 매출`,
-                            legend: { position: 'none' },
-                            vAxis: { format: '₩#,###' },
-                            height: 500,
-                            bar: { groupWidth: '30%' }
-                        };
+    // ✨ 개선된 차트 옵션 ✨
+    var options = {
+        // 1. 차트 제목 개선: 가독성을 높이고 약간의 스타일 추가
+        title: `${user.userId}의 월별 매출 현황`,
+        titleTextStyle: {
+            color: '#333333', // 진한 색상
+            fontSize: 18,
+            bold: true,
+        },
+        
+        // 2. 배경 및 테두리 설정: 깔끔한 디자인을 위해
+        backgroundColor: '#FFFFFF', // 흰색 배경
+        chartArea: {
+            left: 80, 
+            top: 60, 
+            width: '75%', 
+            height: '55%',
+        },
 
-                        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-                        chart.draw(data, options);
-                    }
+        // 3. 범례 (Legend): 여전히 숨김 (position: 'none')을 유지하되, 필요한 경우를 대비해 설정
+        legend: { 
+            position: 'none' 
+        },
+
+        // 4. 색상 (Color): 세련되고 눈에 잘 띄는 색상으로 변경 (예시: 파란색 계열)
+        colors: ['#F4C9D6'], // Google Blue 계열의 세련된 파란색
+
+        // 5. 수직 축 (vAxis - Y축) 개선:
+        vAxis: { 
+            title: '매출 (₩)', // 축 제목 추가
+            format: '##,###,### 원', 
+            titleTextStyle: {
+                italic: false, // 이탤릭체 제거
+                fontSize: 14,
+                color: '#555555'
+            },
+            gridlines: {
+                color: '#EDEDED' // 연한 회색으로 눈금선 설정
+            },
+            minValue: 0, // 0부터 시작하도록 강제
+        },
+        
+        // 6. 수평 축 (hAxis - X축) 개선:
+        hAxis: {
+            title: '월', // 축 제목 추가
+            titleTextStyle: {
+                italic: false,
+                fontSize: 14,
+                color: '#555555'
+            },
+            textStyle: {
+                fontSize: 12
+            }
+        },
+
+        // 7. 차트 크기 및 막대 설정:
+        height: 700, // 높이 유지
+        bar: { 
+            groupWidth: '15%' 
+        },
+        
+        // 8. 툴팁 (Tooltip) 설정: 마우스를 올렸을 때 더 깔끔하게 보이도록 설정
+        tooltip: {
+            isHtml: true,
+            textStyle: {
+                fontSize: 12
+            },
+        },
+    };
+
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+    chart.draw(data, options);
+}
                 },
                 mounted() {
                     // Google Charts 로드 후 Ajax 호출
