@@ -311,7 +311,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data);
+                            // console.log(data);
                             if (data.result == "success") {
                                 alert(data.msg);
                                 location.href = "/main.do";
@@ -337,7 +337,7 @@
                         data: JSON.stringify(param), //에러 잡으려고 수정함
                         contentType: "application/json", //에러 잡으려고 추가함
                         success: function (data) {
-                            console.log(data);
+                            // console.log(data);
                             if (data.res.statusCode == "2000") {
                                 alert("문자 전송 완료");
                                 self.ranStr = data.ranStr;
