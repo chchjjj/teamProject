@@ -24,6 +24,7 @@
                 max-width: 1200px;
                 margin: 0 auto;
                 padding: 20px;
+            
             }
 
             /* 2. 상단 배너/헤더 공간 */
@@ -38,7 +39,7 @@
                 font-size: 2em;
                 font-weight: 700;
                 border-radius: 12px;
-                margin-bottom: 30px;
+                margin-bottom: 80px;
                 box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             }
 
@@ -109,6 +110,7 @@
                 /* 3열 레이아웃. 화면 크기에 따라 자동으로 너비 조절 */
                 grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
                 gap: 20px;
+                margin-top: 20px;
             }
 
             /* 6. 개별 상품 카드 */

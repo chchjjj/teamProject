@@ -275,9 +275,9 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            if (!silent) { //  주문에서 호출한 경우엔 건너뜀
+                            
                                 alert("삭제되었습니다!");
-                            }
+                            
                             self.fnCart();
                         }
                     });
