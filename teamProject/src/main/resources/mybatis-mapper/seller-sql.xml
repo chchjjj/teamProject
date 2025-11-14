@@ -579,8 +579,35 @@
         VALUES (#{proNo}, #{ingreId})
     </insert>
 
-	<!-- 20251112 -->
+	  <!-- 20251112 -->
+    
     <update id="updateProduct" parameterType="hashmap">
+		UPDATE PRODUCT_TBL
+		SET
+			PRO_NAME = #{proName},
+			PRO_TYPE = #{proType},
+			PRICE = #{price},
+			DELIVERY_FEE = #{deliveryFee},
+			STATUS = #{status},
+			LETTERING = #{lettering},
+			UPDATED_AT = SYSDATE 
+		WHERE PRO_NO = #{proNo}
+	</update>
+	<delete id="deleteProductDate" parameterType="hashmap">
+		DELETE FROM DISABLED_DATE_TBL
+		WHERE PRO_NO = #{proNo}
+	</delete>
+	<update id="insertProductDate" parameterType="hashmap">
+		INSERT INTO DISABLED_DATE_TBL
+		VALUES(#{proNo}, #{date})
+	</update>
+	<select id="selectProductImg" parameterType="int" resultType="com.example.teamProject.seller.model.Seller">
+		SELECT *
+		FROM PRODUCT_IMG_TBL
+		WHERE PRO_NO = #{proNo}
+	</select>
+	
+    <!--<update id="updateProduct" parameterType="hashmap">
 		UPDATE PRODUCT_TBL
 		SET
 		PRO_NAME = #{proName},
@@ -608,7 +635,7 @@
 		SET
 		VALUE_NAME = #{valueName}, PRICE_DIFF = #{priceDiff} WHERE
 		SUB_OPTION_ID = #{subOptionId} AND TOP_OPTION_ID = #{topOptionId} 
-		</update>
-	<!-- 상품 업데이트  -->
+		</update>-->
+ <!-- 상품 업데이트  -->
 </mapper>
 

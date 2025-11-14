@@ -92,6 +92,10 @@ public interface SellerMapper {
 
  	// 상품 기본 정보 수정
  	int updateProduct(Seller seller);
+	int updateProduct(HashMap<String, Object> map);
+	
+	int deleteProductDate(HashMap<String, Object> map);
+ 	int insertProductDate(HashMap<String, Object> map);
 
  	// 상위 옵션 등록 (topOptionId는 객체에 자동으로 담김)
  	void insertTopOption(Seller topOpt);
@@ -151,4 +155,9 @@ public interface SellerMapper {
 //	 int newUpdateProduct(String productJsonStr, String optionsJsonStr) throws Exception;
 //
 //	 Seller readValue(String productJsonStr, Class<Seller> class1);
+	 
+	 
+	// 상품 기본 정보 수정
+	 	
+	
 }
