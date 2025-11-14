@@ -70,6 +70,22 @@ public class SellerService {
 
 	    return resultMap;
 	}
+	
+	@Transactional // 트랜잭션 처리 (Spring 환경 가정)
+    public int updateMemberInfo(Map<String, Object> memberInfoMap) throws Exception {
+        
+        // 1. 필요한 경우 비즈니스 로직 추가 (예: 권한 체크, 데이터 검증)
+        
+        // 2. DAO/Mapper 호출
+        int result = sellerMapper.updateMemberInfo(memberInfoMap);
+        
+        // 3. (옵션) 결과 처리
+        if (result == 0) {
+            // throw new CustomException("수정 실패");
+        }
+        
+        return result;
+    }
 
 	// 월별 판매 리스트 불러오기
 	public HashMap<String, Object> getSellesChart(HashMap<String, Object> map) {

@@ -32,11 +32,16 @@
 
 
 	<select id="selectMonthlySalesByUser" parameterType="string"
-		resultType="map"> SELECT s.STORE_NAME, TO_CHAR(o.ORDER_DATE, 'YYYY-MM')
-		AS ORDER_MONTH, COUNT(o.ORDER_ID) AS ORDER_COUNT, SUM(o.TOTAL_PRICE) AS
-		TOTAL_SALES FROM SELLER_INFO_TBL s JOIN ORDER_TBL o ON s.STORE_NAME =
+		resultType="map">
+		SELECT
+		s.STORE_NAME, TO_CHAR(o.ORDER_DATE, 'YYYY-MM')
+		AS ORDER_MONTH, COUNT(o.ORDER_ID) AS ORDER_COUNT,
+		SUM(o.TOTAL_PRICE) AS
+		TOTAL_SALES 
+		FROM SELLER_INFO_TBL s JOIN ORDER_TBL o ON s.STORE_NAME =
 		o.STORE_NAME WHERE s.USER_ID = #{userId} GROUP BY s.STORE_NAME,
-		TO_CHAR(o.ORDER_DATE, 'YYYY-MM') ORDER BY ORDER_MONTH </select>
+		TO_CHAR(o.ORDER_DATE, 'YYYY-MM') ORDER BY ORDER_MONTH
+	</select>
 
 	<select id="selectMonthlySales" resultType="hashmap" parameterType="hashmap">
 		SELECT TO_CHAR(o.order_date, 'MM') AS MONTH, SUM(o.total_price) AS TOTAL
@@ -573,8 +578,8 @@
         INSERT INTO PRODUCT_INGREDIENT_TBL (PRO_NO, INGREDIENT_ID)
         VALUES (#{proNo}, #{ingreId})
     </insert>
-    
-    <!-- 20251112 -->
+
+	<!-- 20251112 -->
     <update id="updateProduct" parameterType="hashmap">
 		UPDATE PRODUCT_TBL
 		SET
@@ -604,6 +609,6 @@
 		VALUE_NAME = #{valueName}, PRICE_DIFF = #{priceDiff} WHERE
 		SUB_OPTION_ID = #{subOptionId} AND TOP_OPTION_ID = #{topOptionId} 
 		</update>
- <!-- 상품 업데이트  -->
+	<!-- 상품 업데이트  -->
 </mapper>
 

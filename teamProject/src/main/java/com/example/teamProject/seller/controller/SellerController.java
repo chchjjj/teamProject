@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,13 +24,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.teamProject.product.model.Product;
 import com.example.teamProject.seller.dao.FileService;
 import com.example.teamProject.seller.dao.SellerService;
 import com.example.teamProject.seller.model.Seller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.auth.oauth2.IdTokenProvider.Option;
 import com.google.gson.Gson;
 
 import jakarta.servlet.http.HttpSession;
@@ -509,6 +508,8 @@ public class SellerController {
 
 		return new Gson().toJson(resultMap);
 	}
+	
+	
 
 	
 
@@ -686,6 +687,32 @@ public class SellerController {
 		return new Gson().toJson(resultMap);
 		
 	}
+	@PostMapping(value="/member/update.dox", consumes = "application/json")
+	@ResponseBody
+    public Map<String, Object> updateMember(@RequestBody Map<String, Object> memberInfoMap) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // 1. Service 호출
+            int result = sellerService.updateMemberInfo(memberInfoMap);
+            
+            if (result > 0) {
+                response.put("status", "success");
+                response.put("message", "회원 정보가 성공적으로 수정되었습니다.");
+            } else {
+                response.put("status", "fail");
+                response.put("message", "수정 대상 회원을 찾을 수 없거나 수정에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "서버 오류: " + e.getMessage());
+            // 실제 환경에서는 로그를 남기고 사용자에게 자세한 오류 메시지는 숨겨야 합니다.
+        }
+        
+        return response; // JSON 응답
+    }
+	
 	
 //	@RequestMapping(value = "/seller/product/update.dox", method = RequestMethod.POST)
 //	@ResponseBody
@@ -696,7 +723,7 @@ public class SellerController {
 //	    @RequestParam(value = "thumbnailUse", required = false) String thumbnailUse, 
 //	    @RequestParam(value = "detailFiles", required = false) List<MultipartFile> detailFiles,
 //	    @RequestParam(value = "longFile", required = false) MultipartFile longFile,
-//	    @RequestParam("storeId") int receivedStoreId, // 클라이언트가 전송한 Store ID (int로 받음)
+
 //	    HttpSession session // jakarta.servlet.http.HttpSession 사용
 //	) {
 //	    Map<String, Object> result = new HashMap<>();
