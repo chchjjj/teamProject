@@ -678,15 +678,22 @@ public class SellerController {
 	public String DeleteSellerList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		
-		String json = map.get("selectItem").toString(); 
+		String json = map.get("disabledDates").toString(); 
 		ObjectMapper mapper = new ObjectMapper();
 		List<Object> list = mapper.readValue(json, new TypeReference<List<Object>>(){});
-		map.put("list", list);
+		map.put("dateList", list);
+		
+		String json2 = map.get("options").toString(); 
+		ObjectMapper mapper2 = new ObjectMapper();
+		List<HashMap<String, Object>> options = mapper2.readValue(json2, new TypeReference<List<HashMap<String, Object>>>(){});
+		map.put("optionList", options);
+		
 		System.out.println(map);
-//		resultMap = sellerService.DeleteUserList(map);
+		resultMap = sellerService.productUpdate(map);
 		return new Gson().toJson(resultMap);
 		
 	}
+	
 	@PostMapping(value="/member/update.dox", consumes = "application/json")
 	@ResponseBody
     public Map<String, Object> updateMember(@RequestBody Map<String, Object> memberInfoMap) {
