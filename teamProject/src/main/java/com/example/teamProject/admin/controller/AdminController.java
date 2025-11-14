@@ -206,7 +206,7 @@ public class AdminController {
 		List<Object> list = mapper.readValue(json, new TypeReference<List<Object>>(){});
 		map.put("list", list);
 		System.out.println(map);
-		resultMap=adminService.DeleteUserList(map);
+		resultMap=adminService.DeleteSellerList(map);
 		return new Gson().toJson(resultMap);
 		
 	}

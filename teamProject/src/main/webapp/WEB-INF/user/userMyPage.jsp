@@ -573,12 +573,12 @@
                             <h3 class="totalPrice">총 {{ formatNumber(order.totalPrice) }}원</h3>
 
                             <!-- Action Buttons -->
-                            <div class="actionButtons" v-if="order.status!='C'">
-                                <button v-if="order.chatYn==='Y' && order.addOptionPrice==0" class="btnChat"
+                            <div class="actionButtons">
+                                <button v-if="(order.status==='C' || order.status==='S') && order.chatYn==='Y'" class="btnChat"
                                     @click="fnChat(order.orderId, order.storeId)">
                                     💬 채팅방으로
                                 </button>
-                                <button class="btnStatus" @click="fnPayment(order.orderId)" v-if="order.status==='S'">
+                                <button class="btnStatus" @click="fnPayment(order.orderId)" v-if="order.status==='C' || order.status==='S'">
                                     💰 바로 결제
                                 </button>
                                 <button class="btnStatus" @click="fnOrderStatus(order.orderId)"
