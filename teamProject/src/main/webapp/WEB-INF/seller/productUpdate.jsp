@@ -69,9 +69,9 @@
             
             <div class="image-container">
                 <div class="thumbnail-box">
-                    <img :src="thumbnailUrl || '/img/default_thumbnail.png'" alt="썸네일 이미지"
+                    <img :src="imgPath" alt="썸네일 이미지"
                             style="max-width: 100%; max-height: 100%; object-fit: contain;">
-                    <span v-if="!thumbnailUrl">썸네일</span>
+                    
                 </div>
 
                 <div class="image-upload-area">
@@ -162,7 +162,7 @@
                 </div>
             </div>
 
-            <div class="option-management-section">
+            <!-- <div class="option-management-section">
                 <h3>상품 옵션 관리</h3>
                 <div v-for="(topOpt, topIndex) in options" :key="topOpt.id" class="top-option-item">
                     <div class="top-option-header">
@@ -205,10 +205,11 @@
                 <p style="margin-top: 15px; font-size: 0.9em; color: gray;">
                     * 상위 옵션(예: 크기)을 추가하고, 하위 옵션(예: 미니, 1호, 2호)과 추가 금액을 설정하세요.
                 </p>
-            </div>
+            </div> -->
 
             <div class="main-action-buttons">
-                <button type="submit" class="btn btn-primary">{{ proNo ? '제품 수정하기' : '제품 등록하기' }}</button>
+                <!-- <button type="submit" class="btn btn-primary">{{ proNo ? '제품 수정하기' : '제품 등록하기' }}</button> -->
+                <button class="btn btn-primary" type="button" @click="fnUpdate">제품 수정하기</button>
                 <button type="button" class="btn btn-secondary" onclick="history.back()">목록으로</button>
             </div>
         </form>
@@ -376,7 +377,8 @@ const proNoFromURL = parseInt(getQueryParam('proNo')) || 0;
             existingLongImage: initialProduct.longImagePath || null,
             options: initialOptions, 
             disabledDates: disabledDatesFromJSP,
-            datePicker: null
+            datePicker: null,
+            imgPath : "${imgPath}"
         };
     },
     methods: {
@@ -408,10 +410,46 @@ const proNoFromURL = parseInt(getQueryParam('proNo')) || 0;
             self.datePicker=flatpickr("#disabledDatesInput", {
                 mode:"multiple", dateFormat:"Y-m-d", locale:"ko",
                 defaultDate:self.disabledDates,
-                onChange(selectedDates){ self.disabledDates=selectedDates.map(d=>d.toISOString().split('T')[0]); }
+                onChange(selectedDates){ 
+                    self.disabledDates=selectedDates.map(d=>{
+                        const year = d.getFullYear();
+                        const month = String(d.getMonth() + 1).padStart(2, '0');
+                        const day = String(d.getDate()).padStart(2, '0');
+                        return year + "-" + month + "-" + day;
+                    });
+                    console.log(self.disabledDates);
+                }
             });
         },
         clearDisabledDates(){ this.disabledDates=[]; this.datePicker.clear(); },
+        fnUpdate(){
+            let self = this;
+            if (self.storeId === 0) {
+                alert('상점 ID가 누락되어 제품 수정 요청을 보낼 수 없습니다.');
+                return;
+            }
+            let param = self.product;
+            param.storeId = self.storeId;
+            param.disabledDates = JSON.stringify(self.disabledDates);
+            param.options = JSON.stringify(self.options);
+            // param.optionName = self.topOpt.optionName;
+            // param.valueName = self.subOpt.valueName;
+            // param.priceDiff = self.subOpt.priceDiff;
+            
+            console.log(self.options);
+            $.ajax({
+                url: "/seller/product/update.dox",
+                dataType: "json",
+                type: "POST",
+                data: param,
+                success: function (data) {
+                    alert("수정되었습니다!");
+                    location.href = '/seller/storeList.do';
+                }
+            });
+        },
+
+
        fnSubmitProduct() {
     // 1. Vue 데이터를 JSON 문자열로 변환
     const productData = this.product;
