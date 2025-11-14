@@ -232,7 +232,7 @@
                     success: function (data) {
                         if (data && data.list) {
                             self.ingreList = data.list; 
-                            console.log(self.ingreList);
+                            //console.log(self.ingreList);
                         }
                         // 원재료 목록 로드 후, 기존 등록된 알레르기 불러오기
                         self.fnLoadAllergy();
@@ -298,7 +298,7 @@
                     traditional: true, // 배열 전송시 HashMap으로 인식시키기
                     data: param,
                     success: function (data) {
-                        console.log("알레르기 등록 결과:", data);
+                        //console.log("알레르기 등록 결과:", data);
 
                         if (data.result === 'success') {
                             const count = self.ingreName.length;
@@ -326,8 +326,8 @@
 
         mounted() {
             let self = this;
-            console.log("로그인 아이디 ===> " + self.userId);
-            console.log("상품 번호 (proNo) ===> " + self.proNo);
+            //console.log("로그인 아이디 ===> " + self.userId);
+            //console.log("상품 번호 (proNo) ===> " + self.proNo);
 
             // 1. 전체 원재료 목록 가져오기 (이후 콜백으로 2. fnLoadAllergy 호출)
             self.fnIngreList();

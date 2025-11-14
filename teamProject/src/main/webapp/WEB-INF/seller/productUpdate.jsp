@@ -230,8 +230,8 @@ const disabledDatesStrValue = '${disabledDatesStr}';
 const productJsonStr = '${productJson != null ? productJson : "null"}'.replace(/\\"/g, '"');
 const optionsJsonStr = '${optionsJson != null ? optionsJson : "null"}'.replace(/\\"/g, '"');
 
-console.log('1. JSP에서 넘어온 원본 productJsonStr:', productJsonStr);
-console.log('2. JSP에서 넘어온 원본 optionsJsonStr:', optionsJsonStr);
+//console.log('1. JSP에서 넘어온 원본 productJsonStr:', productJsonStr);
+//console.log('2. JSP에서 넘어온 원본 optionsJsonStr:', optionsJsonStr);
 
 const proNoFromJSP = (proNoValue === 'null' || proNoValue.trim() === '' || proNoValue === '0') ? null : parseInt(proNoValue);
 const sessionIdFromJSP = (sessionIdValue === 'null' || sessionIdValue.trim() === '') ? '' : sessionIdValue;
@@ -261,10 +261,10 @@ try {
             detailImagePaths: parsed.DETAIL_IMAGE_PATHS || [],
             longImagePath: parsed.LONG_IMAGE_PATH || null
         };
-        console.log('3. 파싱 및 매핑된 initialProduct:', initialProduct);
+        //console.log('3. 파싱 및 매핑된 initialProduct:', initialProduct);
     }
 } catch(e) { 
-    console.error("제품 JSON 파싱 오류:", e); 
+    //console.error("제품 JSON 파싱 오류:", e); 
 }
 
 // 2. 옵션 JSON 파싱, 그룹화 및 ID 카운터 초기화 (🚨 핵심 수정됨: 그룹화 로직 추가)
@@ -305,11 +305,11 @@ try {
             initialOptions = Object.values(groupedOptions);
 
         } else {
-            console.warn("경고: 옵션 JSON이 유효한 배열 형태가 아닙니다. 빈 배열로 초기화합니다.");
+            //console.warn("경고: 옵션 JSON이 유효한 배열 형태가 아닙니다. 빈 배열로 초기화합니다.");
             initialOptions = []; 
         }
         
-        console.log('4. 파싱 및 그룹화된 initialOptions:', initialOptions);
+        //console.log('4. 파싱 및 그룹화된 initialOptions:', initialOptions);
     }
     
     // ID 카운터 초기화 로직 (매핑된 initialOptions 사용)
@@ -417,7 +417,7 @@ const proNoFromURL = parseInt(getQueryParam('proNo')) || 0;
                         const day = String(d.getDate()).padStart(2, '0');
                         return year + "-" + month + "-" + day;
                     });
-                    console.log(self.disabledDates);
+                    //console.log(self.disabledDates);
                 }
             });
         },
@@ -436,7 +436,7 @@ const proNoFromURL = parseInt(getQueryParam('proNo')) || 0;
             // param.valueName = self.subOpt.valueName;
             // param.priceDiff = self.subOpt.priceDiff;
             
-            console.log(self.options);
+            //console.log(self.options);
             $.ajax({
                 url: "/seller/product/update.dox",
                 dataType: "json",
@@ -490,9 +490,9 @@ const proNoFromURL = parseInt(getQueryParam('proNo')) || 0;
     },
     mounted(){
         this.initFlatpickr();
-        console.log('초기 product:', this.product);
-        console.log('초기 thumbnailUrl:', this.thumbnailUrl);
-        console.log('초기 options:', this.options);
+        //console.log('초기 product:', this.product);
+        //console.log('초기 thumbnailUrl:', this.thumbnailUrl);
+        //console.log('초기 options:', this.options);
     }
 });
 

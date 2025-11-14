@@ -558,7 +558,7 @@
                             onChange: function (selectedDates, dateStr, instance) {
                                 // 선택된 날짜 문자열 배열을 disabledDates 배열에 저장
                                 self.disabledDates = selectedDates.map(d => flatpickr.formatDate(d, "Y-m-d"));
-                                console.log("선택된 불가 날짜:", self.disabledDates);
+                                //console.log("선택된 불가 날짜:", self.disabledDates);
                                 // 이 배열을 서버에 저장할 문자열로 변환해야 합니다. (예: 2025-11-01,2025-11-05)
                                 // Note: 범위 선택 모드(range)를 사용하면 이 로직이 더 복잡해지므로, Simple 'multiple'이 권장됩니다.
                             },
@@ -664,7 +664,7 @@
                                     self.disabledDates = response.data.disabledDatesStr ? response.data.disabledDatesStr.split(',') : [];
                                     self.initFlatpickr(); // 날짜 로드 후 캘린더를 다시 초기화
 
-                                    console.log("제품 데이터 로드 완료:", self.product);
+                                    //console.log("제품 데이터 로드 완료:", self.product);
                                 } else {
                                     alert('제품 정보를 불러오는데 실패했습니다.');
                                 }
@@ -681,8 +681,8 @@
                 mounted() {
                     // Flatpickr 초기화
                     this.initFlatpickr();
-                    console.log("현재 userId:", this.userId);
-                    console.log("현재 storeId:", this.storeId); // 🌟 storeId가 정상적으로 출력되는지 확인하세요.
+                    //console.log("현재 userId:", this.userId);
+                    //console.log("현재 storeId:", this.storeId); // 🌟 storeId가 정상적으로 출력되는지 확인하세요.
                     // 수정 모드인 경우 데이터 로드
                     if (this.proNo) {
                         this.loadProductDataForEdit();

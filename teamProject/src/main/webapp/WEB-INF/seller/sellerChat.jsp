@@ -217,7 +217,7 @@
                         dataType: 'json',
                         context: this,
                         success: function(response) {
-                            console.log("채팅 기록 로드 성공:", response);
+                            //console.log("채팅 기록 로드 성공:", response);
                             
                             // 💡 화살표 함수(Arrow Function)를 사용하여 this 스코프 문제 해결
                             this.messages = response.map((msg) => {
@@ -287,7 +287,7 @@
                         data: JSON.stringify(postData),
                         context: this,
                         success: function(response) { 
-                            console.log("메시지 전송 성공:", response);
+                            //console.log("메시지 전송 성공:", response);
                             var sentMsgIndex = this.messages.findIndex(function(m) { return m.id === tempMessage.id; });
                             if (sentMsgIndex !== -1) {
                                 this.messages[sentMsgIndex].isPending = false;
@@ -308,7 +308,7 @@
                         url: '/api/seller/chat/' + this.orderId + '/read?readerId=' + this.currentUserId,
                         type: 'PATCH',
                         success: function(response) {
-                            console.log("메시지 읽음 처리 성공.");
+                            //console.log("메시지 읽음 처리 성공.");
                         },
                         error: function(xhr, status, error) {
                             console.error("메시지 읽음 처리 실패:", error);
@@ -330,7 +330,7 @@
                 },
                 
                 goBack: function() {
-                    console.log("이전 페이지로 이동");
+                   //console.log("이전 페이지로 이동");
                     window.history.back(); 
                 }
             },

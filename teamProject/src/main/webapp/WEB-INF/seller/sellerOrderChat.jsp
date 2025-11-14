@@ -244,7 +244,7 @@
                         this.scrollToBottom();
                     });
                     
-                    console.log("메시지 전송됨:", newMsg.content);
+                    //console.log("메시지 전송됨:", newMsg.content);
                 },
 
                 scrollToBottom() {
@@ -261,7 +261,7 @@
                 
                 goBack() {
                     // 실제 이동할 페이지로 변경
-                    console.log("이전 페이지로 이동");
+                    //console.log("이전 페이지로 이동");
                     // window.history.back(); 
                 }
             },

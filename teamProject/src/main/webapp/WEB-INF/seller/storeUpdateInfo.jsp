@@ -259,7 +259,7 @@
                 } catch(e) { }
 
                 $('#store-intro').val(storeIntro);
-                console.log("가게 정보 조회 성공:", store);
+                //console.log("가게 정보 조회 성공:", store);
             },
             error: function(xhr, status, error){
                 console.error("가게 정보 조회 실패:", error);
@@ -347,7 +347,7 @@
         // ✅ STORE_ID를 숫자형으로 강제 변환 (ORA-01722 방지)
         dataObj.storeId = parseInt($('#store-id').val().trim(), 10);
 
-        console.log("AJAX 요청 데이터:", dataObj);
+        //console.log("AJAX 요청 데이터:", dataObj);
 
         // 4. AJAX 전송
         $.ajax({
@@ -378,10 +378,10 @@
     $(document).ready(function() {
         const initialStoreId = $('#initial-store-id').val();
         if (initialStoreId && initialStoreId.trim() !== "") {
-            console.log("페이지 로드 시 감지된 STORE_ID:", initialStoreId);
+           // console.log("페이지 로드 시 감지된 STORE_ID:", initialStoreId);
             fnGetStoreInfo(initialStoreId);
         } else {
-            console.log("페이지 로드 시 초기 STORE_ID가 감지되지 않았습니다.");
+            //console.log("페이지 로드 시 초기 STORE_ID가 감지되지 않았습니다.");
         }
     });
 </script>

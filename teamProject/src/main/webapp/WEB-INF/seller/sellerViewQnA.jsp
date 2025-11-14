@@ -522,7 +522,7 @@
                                             proNo: item.PRO_NO // proNo도 혹시 모를 다른 용도를 위해 유지
                                         }));
 
-                                        console.log("매핑된 QnA 리스트:", this.qnaList);
+                                        //console.log("매핑된 QnA 리스트:", this.qnaList);
                                     } else {
                                         this.qnaList = [];
                                     }

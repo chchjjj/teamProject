@@ -148,7 +148,7 @@
                                     end: endStr
                                 },
                                 success: (data) => {
-                                    console.log("📦 서버 응답:", data);
+                                    //console.log("📦 서버 응답:", data);
                                     successCallback(this.formatEvents(data));
                                 },
                                 error: (xhr, status, error) => {
