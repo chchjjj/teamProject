@@ -29,7 +29,7 @@
 ***
 ## 🛠 사용 기술
 - Spring boot / MyBatis / Oracle DB
-- JSP / Vue.js 3 / AJAX / JQuery
+- JSP / Vue.js 3 / AJAX / Web Socket
 - 카카오맵 / 주소 / 달력 / 결제(포트원) / 문자인증(coolsms) API
  ***
  ## 📜 발표 PPT
