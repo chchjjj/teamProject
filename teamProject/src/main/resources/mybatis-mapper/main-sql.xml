@@ -133,9 +133,30 @@
 	
 	
 	<!-- QnA 페이징 처리 위해 게시글 개수 구하기 (resultType int) -->
-	<select id="selectQnaCnt" parameterType="hashmap" resultType="int">
-		SELECT COUNT(*) AS CNT
-		FROM QA_TBL		
+		<select id="selectQnaCnt" parameterType="hashmap" resultType="int">
+	    SELECT COUNT(*)
+	    FROM QA_TBL Q
+	    LEFT JOIN USER_TBL U ON Q.USER_ID = U.USER_ID
+	    WHERE 1=1
+	
+	    <if test="qnaKeyword != null and qnaKeyword != ''">
+	        <choose>
+	            <when test="searchOption == 'all'">
+	                AND (Q.QUESTION_CONTENT LIKE '%' || #{qnaKeyword} || '%'
+	                     OR U.USER_NAME LIKE '%' || #{qnaKeyword} || '%')
+	            </when>
+	            <when test="searchOption == 'content'">
+	                AND Q.QUESTION_CONTENT LIKE '%' || #{qnaKeyword} || '%'
+	            </when>
+	            <when test="searchOption == 'id'">
+	                AND U.USER_NAME LIKE '%' || #{qnaKeyword} || '%'
+	            </when>
+	        </choose>
+	    </if>
+	
+	    <if test="userId != null and userId != ''">
+	        AND Q.USER_ID = #{userId}
+	    </if>
 	</select>
 	
 	
