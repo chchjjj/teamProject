@@ -327,7 +327,7 @@
                         })
                         .catch(function () {
                             //검사에 통과하지 않으면 집행x
-                            console.log("업로드 중단됨");
+                            //console.log("업로드 중단됨");
                         });
 
                 },

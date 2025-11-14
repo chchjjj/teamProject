@@ -141,7 +141,7 @@
                     this.stompClient = Stomp.over(socket);
 
                     this.stompClient.connect({}, (frame) => {
-                        console.log("WebSocket 연결 성공: " + frame);
+                        //console.log("WebSocket 연결 성공: " + frame);
                         this.stompClient.subscribe('/topic/public', (message) => {
                             const msg = JSON.parse(message.body);
                             // 1️⃣ 일반 채팅 메시지 수신
@@ -158,7 +158,7 @@
 
                             // 2️⃣ 읽음 상태 알림 수신
                             if (msg.messageIds && msg.readerId) {
-                                console.log("읽음 알림 수신:", msg);
+                                //console.log("읽음 알림 수신:", msg);
 
                                 this.messages = this.messages.map(m => {
                                     if (msg.messageIds.includes(m.id)) {
