@@ -601,11 +601,11 @@
                     $.ajax({
                         url: "/member/update.dox",
                         type: "POST",
-                        data: updateData,
+                        contentType: "application/json; charset=UTF-8",
+                        data: JSON.stringify(updateData),   // JSON으로 변환!!!
                         success: function (response) {
-                            if (response.success) {
+                            if (response.status === "success") {
                                 alert("회원 정보가 성공적으로 수정되었습니다.");
-                                // 비밀번호 필드 초기화 및 정보 재조회
                                 $('#current-pw').val('');
                                 $('#new-pw').val('');
                                 $('#confirm-pw').val('');
