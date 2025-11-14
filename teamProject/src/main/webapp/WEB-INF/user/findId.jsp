@@ -279,14 +279,14 @@
                 fnSendSms: function () {
                     let self = this;
                     let phone = self.phone1.trim() + self.phone2.trim() + self.phone3.trim();
-                    console.log("self.phone1.length: " + self.phone1.length);
-                    console.log("self.phone2.length: " + self.phone2.length);
-                    console.log("self.phone3.length: " + self.phone3.length);
+                    // console.log("self.phone1.length: " + self.phone1.length);
+                    // console.log("self.phone2.length: " + self.phone2.length);
+                    // console.log("self.phone3.length: " + self.phone3.length);
                      if (self.phone1.length != 3 || self.phone2.length != 4 || self.phone3.length != 4) {
                         alert("휴대폰 형식이 맞지 않습니다.");
                         return;
                     }
-                    console.log(phone);
+                    // console.log(phone);
                     let param = {
                         phone: phone
                     };
@@ -297,7 +297,7 @@
                         data: JSON.stringify(param), //에러 잡으려고 수정함
                         contentType: "application/json", //에러 잡으려고 추가함
                         success: function (data) {
-                            console.log(data);
+                            // console.log(data);
                             if (data.res.statusCode == "2000") {
                                 alert("문자 전송 완료");
                                 self.ranStr = data.ranStr;
@@ -353,9 +353,9 @@
                 fnFind: function () {
                     let self = this;
                     let phone = self.phone1 + "-" + self.phone2 + "-" + self.phone3;
-                    console.log("self.phone1.length: " + self.phone1.length);
-                    console.log("self.phone2.length: " + self.phone2.length);
-                    console.log("self.phone3.length: " + self.phone3.length);
+                    // console.log("self.phone1.length: " + self.phone1.length);
+                    // console.log("self.phone2.length: " + self.phone2.length);
+                    // console.log("self.phone3.length: " + self.phone3.length);
                      if (self.phone1.length != 3 || self.phone2.length != 4 || self.phone3.length != 4) {
                         alert("휴대폰 형식이 맞지 않습니다.");
                         return;
@@ -376,7 +376,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log(data);
+                            // console.log(data);
                             self.info = data.info;
                             self.findResult = true;
                         }

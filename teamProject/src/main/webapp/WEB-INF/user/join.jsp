@@ -301,9 +301,9 @@
 
     <script>
         function jusoCallBack(roadFullAddr, roadAddrPart1, addrDetail, roadAddrPart2, engAddr, jibunAddr, zipNo, admCd, rnMgtSn, bdMgtSn, detBdNmList, bdNm, bdKdcd, siNm, sggNm, emdNm, liNm, rn, udrtYn, buldMnnm, buldSlno, mtYn, lnbrMnnm, lnbrSlno, emdNo) {
-            console.log(roadFullAddr);
-            console.log(addrDetail);
-            console.log(zipNo);
+            // console.log(roadFullAddr);
+            // console.log(addrDetail);
+            // console.log(zipNo);
 
             window.vueObj.fnResult(roadFullAddr, addrDetail, zipNo);
         }
@@ -368,7 +368,7 @@
                 fnSendSms: function () {
                     let self = this;
                     let phone = self.phone1.trim() + self.phone2.trim() + self.phone3.trim();
-                    console.log(phone);
+                    // console.log(phone);
                     if (self.phone1.length != 3 || self.phone2.length != 4 || self.phone3.length != 4) {
                         alert("휴대폰 형식이 맞지 않습니다.");
                         return;
@@ -383,7 +383,7 @@
                         data: JSON.stringify(param), //에러 잡으려고 수정함
                         contentType: "application/json", //에러 잡으려고 추가함
                         success: function (data) {
-                            console.log(data);
+                            // console.log(data);
                             if (data.res.statusCode == "2000") {
                                 alert("문자 전송 완료");
                                 self.ranStr = data.ranStr;
