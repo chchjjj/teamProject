@@ -286,7 +286,7 @@
                         dataType: "json",
                         data: { orderId: orderId },
                         success: (res) => {
-                            console.log("채팅 호출 결과:", res);
+                            //console.log("채팅 호출 결과:", res);
 
                             if (res && res.status === "success") {
                                 if (res.canChat) {
@@ -301,13 +301,13 @@
                         error: (xhr, status, error) => {
                             console.error("채팅 이동 실패:", status, error);
                             alert("채팅 서버 호출 중 오류가 발생했습니다.");
-                            console.log("서버 응답:", xhr.responseText);
+                            //console.log("서버 응답:", xhr.responseText);
                         }
                     });
                 },
 
                 goToOptionAdd(orderId) {
-                    console.log(`주문 ID ${orderId}에 대한 옵션 추가 페이지로 이동합니다.`);
+                    //console.log(`주문 ID ${orderId}에 대한 옵션 추가 페이지로 이동합니다.`);
                     window.location.href = `/seller/order/addOption.do?orderId=${orderId}`;
                     alert(`[옵션 추가] 버튼 클릭: 주문 ID ${orderId}`);
                 },

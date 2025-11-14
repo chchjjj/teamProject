@@ -329,7 +329,7 @@
                     success: function (data) {
                         // Mybatis에서 resultType이 Seller Model이므로, 리스트 내부는 객체 형태일 것입니다.
                         self.productList = data.list;
-                        console.log("상품 목록 조회 성공:", data.list);
+                        //console.log("상품 목록 조회 성공:", data.list);
                     },
                     error: function (xhr, status, error) {
                         console.error("상품 목록 조회 실패:", error);

@@ -360,7 +360,7 @@ const app = Vue.createApp({
                 data: param,
                 success: function (data) {
                     self.list = data.list || [];
-                    console.log("가게 목록 조회 성공:", data);
+                    //console.log("가게 목록 조회 성공:", data);
                 },
                 error: function (xhr, status, error) {
                     console.error("가게 목록 조회 실패:", error);

@@ -423,7 +423,7 @@
                             console.error("Order ID가 누락되어 상세 페이지로 이동할 수 없습니다.");
                             return;
                         }
-                        console.log("넘어가는 orderId:", orderId);
+                        //console.log("넘어가는 orderId:", orderId);
 
                         const form = document.createElement('form');
                         form.setAttribute('method', 'post');
@@ -451,7 +451,7 @@
                             dataType: "json",
                             data: { userId: this.userId },
                             success: (data) => {
-                                console.log("서버 응답 데이터:", data);
+                                //console.log("서버 응답 데이터:", data);
                                 this.allOrders = (data.list || []).map(o => ({
                                     orderId: o.ORDER_ID,
                                     userName: o.USER_NAME,

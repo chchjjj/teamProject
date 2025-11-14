@@ -172,7 +172,7 @@
                             <select v-model="option">
                                 <option value="all">::전체::</option>
                                 <option value="userId">사용자 아이디</option>
-                                <option value="userName">닉네임</option>
+                                <option value="userName">이름</option>
                             </select>
                             <input type="text" v-model="keyWord" @keyup.enter="fnUserList">
                             <button @click="fnUserList">검색</button>
@@ -182,7 +182,7 @@
                             <tr>
                                 <th><input type="checkbox" @click="fnSelectAll"></th>
                                 <th>아이디</th>
-                                <th>닉네임</th>
+                                <th>이름</th>
                                 <th>연락처</th>
                                 <th>이메일</th>
                                 <th>주소</th>

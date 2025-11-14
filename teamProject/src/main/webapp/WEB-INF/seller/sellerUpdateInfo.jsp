@@ -511,7 +511,7 @@
                                 // 💡 주소 정보 통합 바인딩: USER_ADDR 값을 하나의 필드에 바로 입력
                                 $('#user-addr').val(member.USER_ADDR || '');
 
-                                console.log("✅ 회원 정보 화면 바인딩 성공:", member);
+                                //console.log("✅ 회원 정보 화면 바인딩 성공:", member);
                             } else {
                                 console.error("회원 정보 조회 실패: 데이터 구조 오류 또는 데이터 없음", data);
                             }
