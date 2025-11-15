@@ -170,6 +170,9 @@
                 text-decoration: underline;
                 font-weight: 500;
             }
+            .mask{
+                -webkit-text-security: square;
+            }
         </style>
     </head>
 
@@ -201,7 +204,7 @@
                         <input v-model="userName" placeholder="이름을 입력하세요">
 
                         <label>전화번호</label>
-                        <input v-model="phone" placeholder="-를 제외하고 입력해주세요.">
+                        <input type="tel" class="mask" v-model="phone"  placeholder="-를 제외하고 입력해주세요.">
 
                         <!-- 여기 밑 세 줄을 문자인증 도입하면 주석 처리 -->
                         <!-- <button @click="fnAuth">인증</button> -->
