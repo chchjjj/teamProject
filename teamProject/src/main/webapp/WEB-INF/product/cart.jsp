@@ -172,6 +172,7 @@
                     groupedCartList: [],
                     selectItem: [],
                     chatYnFilter: 'N',//chatting过滤开关
+                    cartdel: false
                 };
             },
             computed: {
@@ -216,7 +217,7 @@
                         return;
                     }
 
-                    
+                    self.cartdel = true;
                     const selectedItemsData = self.groupedCartList.filter(group =>
                         self.selectItem.includes(group.cartId)
                     );
@@ -267,6 +268,7 @@
                 },
                 fnAllRemove: function () {
                     let self = this;
+                    
                     var fList = JSON.stringify(self.selectItem);
                     var param = { selectItem: fList };
                     $.ajax({
@@ -275,9 +277,9 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            
+                            if(!self.cartdel){
                                 alert("삭제되었습니다!");
-                            
+                            }
                             self.fnCart();
                         }
                     });
