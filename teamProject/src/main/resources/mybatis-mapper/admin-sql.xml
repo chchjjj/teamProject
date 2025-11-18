@@ -494,8 +494,8 @@
    		VALUES (
 			SEQ_AD_TBL.NEXTVAL,
 			#{adName},
-			SYSDATE,  
-        	SYSDATE+30,  
+			TO_DATE(#{startDate}, 'YYYY-MM-DD'),
+			TO_DATE(#{endDate}, 'YYYY-MM-DD'),    
 			'BANNER',
 			#{urlLink},
 			0,
