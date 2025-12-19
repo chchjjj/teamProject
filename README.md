@@ -35,6 +35,7 @@
  ## 📜 발표 PPT
  ### ▶ [발표자료](https://drive.google.com/file/d/1vvmXk1nGDIXIeREsSAAhQdoHZbIMEPfU/view?usp=drive_link)
  ## 🎬 시연 영상
+ ### ▶ [시연영상](https://drive.google.com/drive/folders/1riGB_MYRkvWfvxpnFrVEcJdwaho6IQS-?hl=ko)
  ***
 ## 📌 주요 기능
 ### **✔ 사용자 기능**
