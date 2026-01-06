@@ -4,6 +4,7 @@
 <p align="center">
 <img src="https://github.com/chchjjj/teamProject/blob/develop/mainPage.JPG" width="80%">
 </p>
+
 ***
 ## 💡 프로젝트 소개
 디저트 연구소는 풍부한 수제 디저트 중심의 중개 플랫폼으로,
