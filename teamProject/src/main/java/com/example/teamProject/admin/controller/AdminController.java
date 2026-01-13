@@ -267,20 +267,14 @@ public class AdminController {
 
 	
 	//매출 차트
-	@RequestMapping(value = "/adsale/salestrends.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/adsale/salestrends.dox", method = RequestMethod.POST)
 	@ResponseBody
-	public String salestrends(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+	public String salestrends(@RequestParam HashMap<String, Object> map) {
 
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-
-		
-		resultMap = adminService.SelectSalesTrends(map);
-		
-		System.out.println(map);
-		
-		return new Gson().toJson(resultMap);
+	    HashMap<String, Object> resultMap = adminService.SelectSalesTrends(map);
+	    System.out.println("salestrends 파라미터 = " + map);
+	    return new Gson().toJson(resultMap);
 	}
-	
 	
 	//qnA & review
 	@RequestMapping(value = "/adboard/qnalist.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")

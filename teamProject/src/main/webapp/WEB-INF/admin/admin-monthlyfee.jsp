@@ -225,6 +225,7 @@
                 };
             },
             computed: {
+                //reduce()는 배열의 각 요소를 순회하면서 이를 하나의 단일한 값으로 “축약(누적)”하는 함수
                 totalNetSum() {
                     return this.sellerList.reduce((sum, seller) => sum + (seller.totalNet || 0), 0);
                 },
