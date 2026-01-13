@@ -272,22 +272,64 @@
                         // userId 없으면 undefined
                     },
 
-                    fnGetUnreadCount: function () {
-                        let self = this;
-                        if (!self.userId) return; // 비로그인이면 실행 안 함
 
+
+                    //로그인아이디의 권한에 따라 변동
+                    fnChatList: function () {
+                        let self = this;
+
+                        // 1. 로그인 체크
+                        if (self.userId == "" || self.userId == null || self.userId == "null") {
+                            alert("로그인 후 이용해주세요!");
+                            location.href = "/user/login.do";
+                            return;
+                        }
+
+                        // 2. 권한 확인 후 페이지 이동
                         $.ajax({
-                            url: "/chat/unreadCount.dox", // 실제 본인의 서버 주소로 수정
                             type: "POST",
+                            url: "/main/userInfo.dox", // 기존 fnMypage에서 사용하던 권한 체크 경로
                             data: { userId: self.userId },
+                            dataType: "json",
                             success: function (data) {
-                                self.totalUnread = data.count; // 서버에서 준 개수 반영
+                                // data.info.role 값에 따라 분기
+                                if (data.info.role === "C") {
+                                    // 구매자(Customer)일 경우
+                                    location.href = "/user/chatList.do";
+                                } else if (data.info.role === "S") {
+                                    // 판매자(Seller)일 경우
+                                    location.href = "/seller/salesHistory.do";
+                                } else if (data.info.role === "A") {
+                                    // 관리자(Admin)일 경우 (필요시 추가)
+                                    location.href = "/admin/userlist.do";
+                                } else {
+                                    alert("권한 정보를 확인할 수 없습니다.");
+                                }
+                            },
+                            error: function () {
+                                alert("연결 오류가 발생했습니다.");
                             }
                         });
                     },
-                    fnChatList: function () {
-                        // 메시지 아이콘 클릭 시 채팅 리스트로 이동하는 로직
-                        location.href = "/seller/salesHistory.do";
+
+                    // 안 읽은 메시지 수 가져오기 (하나로 합침)
+                    fnGetUnreadCount: function () {
+                        let self = this;
+                        // 비로그인이거나 null 문자열일 경우 차단
+                        if (!self.userId || self.userId === "" || self.userId === "null") return;
+
+                        $.ajax({
+                            url: "/seller/unreadCount.dox",
+                            type: "POST",
+                            data: { userId: self.userId },
+                            success: function (data) {
+                                // 서버에서 넘어온 count 값을 totalUnread에 저장
+                                self.totalUnread = data.count || 0;
+                            },
+                            error: function () {
+                                console.log("알림 개수를 가져오는데 실패했습니다.");
+                            }
+                        });
                     },
 
                 }, // methods
