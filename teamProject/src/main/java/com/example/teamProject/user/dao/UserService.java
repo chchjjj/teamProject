@@ -381,7 +381,31 @@ public class UserService {
 	}
 
 	
-	
+	// 구매자 마이페이지 - 결제 전 상태 건 주문취소하면 ORDER_TBL의 STATUS X로 바꾸기 
+	public HashMap<String, Object> updateOrderCancel(HashMap<String, Object> map) {
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    
+	    try {
+	        // 1. Mapper 호출 (성공 시 수정된 행의 개수 1을 반환)
+	        int cnt = userMapper.updateOrderCancel(map);
+	        
+	        if (cnt > 0) {
+	            resultMap.put("result", "success");
+	            resultMap.put("msg", "주문이 정상적으로 취소되었습니다.");
+	        } else {
+	            resultMap.put("result", "fail");
+	            resultMap.put("msg", "취소할 주문을 찾지 못했습니다.");
+	        }
+	        
+	    } catch (Exception e) {
+	        // 에러 발생 시 처리
+	        resultMap.put("result", "fail");
+	        resultMap.put("msg", "서버 오류로 인해 취소에 실패했습니다.");
+	        System.out.println("주문 취소 에러: " + e.getMessage());
+	    }
+	    
+	    return resultMap;
+	}
 	
 	
 	
