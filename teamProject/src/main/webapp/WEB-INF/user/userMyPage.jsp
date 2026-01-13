@@ -97,6 +97,11 @@
                 color: #e65100;
             }
 
+            .status-X {
+                background-color: #c5c5c5;
+                color: #020202;
+            }
+
             /* Product Detail Card */
             .orderDetailCard {
                 background-color: #fafafa;
@@ -497,6 +502,7 @@
                                     <span v-if="order.status==='P'">결제 완료</span>
                                     <span v-else-if="order.status==='C'">결제 수락</span>
                                     <span v-else-if="order.status==='S'">결제 대기</span>
+                                    <span v-else-if="order.status==='X'">주문 취소</span>
                                 </span>
                             </h3>
 
@@ -580,6 +586,9 @@
                                 </button>
                                 <button class="btnStatus" @click="fnPayment(order.orderId)" v-if="order.status==='C' || order.status==='S'">
                                     💰 바로 결제
+                                </button>
+                                <button class="btnStatus" @click="fnOrderCancel(order.orderId)" v-if="order.status==='C' || order.status==='S'">
+                                    ❌ 주문 취소
                                 </button>
                                 <button class="btnStatus" @click="fnOrderStatus(order.orderId)"
                                     v-if="order.status==='P'">
@@ -838,7 +847,32 @@
 
                 fnInsertReview: function (orderDetailId) {
                     pageChange("/user/reviewInsert.do", { orderDetailId: orderDetailId });
-                }
+                },
+
+                // 추가) 결제 전 주문취소하기
+                fnOrderCancel : function (orderId) {
+                    let self = this;
+                    console.log("취소할 주문번호:", orderId);
+                    if (confirm("주문을 취소하시겠습니까?")) {
+                        let param = { orderId : orderId };
+                        $.ajax({
+                            url: "/user/orderCancel.dox",
+                            dataType: "json",
+                            type: "POST",
+                            data: param,
+                            success: function (data) {
+                                if (data.result == "success") {
+                                    alert("주문이 취소되었습니다.");    
+                                    // 성공 후 목록을 다시 불러와서 화면을 갱신
+                                    self.fnOrderList();                                
+                                } else {
+                                    alert("주문 취소 중 오류가 발생하였습니다.");
+                                }
+                            }
+                        });
+                    }
+                }    
+
             },
 
             mounted() {

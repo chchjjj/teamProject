@@ -283,6 +283,21 @@ public class UserController {
 		return new Gson().toJson(resultMap);
 	}
 	
+	// 구매자 마이페이지 - 결제 전 상태 건 주문취소하면 ORDER_TBL의 STATUS X로 바꾸기
+	@RequestMapping(value = "/user/orderCancel.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String orderCancel(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    
+	    // 서비스 호출 (주문 상태를 'X'로 변경하고 결과 맵을 받아옴)
+	    resultMap = userService.updateOrderCancel(map);
+	    
+	    // 파라미터 확인용 로그 (orderId가 잘 들어오는지 확인)
+	    System.out.println("주문 취소 요청 파라미터: " + map);
+	    
+	    return new Gson().toJson(resultMap);
+	}
+	
 	
 	
 }

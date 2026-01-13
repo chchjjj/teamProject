@@ -305,6 +305,13 @@
 	</insert>
 	
 	
+	<!-- 구매자 마이페이지에서 결제 전 상태 건 주문취소하기 -->
+	<update id="updateOrderCancel" parameterType="hashmap">
+		UPDATE ORDER_TBL 
+		    SET STATUS = 'X'
+		WHERE ORDER_ID = #{orderId}
+	</update>	
+	
 	
 	
 	

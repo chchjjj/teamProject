@@ -68,6 +68,10 @@ public interface UserMapper {
 	
 	//reviewInsert
 	int reviewInsert (HashMap<String, Object> map);
+	
+	
+	// 구매자 마이페이지) 결제 전 상태 건 주문취소 시 주문 테이블의 STATUS 변경
+	int updateOrderCancel(HashMap<String, Object> map);
 
 	
 	
