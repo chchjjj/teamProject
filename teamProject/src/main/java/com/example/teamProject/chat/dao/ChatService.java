@@ -22,4 +22,12 @@ public interface ChatService {
 	// 채팅 읽음 처리
 	void markMessagesAsRead(List<Integer> messageIds);
 	
+	//추가 특정 유저(판매자/구매자)의 안 읽은 채팅 총 개수 가져오기
+	int getTotalUnreadCount(java.util.Map<String, Object> params);
+	
+	//추가 특정 채팅방의 안 읽은 개수를 0으로
+	void resetUnreadCount(String chatId);
+	
+	//추가 내 채팅방 목록 가져오기
+	List<java.util.Map<String, Object>> selectChatList(java.util.Map<String, Object> params);
 }

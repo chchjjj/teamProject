@@ -161,12 +161,14 @@
 
                         /** 이벤트 클릭 시 채팅페이지 이동 */
                         handleEventClick(info) {
-                            const orderId = info.event.extendedProps.orderId || info.event.id;
-                            if (orderId && orderId !== "(없음)") {
-                                window.location.href = `/chat/chatSeller.do?orderId=\${orderId}`;
-                            } else {
-                                alert("주문 ID를 찾을 수 없습니다.");
-                            }
+                          const orderId = info.event.extendedProps.orderId || info.event.id;
+    
+                        if (orderId && orderId !== "(없음)") {
+                            const url = `/seller/OrderHistoryViewDetail.do?orderId=\${orderId}`;
+                            window.location.href = url;
+                        } else {
+                            alert("주문 ID를 찾을 수 없습니다.");
+                        }
                         }
                     },
                     mounted() {

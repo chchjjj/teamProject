@@ -61,5 +61,41 @@
 	    ORDER BY SENT_AT ASC
 	</select>
 	
+	<!--추가-->
+	<update id="updateChatRoomStatus" parameterType="com.example.teamProject.chat.model.Chat">
+    UPDATE CHAT_TBL
+    SET UNREAD_COUNT = UNREAD_COUNT + 1,
+        LAST_MSG = #{content},
+        LAST_MSG_AT = SYSDATE
+    WHERE CHAT_ID = #{chatId}
+	</update>
+	
+	<!--추가-->
+	<update id="resetUnreadCount" parameterType="string">
+    UPDATE CHAT_TBL
+    SET UNREAD_COUNT = 0
+    WHERE CHAT_ID = #{chatId}
+	</update>
+	
+	<!--추가-->
+	<select id="getTotalUnreadCount" parameterType="map" resultType="int">
+    SELECT SUM(UNREAD_COUNT)
+    FROM CHAT_TBL
+    WHERE USER_ID = #{userId} OR STORE_ID = #{storeId}
+	</select>
+	
+	<!--추가-->
+	<select id="selectChatList" parameterType="map" resultType="map">
+    SELECT 
+        CHAT_ID, 
+        ORDER_ID, 
+        LAST_MSG, 
+        LAST_MSG_AT, 
+        UNREAD_COUNT
+    FROM CHAT_TBL
+    WHERE USER_ID = #{userId} OR STORE_ID = #{storeId}
+    ORDER BY LAST_MSG_AT DESC
+	</select>
+	
 
 </mapper> 
