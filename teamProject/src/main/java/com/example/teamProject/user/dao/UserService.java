@@ -149,6 +149,16 @@ public class UserService {
 
 		return resultMap;
 	}
+	
+	public HashMap<String, Object> phoneCheck(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		User user = userMapper.userPhoneCheck(map);
+		String result = user != null ? "true" : "false";
+
+		resultMap.put("result", result);
+
+		return resultMap;
+	}
 
 	public HashMap<String, Object> userAuth(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
@@ -369,6 +379,8 @@ public class UserService {
 		    
 		    return resultMap;
 	}
+
+	
 	
 	
 	

@@ -253,7 +253,7 @@
                     <div class="addr-box">
                         <input v-if="!userIdFlg" v-model="userId" placeholder="아이디 입력">
                         <input v-else v-model="userId" disabled>
-                        <button @click="fnCheck">중복체크</button>
+                        <button @click="fnIdCheck">중복체크</button>
                     </div>
 
                     <label>비밀번호</label>
@@ -276,15 +276,25 @@
 
                     <label>휴대폰 번호</label>
                     <div class="phone-box">
-                        <input type="tel" class="small-input" v-model="phone1" maxlength="3"> -
-                        <input type="tel" class="mask small-input" v-model="phone2" maxlength="4"> -
-                        <input type="tel" class="mask small-input" v-model="phone3" maxlength="4">
-                        <template v-if="!sendMessageFlg">
-                            <button @click="fnSendSms">인증번호 받기</button>
+                        <input v-if="!phoneCheckFlg" type="tel" class="small-input" v-model="phone1" maxlength="3">
+                        <input v-else type="tel" class="small-input" v-model="phone1" maxlength="3" disabled>
+                        -
+                        <input v-if="!phoneCheckFlg" type="tel" class="mask small-input" v-model="phone2" maxlength="4"> 
+                        <input v-else type="tel" class="mask small-input" v-model="phone2" maxlength="4" disabled>
+                        -
+                        <input v-if="!phoneCheckFlg" type="tel" class="mask small-input" v-model="phone3" maxlength="4">
+                        <input v-else type="tel" class="mask small-input" v-model="phone3" maxlength="4" disabled>
+                        <template v-if="!phoneCheckFlg">
+                            <button @click="fnPhoneCheck">중복체크</button>
                         </template>
                         <template v-else>
-                            <input v-model="inputNum" :placeholder="timer" class="inputNum">
-                            <button @click="fnSmsAuth">인증</button>
+                            <template v-if="!sendMessageFlg">
+                                <button @click="fnSendSms">인증번호 받기</button>
+                            </template>
+                            <template v-else>
+                                <input v-model="inputNum" :placeholder="timer" class="inputNum">
+                                <button v-if="!smsFlg" @click="fnSmsAuth">인증</button>
+                            </template>
                         </template>
                     </div>
 
@@ -324,6 +334,7 @@
                     phone2: "",
                     phone3: "",
                     userIdFlg: false, //아이디 중복 체크 유무
+                    phoneCheckFlg: false, //전화번호 중복 체크 유무
                     inputNum: "", //문자인증 번호
                     sendMessageFlg: false, //문자인증 메세지 전송 여부
                     timer: "",
@@ -335,7 +346,7 @@
             },
             methods: {
                 // 함수(메소드) - (key : function())
-                fnCheck: function () {
+                fnIdCheck: function () {
                     let self = this;
                     if (self.userId.length < 5) {
                         alert("아이디는 5글자 이상이어야 합니다.");
@@ -356,6 +367,32 @@
                             else {
                                 alert("사용 가능한 아이디 입니다.");
                                 self.userIdFlg = true;
+                            }
+                        }
+                    });
+                },
+                fnPhoneCheck: function () {
+                    let self = this;
+                    let phone = self.phone1 + "-" + self.phone2 + "-" + self.phone3;
+                    if (self.phone1.length != 3 || self.phone2.length != 4 || self.phone3.length != 4) {
+                        alert("휴대폰 형식이 맞지 않습니다.");
+                        return;
+                    }
+                    let param = {
+                        phone: phone
+                    };
+                    $.ajax({
+                        url: "/user/phoneCheck.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            if (data.result == "true") {
+                                alert("이미 사용중인 전화번호 입니다.");
+                            }
+                            else {
+                                alert("확인되었습니다.");
+                                self.phoneCheckFlg = true;
                             }
                         }
                     });
@@ -435,7 +472,7 @@
                     }
 
                     if (!regPassword.test(self.userPass)) {
-                        alert('비밀번호 형식에 따라 정확히 입력해주세요');
+                        alert("비밀번호 형식에 따라 정확히 입력해주세요");
                         return;
                     }
 
@@ -450,7 +487,7 @@
                     }
 
                     if (!regEmail.test(self.email)) {
-                        alert('이메일 형식에 따라 정확히 입력해주세요');
+                        alert("이메일 형식에 따라 정확히 입력해주세요");
                         return;
                     }
 
@@ -461,6 +498,11 @@
 
                     if (self.phone1.length != 3 || self.phone2.length != 4 || self.phone3.length != 4) {
                         alert("휴대폰 형식이 맞지 않습니다.");
+                        return;
+                    }
+
+                    if(!self.phoneCheckFlg){
+                        alert("휴대폰 번호 중복 체크를 진행해주세요.");
                         return;
                     }
 

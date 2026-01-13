@@ -16,6 +16,9 @@ public interface UserMapper {
 	
 	// 회원가입 아이디 중복체크
 	User userCheck(HashMap<String, Object> map);
+	
+	//회원가입 전화번호 중복체크
+	User userPhoneCheck(HashMap<String, Object> map);
 		
 	//회원가입
 	int userAdd(HashMap<String, Object> map);
@@ -65,5 +68,7 @@ public interface UserMapper {
 	
 	//reviewInsert
 	int reviewInsert (HashMap<String, Object> map);
+
+	
 	
 }
