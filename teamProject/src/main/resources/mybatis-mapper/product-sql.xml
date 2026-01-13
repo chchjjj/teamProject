@@ -490,4 +490,28 @@ OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	LEFT JOIN INGREDIENT_TBL I ON P.INGREDIENT_ID = I.INGREDIENT_ID
 	WHERE PRO_NO = #{proNo}
 	</select>
+	
+	<!--멤버십 전환-->
+	<insert id="insertMembership" parameterType="hashmap">
+	INSERT INTO MEMBERSHIP_TBL
+	VALUES (
+		MEMBERSHIP_SEQ.NEXTVAL,
+		#{userId},
+		'G',
+		SYSDATE,
+		'A',
+		'30000',
+		NULL,
+		0
+	)
+	</insert>
+	
+	<!-- 멤버십 해지-->
+	<update id="cancelMembership" parameterType="hashmap">
+		UPDATE MEMBERSHIP_TBL
+		SET
+			MEMBERSHIP_STATUS = 'B',
+			EXPIRATION_DATE = TO_DATE(#{expirationDate}, 'YYYY-MM-DD')
+		WHERE USER_ID =  #{userId}
+	</update>
 </mapper>

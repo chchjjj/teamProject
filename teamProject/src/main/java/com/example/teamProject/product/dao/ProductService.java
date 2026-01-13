@@ -27,6 +27,28 @@ public class ProductService {
 		resultMap.put("info", info);
 		return resultMap;
 	}
+	// 멤버십 업데이트
+	public HashMap<String, Object> insertMembership(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		int cnt = ProductMapper.insertMembership(map);
+		resultMap.put("result", "success");
+		return resultMap;
+	}
+	
+	//멤버십 해지
+	public HashMap<String, Object> deleteMembership(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		int cnt = ProductMapper.cancelMembership(map);
+		System.out.println("멤버십해지");
+		System.out.println(map);
+		resultMap.put("result", "success");
+		return resultMap;
+	}
+	
+	
+	
 	// 상품 상세정보
 	public HashMap<String, Object> getProInfo(HashMap<String, Object> map) {
 		// TODO Auto-generated method stub

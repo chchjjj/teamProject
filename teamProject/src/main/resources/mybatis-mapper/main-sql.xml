@@ -274,6 +274,14 @@
 	    )
 	</select>
 	
+	<!--멤버십 판별-->
+	<select id="checkMembership" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">
+	SELECT *
+	FROM MEMBERSHIP_TBL
+	WHERE USER_ID = #{userId}
+	
+	</select>
+	
 	
 	<!-- 멤버쉽 가입 판매자 상품 이미지 (FILEUSE 컬럼 : T(상위이미지)) -->
 	<select id="selectMemberProImg" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">

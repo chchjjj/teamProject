@@ -45,6 +45,21 @@ public class ProductController {
 
         return "/product/wishList";
     }
+	@RequestMapping("/product/membershipJoin.do") 
+    public String membershipJoin(Model model) throws Exception{
+
+        return "/product/membershipJoin";
+    }
+	@RequestMapping("/product/membershipManage.do") 
+    public String membershipManage(Model model) throws Exception{
+
+        return "/product/membershipManage";
+    }
+	@RequestMapping("/product/membershipIMG.do") 
+    public String membershipIMG(Model model) throws Exception{
+
+        return "/product/membershipIMG";
+    }
 	@RequestMapping("/product/sellerStore.do") 
     public String sellerStore(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{
 		request.setAttribute("storeId", map.get("storeId"));
@@ -65,6 +80,21 @@ public class ProductController {
 		resultMap = ProductService.getProInfo(map);
 		return new Gson().toJson(resultMap);
 	}
+	@RequestMapping(value = "/product/updateMembership.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String updateMembership(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = ProductService.insertMembership(map);
+		return new Gson().toJson(resultMap);
+	}
+	@RequestMapping(value = "/product/deleteMembership.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String deleteMembership(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = ProductService.deleteMembership(map);
+		return new Gson().toJson(resultMap);
+	}
+	
 	@RequestMapping(value = "/product/Imginfo.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String Imginfo(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
