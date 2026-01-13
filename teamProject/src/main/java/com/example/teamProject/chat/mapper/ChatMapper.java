@@ -27,4 +27,17 @@ public interface ChatMapper {
 	// 읽음처리
 	int updateMessagesAsRead(List<Integer> msgIds);
 	
+	//추가
+	//채팅방의 안 읽은 개수 증가 및 마지막 메시지 업데이트
+    void updateChatRoomStatus(Chat chat);
+    
+    //채팅방 입장 시 안 읽은 개수 0으로 초기화
+    void resetUnreadCount(@Param("chatId") String chatId);
+    
+    // 추가: 내 안 읽은 메시지 총합 가져오기 (알림 배지용)
+ 	int getTotalUnreadCount(java.util.Map<String, Object> params);
+ 	
+ 	//  추가: 내 채팅방 리스트 가져오기 (목록 페이지용)
+ 	List<java.util.Map<String, Object>> selectChatList(java.util.Map<String, Object> params);
+	
 }

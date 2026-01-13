@@ -143,9 +143,14 @@ ul {
 
 .user-menu img {
     margin-left: 6px;
-    width: 40px;
-    height: auto;
+    width: 40px;          
+    height: 40px;         
     cursor: pointer;
+    border-radius: 50%;   
+    object-fit: cover;   
+    background-color: #fff;
+    border: 1px solid #ddd; 
+    vertical-align: middle;
 }
 
 .icon {
@@ -808,3 +813,20 @@ ul {
     font-size: 16px;
     padding: 50px 0;
 }
+
+    /* 배지(빨간 원) 디자인 */
+    .unread-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: #ff4d4f; /* 선명한 빨간색 */
+        color: white;
+        font-size: 10px;
+        font-weight: bold;
+        padding: 2px 5px;
+        border-radius: 10px;
+        min-width: 14px;
+        text-align: center;
+        border: 1px solid white; /* 배경과 구분되게 흰색 테두리 */
+        line-height: 1;
+    }

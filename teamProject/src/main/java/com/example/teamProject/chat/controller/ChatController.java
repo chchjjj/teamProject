@@ -108,6 +108,9 @@ public class ChatController {
 //        return message;
 //    }
 	
+	
+
+	
 	// WebSocket 메시지 수신 및 DB 저장 
 	@MessageMapping("/sendMessage")
 	@SendTo("/topic/public")
@@ -134,6 +137,9 @@ public class ChatController {
     @ResponseBody // JSON 형태로 응답
     public List<Chat> getMessagesByChatId(@PathVariable("chatId") int chatId) {
         try {
+        	//추가 채팅방 입장시 알림 0으로 초기화
+        	chatService.resetUnreadCount(String.valueOf(chatId));
+        	
             List<Chat> messages = chatService.selectMsgByChatId(chatId);
             System.out.println(chatId + " 채팅방 기존 메시지 " + messages.size() + "개 로드");
             return messages;
@@ -189,5 +195,17 @@ public class ChatController {
         return result;
     }
 
+    
+    //추가 안읽은 메시지 가져오기
+    @GetMapping("/api/chat/totalUnread")
+    @ResponseBody
+    public int getTotalUnreadCount(@RequestParam Map<String, Object> params) {
+        // params에는 세션에서 가져온 userId 또는 storeId가 담겨야 합니다.
+        try {
+            return chatService.getTotalUnreadCount(params);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 	
 }
