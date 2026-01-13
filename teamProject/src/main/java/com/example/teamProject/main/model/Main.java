@@ -51,5 +51,13 @@ public class Main {
     
     private int ingredientId;
     
+    // 멤버십 관련
+    private int membershipId;
+    private String membershipLevel;
+    private String joinDate;
+    private int monthlyFee;
+    private String expirationDate;
+    private int count;
+    private String membershipStatus;
 	
 }

@@ -149,6 +149,17 @@ public class MainController {
 		return new Gson().toJson(resultMap);
 	}
 	
+	// 멤버십 가입정보
+	@RequestMapping(value = "/main/checkmembership.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String checkmembership(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		System.out.println(map);
+		resultMap = mainService.getMembership(map); 
+		System.out.println("멤버십 가입여부 " + resultMap);
+		return new Gson().toJson(resultMap); // 결과를 resultMap에 담음
+	}
+	
 	// 메인페이지 - 멤버쉽 가입 판매자 상품 이미지 목록 목록
 	@RequestMapping(value = "/main/memberProImg.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody

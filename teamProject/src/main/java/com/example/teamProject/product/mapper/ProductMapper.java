@@ -112,4 +112,10 @@ public interface ProductMapper {
  	
  	// 재료와 상품 연결
  	List<Product> proingred(HashMap<String, Object> map);
+ 	
+ 	// 멤버십 업데이트
+ 	int insertMembership(HashMap<String, Object> map);
+ 	
+ 	// 멤버십 해지
+ 	int cancelMembership(HashMap<String, Object> map);
 }

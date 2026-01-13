@@ -27,6 +27,35 @@
             button {
                 cursor: pointer;
             }
+
+            /* =========================
+   판매자 멤버십 이미지 플로팅 버튼
+========================= */
+
+            .seller-membership-float {
+                position: fixed;
+                right: 28px;
+                bottom: 36px;
+                z-index: 9999;
+
+                width: 130px;
+                /* 이미지 실제 크기에 맞게 조절 */
+                height: auto;
+
+                cursor: pointer;
+
+                /* ❌ 버튼처럼 보이게 하는 요소 전부 제거 */
+                background: none;
+                border: none;
+                box-shadow: none;
+                border-radius: 0;
+
+                transition: transform 0.25s ease;
+            }
+
+            .seller-membership-float:hover {
+                transform: translateY(-6px) scale(1.05);
+            }
         </style>
     </head>
 
@@ -36,6 +65,9 @@
 
             <div id="app">
                 <!-- html 코드는 id가 app인 태그 안에서 작업 -->
+                <!-- 판매자 멤버십 플로팅 버튼 -->
+                <img v-if="isSeller" :src="membershipImg" class="seller-membership-float" alt="판매자 멤버십"
+                    @click="fnGoMembership" />
 
                 <div class="container">
 
@@ -174,6 +206,10 @@
             data() {
                 return {
                     // 변수 - (key : value)
+                    userId: "${sessionId}",
+                    isSeller: false, // 판매자 여부
+                    membershipImg: "/img/멤버십가입.png",
+                    membershipState: false,
 
                     // 메인 상단 - 멤버쉽 화면 홍보 이미지
                     productImages: [
@@ -231,7 +267,62 @@
                         }
                     });
                 },
+                // 유저 정보 가져오기(판매자한테만 멤버십 가입 띄우는 용도)
+                fnUserInfo: function () {
+                    let self = this;
+                    $.ajax({
+                        url: "/main/userInfo.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: { userId: self.userId },
+                        success: function (data) {
+                            if (data.info.role === 'S') {
+                                self.isSeller = true;
+                                self.fnCheckMembership()
+                            }
+                        },
+                        error: function (err) {
+                            console.error("fnUserInfo Ajax 에러:", err);
+                        }
+                    });
+                },
+                // 멤버십 가입여부 판별
+                fnCheckMembership: function () {
+                    let self = this;
+                    $.ajax({
+                        url: "/main/checkmembership.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: { userId: self.userId },
+                        success: function (data) {
 
+                            // membershipLevel === 'G' → 이용중 이미지
+                            if (data.info && data.info.membershipLevel === 'G') {
+                                self.membershipImg = "/img/멤버십이용중.png";
+                                self.membershipState = true;
+                                console.log(self.membershipState)
+                            } else {
+                                self.membershipImg = "/img/멤버십가입.png";
+                                self.membershipState = false;
+                            }
+
+                            console.log("멤버십 레벨:", data.info?.membershipLevel);
+                        },
+                        error: function (err) {
+                            console.error("fnCheckMembership Ajax 에러:", err);
+                        }
+                    });
+                },
+                // 멤버십 가입 버튼 눌렀을때
+                fnGoMembership: function () {
+                    let self = this;
+                    if (self.membershipState){
+                        pageChange("/product/membershipManage.do", {});
+                    } else {
+                        pageChange("/product/membershipJoin.do", {});
+                    }
+                    
+                },
                 // 멤버쉽 가입 판매자 상품 홍보 사진 리스트 가져오기
                 fnMemberProImg: function () {
                     let self = this;
@@ -379,6 +470,8 @@
                 let self = this;
                 // console.log("로그인 아이디 ===> " + self.userId); // 로그인한 아이디 잘 넘어오나 테스트
 
+                self.fnUserInfo()
+
                 // Vue가 DOM 렌더링 완료 후 실행
                 self.$nextTick(() => {
                     self.fnMemberProImg();
@@ -440,4 +533,3 @@
 
         app.mount('#app');
     </script>
-    

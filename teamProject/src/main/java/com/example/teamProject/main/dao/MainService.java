@@ -158,6 +158,20 @@ public class MainService {
 		return resultMap;
 	}
 	
+	// 멤버십 가입 여부
+	public HashMap<String, Object> getMembership(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			Main member = mainMapper.checkMembership(map);						
+			resultMap.put("info", member); // (키, 밸류)			
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
+		}			
+		return resultMap;
+	}
+	
 	// 멤버쉽 가입 판매자 상품 이미지 목록 목록
 	public HashMap<String, Object> getMemberProImgList(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();		

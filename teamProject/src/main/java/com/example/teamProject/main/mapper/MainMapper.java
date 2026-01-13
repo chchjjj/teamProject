@@ -53,5 +53,7 @@ public interface MainMapper {
 	// 멤버쉽 가입 판매자 상품 이미지 목록
 	List<Main> selectMemberProImg(HashMap<String, Object> map);
 	
+	// 멤버십 가입정보
+	Main checkMembership(HashMap<String, Object> map);
 	
 }
