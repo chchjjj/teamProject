@@ -1,7 +1,10 @@
 # 🍰 디저트 연구소 
 > 소비자도 판매자도 편리하게 이용하는 디저트 중개 플랫폼!
 ***
-![대표사진](https://github.com/chchjjj/teamProject/blob/develop/mainPage.JPG)
+<p align="center">
+<img src="https://github.com/chchjjj/teamProject/blob/develop/mainPage.JPG" width="80%">
+</p>
+
 ***
 ## 💡 프로젝트 소개
 디저트 연구소는 풍부한 수제 디저트 중심의 중개 플랫폼으로,
@@ -33,8 +36,9 @@
 - 카카오맵 / 주소 / 달력 / 결제(포트원) / 문자인증(coolsms) API
  ***
  ## 📜 발표 PPT
- ### ▶ [발표자료](https://drive.google.com/file/d/17DXaAwjJRvN5bPMVojVMfcMtas4xnYnD/view?usp=sharing)
+ ### ▶ [발표자료](https://drive.google.com/file/d/1vvmXk1nGDIXIeREsSAAhQdoHZbIMEPfU/view?usp=drive_link)
  ## 🎬 시연 영상
+ ### ▶ [시연영상](https://drive.google.com/drive/folders/1riGB_MYRkvWfvxpnFrVEcJdwaho6IQS-?hl=ko)
  ***
 ## 📌 주요 기능
 ### **✔ 사용자 기능**

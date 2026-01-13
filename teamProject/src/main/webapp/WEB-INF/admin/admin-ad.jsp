@@ -311,6 +311,8 @@
                         adName: self.adName,
                         urlLink: self.urlLink,
                         clickUnitCost: self.clickUnitCost,
+                        startDate:self.startDate,
+                        endDate:self.endDate
                     };
                     self.fnCheck()
                         .then(function () {
@@ -322,6 +324,7 @@
                                 data: param,
                                 success: function (data) {
                                     alert("광고가 추가되었습니다.");
+                                    self.fnAdList();
                                 }
                             });
                         })

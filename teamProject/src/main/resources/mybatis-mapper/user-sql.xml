@@ -22,6 +22,12 @@
 		WHERE USER_ID = #{userId} 
 	</select>
 	
+	<select id="userPhoneCheck" parameterType="hashmap" resultType="com.example.teamProject.user.model.User"> 
+		SELECT * 
+		FROM USER_TBL
+		WHERE PHONE = #{phone}
+	</select>
+	
 	<select id="authUser" parameterType="hashmap" resultType="int"> 
 		SELECT COUNT(*)
 		FROM USER_TBL 

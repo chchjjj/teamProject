@@ -3,6 +3,7 @@ package com.example.teamProject.user.controller;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,9 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class UserController {
+	
+	@Value("${JUSO_API_KEY}")
+    private String jusoApiKey;
 	
 	@Autowired
 	UserService userService;
@@ -35,6 +39,7 @@ public class UserController {
 	
 	@RequestMapping("/user/addr.do")
 	public String addr(Model model) throws Exception {
+		model.addAttribute("jusoApiKey", jusoApiKey);
 		return "/user/jusoPopup";
 	}
 	
@@ -131,6 +136,15 @@ public class UserController {
 	public String check(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap = userService.userIdCheck(map);
+
+		return new Gson().toJson(resultMap); 
+	}
+	
+	@RequestMapping(value = "/user/phoneCheck.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String phoneCheck(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = userService.phoneCheck(map);
 
 		return new Gson().toJson(resultMap); 
 	}

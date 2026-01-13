@@ -491,7 +491,7 @@
                 // },
 
                 goToOptionAdd(orderId) {
-                    console.log(`주문 ID ${orderId}에 대한 옵션 추가 페이지로 이동합니다.`);
+                    //console.log(`주문 ID ${orderId}에 대한 옵션 추가 페이지로 이동합니다.`);
                     window.location.href = `/seller/order/addOption.do?orderId=${orderId}`;
                     alert(`[옵션 추가] 버튼 클릭: 주문 ID ${orderId}`);
                 },

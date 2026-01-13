@@ -109,7 +109,7 @@
                                 <td>{{user.userId}}</td>
                             </tr>
                             <tr>
-                                <th>닉네임</th>
+                                <th>이름</th>
                                 <td><input type="text" v-model="userName"></td>
                             </tr>
                             <tr>
