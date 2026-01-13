@@ -147,7 +147,7 @@
             }
 
             .small-input {
-                width: 70px;
+                width: 80px;
                 display: inline-block;
                 text-align: center;
             }
@@ -230,6 +230,9 @@
             .inputNum{
                 width: 100px;
             }
+            .mask{
+                -webkit-text-security: square;
+            }
         </style>
     </head>
 
@@ -273,9 +276,9 @@
 
                     <label>휴대폰 번호</label>
                     <div class="phone-box">
-                        <input class="small-input" v-model="phone1" maxlength="3"> -
-                        <input class="small-input" v-model="phone2" maxlength="4"> -
-                        <input class="small-input" v-model="phone3" maxlength="4">
+                        <input type="tel" class="small-input" v-model="phone1" maxlength="3"> -
+                        <input type="tel" class="mask small-input" v-model="phone2" maxlength="4"> -
+                        <input type="tel" class="mask small-input" v-model="phone3" maxlength="4">
                         <template v-if="!sendMessageFlg">
                             <button @click="fnSendSms">인증번호 받기</button>
                         </template>
