@@ -22,12 +22,15 @@
         }
 
         .monthlyRevenue table {
-            width: 80%;       /* 화면 대비 비율 */
-            max-width: 600px; /* 최대 너비 제한 */
-            margin: 0 ;
+            width: 80%;
+            /* 화면 대비 비율 */
+            max-width: 600px;
+            /* 최대 너비 제한 */
+            margin: 0;
         }
 
-        th,td {
+        th,
+        td {
             padding: 10px 15px;
             text-align: center;
             border-bottom: 1px solid #ddd;
@@ -112,15 +115,28 @@
         }
 
         .info {
-                font-size: 14px;
-                color: #666;
-                margin-bottom: 30px;
-            }
-
-        .plusFee{
-            color: blue;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
         }
 
+        .plusFee {
+            color: blue;
+        }
+        
+        .year-header {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .year-header button {
+            margin: 0 10px;
+        }
+        
+        .year-header span {
+            font-size: 18px;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -156,8 +172,7 @@
                             <button @click="fnMembership()" :class="{active: currentMenu==='membership'}">맴버쉽관리</button>
                         </div>
                         <div>
-                            <button @click="fnMonthlyFee()" :class="{active: currentMenu==='month'}">판매자 월 정산결과
-                                조회</button>
+                            <button @click="fnMonthlyFee()" :class="{active: currentMenu==='month'}">판매자 월 정산결과 조회</button>
                         </div>
                         <div>
                             <button @click="fnQandA()" :class="{active: currentMenu==='qna'}">게시글 관리</button>
@@ -175,26 +190,47 @@
                 <!-- 컨텐츠 영역 -->
                 <div class="contentArea">
                     <div class="section-title">매출 관리</div>
+
+                    <!-- 차트 연도 선택 (상단) -->
+                    <div style="text-align:center; margin-bottom:20px;">
+                        <button @click="changeYear(-1)">◀</button>
+                        <span style="font-size:22px; font-weight:bold; margin:0 15px;">
+                            {{ year }}년 월별 매출
+                        </span>
+                        <button @click="changeYear(1)">▶</button>
+                    </div>
+
                     <!-- 차트 -->
                     <div id="chart" style="margin-bottom: 40px;"></div>
 
                     <div class="info">
-                            ※ 차트 속 '월별 매출'은 '판매수익'만 포함됩니다. (배송비 제외)
-                        </div>
+                        ※ 차트 속 '월별 매출'은 '판매수익'만 포함됩니다. (배송비 제외)
+                    </div>
+
+                    <!-- 수익 테이블 월 선택 -->
+                    <div class="year-header">
+                        <select v-model="month" style="font-size: 16px; padding: 8px 12px;">
+                            <option v-for="m in 12" :key="m" :value="m">
+                                {{ m }}월
+                            </option>
+                        </select>
+                    </div>
 
                     <!-- 이 달의 수익 테이블 -->
                     <div class="monthlyRevenue">
-                        <div style="font-weight:bold; font-size:18px; margin-bottom:10px;">{{ selectedMonth }}월 수익(원)</div>
+                        <div style="font-weight:bold; font-size:18px; margin-bottom:10px;">
+                            {{ year }}-{{ String(month).padStart(2,'0') }} 수익 (원)
+                        </div>
+
                         <table>
                             <tr>
                                 <th>판매자 총 수익</th>
-                                <td>{{formatNumber(revenue.monthlyRevenue)}}</td>   
+                                <td>{{formatNumber(revenue.monthlyRevenue)}}</td>
                             </tr>
                             <tr>
                                 <th>판매자 수수료</th>
-                                <td class="plusFee">{{formatNumber(revenue.commissionFee)}}</td>   
+                                <td class="plusFee">{{formatNumber(revenue.commissionFee)}}</td>
                             </tr>
-
                             <tr>
                                 <th>맴버십 수익</th>
                                 <td class="plusFee">{{formatNumber(revenue.membershipFee)}}</td>
@@ -205,7 +241,9 @@
                             </tr>
                             <tr>
                                 <th>총합</th>
-                                <td class="plusFee" style="font-weight: bold;">{{formatNumber(revenue.totalMonthlyRevenue)}}</td>
+                                <td class="plusFee" style="font-weight: bold;">
+                                    {{formatNumber(revenue.totalMonthlyRevenue)}}
+                                </td>
                             </tr>
                         </table>
                     </div>
@@ -219,24 +257,48 @@
 
 <script>
     const app = Vue.createApp({
+        watch: {
+            // 연도가 변경되면 차트와 수익 데이터 모두 업데이트
+            year() {
+                this.fnList();      // 차트 업데이트
+                this.fnRevenue();   // 수익 테이블 업데이트
+            },
+            // 월이 변경되면 수익 데이터만 업데이트
+            month() {
+                this.fnRevenue();
+            }
+        },
+        
         data() {
+            const now = new Date();
+            
             return {
-                sessionId: "${sessionId}",
+                // 통일된 연도와 월 변수 (차트와 수익 테이블 모두 사용)
+                year: now.getFullYear(),
+                month: now.getMonth() + 1,
+                
+                // 수익 데이터
                 revenue: {},
-                selectedMonth: new Date().getMonth() + 1, // 초기값 현재 월
+                
+                // 현재 활성화된 메뉴
                 currentMenu: "money",
+                
+                // ApexCharts 인스턴스
                 chart: null,
+                
+                // 차트 설정
                 options: {
                     series: [{
-                        name: "매출액", // 韩语标题
+                        name: "매출액",
                         data: [],
                     }],
                     chart: {
                         height: 350,
                         type: 'line',
                         zoom: { enabled: false },
-                        selection: { enabled: true }, // 클릭 허용
+                        selection: { enabled: true },
                         toolbar: { show: false },
+                        // 한글 로케일 설정
                         locales: [{
                             name: 'ko',
                             options: {
@@ -259,16 +321,6 @@
                             }
                         }],
                         defaultLocale: 'ko',
-                        // ★ 월별 추가 ★
-                        events: {
-                            dataPointSelection: function(event, chartContext, config) {
-                                const monthIndex = config.dataPointIndex; // 0부터 시작
-                                const month = monthIndex + 1; // 1월 = 1
-                                app.selectedMonth = month; // Vue 변수에 저장
-                                app.fnRevenueByMonth(month); // 월별 데이터 로드
-                            }
-                        },
-                        
                     },
                     dataLabels: {
                         enabled: true,
@@ -282,13 +334,13 @@
                             foreColor: '#fff',
                         },
                         formatter: function (val) {
-                            return val.toLocaleString('ko-KR'); 
+                            return val.toLocaleString('ko-KR');
                         }
                     },
                     stroke: {
                         curve: 'smooth',
                         width: 4,
-                        colors: ['#E91E63'], 
+                        colors: ['#E91E63'],
                     },
                     markers: {
                         size: 5,
@@ -298,7 +350,7 @@
                         hover: { size: 7 },
                     },
                     title: {
-                        text: '2025년 월별 매출 추이',
+                        text: now.getFullYear() + '년 월별 매출 추이',
                         align: 'center',
                         style: {
                             fontSize: '20px',
@@ -339,70 +391,84 @@
                         }
                     },
                 }
-
             };
         },
+        
         methods: {
-            fnList: function () {
+            /**
+             * 연도 변경 함수
+             * @param {number} diff - 변경할 연도 (-1: 이전년도, 1: 다음년도)
+             */
+            changeYear(diff) {
+                this.year += diff;
+                // 연도가 변경되면 월을 1월로 초기화
+                this.month = 1;
+            },
+
+            /**
+             * 차트 데이터 로드 (연도별 월별 매출)
+             */
+            fnList() {
                 let self = this;
-                let param = {};
+                let param = {
+                    year: self.year,
+                };
+
                 $.ajax({
                     url: "/adsale/salestrends.dox",
-                    dataType: "json",
                     type: "POST",
+                    dataType: "json",
                     data: param,
-                    success: function (data) {
-                        if (data.result === "success" && data.list && data.list.length > 0) {
-                            // Extract the sales data object
-                            let salesData = data.list[0];
+                    success(data) {
+                        // 12개월 배열 초기화 (0으로 채움)
+                        let monthlyData = Array(12).fill(0);
 
-                            // 월별 데이터를 삽입
-                            let monthlyData = [
-                                salesData.JAN || 0,
-                                salesData.FEB || 0,
-                                salesData.MAR || 0,
-                                salesData.APR || 0,
-                                salesData.MAY || 0,
-                                salesData.JUN || 0,
-                                salesData.JUL || 0,
-                                salesData.AUG || 0,
-                                salesData.SEP || 0,
-                                salesData.OCT || 0,
-                                salesData.NOV || 0,
-                                salesData.DEC || 0
-                            ];
+                        // 서버에서 받은 데이터로 배열 채우기
+                        data.list.forEach(item => {
+                            monthlyData[item.MONTH - 1] = item.TOTAL;
+                        });
 
-                            // Update the chart with new data
-                            self.chart.updateSeries([{
-                                name: "매출액",
-                                data: monthlyData
-                            }]);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Error fetching sales data:", error);
+                        // 차트 데이터 업데이트
+                        self.chart.updateSeries([{
+                            name: "매출액",
+                            data: monthlyData
+                        }]);
+
+                        // 차트 제목 업데이트
+                        self.chart.updateOptions({
+                            title: {
+                                text: self.year + '년 월별 매출 추이'
+                            }
+                        });
                     }
                 });
             },
 
+            /**
+             * 월별 수익 데이터 로드
+             */
             fnRevenue: function () {
                 let self = this;
                 let param = {
-                    userId: self.userId
+                    year: self.year,
+                    month: self.month
                 };
+
                 $.ajax({
                     url: "/adrevenue/view.dox",
-                    dataType: "json",
                     type: "POST",
+                    dataType: "json",
                     data: param,
-                    success: function (data) {
+                    success(data) {
+                        // 수익 데이터 저장
                         self.revenue = data.revenue;
-
                     }
                 });
-
             },
 
+            /**
+             * 네비게이션 함수들
+             */
             fnBuyerManage: function () {
                 location.href = "/admin/userlist.do";
             },
@@ -431,6 +497,9 @@
                 location.href = "/admin/boardManage.do";
             },
 
+            /**
+             * 로그아웃 함수
+             */
             fnLogout: function () {
                 if (confirm("로그아웃 하시겠습니까?")) {
                     let param = {};
@@ -446,48 +515,36 @@
                             } else {
                                 alert("로그아웃하는 도중에 오류가 발생하였습니다.");
                             }
-
                         }
-
                     });
                 }
             },
 
+            /**
+             * 숫자 포맷팅 함수 (천단위 콤마)
+             * @param {number} num - 포맷팅할 숫자
+             * @returns {string} - 포맷팅된 문자열
+             */
             formatNumber: function (num) {
                 if (!num && num !== 0) return '0';
                 return Number(num).toLocaleString('ko-KR');
             },
-
-            // 수익 '월별'로 보기 (차트 월 클릭)
-            fnRevenueByMonth: function(month) {
-                let self = this;
-                let param = { month: month }; // 서버에서 YYYYMM 기준 조회
-                $.ajax({
-                    url: "/adrevenue/viewByMonth.dox",
-                    dataType: "json",
-                    type: "POST",
-                    data: param,
-                    success: function(data) {
-                        self.revenue = data.revenue;
-                    }
-                });
-            },
-
-
         },
 
-
+        /**
+         * Vue 인스턴스가 마운트된 후 실행
+         */
         mounted() {
-            let self = this;
+            // 차트 초기화
+            this.chart = new ApexCharts(
+                document.querySelector("#chart"),
+                this.options
+            );
+            this.chart.render();
 
-            // Initialize the chart and store reference
-            self.chart = new ApexCharts(document.querySelector("#chart"), self.options);
-            self.chart.render();
-
-
-            // Load data
-            self.fnList();
-            self.fnRevenue();
+            // 초기 데이터 로드
+            this.fnList();      // 차트 데이터 로드
+            this.fnRevenue();   // 현재 년월의 수익 데이터 로드
         }
     });
 

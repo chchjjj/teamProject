@@ -410,17 +410,25 @@ public class AdminService {
 		
 		//수익
 		public HashMap<String, Object> SelectRevenue(HashMap<String, Object> map) {
-			// TODO Auto-generated method stub
-			
-			HashMap<String, Object> resultMap = new HashMap<String, Object>();
-			
-			Admin revenue= adminMapper.revenueSelect(map);	
-			
-			resultMap.put("revenue",revenue);
-			resultMap.put("result","success");
-			return resultMap;
+
+		    String year = map.get("year").toString();
+		    String month = map.get("month").toString();
+
+		    if(month.length() == 1) {
+		        month = "0" + month;
+		    }
+
+		    map.put("yyyymm", year + month);
+
+		    Admin revenue = adminMapper.revenueSelect(map);
+
+		    HashMap<String, Object> resultMap = new HashMap<>();
+		    resultMap.put("revenue", revenue);
+		    resultMap.put("result", "success");
+
+		    return resultMap;
 		}
-	  
+
 		
 		// 월별 광고 수익 조회
 		public HashMap<String, Object> SelectRevenueByMonth(HashMap<String, Object> map) {
