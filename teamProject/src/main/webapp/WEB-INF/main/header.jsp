@@ -287,7 +287,7 @@
                     },
                     fnChatList: function () {
                         // 메시지 아이콘 클릭 시 채팅 리스트로 이동하는 로직
-                        location.href = "/user/chatList.do";
+                        location.href = "/seller/salesHistory.do";
                     },
 
                 }, // methods
