@@ -640,8 +640,19 @@
 		VALUE_NAME = #{valueName}, PRICE_DIFF = #{priceDiff} WHERE
 		SUB_OPTION_ID = #{subOptionId} AND TOP_OPTION_ID = #{topOptionId} 
 		</update>-->
- <!-- 상품 업데이트  -->
- 
+ <!-- 메인페이지 메세지 카운트 -->
+ <select id="getTotalUnreadCount" parameterType="hashmap" resultType="int">
+    SELECT COUNT(*)
+    FROM CHAT_MSG_TBL
+    WHERE CHAT_ID IN (
+        SELECT CHAT_ID 
+        FROM CHAT_TBL 
+        WHERE USER_ID = #{userId}  /* 내가 구매자인 채팅방 */
+           OR STORE_ID IN (SELECT STORE_ID FROM SELLER_INFO_TBL WHERE USER_ID = #{userId}) /* 내가 판매자인 채팅방 */
+    )
+    AND IS_READ = 'N'      /* 읽지 않은 상태 */
+    AND USER_ID != #{userId} /* 내가 보낸 메시지가 아닌 경우(상대방이 보낸 것) */
+</select>
  
 </mapper>
 

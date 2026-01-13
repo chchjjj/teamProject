@@ -936,7 +936,18 @@ public class SellerController {
 //
 //        return resultMap;
 //    }
-	
+	//메인페이지 메세지 추가
+	@RequestMapping("/seller/unreadCount.dox") // 경로 변경
+	@ResponseBody
+	public HashMap<String, Object> getUnreadCount(@RequestParam HashMap<String, Object> map) {
+	    HashMap<String, Object> resultMap = new HashMap<>();
+	    
+	    // Mapper의 selectTotalUnreadCount 호출
+	    int count = sellerService.getTotalUnreadCount(map);
+	    
+	    resultMap.put("count", count); 
+	    return resultMap;
+	}
 
 
 }

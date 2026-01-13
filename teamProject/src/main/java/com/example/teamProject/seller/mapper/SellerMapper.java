@@ -159,5 +159,6 @@ public interface SellerMapper {
 	 
 	// 상품 기본 정보 수정
 	 	
-	
+	//메인페이지 카운트 
+	 int getTotalUnreadCount(HashMap<String, Object> map);
 }

@@ -752,4 +752,8 @@ public HashMap<String, Object> productUpdate(HashMap<String, Object> map) throws
 	resultMap.put("result","success");
 	return resultMap;
 }
+//메인페이지 카운트
+public int getTotalUnreadCount(HashMap<String, Object> map) {
+    return sellerMapper.getTotalUnreadCount(map);
+}
 }
