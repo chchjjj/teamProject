@@ -67,9 +67,12 @@ public class User {
 		    
 		    // 리뷰 관련
 		    private int reviewId;
+		    private int imgId;
 		    private int rating;
 		    private String reviewContent;
+		    private String imgPath;
 		    private String cdatetime;
+		    private String updatetime;
 		    
 		    // 주문서 관련
 		    

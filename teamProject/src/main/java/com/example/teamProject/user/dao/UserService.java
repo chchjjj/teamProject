@@ -364,22 +364,46 @@ public class UserService {
 	}
 	
 	
-	public HashMap<String, Object> InsertReview(HashMap<String, Object> map) {
-		// TODO Auto-generated method stub
-		
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		try {
-			int cnt= userMapper.reviewInsert(map);
-			resultMap.put("result", "success");
+	public HashMap<String, Object> InsertReview(HashMap<String, Object> map, List<String> imagePaths) {
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    try {
+	        // 1. 리뷰 insert
+	        int cnt = userMapper.reviewInsert(map);
+	        int reviewId = (Integer) map.get("reviewId"); // insert 후 reviewId 가져오기
 
-		    } catch (Exception e) {
-		        resultMap.put("result", "fail");
-		        System.out.println(e.getMessage());
-		    }
-		    
-		    return resultMap;
+	        // 2. 이미지가 있으면 REVIEW_IMG_TBL insert
+	        if (imagePaths != null && !imagePaths.isEmpty()) {
+	        	HashMap<String, Object> imgMap = new HashMap<>();
+	        	imgMap.put("reviewId", reviewId);
+	        	imgMap.put("images", imagePaths);
+	        	userMapper.reviewImgInsert(imgMap);
+	        }
+
+	        resultMap.put("result", "success");
+	    } catch (Exception e) {
+	        resultMap.put("result", "fail");
+	        System.out.println(e.getMessage());
+	    }
+	    return resultMap;
 	}
 
+	// 리뷰 이미지 가져오기
+	public HashMap<String, Object> SelectreviewIMG(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		
+		try {
+			List <User> list = userMapper.reviewIMGList(map);
+//			System.out.println(list);
+			resultMap.put("list", list); 
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("result", "fail");
+			System.out.println(e.getMessage());
+		}				
+		return resultMap;
+	}
 	
 	// 구매자 마이페이지 - 결제 전 상태 건 주문취소하면 ORDER_TBL의 STATUS X로 바꾸기 
 	public HashMap<String, Object> updateOrderCancel(HashMap<String, Object> map) {

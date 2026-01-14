@@ -278,8 +278,13 @@
 		WHERE USER_ID=#{userId}
 	</update>
 	
+	<!--리뷰 인서트-->
 	<insert id="reviewInsert" parameterType="hashmap">
-  INSERT INTO REVIEW_TBL (
+    <selectKey keyProperty="reviewId" resultType="int" order="BEFORE">
+        SELECT REVIEW_SEQ.NEXTVAL FROM DUAL
+    </selectKey>
+    
+    INSERT INTO REVIEW_TBL (
         REVIEW_ID,
         ORDER_ID,
         PRO_NO,
@@ -291,7 +296,7 @@
         CDATETIME,
         UDATETIME
     ) VALUES (
-        REVIEW_SEQ.NEXTVAL,
+        #{reviewId},  <!-- <== selectKey로 받은 값 사용 -->
         #{orderId},
         #{proNo},
         #{userId},
@@ -302,8 +307,31 @@
         SYSDATE,
         SYSDATE
     )
-	</insert>
+</insert>
+
 	
+	<!--리뷰 이미지 인서트-->
+<insert id="reviewImgInsert" parameterType="hashmap">
+    <foreach collection="images" item="imgPath" separator=";">
+        INSERT INTO REVIEW_IMG_TBL (
+            IMG_ID,
+            REVIEW_ID,
+            IMG_PATH,
+            CDATETIME,
+            UDATETIME
+        ) VALUES (
+            REVIEW_IMG_SEQ.NEXTVAL,
+            #{reviewId},
+            #{imgPath},
+            SYSDATE,
+            SYSDATE
+        )
+    </foreach>
+</insert>
+
+	<select id="reviewIMGList" parameterType="hashmap" resultType="com.example.teamProject.user.model.User">
+   		SELECT * FROM REVIEW_IMG_TBL
+	</select>
 	
 	<!-- 구매자 마이페이지에서 결제 전 상태 건 주문취소하기 -->
 	<update id="updateOrderCancel" parameterType="hashmap">

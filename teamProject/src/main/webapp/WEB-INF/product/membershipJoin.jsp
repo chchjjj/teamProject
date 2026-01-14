@@ -255,7 +255,7 @@
                         pay_method: "card",
                         merchant_uid: "membership_" + new Date().getTime(),
                         name: "디저트연구소 판매자 멤버십",
-                        amount: 30000,
+                        amount: 1,
                         buyer_name: self.userId
                     }, function (rsp) {
                         if (rsp.success) {

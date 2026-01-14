@@ -1,4 +1,5 @@
 package com.example.teamProject.user.controller;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 
@@ -15,6 +16,17 @@ import com.example.teamProject.user.dao.UserService;
 import com.google.gson.Gson;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.net.URLEncoder;
+import java.io.IOException;
 
 @Controller
 public class UserController {
@@ -274,14 +286,70 @@ public class UserController {
 
 	@RequestMapping(value = "/user/reviewInsert.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	public String reviewInsert(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+	public String reviewInsert(
+	        @RequestParam HashMap<String, Object> map,
+	        @RequestParam(value = "images", required = false) MultipartFile[] images,
+	        HttpServletRequest request
+	) throws Exception {
+
+	    List<String> imagePaths = new ArrayList<>();
+
+	    if (images != null) {
+	        // 안정적인 절대 경로
+	        String uploadDir = request.getServletContext().getRealPath("/reviewIMG/");
+	        File dir = new File(uploadDir);
+	        if (!dir.exists()) dir.mkdirs();
+
+	        for (MultipartFile file : images) {
+	            if (!file.isEmpty()) {
+	                // 원본 파일명
+	                String originalFileName = file.getOriginalFilename();
+
+	   
+	                String saveFileName = System.currentTimeMillis() + "_" + originalFileName;
+
+
+	                File dest = new File(uploadDir, saveFileName);
+
+	                try {
+	                    file.transferTo(dest); // 실제 서버 저장
+	                    System.out.println("파일 저장 완료: " + dest.getAbsolutePath());
+
+	                    // DB에 저장할 경로 (Vue에서 그대로 사용 가능)
+	                    String dbPath = "/reviewIMG/" + saveFileName;
+	                    imagePaths.add(dbPath);
+
+	                } catch (IOException e) {
+	                    e.printStackTrace();
+	                    System.out.println("파일 저장 실패: " + dest.getAbsolutePath());
+	                }
+	            }
+	        }
+	    }
+
+	    // Service 호출 (review + review image insert)
+	    HashMap<String, Object> resultMap = userService.InsertReview(map, imagePaths);
+
+	    return new Gson().toJson(resultMap);
+	}
+
+
+
+	// 리뷰 이미지 가져오기
+	@RequestMapping(value = "/user/reviewIMGlist.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String reviewIMGList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap = userService.InsertReview(map);
+
 		
-		System.out.println(map);
+		resultMap = userService.SelectreviewIMG(map);
+		
+//		System.out.println(map);
 		
 		return new Gson().toJson(resultMap);
 	}
+	
 	
 	// 구매자 마이페이지 - 결제 전 상태 건 주문취소하면 ORDER_TBL의 STATUS X로 바꾸기
 	@RequestMapping(value = "/user/orderCancel.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
