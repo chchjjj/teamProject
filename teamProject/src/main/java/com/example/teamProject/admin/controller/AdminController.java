@@ -51,9 +51,10 @@ public class AdminController {
 	
 	
 	@RequestMapping("/admin/sellerchart.do")
-    public String sellerchart(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{
-		request.setAttribute("storeName",map.get("storeName"));
-        return "/admin/admin-sellerChart";
+	public String sellerchart(HttpServletRequest request, Model model, @RequestParam HashMap<String, Object> map) throws Exception{
+	    request.setAttribute("storeName", map.get("storeName"));
+	    request.setAttribute("storeId", map.get("storeId"));  // ⭐ 添加
+	    return "/admin/admin-sellerChart";
 	}
 	
 //	@RequestMapping("/admin/userinfo.do")
@@ -238,15 +239,16 @@ public class AdminController {
 	@RequestMapping(value = "/adseller/sales.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String sales(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
-
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-
-		
-		resultMap = adminService.SelectSales(map);
-		
-		System.out.println(map);
-		
-		return new Gson().toJson(resultMap);
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    
+	    // Add debug logging
+	    System.out.println("Received parameters: " + map);
+	    System.out.println("storeId: " + map.get("storeId"));
+	    System.out.println("year: " + map.get("year"));
+	    
+	    resultMap = adminService.SelectSales(map);
+	    
+	    return new Gson().toJson(resultMap);
 	}
 	
 	//멤버십

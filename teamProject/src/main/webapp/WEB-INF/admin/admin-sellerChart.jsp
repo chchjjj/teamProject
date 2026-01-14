@@ -13,14 +13,14 @@
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
         <style>
-            /* 内容区域整体布局 */
+            /* 콘텐츠 영역 전체 레이아웃 */
             .contentArea {
                 padding: 30px;
                 background-color: #f8f9fa;
                 min-height: 100vh;
             }
 
-            /* 页面标题 */
+            /* 페이지 제목 */
             .pageTitle {
                 font-size: 22px;
                 font-weight: bold;
@@ -30,7 +30,7 @@
                 border-bottom: 3px solid #3E2723;
             }
 
-            /* 图表容器 */
+            /* 차트 컨테이너 */
             .chartContainer {
                 background-color: white;
                 border-radius: 12px;
@@ -52,7 +52,7 @@
                 width: 100%;
             }
 
-            /* 热门商品区域 */
+            /* 인기 상품 영역 */
             .hotProductSection {
                 background-color: white;
                 border-radius: 12px;
@@ -69,7 +69,7 @@
                 border-left: 4px solid #FFEDAC;
             }
 
-            /* 表格样式优化 */
+            /* 테이블 스타일 최적화 */
             table {
                 width: 100%;
                 border-collapse: collapse;
@@ -106,7 +106,7 @@
                 border-bottom: none;
             }
 
-            /* 排名标识 */
+            /* 순위 표시 */
             .rankBadge {
                 display: inline-block;
                 width: 28px;
@@ -132,7 +132,7 @@
                 background: linear-gradient(135deg, #9E9E9E, #757575);
             }
 
-            /* 空状态 */
+            /* 빈 상태 */
             .emptyState {
                 text-align: center;
                 padding: 40px;
@@ -152,7 +152,7 @@
     <body>
         <div id="app">
             <div class="mainPageContainer">
-                <!-- 导航栏 (不修改) -->
+                <!-- 네비게이션 바 (수정 안 함) -->
                 <div class="navBar">
                     <div class="logo">
                         <a href="javascript:;" onclick="location.href='/main.do'">
@@ -191,17 +191,27 @@
                     </div>
                 </div>
 
-                <!-- 内容区域 (优化后) -->
+                <!-- 콘텐츠 영역 (최적화 완료) -->
                 <div class="contentArea">
-                    <div class="pageTitle">판매자별 매출 관리</div>
+                    <!--년도 선택 -->
+                    <div
+                        style="display:flex; align-items:center; gap:15px; justify-content:center; width:100%; margin-bottom:20px;">
+                        <button @click="changeYear(-1)">◀</button>
+                        <span style="font-size:22px; font-weight:bold;">
+                            {{storeName}} {{ year }}년 월별 매출 조회
+                        </span>
+                        <button @click="changeYear(1)">▶</button>
 
-                    <!-- 月度销售图表 -->
+                    </div>
+
+
+                    <!-- 월별 매출 차트 -->
                     <div class="chartContainer">
-                        <div class="chartTitle">월별 매출 현황</div>
+                        <!--<div class="chartTitle">월별 매출 현황 (원)</div>-->
                         <div id="chart"></div>
                     </div>
 
-                    <!-- 热门商品列表 -->
+                    <!-- 인기 상품 리스트 -->
                     <div class="hotProductSection">
                         <div class="sectionTitle">해당 판매자의 가장 핫한 상품 TOP</div>
                         <table v-if="productList && productList.length > 0">
@@ -215,8 +225,7 @@
                             <tbody>
                                 <tr v-for="(product, index) in productList" :key="index">
                                     <td>
-                                        <span class="rankBadge" 
-                                              :class="{
+                                        <span class="rankBadge" :class="{
                                                   'rank2': index === 1,
                                                   'rank3': index === 2,
                                                   'others': index > 2
@@ -243,109 +252,117 @@
 
         <script>
             const app = Vue.createApp({
+                watch: {
+                    year() {
+                        this.fnList();
+                    },
+                   
+                },
                 data() {
+                    const now = new Date();
                     return {
+                        year: now.getFullYear(),
                         storeName: "${storeName}",
+                        storeId: "${storeId}",        // ⭐ 必须添加
                         sessionId: "${sessionId}",
                         productList: [],
                         sellerList: [],
                         chart: null,
                         currentMenu: 'money',
                         options: {
-                            series: [{ name: '매출', data: [] }],
-                            chart: { 
-                                height: 350, 
-                                type: 'bar',
-                                toolbar: {
-                                    show: true
-                                }
-                            },
-                            plotOptions: {
-                                bar: { 
-                                    borderRadius: 8, 
-                                    dataLabels: { position: 'top' },
-                                    columnWidth: '60%'
-                                }
+                            series: [{ name: "매출액", data: [] }],
+                            chart: {
+                                height: 350,
+                                type: 'line',
+                                zoom: { enabled: false },
+                                selection: { enabled: true },
+                                toolbar: { show: false },
+                                locales: [{ name: 'ko', options: {} }],
+                                defaultLocale: 'ko',
                             },
                             dataLabels: {
                                 enabled: true,
-                                formatter: val => val ? val.toLocaleString() : 0,
-                                offsetY: -20,
-                                style: { 
-                                    fontSize: '12px', 
-                                    colors: ["#3E2723"],
-                                    fontWeight: 'bold'
+                                style: { fontSize: '12px', colors: ['#3E2723'] },
+                                background: { enabled: true, borderRadius: 4, foreColor: '#fff' },
+                                formatter: function (val) {
+                                    return val.toLocaleString('ko-KR');
                                 }
                             },
-                            xaxis: {
-                                categories: ["1월", "2월", "3월", "4월", "5월", "6월",
-                                    "7월", "8월", "9월", "10월", "11월", "12월"],
-                                position: 'bottom',
-                                axisBorder: { show: false },
-                                axisTicks: { show: false },
-                                labels: {
-                                    style: {
-                                        colors: '#666',
-                                        fontSize: '12px'
-                                    }
-                                }
+                            stroke: { curve: 'smooth', width: 4, colors: ['#E91E63'] },
+                            markers: {
+                                size: 5,
+                                colors: ['#E91E63'],
+                                strokeColors: '#fff',
+                                strokeWidth: 2,
+                                hover: { size: 7 }
                             },
-                            yaxis: { 
-                                labels: { 
-                                    show: true,
-                                    formatter: val => val ? val.toLocaleString() : 0,
-                                    style: {
-                                        colors: '#666',
-                                        fontSize: '12px'
-                                    }
-                                }
-                            },
-                            colors: ['#3E2723'],
-                            fill: {
-                                type: 'gradient',
-                                gradient: {
-                                    shade: 'light',
-                                    type: "vertical",
-                                    shadeIntensity: 0.25,
-                                    gradientToColors: ['#FFEDAC'],
-                                    inverseColors: false,
-                                    opacityFrom: 0.85,
-                                    opacityTo: 0.85,
-                                    stops: [50, 100]
-                                }
+                            title: {
+                                text: now.getFullYear() + '년 월별 매출 추이',
+                                align: 'center',
+                                style: { fontSize: '20px', fontWeight: 'bold', color: '#3E2723' }
                             },
                             grid: {
-                                borderColor: '#f1f1f1',
-                                strokeDashArray: 4
+                                borderColor: '#f0e6dc',
+                                row: { colors: ['#fff', '#faf5f0'], opacity: 0.5 }
                             },
-                            title: { 
-                                text: '', 
-                                align: 'center' 
+                            xaxis: {
+                                categories: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                                labels: { style: { colors: '#3E2723', fontSize: '13px' } }
+                            },
+                            yaxis: {
+                                labels: {
+                                    formatter: val => val.toLocaleString('ko-KR'),
+                                    style: { colors: '#3E2723' }
+                                },
+                                title: { text: '판매액 (원)', style: { color: '#3E2723', fontWeight: 'bold' } }
+                            },
+                            tooltip: {
+                                theme: 'light',
+                                y: { formatter: val => val.toLocaleString('ko-KR') + ' 원' }
                             }
                         }
                     };
                 },
                 methods: {
+                    changeYear(diff) {
+                        this.year += diff;
+                        this.month = 1;
+                    },
                     fnList() {
                         let self = this;
+                        let param = {
+                            storeId: self.storeId,    // ⭐ 必须传递
+                            year: self.year            // ⭐ 必须传递
+                        };
+
                         $.ajax({
                             url: "/adseller/sales.dox",
-                            dataType: "json",
                             type: "POST",
-                            data: { storeName: self.storeName },
-                            success: function (data) {
-                                if (data.result === "success" && data.list && data.list.length > 0) {
-                                    let salesData = data.list[0];
-                                    let monthlyData = [
-                                        salesData.JAN || 0, salesData.FEB || 0, salesData.MAR || 0, salesData.APR || 0,
-                                        salesData.MAY || 0, salesData.JUN || 0, salesData.JUL || 0, salesData.AUG || 0,
-                                        salesData.SEP || 0, salesData.OCT || 0, salesData.NOV || 0, salesData.DEC || 0
-                                    ];
-                                    self.chart.updateSeries([{ name: "매출", data: monthlyData }]);
-                                }
+                            dataType: "json",
+                            data: param,
+                            success(data) {
+                                let monthlyData = Array(12).fill(0);
+
+                                data.list.forEach(item => {
+                                    monthlyData[item.MONTH - 1] = item.TOTAL;
+                                });
+
+                                self.chart.updateSeries([{
+                                    name: "매출액",
+                                    data: monthlyData
+                                }]);
+
+                                self.chart.updateOptions({
+                                    title: { text: self.year + '년 월별 매출 추이' }
+                                });
+
                                 self.productList = data.productList;
                             }
                         });
+                    },
+                    formatNumber(num) {
+                        if (!num && num !== 0) return '0';
+                        return Number(num).toLocaleString('ko-KR');
                     },
                     fnBuyerManage() { location.href = "/admin/userlist.do"; },
                     fnSellerManage() { location.href = "/admin/sellerlist.do"; },
@@ -354,19 +371,18 @@
                     fnMembership() { location.href = "/admin/membership.do"; },
                     fnMonthlyFee() { location.href = "/admin/monthlyfee.do"; },
                     fnQandA() { location.href = "/admin/boardManage.do"; },
-                    fnLogout: function () {
+                    fnLogout() {
                         if (confirm("로그아웃 하시겠습니까?")) {
-                            let param = {};
                             $.ajax({
                                 url: "/user/logout.dox",
                                 dataType: "json",
                                 type: "POST",
-                                data: param,
-                                success: function (data) {
-                                    if(data.result=="success"){
-                                        alert(data.msg+"! 홈페이지로 이동하겠습니다.");
+                                data: {},
+                                success(data) {
+                                    if (data.result == "success") {
+                                        alert(data.msg + "! 홈페이지로 이동하겠습니다.");
                                         location.href = "/main.do";
-                                    }else{
+                                    } else {
                                         alert("로그아웃하는 도중에 오류가 발생하였습니다.");
                                     }
                                 }
