@@ -115,20 +115,22 @@ public class ChatController {
 	@MessageMapping("/sendMessage")
 	@SendTo("/topic/public")
 	public Chat sendMessage(Chat message) {
-	    System.out.println("웹소켓 수신 메시지: " + message);
-
 	    try {
 	        if (message.getMessageType() == null || message.getMessageType().isEmpty()) {
 	            message.setMessageType("TEXT");
 	        }
 
+	        // 1. DB 저장 (XML 수정 덕분에 저장 후 message 객체의 msgId 필드에 값이 자동으로 채워짐)
 	        chatService.insertChatMsg(message);
-	        System.out.println("메시지 저장 완료: " + message.getContent());
+	        
+	        // 2. 확인용 로그 (콘솔에서 ID가 0이 아닌 숫자로 찍히는지 확인하세요)
+	        System.out.println("메시지 저장 완료! 생성된 ID: " + message.getMsgId());
+	        
 	    } catch (Exception e) {
 	        e.printStackTrace();
-	        System.err.println("메시지 저장 실패: " + e.getMessage());
 	    }
 
+	    // 3. 이제 이 message 객체에는 msgId가 포함되어 구독자들에게 전달됨
 	    return message;
 	}
 		
@@ -169,10 +171,13 @@ public class ChatController {
     // 메시지 읽음 상태를 실시간으로 브로드캐스트
     @MessageMapping("/readMessage")
     @SendTo("/topic/public")
-    public Map<String, Object> notifyReadStatus(Map<String, Object> payload) {
-        System.out.println("읽음 상태 브로드캐스트 요청 수신: " + payload);
-        // payload 예시: { chatId: 101, messageIds: [12, 13, 14], readerId: "user01" }
-        return payload;
+    public Map<String, Object> readMessage(Map<String, Object> payload) {
+        // payload 구조: { "chatId": 27, "messageIds": [114, 115], "readerId": "user01" }
+        
+        // 알림용 데이터에 type을 추가해서 프론트가 '메시지'인지 '읽음알림'인지 구분하게 함
+        payload.put("type", "READ_UPDATE");
+        
+        return payload; 
     }
     
  // 사진첨부

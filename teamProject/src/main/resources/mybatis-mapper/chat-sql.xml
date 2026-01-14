@@ -5,10 +5,16 @@
 	
 	<!-- 발송 채팅 인서트 (우선 메세지타입은 text로 하드코딩) -->
 	<!-- 구매자, 판매자 같이 써도 상관없음 -->
-	<insert id="insertChatMsg" parameterType="com.example.teamProject.chat.model.Chat">
-	   INSERT INTO CHAT_MSG_TBL 
+	<insert id="insertChatMsg" 
+	        parameterType="com.example.teamProject.chat.model.Chat" 
+	        useGeneratedKeys="true" 
+	        keyProperty="msgId" 
+	        keyColumn="MSG_ID">
+	    INSERT INTO CHAT_MSG_TBL (
+	        MSG_ID, CHAT_ID, ORDER_ID, USER_ID, STORE_ID, MESSAGE, MESSAGE_TYPE, SENT_AT, IS_READ
+	    )
 	    VALUES (
-			CHAT_MSG_SEQ.NEXTVAL,
+	        CHAT_MSG_SEQ.NEXTVAL,
 	        #{chatId},
 	        #{orderId},
 	        #{sender},

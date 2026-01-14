@@ -114,59 +114,85 @@ const app = Vue.createApp({
             this.stompClient = Stomp.over(socket);
             this.stompClient.connect({}, frame => {
                 this.stompClient.subscribe('/topic/public', message => {
-                    const msg = JSON.parse(message.body);
+                    try {
+                        const msg = JSON.parse(message.body);
+                        console.log("수신 데이터 확인:", msg);
 
-                    // 일반 메시지 수신
-                    if (msg.messageType === 'TEXT' || msg.messageType === 'IMAGE') {
-                        // 자기 메시지는 화면에 추가하지 않음
-                        if (msg.sender !== this.userId) this.messages.push(msg);
-                        this.$nextTick(() => this.scrollToBottom());
-                    }
+                        if (msg.messageType === 'TEXT' || msg.messageType === 'IMAGE') {
+                            if (msg.sender === this.userId) {
+                                // [발신자] 내가 보낸 메시지 처리
+                                this.messages = this.messages.map(m => {
+                                    // 서버 필드명 msgId를 사용해야 함!
+                                    if (!m.id && m.content === msg.content) {
+                                        return { ...m, id: msg.msgId, isRead: msg.isRead }; 
+                                    }
+                                    return m;
+                                });
+                            } else {
+                                // [수신자] 상대방 메시지 도착
+                                // 수신자 리스트에도 id를 msgId로 맞춰서 넣어줘야 나중에 읽음 알림과 비교 가능
+                                const newMsg = {
+                                    id: msg.msgId, 
+                                    content: msg.content,
+                                    sender: msg.sender,
+                                    isRead: msg.isRead,
+                                    messageType: msg.messageType
+                                };
+                                this.messages.push(newMsg);
 
-                    // 읽음 알림 수신
-                    if (msg.messageIds && msg.readerId) {
-                        this.messages = this.messages.map(m => {
-                            if (msg.messageIds.includes(m.id)) return { ...m, isRead: 'Y' };
-                            return m;
-                        });
+                                // 도착하자마자 읽음 처리 함수 호출
+                                this.$nextTick(() => {
+                                    this.markMessagesAsRead(); 
+                                });
+                            }
+                        }
+
+                        // [읽음 알림 처리 부분]
+                        if (msg.type === "READ_UPDATE" || (msg.messageIds && Array.isArray(msg.messageIds))) {
+                            this.messages = this.messages.map(m => {
+                                if (msg.messageIds.includes(m.id)) {
+                                    return { ...m, isRead: 'Y' };
+                                }
+                                return m;
+                            });
+                        }
+                    } catch (e) {
+                        console.error("메시지 처리 에러:", e);
                     }
+                    this.$nextTick(() => this.scrollToBottom());
                 });
             }, error => console.error("WebSocket 연결 실패:", error));
         },
+
         sendMessage() {
             if (!this.newMessage.trim()) return;
-                    if (!this.stompClient || !this.stompClient.connected) {
-                        console.warn("웹소켓이 연결되지 않았습니다.");
-                        return;
-                    }
-                    const chatMessage = {
-                        sender: this.userId,
-                        content: this.newMessage,
-                        chatId: this.chatId,
-                        // 아래 2개는 우선 임시
-                        orderId: this.orderId,
-                        storeId: this.storeId,
-                        messageType: "TEXT" // ✅ 추가 (명시적 선언)
-                    };
-                    // this.stompClient.send("/app/sendMessage", {}, JSON.stringify(chatMessage));
-                    // this.newMessage = "";
+            if (!this.stompClient || !this.stompClient.connected) {
+                console.warn("웹소켓이 연결되지 않았습니다.");
+                return;
+            }
 
-                    //화면에 즉시 추가 (이걸 살리면 읽음 자동바꾸기가 안됨 ㅠㅠ)
-                    this.messages.push({
-                        //id: Date.now(), // 임시 ID, 서버에서 내려오는 실제 ID와 다를 수 있음
-                        sender: this.userId,
-                        content: this.newMessage,
-                        isRead: 'N',
-                        messageType: 'TEXT'
-                    });
+            // 1. 서버로 보낼 데이터 준비
+            const chatMessage = {
+                sender: this.userId,
+                content: this.newMessage,
+                chatId: this.chatId,
+                orderId: this.orderId,
+                storeId: this.storeId,
+                messageType: "TEXT",
+                sentAt: new Date(), // 시간 표시용
+                isRead: 'N'
+            };
 
-                    this.$nextTick(() => this.scrollToBottom()); // 스크롤 최하단 이동
+            // 2. [중요] 화면에 즉시 추가하되, 나중에 서버에서 온 진짜 데이터와 교체하기 위해
+            // 일단 내 리스트에 넣습니다. (이때는 id가 없음)
+            this.messages.push(chatMessage);
+            
+            // 3. 서버 전송
+            this.stompClient.send("/app/sendMessage", {}, JSON.stringify(chatMessage));
 
-                    // 2. 서버 전송
-                    this.stompClient.send("/app/sendMessage", {}, JSON.stringify(chatMessage));
-                    
-                    // 3. 입력창 초기화
-                    this.newMessage = "";
+            // 4. 초기화
+            this.newMessage = "";
+            this.$nextTick(() => this.scrollToBottom());
         },
         
         // 채팅내역 불러오기
@@ -218,8 +244,10 @@ const app = Vue.createApp({
 
                     // 읽지 않은 메시지 ID만 추출
                     const unreadMsgIds = this.messages
-                        .filter(msg => msg.sender !== this.userId && msg.isRead !== 'Y')
+                        .filter(msg => msg.sender !== this.userId && msg.isRead !== 'Y' && msg.id)
                         .map(msg => msg.id);
+
+                    console.log("추출된 읽지 않은 ID들:", unreadMsgIds); // 👈 이게 빈 배열이면 DB 업데이트 안 됨
 
                     if (unreadMsgIds.length === 0) return;
 
@@ -244,6 +272,7 @@ const app = Vue.createApp({
                         // 2) 읽음 상태 WebSocket으로 다른 사용자에게도 알림
                         if (this.stompClient && this.stompClient.connected) {
                             const readNotification = {
+                                type: "READ_UPDATE", // ⭐ 이 한 줄을 추가해서 subscribe 쪽이 인식하게 합니다.
                                 chatId: this.chatId,
                                 messageIds: unreadMsgIds,
                                 readerId: this.userId
@@ -278,31 +307,34 @@ const app = Vue.createApp({
             formData.append("image", file);
 
             fetch("/chat/uploadImage.do", {
-                  method: "POST",
-                  body: formData
-             })
-               .then(res => res.json())
-               .then(data => {
+                method: "POST",
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
                 const imageUrl = data.imageUrl;
 
-                        // ⚙️ DB 구조상 TEXT / IMAGE 구분
-                        const chatMessage = {
-                            chatId: this.chatId,
-                            sender: this.userId,
-                            content: imageUrl,          // message → content로 통일
-                            messageType: "IMAGE",
-                            orderId: this.orderId,
-                            storeId: this.storeId
-                        };
+                const chatMessage = {
+                    chatId: this.chatId,
+                    sender: this.userId,
+                    content: imageUrl,
+                    messageType: "IMAGE",
+                    orderId: this.orderId,
+                    storeId: this.storeId,
+                    sentAt: new Date(),
+                    isRead: 'N'
+                };
 
-                        // 서버로 전송
-                        this.stompClient.send("/app/sendMessage", {}, JSON.stringify(chatMessage));
-                        
-                        // ✅ 바로 스크롤 내리기
-                        this.$nextTick(() => this.scrollToBottom());
-                    })
-                    .catch(err => console.error("이미지 업로드 실패:", err));
-                },
+                // ⭐ 핵심: 서버로 보내기 전에 내 화면에 먼저 띄웁니다.
+                this.messages.push(chatMessage);
+
+                // 서버로 전송
+                this.stompClient.send("/app/sendMessage", {}, JSON.stringify(chatMessage));
+                
+                this.$nextTick(() => this.scrollToBottom());
+            })
+            .catch(err => console.error("이미지 업로드 실패:", err));
+        },
 
     },
     async mounted() {
