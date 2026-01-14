@@ -115,6 +115,7 @@ public interface ProductMapper {
  	
  	// 멤버십 업데이트
  	int insertMembership(HashMap<String, Object> map);
+ 	int updateMembership(HashMap<String, Object> map);
  	
  	// 멤버십 해지
  	int cancelMembership(HashMap<String, Object> map);

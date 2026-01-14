@@ -32,6 +32,7 @@ public class ProductService {
 		// TODO Auto-generated method stub
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		int cnt = ProductMapper.insertMembership(map);
+		ProductMapper.updateMembership(map);
 		resultMap.put("result", "success");
 		return resultMap;
 	}
