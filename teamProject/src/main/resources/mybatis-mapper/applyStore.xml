@@ -57,8 +57,6 @@
 	</insert>
 
 
-	
-
 	<select id="selectStoreIdByStoreNameAndUserId" resultType="int">
 		SELECT
 		STORE_ID /* 실제 테이블 컬럼명에 맞게 대문자로 수정하세요 */
@@ -88,8 +86,7 @@
         #{fileOrgName},
         #{fileEtc} 
     )
-</insert>
-	
+</insert>	
 	
 
 	<select id="getStoreIdByUserId" resultType="long" parameterType="string">
@@ -100,4 +97,15 @@
 		WHERE
 		USER_ID = #{userId}
 	</select>
+	
+	
+	<!-- 입점신청 첫번째 페이지에서, 사업자번호 중복체크 -->
+	<select id="checkBusinessNo" parameterType="hashmap" resultType="int">
+	    SELECT
+	        COUNT(*)
+	    FROM SELLER_INFO_TBL
+	    WHERE BUSINESS_NO = #{businessNo}
+	</select>
+		
+	
 </mapper>

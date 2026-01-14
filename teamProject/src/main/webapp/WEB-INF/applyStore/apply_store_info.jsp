@@ -185,7 +185,21 @@
 
                         <div class="form-group">
                             <label for="businessNo">사업자등록번호:</label>
-                            <input type="text" v-model="formData.businessNo" id="businessNo" required>
+                            <div class="input-group"> 
+                                <input type="text" placeholder="'-'는 제외하고 숫자 10자리를 입력해주세요." 
+                                        v-model="formData.businessNo" 
+                                        id="businessNo" 
+                                        maxlength="10" 
+                                        @input="formData.businessNo = formData.businessNo.replace(/[^0-9]/g, '')"
+                                        :readonly="isBusinessNoChecked" 
+                                        required>
+                                        <!-- ▲ 숫자 10자리 정규식 & 중복확인 완료되면 입력칸 비활성화 -->
+                                <button type="button" class="addr-search-btn" @click="fnCheckBusinessNo">중복확인</button>
+                            </div>
+                            <!-- ▼ 중복 확인 결과 메세지 영역 -->
+                             <div v-if="bizCheckMsg" :style="{ color: bizCheckColor, fontSize: '13px', marginTop: '5px', fontWeight: 'bold' }">
+                                {{ bizCheckMsg }}
+                            </div>
                         </div>
 
                         <div class="form-group">
@@ -274,11 +288,65 @@
                                     storePass: 'G',
                                     rejectReason: '(null)',
                                     gradeCode: 'A',
-                                    membership: 'N'
-                                }
+                                    membership: 'N',          
+                                },
+
+                                // 사업자번호 중복확인 관련
+                                    isBusinessNoChecked: false, // 중복확인 완료 여부 플래그
+                                    bizCheckMsg: '',           // 화면에 보여줄 메시지
+                                    bizCheckColor: '',         // 메시지 색상 ('red' 또는 'green')
                             };
                         },
                         methods: {
+
+                            // 사업자번호 중복확인
+                            fnCheckBusinessNo() {
+                                const self = this;
+
+                                if(!this.formData.businessNo) {
+                                    alert("사업자 번호를 입력해주세요.");
+                                    return;
+                                }
+
+                                // 10자리 숫자 정규식 검사
+                                const bizNoRegExp = /^[0-9]{10}$/;
+                                if (!bizNoRegExp.test(this.formData.businessNo)) {
+                                    alert("사업자등록번호는 숫자 10자리로 입력해주세요.");
+                                    return;
+                                }
+
+                                // XXX-XX-XXXXX 형식으로 변환 (DB 확인용)
+                                const formattedNo = self.formData.businessNo.replace(/(\d{3})(\d{2})(\d{5})/, '$1-$2-$3');
+
+                                // 콘솔에서 변환된 형식이 XXX-XX-XXXXX 인지 확인해보세요!
+                                console.log("변환된 번호:", formattedNo);
+
+                                $.ajax({
+                                    url: '/checkBizNo', 
+                                    type: 'POST',
+                                    data: { businessNo: formattedNo },
+                                    success: function(res) {
+                                        // 결과 처리 (res가 0이면 중복 없음, 1이상이면 중복)
+                                        if (res === 0) {
+                                            self.bizCheckMsg = "사용 가능한 사업자 번호입니다.";
+                                            self.bizCheckColor = "green";
+                                            self.isBusinessNoChecked = true; // 플래그 true (입력창 비활성화)
+                                            
+                                            // 실제 DB에 보낼 때는 하이픈이 포함된 값을 formData에 넣음
+                                            self.formData.businessNo = formattedNo; 
+                                        } else {
+                                            self.bizCheckMsg = "중복된 사업자 번호입니다.";
+                                            self.bizCheckColor = "red";
+                                            self.isBusinessNoChecked = false; // 플래그 false 유지
+                                        }
+                                    },
+                                    error: function(err) {
+                                        alert("중복 확인 중 오류가 발생했습니다.");
+                                    }
+                                });
+                            },
+
+
                             /**
                              * 🌟 주소 검색 처리 함수 (카카오/Daum Postcode API 연동)
                              * 우편번호와 상세 주소 필드는 제외하고, 검색된 전체 주소만 storeAddr에 반영합니다.
@@ -316,6 +384,12 @@
                                         alert('모든 필수 항목을 입력해주세요. (주소 포함)');
                                         return;
                                     }
+                                }
+                                
+                                // 추가) 사업자등록번호 중복확인 여부 체크
+                                if (!this.isBusinessNoChecked) {
+                                    alert("사업자등록번호 중복 확인을 완료해주세요.");
+                                    return;
                                 }
 
                                 // 채팅 가능인데 시작/종료 시간 없을 경우 체크

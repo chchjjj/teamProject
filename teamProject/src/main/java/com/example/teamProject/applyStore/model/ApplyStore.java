@@ -36,5 +36,10 @@ public class ApplyStore {
     private String bannerImageName;     // 배너 이미지 파일명 (FILENAME)
     private String bannerImageOrgName; // 배너 이미지 원본명 (FILEORGNAME)
     private String bannerImageExt;      // 배너 이미지 확장자 (FILEETC)
+    
+    private String registrationImagePath;    // 사업자등록증 경로
+    private String registrationImageName;    // 사업자등록증 파일명
+    private String registrationImageOrgName; // 사업자등록증 원본명
+    private String registrationImageExt;     // 사업자등록증 확장자
 
 }

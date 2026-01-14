@@ -53,14 +53,9 @@ public class ApplyStoreController {
 	@PostMapping("/saveStoreInfo")
 	@ResponseBody
     public HashMap<String, Object> saveStoreInfo(@RequestBody HashMap<String, Object> storeInfoMap) {
-        
-     
-        
-        System.out.println("컨트롤러에 POST /saveStoreInfo 요청 도착!");
-        
-       
-        HashMap<String, Object> result = applyStoreService.insertStoreInfo(storeInfoMap);
-        
+                     
+        System.out.println("컨트롤러에 POST /saveStoreInfo 요청 도착!");               
+        HashMap<String, Object> result = applyStoreService.insertStoreInfo(storeInfoMap);        
        
         return result;
     }
@@ -98,6 +93,7 @@ public class ApplyStoreController {
 	public Map<String, Object> saveStoreImages(
 	    @RequestParam("profileImage") MultipartFile profileImage,
 	    @RequestParam("bannerImage") MultipartFile bannerImage,
+	    @RequestParam("registrationImage") MultipartFile registrationImage, // 사업자 사진 추가
 	    @RequestParam("userId") String userId, 
 	    @RequestParam("storeId") int storeId,   
 	    HttpServletRequest request) { 
@@ -124,8 +120,13 @@ public class ApplyStoreController {
 	        if (!bannerImage.isEmpty()) {
 	            processFile(bannerImage, "bannerImage", storeId, savePath, savedFileDetails);
 	        }
+	        
+	        // 추가) 3. 사업자등록증 이미지 처리
+	        if (registrationImage != null && !registrationImage.isEmpty()) {
+	            processFile(registrationImage, "registrationImage", storeId, savePath, savedFileDetails);
+	        }
 
-	        // 3. Service 호출 (DB 업데이트만 위임)
+	        // Service 호출 (DB 업데이트만 위임)
 	        // applyStoreService는 @Autowired로 주입받았다고 가정합니다.
 	        HashMap<String, Object> serviceResult = applyStoreService.updateStoreImageInfo(
 	                                                      storeId, userId, savedFileDetails); 
@@ -196,6 +197,27 @@ public class ApplyStoreController {
 	    
 	    return fileName;
 	}
+	
+	
+	// 사업자번호 중복확인
+	@RequestMapping(value = "/checkBizNo", method = RequestMethod.POST)
+	@ResponseBody
+	public int checkBizNo(@RequestParam HashMap<String, Object> params) {
+	    int result = 0;
+	    try {
+	        // params 안에는 JSP에서 보낸 'businessNo' (XXX-XX-XXXXX) 가 들어있습니다.
+	        result = applyStoreService.checkBusinessNo(params);
+	    } catch (Exception e) {
+	        // 에러 발생 시 로그 기록
+	        System.err.println("컨트롤러 중복확인 처리 중 에러: " + e.getMessage());
+	        // 실패 시 -1을 반환하여 프론트엔드에서 알 수 있게 처리 가능
+	        result = -1; 
+	    }
+	    return result;
+	}
+	
+	
+	
 }
 	
 
