@@ -123,6 +123,62 @@
                     transform: scale(1);
                 }
             }
+
+            .review-img-wrapper {
+                width: 120px;
+                height: 120px;
+                border-radius: 8px;
+                overflow: hidden;
+                cursor: pointer;
+                border: 1px solid #ddd;
+                flex-shrink: 0;
+            }
+
+            .review-img-wrapper img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                
+                /* 핵심 */
+            }
+
+            .image-modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 2000;
+            }
+
+            .image-modal-content {
+                position: relative;
+                max-width: 90%;
+                max-height: 90%;
+            }
+
+            .image-modal-content img {
+                max-width: 100%;
+                max-height: 100%;
+                border-radius: 10px;
+            }
+
+            .image-modal-close {
+                position: absolute;
+                top: -10px;
+                right: -10px;
+                background: #fff;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                border-radius: 50%;
+                width: 32px;
+                height: 32px;
+            }
         </style>
     </head>
 
@@ -179,9 +235,17 @@
                                 등록된 리뷰가 없습니다.
                             </div>
                             <div v-else class="review-block" v-for="item in reviewList">
-                                <!-- <div class="review-photo-area">
-                                    후기사진
-                                </div> -->
+                                <div class="review-photo-area">
+                                    <div v-if="item.imgPath" class="review-img-wrapper"
+                                        @click="openImage(item.imgPath)">
+                                        <img :src="item.imgPath" alt="리뷰 이미지" />
+                                    </div>
+                                    <div v-else>
+                                        이미지 없음
+                                    </div>
+                                </div>
+
+
                                 <div class="review-content-area">
                                     <div class="review-meta">
                                         <span class="nickname">{{item.userName}}</span>
@@ -296,6 +360,12 @@
                             </div>
                         </div>
                     </div>
+                    <div v-if="showImageModal" class="image-modal-overlay" @click="closeImageModal">
+                        <div class="image-modal-content" @click.stop>
+                            <img :src="modalImagePath" alt="확대 이미지" />
+                            <button class="image-modal-close" @click="closeImageModal">&times;</button>
+                        </div>
+                    </div>
 
 
                 </div>
@@ -337,7 +407,10 @@
                     infoList: {},
                     imgInfo: {},
 
-                    ingredientList: {}
+                    ingredientList: {},
+
+                    showImageModal: false,
+                    modalImagePath: ''
                 };
             },
             methods: {
@@ -401,7 +474,7 @@
                         data: param,
                         success: function (data) {
                             self.reviewList = data.list
-                            // console.log(data.result);
+                            console.log(data.list);
                         }
                     });
                 },
@@ -549,6 +622,14 @@
                             alert("서버 통신 오류가 발생했습니다.");
                         }
                     });
+                },
+                openImage(path) {
+                    this.modalImagePath = path;
+                    this.showImageModal = true;
+                },
+                closeImageModal() {
+                    this.showImageModal = false;
+                    this.modalImagePath = '';
                 }
             }, // methods
             mounted() {

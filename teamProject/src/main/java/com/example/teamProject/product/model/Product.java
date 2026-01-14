@@ -75,6 +75,9 @@ public class Product {
 	    private String reviewContent;
 	    private String cdatetime;
 	    private String qnaContents;
+	    
+	    private int imgId;
+	    private String imgPath;
 	    // 주문서 관련
 	    
 	    private int orderDetailId; // 시퀀스 자동 생성

@@ -264,6 +264,7 @@ public class ProductService {
 			List<Product> list = ProductMapper.selectReviewList(map);			
 			resultMap.put("list", list); 
 			resultMap.put("result", "success");
+			System.out.println(map);
 		} catch (Exception e) {
 			// TODO: handle exception
 			resultMap.put("result", "fail");
