@@ -507,6 +507,15 @@ OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	)
 	</insert>
 	
+	<!-- 멤버십 전환2-->
+	<update id="updateMembership" parameterType="hashmap">
+		UPDATE SELLER_INFO_TBL
+		SET
+			MEMBERSHIP = 'Y'
+		WHERE USER_ID =  #{userId}
+	</update>
+	
+	
 	<!-- 멤버십 해지-->
 	<update id="cancelMembership" parameterType="hashmap">
 		UPDATE MEMBERSHIP_TBL
