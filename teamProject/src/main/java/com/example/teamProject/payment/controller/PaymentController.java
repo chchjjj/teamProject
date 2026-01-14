@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -154,13 +155,17 @@ public class PaymentController {
 		
 		// 2. Controller(.dox)에서 리스트 형태로 변경 후 map에 넣기
 		//String json = (String) map.get("cartItems");
-		String json = map.get("orderList").toString();
+		String json1 = map.get("groupedOrdersList").toString();
+		String json2 = map.get("orderIdList").toString();
 		ObjectMapper mapper = new ObjectMapper();
-		List<Object> orderList = mapper.readValue(json, new TypeReference<List<Object>>() {});
+		List<Map<String, Object>> groupedOrdersList = mapper.readValue(json1, new TypeReference<List<Map<String, Object>>>() {});
+		List<Object> orderIdList = mapper.readValue(json2, new TypeReference<List<Object>>() {});
+		
 
 		//List<HashMap<String, Object>> list = mapper.readValue(json, new TypeReference<List<HashMap<String, Object>>>(){});
 
-		map.put("orderList", orderList);
+		map.put("groupedOrdersList", groupedOrdersList);
+		map.put("orderIdList", orderIdList);
 
 		System.out.println("payment map 안에 담긴 값은 ===>" + map);
 		
@@ -176,13 +181,16 @@ public class PaymentController {
 		
 		// 2. Controller(.dox)에서 리스트 형태로 변경 후 map에 넣기
 		//String json = (String) map.get("cartItems");
-		String json = map.get("orderList").toString();
+		String json1 = map.get("groupedOrdersList").toString();
+		String json2 = map.get("orderIdList").toString();
 		ObjectMapper mapper = new ObjectMapper();
-		List<Object> orderList = mapper.readValue(json, new TypeReference<List<Object>>() {});
+		List<Map<String, Object>> groupedOrdersList = mapper.readValue(json1, new TypeReference<List<Map<String, Object>>>() {});
+		List<Object> orderIdList = mapper.readValue(json2, new TypeReference<List<Object>>() {});
 
 		//List<HashMap<String, Object>> list = mapper.readValue(json, new TypeReference<List<HashMap<String, Object>>>(){});
 
-		map.put("orderList", orderList);
+		map.put("groupedOrdersList", groupedOrdersList);
+		map.put("orderIdList", orderIdList);
 
 		System.out.println("payment map 안에 담긴 값은 ===>" + map);
 		
@@ -198,13 +206,16 @@ public class PaymentController {
 		
 		// 2. Controller(.dox)에서 리스트 형태로 변경 후 map에 넣기
 		//String json = (String) map.get("cartItems");
-		String json = map.get("orderList").toString();
+		String json1 = map.get("groupedOrdersList").toString();
+		String json2 = map.get("orderIdList").toString();
 		ObjectMapper mapper = new ObjectMapper();
-		List<Object> orderList = mapper.readValue(json, new TypeReference<List<Object>>() {});
+		List<Map<String, Object>> groupedOrdersList = mapper.readValue(json1, new TypeReference<List<Map<String, Object>>>() {});
+		List<Object> orderIdList = mapper.readValue(json2, new TypeReference<List<Object>>() {});
 
 		//List<HashMap<String, Object>> list = mapper.readValue(json, new TypeReference<List<HashMap<String, Object>>>(){});
 
-		map.put("orderList", orderList);
+		map.put("groupedOrdersList", groupedOrdersList);
+		map.put("orderIdList", orderIdList);
 
 		System.out.println("payment map 안에 담긴 값은 ===>" + map);
 		

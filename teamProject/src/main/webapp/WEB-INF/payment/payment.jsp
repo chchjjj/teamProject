@@ -520,12 +520,12 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            // console.log("Order 리스트 출력");// 테스트용
-                            // console.log(data);// 테스트용
+                            console.log("Order 리스트 출력");// 테스트용
+                            console.log(data);// 테스트용
                             self.orderList = data.list;
                             self.fnGroupOrderList(self.orderList);
                             self.deliveryType = data.list[0].deliveryType; //배달인지 픽업인지
-                            // console.log("self.deliveryType[0] ===> " + data.list[0].deliveryType);
+                            console.log("self.deliveryType[0] ===> " + data.list[0].deliveryType);
                         }
                     });
                 },
@@ -621,57 +621,57 @@
                 //결제 버튼을 누르면 이 함수를 실행
                 fnPayment: function(){
                     let self = this;
-                    let proName;
+                    // let proName;
 
-                    if(self.kind > 1){
-                        proName = self.groupedOrdersList[0].proName + " 외 " +  (self.kind - 1) + "종";
-                    } else{
-                        proName = self.groupedOrdersList[0].proName;
-                    }
-                    IMP.request_pay({
-                        pg: "html5_inicis",
-                        pay_method: "card",
-                        merchant_uid: "merchant_" + new Date().getTime(),
-                        name: proName, //상품이름, 대표로 제일 첫번째 상품명을 보여준다.
-                        amount: 1, //실제 결제금액은 1원, 원래는 self.paymentPrice
-                        buyer_tel: self.toPhone, // 구매자 휴대폰 번호
-                        buyer_name: self.toName // 구매자 성함
-                      } , function (rsp) { // callback
-                          if (rsp.success) {
+                    // if(self.kind > 1){
+                    //     proName = self.groupedOrdersList[0].proName + " 외 " +  (self.kind - 1) + "종";
+                    // } else{
+                    //     proName = self.groupedOrdersList[0].proName;
+                    // }
+                    // IMP.request_pay({
+                    //     pg: "html5_inicis",
+                    //     pay_method: "card",
+                    //     merchant_uid: "merchant_" + new Date().getTime(),
+                    //     name: proName, //상품이름, 대표로 제일 첫번째 상품명을 보여준다.
+                    //     amount: 1, //실제 결제금액은 1원, 원래는 self.paymentPrice
+                    //     buyer_tel: self.toPhone, // 구매자 휴대폰 번호
+                    //     buyer_name: self.toName // 구매자 성함
+                    //   } , function (rsp) { // callback
+                        //   if (rsp.success) {
                             // 결제 성공 시
                             //alert("성공");
                             // console.log(rsp);
                             
                             // 실제 구현용 여기부터
-                            if(self.orderId.length > 0){
-                                self.fnPayHistory(rsp.imp_uid, rsp.paid_amount); //바로 결제하는 경우
-                            } else if(self.deliveryType == 'D'){
-                                self.fnDeliPayHistory(rsp.imp_uid, rsp.paid_amount); //장바구니 거쳐서 배송 결제하는 경우
-                            } else if(self.deliveryType == 'P'){
-                                self.fnPickPayHistory(rsp.imp_uid, rsp.paid_amount); //장바구니 거쳐서 픽업 결제하는 경우
-                            } else {
-                                alert("잘못된 결제입니다!");
-                                return;
-                            }
+                            // if(self.orderId.length > 0){
+                            //     self.fnPayHistory(rsp.imp_uid, rsp.paid_amount); //바로 결제하는 경우
+                            // } else if(self.deliveryType == 'D'){
+                            //     self.fnDeliPayHistory(rsp.imp_uid, rsp.paid_amount); //장바구니 거쳐서 배송 결제하는 경우
+                            // } else if(self.deliveryType == 'P'){
+                            //     self.fnPickPayHistory(rsp.imp_uid, rsp.paid_amount); //장바구니 거쳐서 픽업 결제하는 경우
+                            // } else {
+                            //     alert("잘못된 결제입니다!");
+                            //     return;
+                            // }
                             // 실제 구현용 여기까지
 
 
                             //테스트 전용 여기부터
-                                // if(self.orderId.length > 0){
-                                //     self.fnPayHistory(1, 1); //바로 결제하는 경우
-                                // } else if(self.deliveryType == 'D'){
-                                //     self.fnDeliPayHistory(1, 1); //장바구니 거쳐서 배송 결제하는 경우
-                                // } else if(self.deliveryType == 'P'){
-                                //     self.fnPickPayHistory(1, 1); //장바구니 거쳐서 픽업 결제하는 경우
-                                // } else {
-                                //     alert("잘못된 결제입니다!");
-                                //     return;
-                                // }
+                                if(self.orderId.length > 0){
+                                    self.fnPayHistory(1, 1); //바로 결제하는 경우
+                                } else if(self.deliveryType == 'D'){
+                                    self.fnDeliPayHistory(1, 1); //장바구니 거쳐서 배송 결제하는 경우
+                                } else if(self.deliveryType == 'P'){
+                                    self.fnPickPayHistory(1, 1); //장바구니 거쳐서 픽업 결제하는 경우
+                                } else {
+                                    alert("잘못된 결제입니다!");
+                                    return;
+                                }
                             //테스트 전용 여기까지
 
 
-                          } 
-                    });
+                        //   } 
+                    // });
                 },
 
                 //PAYMENT_TBL에 결제내역을 추가하는 쿼리문
@@ -680,7 +680,8 @@
                     let param = {
                         uid: uid,
                         amount: amount,
-                        orderList: JSON.stringify(self.orderList),
+                        groupedOrdersList: JSON.stringify(self.groupedOrdersList),  // ✅ 여기 변경
+                        orderIdList: JSON.stringify(self.orderIdList), // ⭐ 추가
                         //selectedDate: self.selectedDate
                         // 그 외 기타 등등
                     };
@@ -707,7 +708,8 @@
                     let param = {
                         uid: uid,
                         amount: amount,
-                        orderList: JSON.stringify(self.orderList),
+                        groupedOrdersList: JSON.stringify(self.groupedOrdersList),  // ✅ 여기 변경
+                        orderIdList: JSON.stringify(self.orderIdList), // ⭐ 추가
                         selectedDate: self.selectedDate
                         // 그 외 기타 등등
                     };
@@ -734,7 +736,8 @@
                     let param = {
                         uid: uid,
                         amount: amount,
-                        orderList: JSON.stringify(self.orderList),
+                        groupedOrdersList: JSON.stringify(self.groupedOrdersList),  // ✅ 여기 변경
+                        orderIdList: JSON.stringify(self.orderIdList), // ⭐ 추가
                         selectedDate: self.selectedDate
                         // 그 외 기타 등등
                     };
@@ -829,12 +832,12 @@
                     });
                     self.groupedOrdersList = Object.values(groupedOrders);
                     self.groupedOrdersList = self.groupedOrdersList.slice().reverse();
-                    // console.log("최종 주문 목록:", self.groupedOrdersList);
+                    console.log("최종 주문 목록:", self.groupedOrdersList);
                     self.kind = self.groupedOrdersList.length; // 상품 종류 갯수
-                    // console.log("상품 종류 갯수: " + self.kind + "개");
+                    console.log("상품 종류 갯수: " + self.kind + "개");
                     for(let i=0; i<self.groupedOrdersList.length; i++){ // 총 결제가격 구하기
                         self.paymentPrice += self.groupedOrdersList[i].totalPrice;
-                        // console.log("self.groupedOrdersList[i].totalPrice:" + self.groupedOrdersList[i].totalPrice);
+                        console.log("self.groupedOrdersList[i].totalPrice:" + self.groupedOrdersList[i].totalPrice);
                     }
                 },
 
@@ -918,7 +921,7 @@
 
                 //주문번호를 장바구니에서 받지 않은 경우
                 if(orderId && orderId.length > 0) {
-                    // console.log("orderId 값이 존재하며 orderId 값은 => " + self.orderId);
+                    console.log("orderId 값이 존재하며 orderId 값은 => " + self.orderId);
                     self.orderIdList.push(orderId);
                 } 
                 
@@ -929,7 +932,7 @@
                     
                 }
 
-                // console.log("최종적으로 사용할 orderIdList 값은 => " + self.orderIdList);
+                console.log("최종적으로 사용할 orderIdList 값은 => " + self.orderIdList);
                 self.fnOrderList(); //주문 목록 출력
 
                 // 옵션 등 데이터 로드 후
