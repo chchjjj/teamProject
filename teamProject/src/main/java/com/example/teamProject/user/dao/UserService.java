@@ -152,8 +152,8 @@ public class UserService {
 	
 	public HashMap<String, Object> phoneCheck(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		User user = userMapper.userPhoneCheck(map);
-		String result = user != null ? "true" : "false";
+		List<User> list = userMapper.userPhoneCheck(map);
+		String result = list.size() != 0 ? "true" : "false";
 
 		resultMap.put("result", result);
 

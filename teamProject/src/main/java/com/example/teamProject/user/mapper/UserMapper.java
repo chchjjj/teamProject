@@ -18,7 +18,7 @@ public interface UserMapper {
 	User userCheck(HashMap<String, Object> map);
 	
 	//회원가입 전화번호 중복체크
-	User userPhoneCheck(HashMap<String, Object> map);
+	List <User> userPhoneCheck(HashMap<String, Object> map);
 		
 	//회원가입
 	int userAdd(HashMap<String, Object> map);
