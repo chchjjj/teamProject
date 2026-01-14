@@ -8,6 +8,7 @@ import lombok.Data;
 public class Chat {
 	
 	// DB 관련 
+	private int msgId; // PK 값을 담을 필드 추가
 	private String userId;
 	private int orderId;
 	private int chatId;
