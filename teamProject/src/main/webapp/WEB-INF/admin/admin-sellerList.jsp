@@ -12,13 +12,14 @@
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <script src="/js/page-change.js"></script>
         <style>
-
             .section-title {
                 font-weight: bold;
                 font-size: 18px;
                 padding: 10px 0;
-                border-bottom: 2px solid #3E2723; /* 진한 검은색 라인 */
-                margin-bottom: 15px; /* 아래 테이블과 여백 */
+                border-bottom: 2px solid #3E2723;
+                /* 진한 검은색 라인 */
+                margin-bottom: 15px;
+                /* 아래 테이블과 여백 */
             }
 
             /* ===== 관리자 테이블 공통 스타일 ===== */
@@ -124,17 +125,17 @@
                 }
             }
 
-            
-            th, td {
+
+            th,
+            td {
                 font-size: 12px;
                 padding: 8px 10px;
             }
 
-            a{
+            a {
                 text-decoration: none;
-                color : brown;
+                color: brown;
             }
-
         </style>
     </head>
 
@@ -205,9 +206,11 @@
                             <tr v-for="seller in sellerList">
                                 <td><input type="checkbox" :value="seller.storeId" v-model="selectItem"></td>
                                 <td>{{seller.storeId}}</td>
-                                <td><a href="javascript:;"
-                                        @click="fnSellerInfo(seller.storeName)">{{seller.storeName}}</a></td>
-                                <td>{{seller.userId}}</td>
+                                <td>
+                                    <a href="javascript:;" @click="fnSellerInfo(seller.storeName, seller.storeId)">
+                                        {{seller.storeName}}
+                                    </a>
+                                </td>
                                 <td>{{seller.businessNo}}</td>
                                 <td>{{seller.storeAddr}}</td>
                                 <td>
@@ -225,7 +228,8 @@
                                 <td>{{seller.regDate}}</td>
                                 <td v-if="flgApp===false"><span v-if="seller.passDate">{{seller.passDate}}</span><span
                                         v-else>-</span></td>
-                                <td><button @click="fnEdit(seller.storeId,seller.userId)"><span v-if="flgApp===true">신청내역
+                                <td><button @click="fnEdit(seller.storeId,seller.userId)"><span
+                                            v-if="flgApp===true">신청내역
                                             보기</span><span v-if="flgApp===false">수정</span></button></td>
                             </tr>
                         </table>
@@ -361,12 +365,15 @@
                 },
 
                 //수정 페이지로 이동
-                fnEdit: function (storeId,userId) {
-                    pageChange("/admin/selleredit.do", { storeId: storeId,userId:userId});
+                fnEdit: function (storeId, userId) {
+                    pageChange("/admin/selleredit.do", { storeId: storeId, userId: userId });
                 },
 
-                fnSellerInfo: function (storeName) {
-                    pageChange("/admin/sellerchart.do", { storeName: storeName });
+                fnSellerInfo: function (storeName, storeId) {
+                    pageChange("/admin/sellerchart.do", {
+                        storeName: storeName,
+                        storeId: storeId  // ⭐ Add this!
+                    });
                 },
 
 
@@ -460,20 +467,20 @@
                             type: "POST",
                             data: param,
                             success: function (data) {
-                                if(data.result=="success"){
-                                    alert(data.msg+"! 홈페이지로 이동하겠습니다.");
+                                if (data.result == "success") {
+                                    alert(data.msg + "! 홈페이지로 이동하겠습니다.");
                                     location.href = "/main.do";
-                                }else{
+                                } else {
                                     alert("로그아웃하는 도중에 오류가 발생하였습니다.");
                                 }
-                                    
+
                             }
-                            
+
                         });
                     }
                 },
 
-               
+
 
 
 

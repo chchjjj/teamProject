@@ -193,55 +193,46 @@
 	</update>
 	
 	
-	<!-- 판매자 판매 상세 정보: 월 판매량 통계 -->
+	<!-- 판매자 월별 매출 통계 (01.14수정됨: 현재 년->지정년) -->
 	<select id="salesSelect" resultType="HashMap">
-		  <![CDATA[ 
-			WITH MONTHS AS (
-			    SELECT LEVEL AS MONTH
-			    FROM DUAL
-			    CONNECT BY LEVEL <= 12
-			)
-			SELECT
-			    NVL(SUM(CASE WHEN M.MONTH = 1 THEN D.MONTHLY_INCOME END),0) AS JAN,
-			    NVL(SUM(CASE WHEN M.MONTH = 2 THEN D.MONTHLY_INCOME END),0) AS FEB,
-			    NVL(SUM(CASE WHEN M.MONTH = 3 THEN D.MONTHLY_INCOME END),0) AS MAR,
-			    NVL(SUM(CASE WHEN M.MONTH = 4 THEN D.MONTHLY_INCOME END),0) AS APR,
-			    NVL(SUM(CASE WHEN M.MONTH = 5 THEN D.MONTHLY_INCOME END),0) AS MAY,
-			    NVL(SUM(CASE WHEN M.MONTH = 6 THEN D.MONTHLY_INCOME END),0) AS JUN,
-			    NVL(SUM(CASE WHEN M.MONTH = 7 THEN D.MONTHLY_INCOME END),0) AS JUL,
-			    NVL(SUM(CASE WHEN M.MONTH = 8 THEN D.MONTHLY_INCOME END),0) AS AUG,
-			    NVL(SUM(CASE WHEN M.MONTH = 9 THEN D.MONTHLY_INCOME END),0) AS SEP,
-			    NVL(SUM(CASE WHEN M.MONTH = 10 THEN D.MONTHLY_INCOME END),0) AS OCT,
-			    NVL(SUM(CASE WHEN M.MONTH = 11 THEN D.MONTHLY_INCOME END),0) AS NOV,
-			    NVL(SUM(CASE WHEN M.MONTH = 12 THEN D.MONTHLY_INCOME END),0) AS DEC
-			FROM MONTHS M
-			LEFT JOIN (
-			    SELECT 
-			        O.STORE_NAME,
-			        EXTRACT(MONTH FROM O.ORDER_DATE) AS ORDER_MONTH,
-			        EXTRACT(YEAR FROM O.ORDER_DATE) AS ORDER_YEAR,
-			        SUM(O.TOTAL_PRICE - O.DELIVERY_FEE) AS MONTHLY_INCOME
-			    FROM ORDER_TBL O
-			    WHERE O.STORE_NAME = #{storeName} AND O.STATUS='P'
-			    GROUP BY O.STORE_NAME, EXTRACT(MONTH FROM O.ORDER_DATE), EXTRACT(YEAR FROM O.ORDER_DATE)
-			) D
-			ON D.ORDER_MONTH = M.MONTH
-			AND D.ORDER_YEAR = EXTRACT(YEAR FROM SYSDATE)
-		  ]]>
+	    <![CDATA[
+	    SELECT
+	        M.MONTH,
+	        NVL(D.TOTAL, 0) AS TOTAL
+	    FROM (
+	        SELECT LEVEL AS MONTH
+	        FROM DUAL
+	        CONNECT BY LEVEL <= 12
+	    ) M
+	    LEFT JOIN (
+	        SELECT
+	            EXTRACT(MONTH FROM O.ORDER_DATE) AS ORDER_MONTH,
+	            SUM(OD.SUBTOTAL) AS TOTAL
+	        FROM ORDER_TBL O
+	        INNER JOIN ORDER_DETAIL_TBL OD ON O.ORDER_ID = OD.ORDER_ID
+	        WHERE O.STATUS = 'P'
+	          AND OD.STORE_ID = #{storeId}
+	          AND EXTRACT(YEAR FROM O.ORDER_DATE) = #{year}
+	        GROUP BY EXTRACT(MONTH FROM O.ORDER_DATE)
+	    ) D ON D.ORDER_MONTH = M.MONTH
+	    ORDER BY M.MONTH
+	    ]]>
 	</select>
 	
-	<!-- 판매자 판매 상세 정보: 가장 핫한 상품 -->
-	<select id="sellerPopularListSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
-   		SELECT O.STORE_NAME, P.PRO_NAME, SUM(QUANTITY) AS TOTAL_AMOUNT
-		FROM ORDER_DETAIL_TBL D
-		INNER JOIN ORDER_TBL O ON O.ORDER_ID = D.ORDER_ID
-		INNER JOIN PRODUCT_TBL P ON P.PRO_NO = D.PRO_NO
-		WHERE O.STORE_NAME = #{storeName}
-		GROUP BY O.STORE_NAME, P.PRO_NAME
-		ORDER BY TOTAL_AMOUNT DESC
-		FETCH FIRST 1 ROW ONLY
+	<!-- 판매자 인기 상품 TOP 조회 -->
+	<select id="sellerPopularListSelect" resultType="com.example.teamProject.admin.model.Admin">
+	    SELECT
+	        P.PRO_NAME,
+	        SUM(D.QUANTITY) AS TOTAL_AMOUNT
+	    FROM ORDER_DETAIL_TBL D
+	    INNER JOIN ORDER_TBL O ON O.ORDER_ID = D.ORDER_ID
+	    INNER JOIN PRODUCT_TBL P ON P.PRO_NO = D.PRO_NO
+	    WHERE D.STORE_ID = #{storeId}
+	      AND O.STATUS = 'P'
+	    GROUP BY P.PRO_NAME
+	    ORDER BY TOTAL_AMOUNT DESC
+	    FETCH FIRST 10 ROWS ONLY
 	</select>
-	
 
 	
 	
@@ -333,10 +324,10 @@
 	           AND S.STORE_PASS = 'P'
 	        ) AS MONTHLY_REVENUE,
 	
-	        /* 광고 수익 */
+	        /* 광고 수익  01-13 수정(SART_DATE를 END_DATE로: 광고는 마지막날 결제)*/
 	        (SELECT SUM(CLICKS * CLICK_UNIT_COST)
 	         FROM AD_TBL
-	         WHERE TO_CHAR(START_DATE,'YYYYMM') = #{yyyymm}
+	         WHERE TO_CHAR(END_DATE,'YYYYMM') = #{yyyymm}
 	        ) AS MONTHLY_AD_REVENUE,
 	
 	        /* 총 수익 */
@@ -620,7 +611,7 @@
 	</update>
 	
 	
-	<!-- 판매자별 월 수익 (제대로 안뜸 ) -->
+	<!-- 판매자별 월 수익 정산 (제대로 안뜸 ) -->
 	<select id="monthlyFeeCalculate" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
        <!--  SELECT 
             TO_CHAR(SYSDATE,'YYYY-MM') AS THIS_MONTH,
@@ -670,79 +661,82 @@
 		GROUP BY S.STORE_NAME, S.STORE_ID
 		ORDER BY S.STORE_ID-->
 		
-		WITH STORE_NET AS (
-		    SELECT S.STORE_ID,
-		           S.STORE_NAME,
-		           SUM(O.TOTAL_PRICE - O.DELIVERY_FEE) AS TOTAL_NET
-		    FROM ORDER_TBL O
-		    JOIN SELLER_INFO_TBL S ON O.STORE_NAME = S.STORE_NAME
-		    WHERE O.STATUS = 'P'
-		      AND TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
-		      AND S.STORE_PASS = 'P'
-		    GROUP BY S.STORE_ID, S.STORE_NAME
-		)
-		SELECT TO_CHAR(SYSDATE,'YYYY-MM') AS THIS_MONTH,
-		       SN.STORE_ID,
-		       SN.STORE_NAME,
-		       SN.TOTAL_NET,
-		       SN.TOTAL_NET * C.COMMISSION_RATE AS STORE_MONTHLY_FEE
-		FROM STORE_NET SN
-		JOIN COMMISSION_GRADE_TBL C
-		     ON SN.TOTAL_NET BETWEEN C.LOSAL AND C.HISAL
-		WHERE 1=1
-		<if test="keyWord != null and keyWord != ''">
-		    <choose>
-		        <when test="option == 'all'">
-		            AND (SN.STORE_ID LIKE '%' || #{keyWord} || '%' 
-		                 OR SN.STORE_NAME LIKE '%' || #{keyWord} || '%')
-		        </when>
-		        <when test="option == 'storeId'">
-		            AND SN.STORE_ID LIKE '%' || #{keyWord} || '%'
-		        </when>
-		        <when test="option == 'storeName'">
-		            AND SN.STORE_NAME LIKE '%' || #{keyWord} || '%'
-		        </when>
-		    </choose>
-		</if>
-		ORDER BY SN.STORE_ID
-		<if test="offset != null and fetchRows != null">
-		    OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
-		</if>
-   </select>
-    
-    <select id="monthlyFeeCalculateCount" resultType="int">
-         WITH STORE_NET AS (
-		    SELECT S.STORE_ID,
-		           S.STORE_NAME,
-		           SUM(O.TOTAL_PRICE - O.DELIVERY_FEE) AS TOTAL_NET
-		    FROM ORDER_TBL O
-		    JOIN SELLER_INFO_TBL S ON O.STORE_NAME = S.STORE_NAME
-		    WHERE O.STATUS = 'P'
-		      AND TO_CHAR(O.ORDER_DATE,'YYYYMM') = TO_CHAR(SYSDATE,'YYYYMM')
-		      AND S.STORE_PASS = 'P'
-		    GROUP BY S.STORE_ID, S.STORE_NAME
-		)
-		SELECT COUNT(*) AS TOTAL_ROWS
-		FROM STORE_NET SN
-		JOIN COMMISSION_GRADE_TBL C
-		     ON SN.TOTAL_NET BETWEEN C.LOSAL AND C.HISAL
-		WHERE 1=1
-	<if test="keyWord != null and keyWord != ''">
-	    <choose>
-	        <when test="option == 'all'">
-	            AND (SN.STORE_ID LIKE '%' || #{keyWord} || '%' 
-	                 OR SN.STORE_NAME LIKE '%' || #{keyWord} || '%')
-	        </when>
-	        <when test="option == 'storeId'">
-	            AND SN.STORE_ID LIKE '%' || #{keyWord} || '%'
-	        </when>
-	        <when test="option == 'storeName'">
-	            AND SN.STORE_NAME LIKE '%' || #{keyWord} || '%'
-	        </when>
-	    </choose>
-	</if>
+		<!--수정 01.14: 지금 이달만 조회 가능->년과 월 가리게 조회 가능-->
 
-    </select>
+	    WITH STORE_NET AS (
+	        SELECT S.STORE_ID,
+	               S.STORE_NAME,
+	               SUM(O.TOTAL_PRICE - O.DELIVERY_FEE) AS TOTAL_NET
+	        FROM ORDER_TBL O
+	        JOIN SELLER_INFO_TBL S ON O.STORE_NAME = S.STORE_NAME
+	        WHERE O.STATUS = 'P'
+	          AND TO_CHAR(O.ORDER_DATE,'YYYY') = #{year}
+	          AND TO_CHAR(O.ORDER_DATE,'MM') = LPAD(#{month}, 2, '0')
+	          AND S.STORE_PASS = 'P'
+	        GROUP BY S.STORE_ID, S.STORE_NAME
+	    )
+	    SELECT #{year} || '-' || LPAD(#{month}, 2, '0') AS THIS_MONTH,
+	           SN.STORE_ID,
+	           SN.STORE_NAME,
+	           SN.TOTAL_NET,
+	           SN.TOTAL_NET * C.COMMISSION_RATE AS STORE_MONTHLY_FEE
+	    FROM STORE_NET SN
+	    JOIN COMMISSION_GRADE_TBL C
+	         ON SN.TOTAL_NET BETWEEN C.LOSAL AND C.HISAL
+	    WHERE 1=1
+	    <if test="keyWord != null and keyWord != ''">
+	        <choose>
+	            <when test="option == 'all'">
+	                AND (SN.STORE_ID LIKE '%' || #{keyWord} || '%' 
+	                     OR SN.STORE_NAME LIKE '%' || #{keyWord} || '%')
+	            </when>
+	            <when test="option == 'storeId'">
+	                AND SN.STORE_ID LIKE '%' || #{keyWord} || '%'
+	            </when>
+	            <when test="option == 'storeName'">
+	                AND SN.STORE_NAME LIKE '%' || #{keyWord} || '%'
+	            </when>
+	        </choose>
+	    </if>
+	    ORDER BY SN.STORE_ID
+	    <if test="offset != null and fetchRows != null">
+	        OFFSET #{offset} ROWS FETCH NEXT #{fetchRows} ROWS ONLY
+	    </if>
+	</select>
+	
+	<select id="monthlyFeeCalculateCount" resultType="int">
+	    WITH STORE_NET AS (
+	        SELECT S.STORE_ID,
+	               S.STORE_NAME,
+	               SUM(O.TOTAL_PRICE - O.DELIVERY_FEE) AS TOTAL_NET
+	        FROM ORDER_TBL O
+	        JOIN SELLER_INFO_TBL S ON O.STORE_NAME = S.STORE_NAME
+	        WHERE O.STATUS = 'P'
+	          AND TO_CHAR(O.ORDER_DATE,'YYYY') = #{year}
+	          AND TO_CHAR(O.ORDER_DATE,'MM') = #{month}
+	          AND S.STORE_PASS = 'P'
+	        GROUP BY S.STORE_ID, S.STORE_NAME
+	    )
+	    SELECT COUNT(*) AS TOTAL_ROWS
+	    FROM STORE_NET SN
+	    JOIN COMMISSION_GRADE_TBL C
+	         ON SN.TOTAL_NET BETWEEN C.LOSAL AND C.HISAL
+	    WHERE 1=1
+	    <if test="keyWord != null and keyWord != ''">
+	        <choose>
+	            <when test="option == 'all'">
+	                AND (SN.STORE_ID LIKE '%' || #{keyWord} || '%' 
+	                     OR SN.STORE_NAME LIKE '%' || #{keyWord} || '%')
+	            </when>
+	            <when test="option == 'storeId'">
+	                AND SN.STORE_ID LIKE '%' || #{keyWord} || '%'
+	            </when>
+	            <when test="option == 'storeName'">
+	                AND SN.STORE_NAME LIKE '%' || #{keyWord} || '%'
+	            </when>
+	        </choose>
+	    </if>
+	</select>
 	
 	
 	<!-- 매출관리 차트 속 월 클릭시 (작동안됨 하) -->

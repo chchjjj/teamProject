@@ -105,9 +105,23 @@
                     <!--사용자list-->
                     <div>
                         <!--구역이름-->
-                        <div>
-                            판매자 월 정산결과 조회
+                        <!--연도&월 선택 -->
+                        <div
+                            style="display:flex; align-items:center; gap:15px; justify-content:center; width:100%; margin-bottom:20px;">
+                            <button @click="changeYear(-1)">◀</button>
+                            <span style="font-size:22px; font-weight:bold;">
+                                {{ year }}年 월별 정산결과 조회
+                            </span>
+                            <button @click="changeYear(1)">▶</button>
+
+                            <!-- 월 선택 -->
+                            <select v-model="month" style="font-size:16px; padding:8px 12px;">
+                                <option v-for="m in 12" :key="m" :value="m">
+                                    {{ m }}월
+                                </option>
+                            </select>
                         </div>
+
                         <div class="info">
                             ※ 판매 승인을 받은 판매자 목록만 표시합니다.
                         </div>
@@ -196,7 +210,20 @@
 
     <script>
         const app = Vue.createApp({
+            //년,월 변화할 때 데이터를 자동 로딩
+            watch: {
+                year() {
+                    this.page = 1;
+                    this.fnSellerList();
+                },
+                month() {
+                    this.page = 1;
+                    this.fnSellerList();
+                }
+            },
             data() {
+                //now를 정의
+                const now = new Date();
                 return {
                     // 변수 - (key : value)
                     sellerList: [],
@@ -204,6 +231,10 @@
 
                     currentMenu: "month",
                     flgPending: true, // 항상 P만 보도록 기본값 설정
+
+                    // 연도와 월 (차트와 수익 테이블 공용)
+                    year: now.getFullYear(),      // 4자리 연도 가져오기
+                    month: now.getMonth() + 1,    // 월 가져오기 (주의: getMonth()는 0부터 시작하므로 +1 필요)
 
                     //선택
                     selectItem: [],
@@ -236,9 +267,18 @@
 
             methods: {
                 // 함수(메소드) - (key : function())
+
+                //연도 변경 함수
+                changeYear(diff) {
+                    this.year += diff;
+                    this.month = 1;     // 연도 변경 시 1월로 초기화
+                },
+
                 fnSellerList: function () {
                     let self = this;
                     let param = {
+                        year: self.year,
+                        month: self.month,
                         option: self.option,
                         keyWord: self.keyWord,
                         flgApp: self.flgApp,

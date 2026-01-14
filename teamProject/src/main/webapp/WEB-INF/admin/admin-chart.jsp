@@ -306,18 +306,18 @@
                                 shortMonths: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
                                 days: ['일', '월', '화', '수', '목', '금', '토'],
                                 shortDays: ['일', '월', '화', '수', '목', '금', '토'],
-                                toolbar: {
-                                    exportToSVG: 'SVG로 내보내기',
-                                    exportToPNG: 'PNG로 내보내기',
-                                    exportToCSV: 'CSV로 내보내기',
-                                    menu: '메뉴',
-                                    selection: '선택',
-                                    selectionZoom: '선택 확대',
-                                    zoomIn: '확대',
-                                    zoomOut: '축소',
-                                    pan: '이동',
-                                    reset: '초기화'
-                                }
+                                // toolbar: {
+                                //     exportToSVG: 'SVG로 내보내기',
+                                //     exportToPNG: 'PNG로 내보내기',
+                                //     exportToCSV: 'CSV로 내보내기',
+                                //     menu: '메뉴',
+                                //     selection: '선택',
+                                //     selectionZoom: '선택 확대',
+                                //     zoomIn: '확대',
+                                //     zoomOut: '축소',
+                                //     pan: '이동',
+                                //     reset: '초기화'
+                                // }
                             }
                         }],
                         defaultLocale: 'ko',
