@@ -3,6 +3,7 @@ package com.example.teamProject.payment.dao;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -82,18 +83,19 @@ public class PaymentService {
 	public HashMap<String, Object> addPayment(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
-			List<HashMap<String, Object>> orderList = (List<HashMap<String, Object>>) map.get("orderList");
+			List<Object> orderIdList = (List<Object>) map.get("orderIdList");
+			List<Map<String, Object>> groupedOrdersList = (List<Map<String, Object>>) map.get("groupedOrdersList");
 			System.out.println("맵=>" + map);
-	        System.out.println("주문리스트=>" + orderList);
+	        System.out.println("주문리스트=>" + groupedOrdersList);
          
-	        if (orderList == null || orderList.isEmpty()) {
+	        if (groupedOrdersList == null || groupedOrdersList.isEmpty()) {
 	            resultMap.put("result", "fail");
 	            resultMap.put("message", "결제할 게 없습니다.");
 	            return resultMap; 
 	        }
 	        
-	        for (int i = 0; i < orderList.size(); i++) {
-	        	HashMap<String, Object> order = orderList.get(i);
+	        for (int i = 0; i < groupedOrdersList.size(); i++) {
+	        	HashMap<String, Object> order = (HashMap<String, Object>) groupedOrdersList.get(i);
 	        	// 공통 데이터
 //	        	String orderId = (String) map.get("orderId");
 //	        	String totalPrice = (String) order.get("totalPrice");
@@ -121,20 +123,22 @@ public class PaymentService {
 	
 	@Transactional
 	public HashMap<String, Object> addDeliPayment(HashMap<String, Object> map) {
+		
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
-			List<HashMap<String, Object>> orderList = (List<HashMap<String, Object>>) map.get("orderList");
+			List<Object> orderIdList = (List<Object>) map.get("orderIdList");
+			List<Map<String, Object>> groupedOrdersList = (List<Map<String, Object>>) map.get("groupedOrdersList");
 			System.out.println("맵=>" + map);
-	        System.out.println("주문리스트=>" + orderList);
+	        System.out.println("주문리스트=>" + groupedOrdersList);
          
-	        if (orderList == null || orderList.isEmpty()) {
+	        if (groupedOrdersList == null || groupedOrdersList.isEmpty()) {
 	            resultMap.put("result", "fail");
 	            resultMap.put("message", "결제할 게 없습니다.");
 	            return resultMap; 
 	        }
 	        
-	        for (int i = 0; i < orderList.size(); i++) {
-	        	HashMap<String, Object> order = orderList.get(i);
+	        for (int i = 0; i < groupedOrdersList.size(); i++) {
+	        	HashMap<String, Object> order = (HashMap<String, Object>) groupedOrdersList.get(i);
 	        	// 공통 데이터
 //	        	String orderId = (String) map.get("orderId");
 //	        	String totalPrice = (String) order.get("totalPrice");
@@ -167,20 +171,22 @@ public class PaymentService {
 
 	@Transactional
 	public HashMap<String, Object> addPickPayment(HashMap<String, Object> map) {
+		
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
-			List<HashMap<String, Object>> orderList = (List<HashMap<String, Object>>) map.get("orderList");
+			List<Object> orderIdList = (List<Object>) map.get("orderIdList");
+			List<Map<String, Object>> groupedOrdersList = (List<Map<String, Object>>) map.get("groupedOrdersList");
 			System.out.println("맵=>" + map);
-	        System.out.println("주문리스트=>" + orderList);
+	        System.out.println("주문리스트=>" + groupedOrdersList);
          
-	        if (orderList == null || orderList.isEmpty()) {
+	        if (groupedOrdersList == null || groupedOrdersList.isEmpty()) {
 	            resultMap.put("result", "fail");
 	            resultMap.put("message", "결제할 게 없습니다.");
 	            return resultMap; 
 	        }
 	        
-	        for (int i = 0; i < orderList.size(); i++) {
-	        	HashMap<String, Object> order = orderList.get(i);
+	        for (int i = 0; i < groupedOrdersList.size(); i++) {
+	        	HashMap<String, Object> order = (HashMap<String, Object>) groupedOrdersList.get(i);
 	        	// 공통 데이터
 //	        	String orderId = (String) map.get("orderId");
 //	        	String totalPrice = (String) order.get("totalPrice");

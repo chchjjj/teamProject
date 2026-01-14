@@ -388,10 +388,10 @@
                         data: param,
                         success: function (data) {
                             if (data.result == "true") {
-                                alert("이미 사용중인 전화번호 입니다.");
+                                alert("이미 가입된 번호입니다. 로그인 / 아이디 찾기를 이용하세요");
                             }
                             else {
-                                alert("확인되었습니다.");
+                                alert("사용 가능한 번호입니다.");
                                 self.phoneCheckFlg = true;
                             }
                         }
