@@ -13,7 +13,7 @@
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
         <style>
-           
+
         </style>
     </head>
 
@@ -21,7 +21,7 @@
         <%@ include file="/WEB-INF/main/header.jsp" %>
 
             <div id="app">
-                
+
             </div>
 
             <%@ include file="/WEB-INF/main/footer.jsp" %>
@@ -37,7 +37,24 @@
                 };
             },
             methods: {
-               
+                fnIMGlist: function () {
+                    let self = this;
+                    $.ajax({
+                        url: "/product/membershipImg.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: { userId: self.userId },
+                        success: function (data) {
+                            if (data.info.role === 'S') {
+                                self.isSeller = true;
+                                self.fnCheckMembership()
+                            }
+                        },
+                        error: function (err) {
+                            console.error("fnUserInfo Ajax 에러:", err);
+                        }
+                    });
+                }
             },
             mounted() {
                 let self = this;
