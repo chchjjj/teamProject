@@ -119,6 +119,42 @@
                 font-weight: bold;
                 color: #3E2723;
             }
+
+            .pagination {
+                display: flex;
+                justify-content: center;
+                margin-top: 30px;
+            }
+
+            .pagination a {
+                margin: 0 5px;
+                padding: 10px 15px;
+                /* 크기 조정 */
+                text-decoration: none;
+                border-radius: 6px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+
+                /* 기본 스타일: 에스프레소 테두리/글자, 흰색 배경 */
+                background-color: #3E2723;
+                color: #ffffff;
+                border: 1px solid var(--primary-color);
+            }
+
+            .pagination a:hover {
+                background-color: #F4C9D6;
+                color: var(--white);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(62, 39, 35, 0.3);
+            }
+
+            .pagination .current {
+                background-color: #F4C9D6;
+                /* 현재 페이지는 피오니색으로 강조 */
+                color: var(--primary-color);
+                border: 1px solid var(--secondary-color);
+                box-shadow: 0 2px 8px rgba(244, 201, 214, 0.4);
+            }
         </style>
     </head>
 
@@ -160,7 +196,9 @@
                 <div class="review-list">
                     <div v-if="reviewList.length === 0">등록된 리뷰가 없습니다.</div>
 
-                    <div v-for="review in reviewList" :key="review.reviewId" class="review-card" @click="fnProductDetail(review.proNo)">
+                    <div v-for="review in pagedReviewList" :key="review.reviewId" class="review-card"
+                        @click="fnProductDetail(review.proNo)">
+
 
                         <div class="review-info">
                             <div class="review-meta">
@@ -176,16 +214,32 @@
                                 별점: {{review.rating}} / 5
                             </div>
                         </div>
+                        <!-- 오른쪽: 리뷰 이미지 -->
+                        <div class="review-image" v-if="review.imgPath">
+                            <img :src="review.imgPath" alt="리뷰 이미지">
+                        </div>
+
+                        <div class="review-image" v-else>
+                            이미지 없음
+                        </div>
                     </div>
                 </div>
 
                 <!-- 페이징 -->
-                <div class="paging" v-if="pageNum > 1">
-                    <button v-if="page > 1" @click="fnPre()">◀</button>
+                <div class="pagination" v-if="pageNum > 1">
+                    <!-- 이전 -->
+                    <a v-if="page > 1" @click="fnPre()">◀</a>
+
+                    <!-- 페이지 번호 -->
                     <a v-for="num in pageRangeList" :key="num" @click="fnChange(num)"
-                        :class="{active: page === num}">{{num}}</a>
-                    <button v-if="page < pageNum" @click="fnNext()">▶</button>
+                        :class="{ current: page === num }">
+                        {{num}}
+                    </a>
+
+                    <!-- 다음 -->
+                    <a v-if="page < pageNum" @click="fnNext()">▶</a>
                 </div>
+
             </div>
         </div>
 
@@ -195,6 +249,7 @@
                     return {
                         userId: "${sessionId}",
                         reviewList: [],
+                        pagedReviewList: [],
                         page: 1,
                         pageSize: 5,
                         pageRange: 5,
@@ -217,41 +272,65 @@
                             },
                             success(data) {
                                 self.reviewList = data.reviewList;
-                                self.totalRows = data.totalRows;
-                                self.pageNum = Math.ceil(self.totalRows / self.pageSize);
+
+                                // 총 페이지 수 계산
+                                self.pageNum = Math.ceil(self.reviewList.length / self.pageSize);
+
+                                // 첫 페이지 세팅
+                                self.page = 1;
+                                self.fnMakePage();
                                 self.fnPageRange();
                             }
                         });
                     },
+                    fnMakePage() {
+                        const start = (this.page - 1) * this.pageSize;
+                        const end = start + this.pageSize;
+                        this.pagedReviewList = this.reviewList.slice(start, end);
+                    },
                     fnPageRange() {
                         let start = Math.floor((this.page - 1) / this.pageRange) * this.pageRange + 1;
                         let end = Math.min(start + this.pageRange - 1, this.pageNum);
+
                         this.pageRangeList = [];
-                        for (let i = start; i <= end; i++) this.pageRangeList.push(i);
+                        for (let i = start; i <= end; i++) {
+                            this.pageRangeList.push(i);
+                        }
                     },
+
                     fnChange(num) {
                         this.page = num;
-                        this.fnReviewList();
+                        this.fnMakePage();
+                        this.fnPageRange();
                     },
+
                     fnPre() {
-                        if (this.page > 1) this.page--;
-                        this.fnReviewList();
+                        if (this.page > 1) {
+                            this.page--;
+                            this.fnMakePage();
+                            this.fnPageRange();
+                        }
                     },
+
                     fnNext() {
-                        if (this.page < this.pageNum) this.page++;
-                        this.fnReviewList();
+                        if (this.page < this.pageNum) {
+                            this.page++;
+                            this.fnMakePage();
+                            this.fnPageRange();
+                        }
                     },
-                    fnDeleteAccount:function(){ 
-                    if(confirm("회원을 탈퇴하겠습니까?")){
-                        location.href="/main.do";
-                    }
-                    return;
-                },
+
+                    fnDeleteAccount: function () {
+                        if (confirm("회원을 탈퇴하겠습니까?")) {
+                            location.href = "/main.do";
+                        }
+                        return;
+                    },
 
 
-                fnProductDetail:function(proNo){
-                    pageChange("/productDetail.do", { proNo: proNo }); 
-                },
+                    fnProductDetail: function (proNo) {
+                        pageChange("/productDetail.do", { proNo: proNo });
+                    },
 
                     fnHome() { location.href = "/main.do" },
                     fnOrderHistory() { location.href = "/user/orderHistory.do"; },

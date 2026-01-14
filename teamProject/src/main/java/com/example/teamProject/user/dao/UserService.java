@@ -387,23 +387,6 @@ public class UserService {
 	    return resultMap;
 	}
 
-	// 리뷰 이미지 가져오기
-	public HashMap<String, Object> SelectreviewIMG(HashMap<String, Object> map) {
-		// TODO Auto-generated method stub
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		
-		try {
-			List <User> list = userMapper.reviewIMGList(map);
-//			System.out.println(list);
-			resultMap.put("list", list); 
-			resultMap.put("result", "success");
-		} catch (Exception e) {
-			// TODO: handle exception
-			resultMap.put("result", "fail");
-			System.out.println(e.getMessage());
-		}				
-		return resultMap;
-	}
 	
 	// 구매자 마이페이지 - 결제 전 상태 건 주문취소하면 ORDER_TBL의 STATUS X로 바꾸기 
 	public HashMap<String, Object> updateOrderCancel(HashMap<String, Object> map) {

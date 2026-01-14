@@ -335,20 +335,6 @@ public class UserController {
 
 
 
-	// 리뷰 이미지 가져오기
-	@RequestMapping(value = "/user/reviewIMGlist.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public String reviewIMGList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
-
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-
-		
-		resultMap = userService.SelectreviewIMG(map);
-		
-//		System.out.println(map);
-		
-		return new Gson().toJson(resultMap);
-	}
 	
 	
 	// 구매자 마이페이지 - 결제 전 상태 건 주문취소하면 ORDER_TBL의 STATUS X로 바꾸기
