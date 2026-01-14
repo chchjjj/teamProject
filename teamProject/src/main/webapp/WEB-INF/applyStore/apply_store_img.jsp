@@ -136,6 +136,11 @@
                             <input type="file" id="bannerImage" @change="handleFileChange('bannerImage')" hidden>
                             <span>{{ bannerImageName }}</span>
                         </div>
+                        <div class="file-upload-section">
+                            <label for="registrationImage" class="upload-btn">사업자등록증 첨부</label>
+                            <input type="file" id="registrationImage" @change="handleFileChange('registrationImage')" hidden>
+                            <span>{{ registrationImageName }}</span>
+                        </div>
                         <button type="submit" class="submit-btn">입점 신청</button>
                     </form>
                 </div>
@@ -152,9 +157,11 @@
                 searched: false,
                 profileImageName: '선택된 파일 없음',
                 bannerImageName: '선택된 파일 없음',
+                registrationImageName: '선택된 파일 없음',
                 files: {
                     profileImage: null,
-                    bannerImage: null
+                    bannerImage: null,
+                    registrationImage: null
                 }
             };
         },
@@ -230,6 +237,7 @@
                 const formData = new FormData();
                 formData.append('profileImage', this.files.profileImage);
                 formData.append('bannerImage', this.files.bannerImage);
+                formData.append('registrationImage', this.files.registrationImage); // 사업자 사진 추가
                 formData.append('userId', this.userId);
                 formData.append('storeId', this.storeId);
 

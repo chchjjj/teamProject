@@ -66,8 +66,20 @@ public Integer getStoreIdByStoreNameAndUserId(String storeName, String userId) {
         }
     }
   
-
-
+	// 추가) 사업자번호 중복 체크
+	public int checkBusinessNo(HashMap<String, Object> params) {
+	    int result = 0;
+	    try {
+	        // 매퍼 호출하여 중복 개수(0 또는 1) 반환
+	        result = applyStoreMapper.checkBusinessNo(params);
+	    } catch (Exception e) {
+	        // 예외 발생 시 로그 출력 및 결과값 초기화(또는 예외 던지기)
+	        System.err.println("사업자번호 중복 확인 중 서비스 에러 발생: " + e.getMessage());
+	        e.printStackTrace();
+	        // 필요에 따라 result = -1; 등으로 에러 상태를 컨트롤러에 보낼 수 있습니다.
+	    }
+	    return result;
+	}
 
 
 
@@ -106,15 +118,27 @@ public HashMap<String, Object> updateStoreImageInfo(int storeId, String userId, 
         // 🟢 Mapper 호출 2: insertStoreImage 사용!
         totalRowsAffected += applyStoreMapper.insertStoreImage(bannerMap); 
         System.out.println(">>> [Service] 배너 이미지 DB 저장 완료.");
+        
+        // 추가) 3. 사업자등록증 이미지 정보 준비 및 삽입 
+        HashMap<String, Object> regMap = new HashMap<>();
+        regMap.put("storeId", storeId);
+        regMap.put("fileUse", "사업자등록증"); 
+        regMap.put("filePath", "img-seller/");
+        regMap.put("fileName", savedFileDetails.get("registrationImageSaveName"));
+        regMap.put("fileOrgName", savedFileDetails.get("registrationImageOriginalName"));
+        regMap.put("fileEtc", savedFileDetails.get("registrationImageExt")); 
+
+        totalRowsAffected += applyStoreMapper.insertStoreImage(regMap); 
+        System.out.println(">>> [Service] 사업자등록증 이미지 DB 저장 완료.");
 
 
         // 3. 결과 처리
-        if (totalRowsAffected == 2) {
+        if (totalRowsAffected == 3) { // 2에서 3으로 변경 (사업자등록증 사진 추가)
             resultMap.put("success", true);
-            resultMap.put("message", "파일 정보가 DB에 성공적으로 저장되었습니다. (2건)");
+            resultMap.put("message", "파일 정보가 DB에 성공적으로 저장되었습니다. (3건)");
         } else {
             resultMap.put("success", false);
-            resultMap.put("message", "DB 업데이트 실패: 2건 중 " + totalRowsAffected + "건만 저장되었습니다.");
+            resultMap.put("message", "DB 업데이트 실패: 3건 중 " + totalRowsAffected + "건만 저장되었습니다.");
         }
         
     } catch (Exception e) {
