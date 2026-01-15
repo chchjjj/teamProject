@@ -89,6 +89,7 @@
 		SELECT
 		T1.USER_NAME, 
 		T2.ORDER_ID, 
+		T2.STATUS, <!--추가) 주문상세 부분에 띄울 주문상태 (P, C, S, X 등)--> 
 		T3.PRO_NAME, 
 		COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE) AS ORDER_OR_PICKUP_DATE, 
 		T10.STORE_NAME, 
@@ -117,6 +118,7 @@
 		GROUP BY
 		T1.USER_NAME,
 		T2.ORDER_ID,
+		T2.STATUS, <!--추가) 주문상세 부분에 띄울 주문상태 (P, C, S, X 등)--> 
 		T3.PRO_NAME,
 		COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE),
 		T10.STORE_NAME,
@@ -128,6 +130,7 @@
 		T3.ORDER_DETAIL_ID
 		ORDER BY T3.PRO_NAME
 	</select>
+	
 	<select id="selectChatPass" parameterType="java.util.HashMap"
 		resultType="java.util.HashMap">
 		SELECT *
@@ -234,7 +237,8 @@
 		WHERE
 		ORDER_ID = #{orderId}
 	</update>
-
+	
+	<!-- 수정) '주문취소' 건은 달력에 안뜨게 함-->
 	<select id="selectPickupSchedule"
 		parameterType="java.util.HashMap"
 		resultType="java.util.HashMap">
@@ -244,10 +248,11 @@
 		TO_CHAR(P.PICKUP_DATE, 'YYYY-MM-DD') AS PICKUP_END_DATE
 		FROM
 		PICKUP_TBL P
-		JOIN
-		SELLER_INFO_TBL S ON P.STORE_ADDR = S.STORE_ADDR
+		INNER JOIN ORDER_TBL O ON P.ORDER_ID = O.ORDER_ID
+		INNER JOIN SELLER_INFO_TBL S ON O.STORE_NAME = S.STORE_NAME
 		WHERE
 		S.USER_ID = #{userId}
+		AND NVL(O.STATUS, ' ') != 'X'
 	</select>
 
 	<select id="selectSellerInfo" parameterType="hashmap" resultType="hashmap">

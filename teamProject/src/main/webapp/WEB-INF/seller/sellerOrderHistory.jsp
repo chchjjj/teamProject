@@ -435,6 +435,10 @@
                                         주문 ID: {{ order.orderId }} |
                                         주문자: {{ order.userName }} |
                                         주문일: {{ formatDate(order.pickupDate) }}
+                                        <span v-if="order.status === 'X'" 
+                                            style="color: white; background-color: #ff4d4f; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 10px; font-weight: bold; display: inline-block; vertical-align: middle;">
+                                            주문취소
+                                        </span>
                                     </div>
 
                                     <div class="header-buttons">
@@ -547,6 +551,7 @@
                                 //console.log("서버 응답 데이터:", data);
                                 this.allOrders = (data.list || []).map(o => ({
                                     orderId: o.ORDER_ID,
+                                    status: o.STATUS,  // 추가) 주문취소 건 확인 (XML의 T2.STATUS 값)
                                     userName: o.USER_NAME,
                                     userPhone: o.USER_PHONE,
                                     proName: o.PRO_NAME,

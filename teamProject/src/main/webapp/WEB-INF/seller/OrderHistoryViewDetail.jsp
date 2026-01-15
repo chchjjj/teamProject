@@ -95,6 +95,7 @@
         /* 에스프레소 색상 적용 */
         color: var(--text-dark);
         font-size: 12px;
+        
     }
 
     .product-area {
@@ -279,6 +280,31 @@
         background-color: #5d4037;
         /* 에스프레소보다 약간 밝게 (호버 효과) */
     }
+
+    /* 추가) 주문상태 값 넣기위한 css */
+    .detail-card {
+        position: relative; 
+        padding-top: 50px !important;
+    }
+
+    /* 딱지 디자인 */
+    .statusBadge {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 13px;
+        z-index: 10;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    /* 상태별 배경색 */
+    .status-P { background-color: #28a745; color: white; } /* 결제완료 - 초록 */
+    .status-C { background-color: #007bff; color: white; } /* 결제수락 - 파랑 */
+    .status-S { background-color: #ffc107; color: #333; }  /* 결제대기 - 노랑 */
+    .status-X { background-color: #dc3545; color: white; } /* 주문취소 - 빨강 */
 </style>
     
 </head>
@@ -307,6 +333,12 @@
                 </div>
 
                 <div v-else-if="orderDetail" class="detail-card">
+                    <span class="statusBadge" :class="'status-' + orderDetail.status">
+                        <span v-if="orderDetail.status==='P'">결제 완료</span>
+                        <span v-else-if="orderDetail.status==='C'">결제 수락</span>
+                        <span v-else-if="orderDetail.status==='S'">결제 대기</span>
+                        <span v-else-if="orderDetail.status==='X'">주문 취소</span>
+                    </span>
                     <div class="order-header">
                         주문 ID: [[ orderDetail.orderId ]] | 주문자: [[
                         orderDetail.userName ]] | 픽업일: [[
@@ -369,6 +401,10 @@
                     </div>
 
                     <div class="button-group">
+                        <button class="action-button" @click="fnAlert">
+                            상태 변경
+                        </button>
+
                         <button class="action-button option-add-button" 
                         @click="goToOptionAdd(orderDetail.orderId)">
                             옵션 추가
@@ -426,6 +462,7 @@
 
                             this.orderDetail = {
                                 orderId: od.ORDER_ID,
+                                status: od.STATUS, // 추가) 주문상태값 넣기 위함
                                 userName: od.USER_NAME || od.STORE_NAME || '-',
                                 proName: od.PRO_NAME || '-',
                                 // 쿼리에서 별칭을 ORDER_OR_PICKUP_DATE로 사용했으므로 변경
@@ -511,7 +548,16 @@
 
                 formatNumber(number) {
                     return number != null ? Number(number).toLocaleString() : '0';
-                } // 마지막 함수이므로 쉼표 불필요
+                },
+
+
+                // 추가) '상태 변경' 버튼 - 원래 준비중/준비완료/픽업완료 이런거 하려했는데 일단 버튼만 구현
+                fnAlert (){
+                    alert("해당 내용은 구현중입니다.");
+                }
+
+
+
             }, // <--- methods 객체 종료
             mounted() {
                 this.fnDetail();
