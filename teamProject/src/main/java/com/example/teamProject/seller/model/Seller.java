@@ -30,6 +30,13 @@ public class Seller {
 	private Date udate; // UDATE
 	private String orderId;
 	private String chatYN;
+	
+	
+	private int sellerImgNum;
+	private String fileuse;
+	private String filename;
+	private String fileorgname;
+	private String fileetc;
 
 	private String orderMonth; // YYYY-MM 형식, ORDER_TBL 기준
 	private Integer orderCount; // 월별 주문 건수
@@ -109,4 +116,6 @@ public class Seller {
 
 	private String proType = "케이크";
 
+	
+	
 }

@@ -165,7 +165,7 @@
                 }
             }
 
-            <style>.image-preview {
+            .image-preview {
                 display: flex;
                 flex-wrap: wrap;
                 gap: 10px;

@@ -329,26 +329,70 @@ public HashMap<String, Object> getSellerInfo(HashMap<String, Object> map) {
 
 
 
-//판매자 정보 수정
+//판매자 정보 수정 (기본 정보 + 프로필/배너 이미지)
 @Transactional
 public HashMap<String, Object> updateSellerInfo(HashMap<String, Object> map) {
- HashMap<String, Object> resultMap = new HashMap<>();
- try {
-     int result = sellerMapper.updateSellerInfo(map);
 
-     if (result > 0) {
-         resultMap.put("result", "success");
-     } else {
+ HashMap<String, Object> resultMap = new HashMap<>();
+
+ try {
+     // ===============================
+     // 1. 기본 판매자 정보 업데이트
+     // ===============================
+     int updateCnt = sellerMapper.updateSellerInfo(map);
+
+     if (updateCnt <= 0) {
          resultMap.put("result", "fail");
-         resultMap.put("message", "수정할 데이터가 없습니다.");
+         resultMap.put("message", "수정할 판매자 정보가 없습니다.");
+         return resultMap;
      }
+
+     // ===============================
+     // 2. 프로필 이미지 처리
+     // ===============================
+     if (map.get("profileFileName") != null) {
+
+         map.put("fileUse", "프로필");
+
+         int profileCnt = sellerMapper.selectSellerImgCount(map);
+
+         if (profileCnt > 0) {
+             sellerMapper.updateSellerImg(map);
+         } else {
+             sellerMapper.insertSellerImg(map);
+         }
+     }
+
+     // ===============================
+     // 3. 배너 이미지 처리
+     // ===============================
+     if (map.get("bannerFileName") != null) {
+
+         map.put("fileUse", "배너");
+
+         int bannerCnt = sellerMapper.selectSellerImgCount(map);
+
+         if (bannerCnt > 0) {
+             sellerMapper.updateSellerImg(map);
+         } else {
+             sellerMapper.insertSellerImg(map);
+         }
+     }
+
+     // ===============================
+     // 4. 정상 종료
+     // ===============================
+     resultMap.put("result", "success");
+
  } catch (Exception e) {
+     // ❗ 예외 발생 시 전체 롤백
      e.printStackTrace();
-     resultMap.put("result", "error");
-     resultMap.put("message", "판매자 정보 수정 중 오류 발생: " + e.getMessage());
+     throw e; // @Transactional 때문에 반드시 throw
  }
+
  return resultMap;
 }
+
 
 public HashMap<String, Object> getQnAListByProNo(HashMap<String, Object> map) {
     HashMap<String, Object> resultMap = new HashMap<String, Object>();
