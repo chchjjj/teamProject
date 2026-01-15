@@ -2,7 +2,7 @@
 > 소비자도 판매자도 편리하게 이용하는 디저트 중개 플랫폼!
 ***
 <p align="center">
-<img src="https://github.com/chchjjj/teamProject/blob/develop/mainPage.JPG" width="80%">
+<img src="https://github.com/chchjjj/teamProject/blob/develop/newmainPage.JPG" width="80%">
 </p>
 
 ***
