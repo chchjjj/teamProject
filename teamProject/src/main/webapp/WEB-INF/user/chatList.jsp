@@ -160,7 +160,7 @@
                     fnchatList() {
                         let self = this;
                         $.ajax({
-                            url: "/user/chat.dox?t",
+                            url: "/user/chat.dox",
                             dataType: "json",
                             type: "POST",
                             data: { userId: self.userId },
