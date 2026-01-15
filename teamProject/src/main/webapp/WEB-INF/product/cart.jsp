@@ -23,7 +23,7 @@
    상단 필터
 ========================= */
             .chat-filter-container {
-                margin: 24px 0 32px;
+                margin: 0px 0 32px;
                 text-align: center;
             }
 
@@ -289,7 +289,32 @@
                 color: #666;
                 line-height: 1.6;
             }
-            
+
+            .button-group {
+                display: flex;
+                justify-content: space-between;
+                /* 양 끝 정렬 */
+                align-items: center;
+                /* margin-top: 20px; */
+            }
+
+            .btn-delete {
+                background-color: #f0f0f0;
+                color: #555;
+                padding: 10px 16px;
+                border-radius: 4px;
+                border: none;
+                cursor: pointer;
+            }
+
+            .btn-order {
+                background-color: #F4C9D6;
+                color: #000;
+                padding: 10px 16px;
+                border-radius: 4px;
+                border: none;
+                cursor: pointer;
+            }
         </style>
     </head>
 
@@ -332,6 +357,31 @@
 
                         <div class="product-info-area">
                             <div class="product-selection-section">
+                                <!-- 채팅 신청 주문 없음 메시지 -->
+                                <!-- 채팅 신청 주문 없음 (장바구니가 비어있지 않을 때만) -->
+                                <!-- ✅ 필터 결과 없음 (Y / N 통합) -->
+                                <div v-if="groupedCartList.length > 0
+        && filteredCartList.length === 0" class="empty-cart-message">
+                                    <div class="empty-cart-box">
+                                        <div class="empty-cart-icon">
+                                            {{ chatYnFilter === 'Y' ? '💬' : '📭' }}
+                                        </div>
+
+                                        <p class="empty-cart-title">
+                                            {{ chatYnFilter === 'Y'
+                                            ? '채팅 신청 주문이 존재하지 않습니다.'
+                                            : '채팅 미신청 주문이 존재하지 않습니다.' }}
+                                        </p>
+
+                                        <p class="empty-cart-desc">
+                                            {{ chatYnFilter === 'Y'
+                                            ? '채팅을 신청한 장바구니가 없습니다.'
+                                            : '채팅을 신청하지 않은 장바구니가 없습니다.' }}
+                                        </p>
+                                    </div>
+                                </div>
+
+
 
                                 <label v-for="(group, groupIndex) in filteredCartList" :key="group.cartId"
                                     class="product-card" :class="{'selected-product': groupIndex === 0}">
@@ -428,12 +478,13 @@
                                             </p>
                                         </div>
                                     </div>
-
-                                    <div class="order-button-container">
-                                        <button class="order-button" @click="fnAllRemove">삭제하기</button>
-                                    </div>
-                                    <div class="order-button-container">
-                                        <button class="order-button" @click="fnBuy()">주문하기</button>
+                                    <div class="button-group">
+                                        <div class="order-button-container">
+                                            <button class="order-button" @click="fnAllRemove">❌ 삭제하기</button>
+                                        </div>
+                                        <div class="order-button-container">
+                                            <button class="order-button" @click="fnBuy()">🛒 주문하기</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
