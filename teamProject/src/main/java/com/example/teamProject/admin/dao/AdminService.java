@@ -136,15 +136,34 @@ public class AdminService {
 		}
 		
 		public HashMap<String, Object> SelectSeller(HashMap<String, Object> map) {
-			// TODO Auto-generated method stub
-			
-			HashMap<String, Object> resultMap = new HashMap<String, Object>();
-			
-			Admin seller= adminMapper.sellerSelect(map);	
-			
-			resultMap.put("seller",seller);
-			resultMap.put("result","success");
-			return resultMap;
+		    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		    
+		    Admin seller = adminMapper.sellerSelect(map);
+		    
+		    if (seller != null && seller.getFilepath() != null && seller.getFilename() != null) {
+		        String filepath = seller.getFilepath();
+		        String filename = seller.getFilename();
+		        
+		        // ⭐ "img-seller/" 부분만 추출
+		        if (filepath.contains("img-seller/")) {
+		            // "67 사업자등록증 img-seller/" → "img-seller/"
+		            filepath = "img-seller/";
+		        }
+		        
+		        // 웹 경로 생성
+		        String imgPath = "/" + filepath + filename;
+		        imgPath = imgPath.replace("//", "/");
+		        
+		        seller.setImgPath(imgPath);
+		        
+		        System.out.println("원본 filepath: " + seller.getFilepath());
+		        System.out.println("정리된 filepath: " + filepath);
+		        System.out.println("최종 imgPath: " + imgPath);
+		    }
+		    
+		    resultMap.put("seller", seller);
+		    resultMap.put("result", "success");
+		    return resultMap;
 		}
 		
 		// 입점신청자 (판매자) 업데이트
@@ -198,6 +217,7 @@ public class AdminService {
 			 return resultMap;
 					
 		}
+		//membership 취소
 		
 		//4.매출관리
 		public HashMap<String, Object> SelectSalesTrends(HashMap<String, Object> map) {
