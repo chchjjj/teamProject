@@ -192,8 +192,8 @@
                                 <th><input type="checkbox" @click="fnSelectAll"></th>
                                 <th>가게 번호</th>
                                 <th>가게 이름</th>
-                                <th>소유자 사용자 아이디</th>
                                 <th>사업자 번호</th>
+                                <th>소유자 사용자 아이디</th>
                                 <th>가게 주소</th>
                                 <th>입점 승인여부</th>
                                 <th>가입일자</th>

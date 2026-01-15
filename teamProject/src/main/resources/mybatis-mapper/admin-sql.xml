@@ -151,13 +151,44 @@
 	    </if>
 	</select>
 	
-	<!--판매자 상세-->
+	<!--판매자 상세 - 이미지 포함-->
 	<select id="sellerSelect" parameterType="hashmap" resultType="com.example.teamProject.admin.model.Admin">
-		SELECT * FROM USER_TBL U
-		LEFT JOIN
-		SELLER_INFO_TBL S
-		ON S.USER_ID=U.USER_ID
-		WHERE STORE_ID = #{storeId}
+	    SELECT 
+	        U.USER_ID,
+	        U.USER_NAME,
+	        U.EMAIL,
+	        U.USER_ADDR,
+	        U.PHONE,
+	        U.ROLE,
+	        U.USER_STATUS,
+	        U.JOIN_CDATE,
+	        S.STORE_ID,
+	        S.STORE_NAME,
+	        S.BUSINESS_NO,
+	        S.STORE_INTRO,
+	        S.DELIVERY_YN,
+	        S.IS_CHAT_ENABLED,
+	        S.CHAT_START,
+	        S.CHAT_END,
+	        S.STORE_ADDR,
+	        S.STORE_AREA,
+	        S.STORE_PASS,
+	        S.REJECT_REASON,
+	        S.GRADE_CODE,
+	        S.MEMBERSHIP,
+	        S.REG_DATE,
+	        S.PASS_DATE,
+	        S.STORE_MONTHLY_FEE,
+	        S.UDATE,
+	        IMG.FILEPATH,
+	        IMG.FILENAME,
+	        IMG.FILEORGNAME,
+	        IMG.FILEETC
+	    FROM USER_TBL U
+	    LEFT JOIN SELLER_INFO_TBL S ON S.USER_ID = U.USER_ID
+	    LEFT JOIN SELLER_IMG_TBL IMG ON IMG.STORE_ID = S.STORE_ID 
+	        AND IMG.FILEUSE = '사업자등록증'
+	    WHERE S.STORE_ID = #{storeId}
 	</select>
 	
 	<!--판매자 정보 고치기-->

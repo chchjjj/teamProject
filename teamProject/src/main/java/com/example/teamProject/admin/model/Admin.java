@@ -135,6 +135,49 @@ public class Admin {
     //판매자별 월 판매량
     private double totalNet;
     
+    // 파일 업로드 관련 필드
+    private String filepath;      // 파일 경로
+    private String filename;      // 파일명
+    private String fileorgname;   // 원본 파일명
+    private String fileetc;       // 확장자
+    private String imgPath;       // 조합된 이미지 경로
+    
+    // Getter and Setter
+    public String getFilepath() {
+        return filepath;
+    }
+    public void setFilepath(String filepath) {
+        this.filepath = filepath;
+    }
+    
+    public String getFilename() {
+        return filename;
+    }
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+    
+    public String getFileorgname() {
+        return fileorgname;
+    }
+    public void setFileorgname(String fileorgname) {
+        this.fileorgname = fileorgname;
+    }
+    
+    public String getFileetc() {
+        return fileetc;
+    }
+    public void setFileetc(String fileetc) {
+        this.fileetc = fileetc;
+    }
+    
+    // ⭐ 추가 필요
+    public String getImgPath() {
+        return imgPath;
+    }
+    public void setImgPath(String imgPath) {
+        this.imgPath = imgPath;
+    }
 
 	
     
