@@ -998,18 +998,26 @@ public class SellerController {
 //
 //        return resultMap;
 //    }
-	//메인페이지 메세지 추가
-	@RequestMapping("/seller/unreadCount.dox") // 경로 변경
-	@ResponseBody
-	public HashMap<String, Object> getUnreadCount(@RequestParam HashMap<String, Object> map) {
-	    HashMap<String, Object> resultMap = new HashMap<>();
-	    
-	    // Mapper의 selectTotalUnreadCount 호출
-	    int count = sellerService.getTotalUnreadCount(map);
-	    
-	    resultMap.put("count", count); 
-	    return resultMap;
-	}
+	// 메인페이지 알림 카운트 (메시지 + 새 주문)
+    @RequestMapping("/seller/unreadCount.dox")
+    @ResponseBody
+    public HashMap<String, Object> getUnreadCount(@RequestParam HashMap<String, Object> map) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        
+        //  안 읽은 전체 메시지 개수 가져오기
+        int unreadCount = sellerService.getTotalUnreadCount(map);
+        
+        // 새 주문(오늘자 결제완료) 개수 가져오기
+        int newOrderCount = sellerService.getNewOrderCount(map);
+        
+ 
+        resultMap.put("count", unreadCount); // 채팅 아이콘 옆 숫자
+        
+
+        resultMap.put("hasNewOrder", newOrderCount > 0); 
+        
+        return resultMap;
+    }
 
 
 }

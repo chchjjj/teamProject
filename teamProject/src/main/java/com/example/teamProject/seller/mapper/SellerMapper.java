@@ -169,4 +169,7 @@ public interface SellerMapper {
 	 	
 	//메인페이지 카운트 
 	 int getTotalUnreadCount(HashMap<String, Object> map);
+	 
+	// 메인페이지 새 주문(오늘자 결제완료) 카운트
+	 int getNewOrderCount(HashMap<String, Object> map);
 }
