@@ -110,7 +110,7 @@
                             style="display:flex; align-items:center; gap:15px; justify-content:center; width:100%; margin-bottom:20px;">
                             <button @click="changeYear(-1)">◀</button>
                             <span style="font-size:22px; font-weight:bold;">
-                                {{ year }}年 월별 정산결과 조회
+                                {{ year }}년 월별 정산결과 조회
                             </span>
                             <button @click="changeYear(1)">▶</button>
 

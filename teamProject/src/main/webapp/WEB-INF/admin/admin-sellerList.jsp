@@ -173,8 +173,8 @@
                         <div></div>
                         <div>
                             <select v-model="pageSize" @change="fnSellerList">
-                                <option value="5">:: 5개씩 ::</option>
-                                <option value="15">:: 10개씩 ::</option>
+                                <option value="10">:: 10개씩 ::</option>
+                                <option value="15">:: 15개씩 ::</option>
                                 <option value="20">:: 20개씩 ::</option>
                             </select>
                             <select v-model="option">
@@ -198,7 +198,7 @@
                                 <th>입점 승인여부</th>
                                 <th>가입일자</th>
                                 <th>입점거절 사유</th>
-                                <th>맴버십 가입 여부 </th>
+                                <th>맴버십 가입 여부</th>
                                 <th>등록 일자</th>
                                 <th v-if="flgApp===false">가게승인 일자</th>
                                 <th>수정</th>
@@ -212,6 +212,7 @@
                                     </a>
                                 </td>
                                 <td>{{seller.businessNo}}</td>
+                                <td>{{seller.userId}}</td> 
                                 <td>{{seller.storeAddr}}</td>
                                 <td>
                                     <span v-if="seller.storePass==='P'">승인</span>
@@ -228,9 +229,10 @@
                                 <td>{{seller.regDate}}</td>
                                 <td v-if="flgApp===false"><span v-if="seller.passDate">{{seller.passDate}}</span><span
                                         v-else>-</span></td>
-                                <td><button @click="fnEdit(seller.storeId,seller.userId)"><span
-                                            v-if="flgApp===true">신청내역
-                                            보기</span><span v-if="flgApp===false">수정</span></button></td>
+                                <td><button @click="fnEdit(seller.storeId,seller.userId)">
+                                        <span v-if="flgApp===true">신청내역 보기</span>
+                                        <span v-if="flgApp===false">수정</span>
+                                    </button></td>
                             </tr>
                         </table>
                         <div>
@@ -277,7 +279,7 @@
                     //paging에 관한 모든 것
                     totalRows: 0,//전체 목록의 총 행수
                     pageRangeList: [],//화면 페이징을 하는 숫자들이 이루어진 리스트
-                    pageSize: 5,//뿌렸을 때 한 페이지에 몇 행
+                    pageSize: 10,//뿌렸을 때 한 페이지에 몇 행
                     page: 1,//지금 페이지
                     pageRange: 5,//한 화면에 몇개 페이지 수 나오게 한다
                     pageNum: 0,//목록 전체를 가져오려면 합하여 몇 페지
@@ -372,7 +374,7 @@
                 fnSellerInfo: function (storeName, storeId) {
                     pageChange("/admin/sellerchart.do", {
                         storeName: storeName,
-                        storeId: storeId  // ⭐ Add this!
+                        storeId: storeId  
                     });
                 },
 
@@ -479,10 +481,6 @@
                         });
                     }
                 },
-
-
-
-
 
 
             }, // methods
