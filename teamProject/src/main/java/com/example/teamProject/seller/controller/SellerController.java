@@ -1,5 +1,8 @@
 package com.example.teamProject.seller.controller;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,7 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -515,10 +517,18 @@ public class SellerController {
 
 	@RequestMapping(value = "/store/update.dox", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> updateStoreInfo(@RequestParam Map<String, String> params) {
+	public Map<String, Object> updateStoreInfo(
+	        @RequestParam Map<String, String> params,
+	        @RequestParam(value = "storeProfileImg", required = false) MultipartFile storeProfileImg,
+	        @RequestParam(value = "storeBannerImg", required = false) MultipartFile storeBannerImg
+	) {
+
 	    Map<String, Object> result = new HashMap<>();
+
 	    try {
-	        // 1. 테이블 스키마에 존재하는 필드만 받도록 정리
+	        // ===============================
+	        // 1. 파라미터 추출
+	        // ===============================
 	        String userId = params.get("userId");
 	        String storeId = params.get("storeId");
 	        String storeName = params.get("storeName");
@@ -527,24 +537,73 @@ public class SellerController {
 	        String deliveryYn = params.get("deliveryYn");
 	        String chatYn = params.get("chatYn"); // DB 컬럼: IS_CHAT_ENABLED
 
-	        // 2. 핵심 WHERE 조건 필드(userId, storeId) 유효성 체크
-	        if (userId == null || userId.isEmpty() || storeId == null || storeId.isEmpty()) {
+	        // ===============================
+	        // 2. 필수 값 검증
+	        // ===============================
+	        if (userId == null || userId.isEmpty()
+	                || storeId == null || storeId.isEmpty()) {
+
 	            result.put("result", "failure");
 	            result.put("message", "필수 정보(사용자 ID 또는 가게 ID)가 누락되었습니다.");
 	            return result;
 	        }
 
-	        // 3. MyBatis 전달용 Map 생성, null 값 처리
+	        // ===============================
+	        // 3. MyBatis 전달용 Map 생성
+	        // ===============================
 	        Map<String, Object> paramMap = new HashMap<>();
-	        paramMap.put("storeId", Integer.parseInt(storeId)); // NUMBER 컬럼
+	        paramMap.put("storeId", Integer.parseInt(storeId)); // NUMBER
 	        paramMap.put("userId", userId);
 	        paramMap.put("storeName", storeName != null ? storeName : "");
 	        paramMap.put("storeAddr", storeAddr != null ? storeAddr : "");
 	        paramMap.put("storeIntro", storeIntro != null ? storeIntro : "");
-	        paramMap.put("deliveryYn", deliveryYn != null ? deliveryYn : "N"); // CHAR(1) 기본값 N
-	        paramMap.put("isChatEnabled", chatYn != null ? chatYn : "N");      // CHAR(1) 기본값 N
+	        paramMap.put("deliveryYn", deliveryYn != null ? deliveryYn : "N");
+	        paramMap.put("isChatEnabled", chatYn != null ? chatYn : "N");
 
-	        // 4. Service 호출
+	        // ===============================
+	        // 4. 이미지 저장 처리
+	        // ===============================
+	        String uploadDir = "C:/img-product/";
+	        Files.createDirectories(Paths.get(uploadDir));
+
+
+	        // ▶ 가게 프로필 이미지
+	        if (storeProfileImg != null && !storeProfileImg.isEmpty()) {
+
+	            String orgName = storeProfileImg.getOriginalFilename();
+	            String saveName = System.currentTimeMillis() + "_" + orgName;
+
+	            File file = new File(uploadDir + saveName);
+	            storeProfileImg.transferTo(file);
+
+	            paramMap.put("profileFileName", saveName);   // Service 조건용
+	            paramMap.put("filePath", "/img-product/");
+	            paramMap.put("fileName", saveName);
+	            paramMap.put("fileOrgName", orgName);
+	            paramMap.put("fileEtc", "image");
+	        }
+
+
+	        // ▶ 가게 배너 이미지
+	        if (storeBannerImg != null && !storeBannerImg.isEmpty()) {
+
+	            String orgName = storeBannerImg.getOriginalFilename();
+	            String saveName = System.currentTimeMillis() + "_" + orgName;
+
+	            File file = new File(uploadDir + saveName);
+	            storeBannerImg.transferTo(file);
+
+	            paramMap.put("bannerFileName", saveName);
+	            paramMap.put("filePath", "/img-product/");
+	            paramMap.put("fileName", saveName);
+	            paramMap.put("fileOrgName", orgName);
+	            paramMap.put("fileEtc", "image");
+	        }
+
+
+	        // ===============================
+	        // 5. 서비스 호출
+	        // ===============================
 	        boolean isUpdated = sellerService.updateStoreInfo(paramMap);
 
 	        if (isUpdated) {
@@ -554,17 +613,20 @@ public class SellerController {
 	            result.put("message", "정보 수정에 실패했습니다. (가게 ID 및 사용자 ID 확인 필요)");
 	        }
 
-	    } catch (NumberFormatException nfe) {
-	        nfe.printStackTrace();
+	    } catch (NumberFormatException e) {
+	        e.printStackTrace();
 	        result.put("result", "failure");
 	        result.put("message", "STORE_ID는 숫자여야 합니다.");
+
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        result.put("result", "failure");
 	        result.put("message", "서버 오류가 발생했습니다. 로그를 확인하세요.");
 	    }
+
 	    return result;
 	}
+
 
 
 	

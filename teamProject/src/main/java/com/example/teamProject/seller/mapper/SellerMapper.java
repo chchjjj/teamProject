@@ -73,8 +73,16 @@ public interface SellerMapper {
 	//가게 정보 가져오기
 	Map<String, Object> selectStoreInfo(String userId);
 	//가게 정보 업데이트
+	int insertSellerImage(Map<String, Object> paramMap);
+	List<Map<String, Object>> selectSellerImages(int storeId);
+	// 특정 가게 + 용도(프로필/배너) 이미지 개수 조회
+	int selectSellerImgCount(HashMap<String, Object> map);
 
-	
+	// 기존 이미지 정보 수정
+	int updateSellerImg(Map<String, Object> paramMap);
+
+	// 이미지 신규 등록
+	int insertSellerImg(Map<String, Object> paramMap);
 	
 	//  제품 등록
     void registerProduct(Seller seller, MultipartFile thumbnailFile, List<MultipartFile> detailFiles, MultipartFile longFile) throws Exception;

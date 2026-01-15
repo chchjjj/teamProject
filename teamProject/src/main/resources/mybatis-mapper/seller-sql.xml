@@ -306,23 +306,74 @@
 			</if> UDATE = SYSDATE </set> WHERE
 		USER_ID = #{userId} </update>
 
-	<!-- 판매자 정보 수정 -->
-	<update id="updateSellerInfo" parameterType="hashmap"> UPDATE
-		SELLER_INFO_TBL <set>
-			<if test="storeName != null and storeName != ''">
-				STORE_NAME = #{storeName},
-			</if>
-            <if
-				test="storeIntro != null and storeIntro != ''">
-				STORE_INTRO = #{storeIntro},
-			</if>
-            <if
-				test="storeAddr != null and storeAddr != ''">
-				STORE_ADDR = #{storeAddr},
-			</if> DELIVERY_YN =
-		#{deliveryYN}, IS_CHAT_ENABLED = #{isChatEnabled}, CHAT_START =
-		#{chatStart}, CHAT_END = #{chatEnd}, MEMBERSHIP = #{membership}, UDATE =
-		SYSDATE </set> WHERE USER_ID = #{userId} </update>
+
+	<!-- 판매자 정보 수정 (이미지 제외) -->
+	<update id="updateSellerInfo" parameterType="hashmap">
+	    UPDATE SELLER_INFO_TBL
+	    <set>
+	        <if test="storeName != null and storeName != ''">
+	            STORE_NAME = #{storeName},
+	        </if>
+	
+	        <if test="storeIntro != null and storeIntro != ''">
+	            STORE_INTRO = #{storeIntro},
+	        </if>
+	
+	        <if test="storeAddr != null and storeAddr != ''">
+	            STORE_ADDR = #{storeAddr},
+	        </if>
+	
+	        DELIVERY_YN = #{deliveryYn},
+	        IS_CHAT_ENABLED = #{isChatEnabled},
+	        CHAT_START = #{chatStart},
+	        CHAT_END = #{chatEnd},
+	        MEMBERSHIP = #{membership},
+	        UDATE = SYSDATE
+	    </set>
+	    WHERE USER_ID = #{userId}
+	</update>
+	
+	<!--기존 이미지 존재 여부 조회-->
+	<select id="selectSellerImgCount" parameterType="hashmap" resultType="int">
+	    SELECT COUNT(*)
+	    FROM SELLER_IMG_TBL
+	    WHERE STORE_ID = #{storeId}
+	      AND FILEUSE = #{fileUse}
+	</select>
+	
+	<!--이미지 INSERT-->
+	<insert id="insertSellerImg" parameterType="hashmap">
+	    INSERT INTO SELLER_IMG_TBL (
+	        SELLER_IMG_NUM,
+	        STORE_ID,
+	        FILEUSE,
+	        FILEPATH,
+	        FILENAME,
+	        FILEORGNAME,
+	        FILEETC
+	    ) VALUES (
+	        SEQ_SELLER_IMG_NUM.NEXTVAL,
+	        #{storeId},
+	        #{fileUse},
+	        #{filePath},
+	        #{fileName},
+	        #{fileOrgName},
+	        #{fileEtc}
+	    )
+	</insert>
+
+	<!--이미지 update-->
+	<update id="updateSellerImg" parameterType="hashmap">
+	    UPDATE SELLER_IMG_TBL
+	    SET
+	        FILEPATH = #{filePath},
+	        FILENAME = #{fileName},
+	        FILEORGNAME = #{fileOrgName},
+	        FILEETC = #{fileEtc}
+	    WHERE STORE_ID = #{storeId}
+	      AND FILEUSE = #{fileUse}
+	</update>
+
 
 	<select id="selectQnA" parameterType="string" resultType="hashmap">
 		SELECT
