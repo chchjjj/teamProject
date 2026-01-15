@@ -226,16 +226,21 @@ public class SellerService {
 	        }
 	    }
 
-	    public void updateMessageReadStatus(Long orderId, String readerId) {
+	    public void updateMessageReadStatus(HashMap<String, Object> map) {
 	        try {
-	            System.out.println("DEBUG: [ChatService] 메시지 읽음 처리 시도. Order ID: " + orderId + ", Reader ID: " + readerId);
-	            sellerMapper.updateMessageReadStatus(orderId, readerId);
+	            System.out.println("DEBUG: [ChatService] 메시지 읽음 처리 시도. 데이터: " + map);
+	            
+	            // 이미 컨트롤러에서 map에 "orderId"와 "userId"를 잘 담아 보냈으므로 
+	            // 서비스에서는 가공 없이 바로 매퍼로 전달만 하면 됩니다.
+	            sellerMapper.updateMessageReadStatus(map);
+	            
 	            System.out.println("DEBUG: [ChatService] 메시지 읽음 처리 성공.");
 	        } catch (Exception e) {
-	            System.err.println("ERROR: [ChatService] 메시지 읽음 처리 중 오류 발생 - Order ID: " + orderId);
+	            System.err.println("ERROR: [ChatService] 메시지 읽음 처리 중 오류 발생");
 	            e.printStackTrace();
 	        }
 	    }
+	    
 public HashMap<String, Object> selectReviewList(HashMap<String, Object> param) {
 	        
 	        HashMap<String, Object> resultMap = new HashMap<>();
@@ -804,5 +809,30 @@ public int getTotalUnreadCount(HashMap<String, Object> map) {
 // 오늘 들어온 새 주문 카운트
 public int getNewOrderCount(HashMap<String, Object> map) {
  return sellerMapper.getNewOrderCount(map);
+}
+
+//주문 상태 업데이트 (배달/픽업 공용 버튼 처리)
+@Transactional(rollbackFor = Exception.class)
+public HashMap<String, Object> updateOrderStatus(HashMap<String, Object> map) {
+ HashMap<String, Object> resultMap = new HashMap<>();
+ try {
+     // 1. 매퍼 호출 (주문 상태 UPDATE 실행)
+     int updatedRows = sellerMapper.updateOrderStatus(map);
+     
+     if (updatedRows > 0) {
+         resultMap.put("status", "success");
+         System.out.println("LOG: [Service] 주문 상태 변경 성공 - ORDER_ID: " + map.get("orderId") + ", NEW_STATUS: " + map.get("status"));
+     } else {
+         resultMap.put("status", "fail");
+         resultMap.put("message", "변경할 주문 데이터가 존재하지 않습니다.");
+     }
+ } catch (Exception e) {
+     e.printStackTrace();
+     // 롤백 유도를 위해 예외를 다시 던지거나, 실패 메시지를 반환합니다.
+     resultMap.put("status", "error");
+     resultMap.put("message", "상태 변경 중 오류 발생: " + e.getMessage());
+     throw new RuntimeException(e); // 트랜잭션 롤백 보장
+ }
+ return resultMap;
 }
 }
