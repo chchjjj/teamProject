@@ -274,7 +274,7 @@ ORDER BY R.CDATETIME DESC
 	<update id="unreadToZeroUpdate" parameterType="hashmap">
 		UPDATE CHAT_MSG_TBL
 		SET IS_READ='Y'
-		WHERE USER_ID!=#{userId} AND ORDER_ID=#{orderId}
+		WHERE USER_ID!=#{userId} AND ORDER_ID=#{orderId} AND IS_READ='N'
 	</update>	
 	
 	<!--정보 수정-->

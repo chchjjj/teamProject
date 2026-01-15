@@ -56,7 +56,7 @@
                                     <span v-if="totalUnread > 0" class="unread-badge">{{totalUnread}}</span>
                                 </div>
                                 <img src="/img/찜.png" alt="찜 목록" @click="fnWishList"> <!--하트 그림-->
-                                
+
                                 <img :src="userIcon" :alt="userAlt" @click="fnUserToggle"> <!--로그인/로그아웃-->
                             </div>
 
@@ -317,28 +317,81 @@
                         });
                     },
 
-                    // 안 읽은 메시지 수 가져오기 (하나로 합침)
+                    // 안 읽은 메시지 수 가져오기 
                     fnGetUnreadCount: function () {
                         let self = this;
                         if (!self.userId || self.userId === "" || self.userId === "null") return;
 
+                        // 사용자 롤 가져오기
                         $.ajax({
-                            url: "/seller/unreadCount.dox",
                             type: "POST",
+                            url: "/main/userInfo.dox",
                             data: { userId: self.userId },
+                            dataType: "json",
                             success: function (data) {
-                                // 1. 안 읽은 메시지 숫자 업데이트 (오른쪽 숫자)
-                                self.totalUnread = data.count || 0;
+                                const role = data.info.role;
 
-                                // 2. 새 주문 알림 여부 업데이트 (왼쪽 NEW)
-                                // 서버(Controller)에서 data.hasNewOrder 라는 이름으로 true/false를 보내줘야 합니다.
-                                self.isNewOrder = data.hasNewOrder || false;
+                                if (role === "C") {
+                                    // 구매자쪽 안읽음
+                                    $.ajax({
+                                        url: "/user/chat.dox",
+                                        type: "POST",
+                                        data: { userId: self.userId },
+                                        success: function (chatData) {
+                                            let totalUnread = 0;
+                                            //구매자의 각 주문의 안읽음을 합함
+                                            if (chatData.chatList && chatData.chatList.length > 0) {
+                                                chatData.chatList.forEach(chat => {
+                                                    totalUnread += (chat.unreadCount || 0);
+                                                });
+                                            }
+                                            self.totalUnread = totalUnread;
+                                        },
+                                        error: function () {
+                                            console.log("구매자 알림 개수를 가져오는데 실패했습니다.");
+                                        }
+                                    });
+                                } else if (role === "S") {
+                                    // 판매자 쪽 안읽음
+                                    $.ajax({
+                                        url: "/seller/unreadCount.dox",
+                                        type: "POST",
+                                        data: { userId: self.userId },
+                                        success: function (sellerData) {
+                                            self.totalUnread = sellerData.count || 0;
+                                            self.isNewOrder = sellerData.hasNewOrder || false;
+                                        },
+                                        error: function () {
+                                            console.log("판매자 알림 개수를 가져오는데 실패했습니다.");
+                                        }
+                                    });
+                                }
                             },
                             error: function () {
-                                console.log("알림 개수를 가져오는데 실패했습니다.");
+                                console.log("사용자 권한을 확인하는데 실패했습니다.");
                             }
                         });
                     },
+
+                    // // 안 읽은 메시지 수 가져오기 (user 쪽)
+                    // fnUserGetUnreadCount: function () {
+                    //     let self = this;
+                    //     if (!self.userId || self.userId === "" || self.userId === "null") return;
+
+                    //     $.ajax({
+                    //         url: "/user/chat.dox",
+                    //         type: "POST",
+                    //         data: { userId: self.userId },
+                    //         success: function (data) {
+                    //             // 1. 안 읽은 메시지 숫자 업데이트 (오른쪽 숫자)
+                    //             self.totalUnread = data.unreadCount || 0;
+
+                    //         },
+                    //         error: function () {
+                    //             console.log("알림 개수를 가져오는데 실패했습니다.");
+                    //         }
+                    //     });
+                    // },
 
                 }, // methods
                 mounted() {
@@ -349,6 +402,7 @@
                     // 30초마다 한 번씩 새 메시지 있는지 확인 (폴링)
                     if (self.userId) {
                         self.fnGetUnreadCount(); // 페이지 로드 시 즉시 실행
+
 
                         setInterval(() => {
                             self.fnGetUnreadCount();
