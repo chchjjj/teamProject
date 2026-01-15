@@ -138,7 +138,7 @@
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
-                
+
                 /* 핵심 */
             }
 
@@ -178,6 +178,30 @@
                 border-radius: 50%;
                 width: 32px;
                 height: 32px;
+            }
+
+            .review-img-wrapper {
+                width: 120px;
+                height: 120px;
+                border-radius: 8px;
+                overflow: hidden;
+                cursor: pointer;
+                border: 1px solid #ddd;
+                flex-shrink: 0;
+
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background: #f8f8f8;
+            }
+
+            .review-img-wrapper.empty {
+                cursor: default;
+            }
+
+            .no-image-text {
+                font-size: 13px;
+                color: #999;
             }
         </style>
     </head>
@@ -236,14 +260,15 @@
                             </div>
                             <div v-else class="review-block" v-for="item in reviewList">
                                 <div class="review-photo-area">
-                                    <div v-if="item.imgPath" class="review-img-wrapper"
-                                        @click="openImage(item.imgPath)">
-                                        <img :src="item.imgPath" alt="리뷰 이미지" />
-                                    </div>
-                                    <div v-else>
-                                        이미지 없음
+                                    <div class="review-img-wrapper" :class="{ empty: !item.imgPath }"
+                                        @click="item.imgPath && openImage(item.imgPath)">
+
+                                        <img v-if="item.imgPath" :src="item.imgPath" alt="리뷰 이미지" />
+
+                                        <span v-else class="no-image-text">이미지 없음</span>
                                     </div>
                                 </div>
+
 
 
                                 <div class="review-content-area">
