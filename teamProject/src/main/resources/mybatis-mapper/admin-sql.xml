@@ -193,16 +193,17 @@
 	
 	<!--판매자 정보 고치기-->
 	<update id="sellerUpdate" parameterType="hashmap">
-		UPDATE SELLER_INFO_TBL 
-		SET 
-			STORE_NAME=#{storeName},
-			STORE_ADDR=#{storeAddr},
-			STORE_PASS=#{storePass},
-			<if test="rejectReason != '' and rejectReason != null">
-				REJECT_REASON=#{rejectReason},
-			</if>
-			MEMBERSHIP=#{membership}
-		WHERE STORE_ID=#{storeId}
+	    UPDATE SELLER_INFO_TBL
+	    <set>
+	        STORE_NAME = #{storeName},
+	        STORE_ADDR = #{storeAddr},
+	        STORE_PASS = #{storePass},
+	        <if test="rejectReason != null and rejectReason != ''">
+	            REJECT_REASON = #{rejectReason},
+	        </if>
+	        MEMBERSHIP = #{membership}
+	    </set>
+	    WHERE STORE_ID = #{storeId}
 	</update>
 	
 	<!--입점 신청 처리-->
@@ -211,6 +212,8 @@
 		SET STORE_PASS=#{storePass}
 		WHERE STORE_ID=#{storeId}
 	</update>
+	
+	<!---->
 	
 	<update id="userRoleUpdate" parameterType="hashmap">
 	    UPDATE USER_TBL
