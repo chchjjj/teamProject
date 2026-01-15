@@ -32,7 +32,7 @@
 	
 	<delete id="deleteCartList" parameterType="hashmap">
 		DELETE FROM CART_TBL
-		WHERE CART_NO IN
+		WHERE CART_ID IN
 		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
 			#{item}
 		</foreach>
