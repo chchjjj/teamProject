@@ -270,6 +270,7 @@
         },
         
         data() {
+            //now를 정의
             const now = new Date();
             
             return {
