@@ -800,4 +800,9 @@ public HashMap<String, Object> productUpdate(HashMap<String, Object> map) throws
 public int getTotalUnreadCount(HashMap<String, Object> map) {
     return sellerMapper.getTotalUnreadCount(map);
 }
+
+// 오늘 들어온 새 주문 카운트
+public int getNewOrderCount(HashMap<String, Object> map) {
+ return sellerMapper.getNewOrderCount(map);
+}
 }

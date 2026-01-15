@@ -834,3 +834,17 @@ ul {
         padding: 2px;
         line-height: 1;
     }
+
+    /* 새로운 주문 알림 (왼쪽) */
+.new-badge {
+    position: absolute;
+    top: -5px;
+    left: -15px; /* 왼쪽으로 배치 */
+    background-color: #ff9800; /* 오렌지색 계열 (구분용) */
+    color: white;
+    padding: 2px 4px;
+    font-size: 8px;
+    font-weight: bold;
+    border-radius: 4px;
+    /* animation: blink 1s infinite; 깜빡임 효과 추가 (선택사항) */
+}

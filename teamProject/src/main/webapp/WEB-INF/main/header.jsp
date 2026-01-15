@@ -48,11 +48,15 @@
                                 </button>
                             </div>
                             <div class="user-menu">
-                                <img src="/img/찜.png" alt="찜 목록" @click="fnWishList"> <!--하트 그림-->
                                 <div style="position: relative; display: inline-block;">
-                                    <img src="/img/메세지.png" alt="메시지 목록" @click="fnChatList">
+                                    <span v-if="isNewOrder" class="new-badge">NEW</span>
+
+                                    <img src="/img/메세지.png" alt="메시지 목록" @click="fnChatList" style="cursor:pointer;">
+
                                     <span v-if="totalUnread > 0" class="unread-badge">{{totalUnread}}</span>
                                 </div>
+                                <img src="/img/찜.png" alt="찜 목록" @click="fnWishList"> <!--하트 그림-->
+                                
                                 <img :src="userIcon" :alt="userAlt" @click="fnUserToggle"> <!--로그인/로그아웃-->
                             </div>
 
@@ -100,12 +104,13 @@
             const header = Vue.createApp({
                 data() {
                     return {
-                        // 변수 - (key : value)                    
+
                         keyword: "", // 검색어
                         userId: "${sessionId}", // 로그인 했을 시 전달 받은 아이디
                         userIcon: "", // 로그인 상태에 따라 이미지 변경
                         userAlt: "",  // 로그인 상태 이미지 대체 텍스트
                         totalUnread: 0,//추가 안읽은 메세지 수
+                        isNewOrder: false, // 새로운 주문 여부 변수 추가
                     };
                 },
                 methods: {
@@ -315,7 +320,6 @@
                     // 안 읽은 메시지 수 가져오기 (하나로 합침)
                     fnGetUnreadCount: function () {
                         let self = this;
-                        // 비로그인이거나 null 문자열일 경우 차단
                         if (!self.userId || self.userId === "" || self.userId === "null") return;
 
                         $.ajax({
@@ -323,8 +327,12 @@
                             type: "POST",
                             data: { userId: self.userId },
                             success: function (data) {
-                                // 서버에서 넘어온 count 값을 totalUnread에 저장
+                                // 1. 안 읽은 메시지 숫자 업데이트 (오른쪽 숫자)
                                 self.totalUnread = data.count || 0;
+
+                                // 2. 새 주문 알림 여부 업데이트 (왼쪽 NEW)
+                                // 서버(Controller)에서 data.hasNewOrder 라는 이름으로 true/false를 보내줘야 합니다.
+                                self.isNewOrder = data.hasNewOrder || false;
                             },
                             error: function () {
                                 console.log("알림 개수를 가져오는데 실패했습니다.");

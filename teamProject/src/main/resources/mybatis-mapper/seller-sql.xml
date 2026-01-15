@@ -709,6 +709,17 @@
     AND IS_READ = 'N'      /* 읽지 않은 상태 */
     AND USER_ID != #{userId} /* 내가 보낸 메시지가 아닌 경우(상대방이 보낸 것) */
 </select>
+<!-- 새로운 주문 시 알림 -->
+<select id="getNewOrderCount" parameterType="hashmap" resultType="int">
+    SELECT COUNT(DISTINCT T1.ORDER_ID)
+    FROM ORDER_TBL T1
+    INNER JOIN ORDER_DETAIL_TBL T2 ON T1.ORDER_ID = T2.ORDER_ID 
+    INNER JOIN PRODUCT_TBL T8 ON T2.PRO_NO = T8.PRO_NO
+    INNER JOIN SELLER_INFO_TBL T10 ON T8.STORE_ID = T10.STORE_ID
+    WHERE T10.USER_ID = #{userId}
+      AND T1.STATUS = 'P'
+      AND TO_CHAR(T1.ORDER_DATE, 'YYYYMMDD') = TO_CHAR(SYSDATE, 'YYYYMMDD')
+</select>
  
 </mapper>
 
