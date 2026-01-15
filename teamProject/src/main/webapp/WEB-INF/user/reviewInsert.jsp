@@ -274,7 +274,8 @@
                         <div class="section-label">리뷰 내용</div>
                         <div class="section">
                             <div class="section-label">리뷰 이미지</div>
-                            <input type="file" @change="onFileChange" accept="image/*" multiple>
+                            <input type="file" @change="onFileChange" accept="image/*">
+
                             <div class="image-preview" v-if="images.length">
                                 <div v-for="(img, index) in images" :key="index" class="preview-item">
                                     <img :src="img.url" alt="preview" />
@@ -313,18 +314,25 @@
             methods: {
                 // 이미지 업로드
                 onFileChange(e) {
-                    const files = e.target.files;
-                    for (let i = 0; i < files.length; i++) {
-                        const file = files[i];
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                            this.images.push({ file: file, url: event.target.result });
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                    // input 초기화 (동일 파일 재선택 가능)
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    // 기존 이미지 제거 (1장만 유지)
+                    this.images = [];
+
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        this.images.push({
+                            file: file,
+                            url: event.target.result
+                        });
+                    };
+                    reader.readAsDataURL(file);
+
+                    // 동일 파일 재선택 가능
                     e.target.value = '';
                 },
+
 
                 // 이미지 삭제
                 removeImage(index) {
