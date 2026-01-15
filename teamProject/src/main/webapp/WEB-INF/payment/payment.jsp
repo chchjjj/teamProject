@@ -387,7 +387,10 @@
                     
                     <div class="item-details">
                         <div class="pro-name">
-                            <div v-for="jitem in item.groupedDetails">{{jitem.proName}}</div>
+                            <div v-for="jitem in item.groupedDetails">
+                                {{jitem.proName}}
+                                <span class="orderId">(수량 : {{jitem.quantity}} 개)</span>
+                            </div>
                             <span class="orderId">(주문번호: {{item.orderId}})</span>
                         </div>
                         
@@ -399,9 +402,6 @@
                     <div class="item-meta">
                         <div class="total-price">
                             {{item.totalPrice.toLocaleString('ko-KR')}} 원
-                        </div>
-                        <div>
-                            수량: {{item.quantity}} 개
                         </div>
                     </div>
 
