@@ -35,21 +35,32 @@ public class PaymentController {
 		// 바로 주문하는 경우(productDetail.jsp) orderId 넘겨받기
 		request.setAttribute("orderId", map.get("orderId"));
 
-		// cart.jsp에서 보낸 selectItem(JSON 문자열) 꺼내기
-		String selectItemJson = (String) map.get("orderIdList");
+		// cart.jsp에서 보낸 orderIdList(JSON 문자열) 꺼내기
+		String orderIdListJson = (String) map.get("orderIdList");
+		
+		//cart.jsp에서 보낸 selectItem(JSON 문자열) 꺼내기
+		String selectItemListJson = (String) map.get("selectItem");
 
 		// JSON → List 변환 (Gson 사용)
 		List<String> orderIdList = new ArrayList<>();
-		if (selectItemJson != null && !selectItemJson.isEmpty()) {
+		List<String> selectItem = new ArrayList<>();
+		if (orderIdListJson != null && !orderIdListJson.isEmpty()) {
 			Gson gson = new Gson();
-			orderIdList = gson.fromJson(selectItemJson, new TypeToken<List<String>>() {
+			orderIdList = gson.fromJson(orderIdListJson, new TypeToken<List<String>>() {
+			}.getType());
+		}
+		if (selectItemListJson != null && !selectItemListJson.isEmpty()) {
+			Gson gson = new Gson();
+			selectItem = gson.fromJson(selectItemListJson, new TypeToken<List<String>>() {
 			}.getType());
 		}
 
 		// JSP에서 쓸 수 있도록 model에 담기
 		model.addAttribute("orderIdList", orderIdList);
+		model.addAttribute("selectItem", selectItem);
 
 		System.out.println("cart.do에서 넘어온 orderIdList 목록: " + orderIdList);
+		System.out.println("cart.do에서 넘어온 selectItem 목록: " + selectItem);
 
 		// 결제 페이지로 이동
 		return "/payment/payment";
@@ -112,7 +123,7 @@ public class PaymentController {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 
 		// 2. Controller(.dox)에서 리스트 형태로 변경 후 map에 넣기
-		String json = map.get("cartIdList").toString();
+		String json = map.get("selectItem").toString();
 		ObjectMapper mapper = new ObjectMapper();
 		List<Object> list = mapper.readValue(json, new TypeReference<List<Object>>() {
 		});

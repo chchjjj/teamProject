@@ -466,6 +466,7 @@
             data() {
                 return {
                     // 변수 - (key : value)
+                    userId: "${sessionId}", //사용자 아이디
                     toName: "${sessionName}", //받을 사람
                     toPhone: "${sessionPhone}", //받을 사람의 휴대폰 번호
                     orderList: [], //배송 정보 확정 전 단계, ORDER_TBL + ORDER_DETAIL_TBL + ORDER_OPTION_TBL
@@ -488,8 +489,13 @@
                     selectedDate: null, // 달력 정보
                     datePicker: null,   // flatpickr 객체를 저장할 변수
 
-                    //판매자가 지정한 날짜 비활성화 기능 적용하는법
-                    disabledDates: []
+                    //판매자가 지정한 날짜 비활성화 기능 적용하는 법
+                    disabledDates: [],
+
+                    //장바구니 삭제 기능 구현
+                    selectItem: [], // 장바구니 페이지에서 선택한 장바구니 목록
+                    cartList: [], //전체 장바구니 목록
+                    groupedCartList: [], //옵션 장바구니 목록
                 };
             },
 
@@ -530,12 +536,101 @@
                     });
                 },
 
+                //장바구니 목록 조회
+                fnCart: function () {
+                    let self = this;
+                    let param = { userId: self.userId };
+                    $.ajax({
+                        url: "/product/cart.dox",
+                        dataType: "json",
+                        type: "POST",
+                        data: param,
+                        success: function (data) {
+                            self.cartList = data.list;
+                            console.log(data);
+                            self.fnGroupCartList(self.cartList);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("장바구니 로드 실패:", status, error);
+                        }
+                    });
+                },
+
+                fnGroupCartList: function (list) {
+                    const grouped = {};
+                    if (!Array.isArray(list) || list.length === 0) {
+                        this.groupedCartList = [];
+                        console.log("장바구니 목록이 비어 있거나 올바르지 않아 그룹화하지 않습니다.");
+                        return;
+                    }
+                    list.forEach(item => {
+                        const cartId = item.cartId || item.CART_ID;
+                        if (!cartId) return;
+                        const defPrice = Number(item.defPrice || item.DEF_PRICE || 0);
+                        const subOptPrice = Number(item.subOptPrice || item.SUB_OPT_PRICE || 0);
+                        const optQty = Number(item.cartOptQuantity || item.CART_OPT_QUANTITY || 1);
+                        const cartQuantity = Number(item.cartQuantity || item.CART_QUANTITY || 1);
+                        const deliveryFee = Number(item.deliveryFee || item.DELIVERY_FEE || 0); //배송비
+                        const deliveryType = item.deliveryType || item.DELIVERY_TYPE || "기본배송";
+                        if (!grouped[cartId]) {
+                            grouped[cartId] = {
+                                userName: item.userName,
+                                phone: item.phone,
+                                userAddr: item.userAddr,
+                                storeAddr: item.storeAddr,
+
+                                cartId: cartId,
+                                storeName: item.storeName,
+                                storeId: item.storeId,
+                                proNo: item.proNo,
+                                proName: item.proName || item.PRO_NAME,
+                                defPrice: defPrice,
+                                options: [],
+                                totalPrice: item.defPrice,
+                                totalAddPrice: 0,
+                                itemQty: cartQuantity,
+                                cartOptQuantity: item.cartOptQuantity,
+                                letteringWord: item.letteringWord || item.LETTERING_WORD || "",
+                                chatYn: item.chatYn || item.CHAT_YN || "N",
+                                deliveryFee: deliveryFee,
+                                deliveryType: deliveryType,
+
+                                filePath: item.filePath,
+                                fileName: item.fileName
+                            };
+                        }
+                        grouped[cartId].options.push({
+                            topOpt: item.topOpt || item.TOP_OPT,
+                            subOpt: item.subOpt || item.SUB_OPT,
+                            topOptionId: item.topOptionId,
+                            subOptionId: item.subOptionId,
+                            subOptPrice: subOptPrice,
+                            cartOptQuantity: optQty,
+                        });
+
+                        if (subOptPrice > 0) {
+                            const addedAmount = subOptPrice * optQty;
+                            grouped[cartId].totalPrice += addedAmount;
+                            grouped[cartId].totalAddPrice += addedAmount;
+                            grouped[cartId].optionPrice = grouped[cartId].totalPrice - grouped[cartId].defPrice;
+
+                        }
+                    });
+                    this.groupedCartList = Object.values(grouped);
+                    for (let i = 0; i < this.groupedCartList.length; i++) {
+                        this.groupedCartList[i].totalPrice = this.groupedCartList[i].totalPrice * this.groupedCartList[i].itemQty;
+
+                    }
+                    this.groupedCartList = this.groupedCartList.slice().reverse();
+                    console.log("그룹화된 장바구니 ===>", this.groupedCartList);
+                },
+
                 //결제 성공까지 했을 때 필요 없어진 장바구니 목록을 지우는 함수
                 fnCartDelete: function(){
                     let self = this;
-                    cartIdList = JSON.stringify(self.cartIdList);
+                    selectItem = JSON.stringify(self.selectItem);
                     let param = {
-                        cartIdList : cartIdList
+                        selectItem : selectItem
                     };
                     $.ajax({
                         url: "/payment/cartRemove.dox",
@@ -543,8 +638,8 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            // console.log("장바구니 비우기");// 테스트용
-                            // console.log(data);// 테스트용
+                            console.log("장바구니 비우기");// 테스트용
+                            console.log(data);// 테스트용
                         }
                     });
                 },
@@ -693,6 +788,7 @@
                         success: function (data) {
                             if(data.result == "success"){
                                 alert("결제되었습니다!");
+                                self.fnCartDelete();
                                 location.href="/main.do";
                             } else {
                                 alert("fnPayHistory 오류가 발생했습니다!");
@@ -721,6 +817,7 @@
                         success: function (data) {
                             if(data.result == "success"){
                                 alert("결제되었습니다!");
+                                self.fnCartDelete();
                                 location.href="/main.do";
                             } else {
                                 alert(" fnDeliPayHistory 오류가 발생했습니다!");
@@ -749,6 +846,7 @@
                         success: function (data) {
                             if(data.result == "success"){
                                 alert("결제되었습니다!");
+                                self.fnCartDelete();
                                 location.href="/main.do";
                             } else {
                                 alert("fnPickPayHistory 오류가 발생했습니다!");
@@ -912,6 +1010,8 @@
                         }
                     });
                 },
+
+                
                 
             }, // methods
             mounted() {
@@ -927,13 +1027,16 @@
                 
                 //주문번호를 장바구니에서 받는 경우
                 else {
-                    let str = "${orderIdList}";
-                    self.orderIdList = JSON.parse(str); //파싱을 해줘야 문자열을 리스트로 바꿀 수 있다.
+                    let str1 = "${orderIdList}";
+                    self.orderIdList = JSON.parse(str1); //파싱을 해줘야 문자열을 리스트로 바꿀 수 있다.
                     
+                    let str2 = "${selectItem}";
+                    self.selectItem = JSON.parse(str2);
                 }
 
                 console.log("최종적으로 사용할 orderIdList 값은 => " + self.orderIdList);
                 self.fnOrderList(); //주문 목록 출력
+                self.fnCart(); // 장바구니 목록 가져오기
 
                 // 옵션 등 데이터 로드 후
                 setTimeout(() => {
