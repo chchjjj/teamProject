@@ -50,6 +50,8 @@ public interface UserMapper {
 	
 	//chatlist
 	List <User> chatListSelect(HashMap<String, Object> map);
+	//unread to zero
+	int unreadToZeroUpdate(HashMap<String, Object> map);
 	
 	
 	//userview

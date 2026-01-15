@@ -80,6 +80,7 @@ public class UserController {
 		return "/user/chatList";
 	}
 	
+	
 	@RequestMapping("/user/orderHistory.do")
 	public String orderHistory(Model model) throws Exception {
 		return "/user/orderHistory";
@@ -276,6 +277,20 @@ public class UserController {
 
 		
 		resultMap = userService.SelectChatList(map);
+		
+		System.out.println(map);
+		
+		return new Gson().toJson(resultMap);
+	}
+	
+	@RequestMapping(value = "/user/unreadToZero.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String unreadtoZero(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		
+		resultMap = userService.UpdateUnreadToZero(map);
 		
 		System.out.println(map);
 		

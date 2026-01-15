@@ -363,6 +363,21 @@ public class UserService {
 				
 	}
 	
+	//안 읽음을 0으로
+	public HashMap<String, Object> UpdateUnreadToZero(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			int cnt= userMapper.unreadToZeroUpdate(map);
+
+		    } catch (Exception e) {
+		        resultMap.put("result", "fail");
+		        System.out.println(e.getMessage());
+		    }
+		    
+		    return resultMap;
+	}
 	
 	public HashMap<String, Object> InsertReview(HashMap<String, Object> map, List<String> imagePaths) {
 	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
