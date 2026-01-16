@@ -3,32 +3,40 @@
 
 <mapper namespace="com.example.teamProject.seller.mapper.SellerMapper">
 
-	<select id="selectStoreList"
-		resultType="com.example.teamProject.seller.model.Seller">
-		SELECT
-		STORE_ID,
-		STORE_NAME,
-		-- 💡 수정: USER_ID 컬럼 추가
-		USER_ID,
-		BUSINESS_NO,
-		STORE_INTRO,
-		DELIVERY_YN,
-		IS_CHAT_ENABLED,
-		CHAT_START,
-		CHAT_END,
-		STORE_ADDR,
-		STORE_AREA,
-		STORE_PASS,
-		REJECT_REASON,
-		GRADE_CODE,
-		MEMBERSHIP,
-		REG_DATE,
-		UDATE
-		FROM SELLER_INFO_TBL
-		WHERE USER_ID = #{userId}
-		AND STORE_PASS = 'P'
-		ORDER BY STORE_ID
-	</select>
+	<select id="selectStoreList" resultType="com.example.teamProject.seller.model.Seller">
+    SELECT
+        S.STORE_ID,
+        S.STORE_NAME,
+        S.USER_ID,
+        S.BUSINESS_NO,
+        S.STORE_INTRO,
+        S.DELIVERY_YN,
+        S.IS_CHAT_ENABLED,
+        S.CHAT_START,
+        S.CHAT_END,
+        S.STORE_ADDR,
+        S.STORE_AREA,
+        S.STORE_PASS,
+        S.REJECT_REASON,
+        S.GRADE_CODE,
+        S.MEMBERSHIP,
+        S.REG_DATE,
+        S.UDATE,
+        -- 멤버십 테이블과 조인하여 실제 멤버십 상태 확인
+        CASE 
+            WHEN M.MEMBERSHIP_ID IS NOT NULL 
+                 AND M.MEMBERSHIP_STATUS = 'A' 
+                 AND M.EXPIRATION_DATE >= SYSDATE 
+            THEN 'Y'
+            ELSE 'N'
+        END AS MEMBERSHIP_YN
+    FROM SELLER_INFO_TBL S
+    LEFT JOIN MEMBERSHIP_TBL M 
+        ON S.USER_ID = M.USER_ID
+    WHERE S.USER_ID = #{userId}
+        AND S.STORE_PASS = 'P'
+    ORDER BY S.STORE_ID
+</select>
 
 
 	<select id="selectMonthlySalesByUser" parameterType="string"
@@ -43,11 +51,17 @@
 		TO_CHAR(o.ORDER_DATE, 'YYYY-MM') ORDER BY ORDER_MONTH
 	</select>
 
-	<select id="selectMonthlySales" resultType="hashmap" parameterType="hashmap">
-		SELECT TO_CHAR(o.order_date, 'MM') AS MONTH, SUM(o.total_price) AS TOTAL
-		FROM order_tbl o INNER JOIN seller_info_tbl s ON o.store_name =
-		s.store_name WHERE s.user_id = #{userId} <!-- 여기에 특정 판매자 아이디 조건 추가 --> GROUP BY TO_CHAR(o.order_date,
-		'MM') ORDER BY TO_CHAR(o.order_date, 'MM') </select>
+<select id="selectMonthlySales" resultType="hashmap" parameterType="hashmap">
+    SELECT 
+        TO_CHAR(o.ORDER_DATE, 'MM') AS MONTH, 
+        SUM(o.TOTAL_PRICE - NVL(o.DELIVERY_FEE, 0)) AS TOTAL
+    FROM ORDER_TBL o 
+    INNER JOIN SELLER_INFO_TBL s 
+        ON o.STORE_NAME = s.STORE_NAME 
+    WHERE s.USER_ID = #{userId}
+    GROUP BY TO_CHAR(o.ORDER_DATE, 'MM') 
+    ORDER BY TO_CHAR(o.ORDER_DATE, 'MM')
+</select>
 
 		<!-- 수정  댓글 카운터 -->
 	<select id="selectOrderList" parameterType="HashMap" resultType="HashMap">

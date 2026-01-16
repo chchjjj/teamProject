@@ -317,26 +317,27 @@ public class SellerController {
 	@PatchMapping("/api/seller/chat/{orderId}/read")
 	@ResponseBody
 	public ResponseEntity<String> markMessagesAsRead(@PathVariable("orderId") Long orderId,
-	        @RequestParam("readerId") String readerId) {
+			@RequestParam("readerId") String readerId) {
 
-	    System.out.println("REQUEST: [ChatController] 메시지 읽음 처리 요청 수신. Order ID: " + orderId + ", Reader ID: " + readerId);
+		System.out.println(
+				"REQUEST: [ChatController] 메시지 읽음 처리 요청 수신. Order ID: " + orderId + ", Reader ID: " + readerId);
 
-	    try {
-	        // 1. XML의 parameterType="HashMap"에 맞게 맵 생성
-	        HashMap<String, Object> map = new HashMap<>();
-	        map.put("orderId", orderId);
-	        map.put("userId", readerId); // XML에서 #{userId}라고 썼으므로 키값을 "userId"로 맞춰야 함!
+		try {
+			// 1. XML의 parameterType="HashMap"에 맞게 맵 생성
+			HashMap<String, Object> map = new HashMap<>();
+			map.put("orderId", orderId);
+			map.put("userId", readerId); // XML에서 #{userId}라고 썼으므로 키값을 "userId"로 맞춰야 함!
 
-	        // 2. 서비스 호출 시 맵을 전달
-	        sellerService.updateMessageReadStatus(map); 
-	        
-	        System.out.println("RESPONSE: [ChatController] 메시지 읽음 처리 성공.");
-	        return new ResponseEntity<>("Messages marked as read.", HttpStatus.OK);
+			// 2. 서비스 호출 시 맵을 전달
+			sellerService.updateMessageReadStatus(map);
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return new ResponseEntity<>("Failed to mark messages as read.", HttpStatus.INTERNAL_SERVER_ERROR);
-	    }
+			System.out.println("RESPONSE: [ChatController] 메시지 읽음 처리 성공.");
+			return new ResponseEntity<>("Messages marked as read.", HttpStatus.OK);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("Failed to mark messages as read.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@RequestMapping(value = "/seller/review/list.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -983,23 +984,23 @@ public class SellerController {
 
 		return resultMap;
 	}
-	
+
 	@RequestMapping(value = "/seller/updateOrderStatus.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public Map<String, Object> updateOrderStatus(@RequestParam HashMap<String, Object> map) throws Exception {
-	    HashMap<String, Object> resultMap = new HashMap<>();
+		HashMap<String, Object> resultMap = new HashMap<>();
 
-	    try {
-	        resultMap = sellerService.updateOrderStatus(map);
-	        System.out.println("LOG: [Controller] 주문 상태 변경 요청 처리 완료 - " + map);
+		try {
+			resultMap = sellerService.updateOrderStatus(map);
+			System.out.println("LOG: [Controller] 주문 상태 변경 요청 처리 완료 - " + map);
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        resultMap.put("status", "error");
-	        resultMap.put("message", "상태 변경 중 서버 오류: " + e.getMessage());
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultMap.put("status", "error");
+			resultMap.put("message", "상태 변경 중 서버 오류: " + e.getMessage());
+		}
 
-	    // Map을 직접 반환 (Spring이 자동으로 JSON 변환)
-	    return resultMap;
+		// Map을 직접 반환 (Spring이 자동으로 JSON 변환)
+		return resultMap;
 	}
 }
