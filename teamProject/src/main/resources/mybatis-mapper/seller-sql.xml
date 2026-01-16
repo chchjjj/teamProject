@@ -104,21 +104,23 @@
 
 	<select id="selectOrderDetail" parameterType="java.util.HashMap" resultType="java.util.HashMap">
     SELECT
-        T1.USER_NAME, 
-        T2.ORDER_ID, 
-        T2.STATUS, 
-        T3.PRO_NAME, 
-        COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE) AS ORDER_OR_PICKUP_DATE, 
-        T10.STORE_NAME, 
-        T2.TOTAL_PRICE, 
-        T3.PRICE AS PRODUCT_PRICE, 
-        T2.ADD_OPTION_PRICE AS MANUAL_OPTION_PRICE, 
-        T2.LETTERING_WORD, 
+        T1.USER_NAME,
+        T2.ORDER_ID,
+        T2.STATUS,
+        T2.DELIVERY_TYPE,
+        T3.PRO_NAME,
+        T11.FILEPATH || T11.FILENAME AS PRO_IMAGE_URL,  -- 이미지 경로 추가
+        COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE) AS ORDER_OR_PICKUP_DATE,
+        T10.STORE_NAME,
+        T2.TOTAL_PRICE,
+        T3.PRICE AS PRODUCT_PRICE,
+        T2.ADD_OPTION_PRICE AS MANUAL_OPTION_PRICE,
+        T2.LETTERING_WORD,
         SUM(NVL(T6.PRICE_DIFF, 0)) AS AUTO_OPTION_PRICE_DIFF,
         LISTAGG(T4.OPTION_NAME || ': ' || T5.VALUE_NAME, ', ')
             WITHIN GROUP (ORDER BY T6.ORDER_OPTION_ID) AS OPTION_DETAILS,
         T2.CHAT_YN,
-       
+
         T7.DELI_ID,
         T7.DELIVERY_STATUS,
         T7.RECEIVER_NAME,
@@ -139,22 +141,31 @@
         LEFT JOIN PRODUCT_SUB_OPTION_TBL T5 ON T6.SUB_OPTION_ID = T5.SUB_OPTION_ID
         LEFT JOIN DELIVERY_TBL T7 ON T2.ORDER_ID = T7.ORDER_ID
         LEFT JOIN PICKUP_TBL T9 ON T2.ORDER_ID = T9.ORDER_ID
+        LEFT JOIN (
+            SELECT PRO_NO, FILEPATH, FILENAME
+            FROM PRODUCT_IMG_TBL
+            WHERE FILEUSE = 'T'  -- 상위 이미지(썸네일)
+            AND ROWNUM = 1
+        ) T11 ON T8.PRO_NO = T11.PRO_NO
     WHERE
         T2.ORDER_ID = #{orderId}
     GROUP BY
         T1.USER_NAME,
         T2.ORDER_ID,
-        T2.STATUS, 
+        T2.STATUS,
+        T2.DELIVERY_TYPE,
         T3.PRO_NAME,
+        T11.FILEPATH,
+        T11.FILENAME,
         COALESCE(T9.PICKUP_DATE, T2.ORDER_DATE),
         T10.STORE_NAME,
         T2.TOTAL_PRICE,
         T2.CHAT_YN,
         T3.PRICE,
         T2.ADD_OPTION_PRICE,
-        T2.LETTERING_WORD, 
+        T2.LETTERING_WORD,
         T3.ORDER_DETAIL_ID,
-        
+
         T7.DELI_ID,
         T7.DELIVERY_STATUS,
         T7.RECEIVER_NAME,
@@ -758,13 +769,25 @@
       AND TO_CHAR(T1.ORDER_DATE, 'YYYYMMDD') = TO_CHAR(SYSDATE, 'YYYYMMDD')
 </select>
 
-<update id="updateOrderStatus">
-    UPDATE DELIVERY_TBL
-    SET 
-        DELIVERY_STATUS = #{status}, 
-        DELI_UDATETIME = SYSDATE     WHERE 
-        ORDER_ID = #{orderId}
+<update id="updateOrderStatus" parameterType="java.util.HashMap">
+    UPDATE ORDER_TBL
+    SET STATUS = #{status}
+    WHERE ORDER_ID = TO_NUMBER(#{orderId})
 </update>
+
+<update id="updateDeliveryStatus">
+    UPDATE DELIVERY_TBL
+    SET DELIVERY_STATUS = #{deliveryStatus},
+        DELI_UDATETIME = SYSDATE
+    WHERE ORDER_ID = #{orderId}
+</update>
+<!-- 픽업 상태 업데이트 (픽업 주문인 경우에만) -->
+<update id="updatePickupStatus">
+    UPDATE PICKUP_TBL
+    SET PICKUP_STATUS = #{pickupStatus},
+        PICKUP_UDATETIME = SYSDATE
+    WHERE ORDER_ID = #{orderId}
+</update>	
  
 </mapper>
 

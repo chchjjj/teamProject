@@ -811,28 +811,125 @@ public int getNewOrderCount(HashMap<String, Object> map) {
  return sellerMapper.getNewOrderCount(map);
 }
 
-//주문 상태 업데이트 (배달/픽업 공용 버튼 처리)
-@Transactional(rollbackFor = Exception.class)
+
+
+
+
 public HashMap<String, Object> updateOrderStatus(HashMap<String, Object> map) {
- HashMap<String, Object> resultMap = new HashMap<>();
- try {
-     // 1. 매퍼 호출 (주문 상태 UPDATE 실행)
-     int updatedRows = sellerMapper.updateOrderStatus(map);
-     
-     if (updatedRows > 0) {
-         resultMap.put("status", "success");
-         System.out.println("LOG: [Service] 주문 상태 변경 성공 - ORDER_ID: " + map.get("orderId") + ", NEW_STATUS: " + map.get("status"));
-     } else {
-         resultMap.put("status", "fail");
-         resultMap.put("message", "변경할 주문 데이터가 존재하지 않습니다.");
-     }
- } catch (Exception e) {
-     e.printStackTrace();
-     // 롤백 유도를 위해 예외를 다시 던지거나, 실패 메시지를 반환합니다.
-     resultMap.put("status", "error");
-     resultMap.put("message", "상태 변경 중 오류 발생: " + e.getMessage());
-     throw new RuntimeException(e); // 트랜잭션 롤백 보장
- }
- return resultMap;
+    HashMap<String, Object> resultMap = new HashMap<>();
+    
+    try {
+        System.out.println("=== updateOrderStatus 시작 ===");
+        System.out.println("받은 파라미터: " + map);
+        
+        String status = (String) map.get("status");
+        Object orderIdObj = map.get("orderId");
+        
+        // orderId를 Integer로 변환
+        Integer orderId = null;
+        if (orderIdObj != null) {
+            if (orderIdObj instanceof Integer) {
+                orderId = (Integer) orderIdObj;
+            } else if (orderIdObj instanceof String) {
+                try {
+                    orderId = Integer.parseInt((String) orderIdObj);
+                } catch (NumberFormatException e) {
+                    resultMap.put("status", "fail");
+                    resultMap.put("message", "주문번호 형식이 잘못되었습니다.");
+                    return resultMap;
+                }
+            }
+        }
+        
+        System.out.println("orderId (Integer): " + orderId);
+        System.out.println("status: " + status);
+        
+        if (orderId == null) {
+            resultMap.put("status", "fail");
+            resultMap.put("message", "주문번호가 없습니다.");
+            return resultMap;
+        }
+        
+        // map에 Integer로 다시 넣기
+        map.put("orderId", orderId);
+        
+        // 1. 주문 상태 업데이트
+        int orderUpdated = sellerMapper.updateOrderStatus(map);
+        System.out.println("주문 업데이트 결과: " + orderUpdated);
+        
+        if (orderUpdated > 0) {
+            // 2. 주문 상세 정보 조회
+            HashMap<String, Object> orderParam = new HashMap<>();
+            orderParam.put("orderId", orderId);
+            List<HashMap<String, Object>> orderDetail = sellerMapper.selectOrderDetail(orderParam);
+            
+            System.out.println("주문 상세 조회 결과: " + orderDetail);
+            
+            if (orderDetail != null && !orderDetail.isEmpty()) {
+                // DELIVERY_YN 대신 DELIVERY_TYPE 사용
+                String deliveryType = (String) orderDetail.get(0).get("DELIVERY_TYPE");
+                System.out.println("배송 타입: " + deliveryType);
+                
+                // 3. 배송 주문인 경우 (D = 배송)
+                if ("D".equals(deliveryType)) {
+                    String deliveryStatus = mapOrderStatusToDeliveryStatus(status);
+                    if (deliveryStatus != null) {
+                        HashMap<String, Object> deliveryMap = new HashMap<>();
+                        deliveryMap.put("orderId", orderId);
+                        deliveryMap.put("deliveryStatus", deliveryStatus);
+                        int deliveryUpdated = sellerMapper.updateDeliveryStatus(deliveryMap);
+                        System.out.println("배송 상태 업데이트 결과: " + deliveryUpdated);
+                    }
+                }
+                // 4. 픽업 주문인 경우 (P = 픽업)
+                else if ("P".equals(deliveryType)) {
+                    String pickupStatus = mapOrderStatusToPickupStatus(status);
+                    if (pickupStatus != null) {
+                        HashMap<String, Object> pickupMap = new HashMap<>();
+                        pickupMap.put("orderId", orderId);
+                        pickupMap.put("pickupStatus", pickupStatus);
+                        int pickupUpdated = sellerMapper.updatePickupStatus(pickupMap);
+                        System.out.println("픽업 상태 업데이트 결과: " + pickupUpdated);
+                    }
+                }
+            }
+            
+            resultMap.put("status", "success");
+            resultMap.put("message", "주문 상태가 성공적으로 변경되었습니다.");
+        } else {
+            resultMap.put("status", "fail");
+            resultMap.put("message", "주문을 찾을 수 없습니다. ORDER_ID: " + orderId);
+        }
+        
+    } catch (Exception e) {
+        e.printStackTrace();
+        resultMap.put("status", "error");
+        resultMap.put("message", "상태 변경 중 오류 발생: " + e.getMessage());
+    }
+    
+    System.out.println("=== updateOrderStatus 종료 ===");
+    System.out.println("결과: " + resultMap);
+    
+    return resultMap;
+}
+
+// 주문 상태 → 배송 상태 매핑
+private String mapOrderStatusToDeliveryStatus(String orderStatus) {
+    switch (orderStatus) {
+        case "C": return "A";  // 결제수락 → 주문수락완료
+        case "D": return "D";  // 배송시작 → 배송중
+        case "F": return "F";  // 완료 → 배송완료
+        default: return null;
+    }
+}
+
+// 주문 상태 → 픽업 상태 매핑
+private String mapOrderStatusToPickupStatus(String orderStatus) {
+    switch (orderStatus) {
+        case "C": return "A";  // 결제수락 → 준비중
+        case "R": return "B";  // 픽업대기 → 준비완료
+        case "F": return "C";  // 완료 → 픽업완료
+        default: return null;
+    }
 }
 }

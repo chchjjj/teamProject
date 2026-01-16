@@ -174,4 +174,9 @@ public interface SellerMapper {
 	 int getNewOrderCount(HashMap<String, Object> map);
 	// 주문 상태 업데이트 (배달/픽업 공용)
 	 int updateOrderStatus(HashMap<String, Object> map);
+	// 배송 상태 업데이트 
+	 int updateDeliveryStatus(HashMap<String, Object> map);
+
+	 // 픽업 상태 업데이트 
+	 int updatePickupStatus(HashMap<String, Object> map);
 }

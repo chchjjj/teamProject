@@ -984,28 +984,22 @@ public class SellerController {
 		return resultMap;
 	}
 	
-	// 주문 상태 업데이트 (배달/픽업 상태 변경 버튼)
-		@RequestMapping(value = "/seller/updateOrderStatus.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-		@ResponseBody
-		public String updateOrderStatus(@RequestParam HashMap<String, Object> map) throws Exception {
-			// 1. 결과값 담을 맵 생성
-			HashMap<String, Object> resultMap = new HashMap<>();
-			
-			try {
-				// 2. 서비스 호출 (orderId와 status가 포함된 map 전달)
-				resultMap = sellerService.updateOrderStatus(map);
-				
-				// 성공 로그 기록 (선택 사항)
-				System.out.println("LOG: [Controller] 주문 상태 변경 요청 처리 완료 - " + map);
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-				resultMap.put("status", "error");
-				resultMap.put("message", "상태 변경 중 서버 오류: " + e.getMessage());
-			}
-			
-			// 3. Gson을 사용하여 JSON 문자열로 반환
-			return new Gson().toJson(resultMap);
-		}
+	@RequestMapping(value = "/seller/updateOrderStatus.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public Map<String, Object> updateOrderStatus(@RequestParam HashMap<String, Object> map) throws Exception {
+	    HashMap<String, Object> resultMap = new HashMap<>();
 
+	    try {
+	        resultMap = sellerService.updateOrderStatus(map);
+	        System.out.println("LOG: [Controller] 주문 상태 변경 요청 처리 완료 - " + map);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        resultMap.put("status", "error");
+	        resultMap.put("message", "상태 변경 중 서버 오류: " + e.getMessage());
+	    }
+
+	    // Map을 직접 반환 (Spring이 자동으로 JSON 변환)
+	    return resultMap;
+	}
 }

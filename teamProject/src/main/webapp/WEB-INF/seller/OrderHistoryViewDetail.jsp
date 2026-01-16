@@ -356,7 +356,7 @@
                                         this.orderDetail = {
                                             orderId: od.ORDER_ID,
                                             status: od.STATUS,
-                                            deliveryYn: od.DELIVERY_YN || 'N', // 배달 여부 추가
+                                            deliveryYn: od.DELIVERY_TYPE === 'D' ? 'Y' : 'N', // DELIVERY_TYPE을 Y/N으로 변환
                                             userName: od.USER_NAME || '-',
                                             proName: od.PRO_NAME || '-',
                                             totalPrice: od.TOTAL_PRICE || 0,
@@ -372,52 +372,52 @@
                                 }
                             });
                         },
-                       fnUpdateStatus(newStatus) {
-    // 상태 코드에 맞는 한글 이름 매핑
-    const statusMap = {
-        'P': '결제완료',
-        'C': '결제수락',
-        'D': '배송시작',
-        'R': '픽업대기',
-        'F': '완료처리',
-        'X': '주문취소'
-    };
+                        fnUpdateStatus(newStatus) {
+                            const statusMap = {
+                                'P': '결제완료',
+                                'C': '결제수락',
+                                'D': '배송시작',
+                                'R': '픽업대기',
+                                'F': '완료처리',
+                                'X': '주문취소'
+                            };
 
-    const statusName = statusMap[newStatus];
-    
-    // 유효하지 않은 상태 코드 체크
-    if (!statusName) {
-        alert('유효하지 않은 상태 코드입니다: ' + newStatus);
-        console.error('Invalid status code:', newStatus);
-        return;
-    }
+                            const statusName = statusMap[newStatus];
 
-    if (!confirm(`주문을 [${statusName}] 상태로 변경하시겠습니까?`)) {
-        return;
-    }
+                            if (!statusName) {
+                                alert('유효하지 않은 상태 코드입니다: ' + newStatus);
+                                console.error('Invalid status code:', newStatus);
+                                return;
+                            }
 
-    $.ajax({
-        url: "/seller/updateOrderStatus.dox",
-        type: "POST",
-        data: { 
-            orderId: this.orderId, 
-            status: newStatus 
-        },
-        success: (res) => {
-            if (res.status === "success") {
-                alert("상태가 성공적으로 변경되었습니다.");
-                this.fnDetail(); // 업데이트 후 화면 갱신
-            } else {
-                alert("변경 실패: " + (res.message || "알 수 없는 오류"));
-            }
-        },
-        error: (xhr, status, error) => {
-            alert("서버 통신 오류가 발생했습니다.");
-            console.error('Ajax Error:', error);
-            console.error('Response:', xhr.responseText);
-        }
-    });
-},
+                            if (!confirm('주문을 [' + statusName + '] 상태로 변경하시겠습니까?')) {
+                                return;
+                            }
+
+                            $.ajax({
+                                url: "/seller/updateOrderStatus.dox",
+                                type: "POST",
+                                data: {
+                                    orderId: this.orderId,
+                                    status: newStatus
+                                },
+                                dataType: "json",  // ← 이 줄 추가! JSON으로 자동 파싱
+                                success: (res) => {
+                                    console.log('Response:', res); // 디버깅용
+                                    if (res.status === "success") {
+                                        alert("상태가 성공적으로 변경되었습니다.");
+                                        this.fnDetail();
+                                    } else {
+                                        alert("변경 실패: " + (res.message || "알 수 없는 오류"));
+                                    }
+                                },
+                                error: (xhr, status, error) => {
+                                    alert("서버 통신 오류가 발생했습니다.");
+                                    console.error('Ajax Error:', error);
+                                    console.error('Response:', xhr.responseText);
+                                }
+                            });
+                        },
                         getStatusName(status) {
                             const names = { 'P': '결제완료', 'C': '준비중', 'D': '배송중', 'R': '픽업대기', 'F': '완료', 'X': '취소' };
                             return names[status] || status;
