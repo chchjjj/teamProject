@@ -45,10 +45,7 @@ public class SellerController {
 	private ObjectMapper objectMapper;
 
 	@Autowired
-	FileService fileService; 
-	
-	
-  
+	FileService fileService;
 
 	@RequestMapping("/seller/list.do")
 	public String area(Model model) throws Exception {
@@ -72,42 +69,43 @@ public class SellerController {
 
 		return "seller/sellerOrderHistory";
 	}
+
 	@RequestMapping("/seller/productinfo.do")
 	public String productinfo(Model model) throws Exception {
 
 		return "seller/productinfo";
 	}
+
 	@RequestMapping("/seller/productUpdate.do")
-	public String productUpdate(@RequestParam(value="proNo", required=false) Integer proNo, 
-	                            HttpSession session, Model model) {
+	public String productUpdate(@RequestParam(value = "proNo", required = false) Integer proNo, HttpSession session,
+			Model model) {
 
-	    Map<String, Object> product = new HashMap<>();
-	    List<Map<String, Object>> options = new ArrayList<>();
-	    String disabledDatesStr = "";
+		Map<String, Object> product = new HashMap<>();
+		List<Map<String, Object>> options = new ArrayList<>();
+		String disabledDatesStr = "";
 
-	    if (proNo != null) {
-	        // 상품 정보 조회
-	        product = sellerService.getProduct(proNo); 
+		if (proNo != null) {
+			// 상품 정보 조회
+			product = sellerService.getProduct(proNo);
 
-	        // 옵션 정보 조회
-	        options = sellerService.getOptionsByProduct(proNo); 
+			// 옵션 정보 조회
+			options = sellerService.getOptionsByProduct(proNo);
 
-	        // 불가 날짜 문자열
-	        disabledDatesStr = String.join(",", sellerService.getDisabledDates(proNo)); 
-	    }
+			// 불가 날짜 문자열
+			disabledDatesStr = String.join(",", sellerService.getDisabledDates(proNo));
+		}
 
-	    model.addAttribute("pageTitle", proNo == null ? "제품 등록" : "제품 수정");
-	    model.addAttribute("proNo", proNo);
-	    model.addAttribute("sessionId", session.getAttribute("userId"));
+		model.addAttribute("pageTitle", proNo == null ? "제품 등록" : "제품 수정");
+		model.addAttribute("proNo", proNo);
+		model.addAttribute("sessionId", session.getAttribute("userId"));
 
-	    // Map과 List<Map> 그대로 JSON으로 변환
-	    model.addAttribute("productJson", new Gson().toJson(product));
-	    model.addAttribute("optionsJson", new Gson().toJson(options));
-	    model.addAttribute("disabledDatesStr", disabledDatesStr);
+		// Map과 List<Map> 그대로 JSON으로 변환
+		model.addAttribute("productJson", new Gson().toJson(product));
+		model.addAttribute("optionsJson", new Gson().toJson(options));
+		model.addAttribute("disabledDatesStr", disabledDatesStr);
 
-	    return "/seller/productUpdate";
+		return "/seller/productUpdate";
 	}
-
 
 	@RequestMapping("/seller/OrderHistoryViewDetail.do")
 	public String viewOrderHistory(
@@ -156,8 +154,6 @@ public class SellerController {
 		return "/seller/sellerUpdateInfo";
 	}
 
-	
-
 	@RequestMapping("/seller/sellerViewQnA.do")
 	public String QnA(Model model) throws Exception {
 
@@ -166,44 +162,33 @@ public class SellerController {
 
 	@RequestMapping("/seller/productAdd.do")
 	public String productAdd(@RequestParam("storeId") int storeId, Model model) {
-	    // storeId (45)를 받아 다음 로직을 처리합니다.
-	    model.addAttribute("storeId", storeId);
+		// storeId (45)를 받아 다음 로직을 처리합니다.
+		model.addAttribute("storeId", storeId);
 
 		return "/seller/productAdd";
 	}
-	
-	@RequestMapping(value = "/seller/productlist.do", method = {RequestMethod.GET, RequestMethod.POST})
-	public String productList(
-	    HttpSession session, 
-	    Model model, 
-	    @RequestParam(value = "storeId", required = false) String paramStoreId
-	) throws Exception {
-	    String finalStoreId = paramStoreId;
-	    
-	    if (finalStoreId == null || finalStoreId.isEmpty()) {
-	         // 세션에서 가져옵니다.
-	         finalStoreId = (String) session.getAttribute("storeId"); 
-	    }
-	    
-	
-	    
-	    // 2. 최종 storeId를 Model에 담습니다.
-	    model.addAttribute("storeId", finalStoreId);
-	    
-	    return "/seller/sellerProductList";
-	}
 
-	
+	@RequestMapping(value = "/seller/productlist.do", method = { RequestMethod.GET, RequestMethod.POST })
+	public String productList(HttpSession session, Model model,
+			@RequestParam(value = "storeId", required = false) String paramStoreId) throws Exception {
+		String finalStoreId = paramStoreId;
+
+		if (finalStoreId == null || finalStoreId.isEmpty()) {
+			// 세션에서 가져옵니다.
+			finalStoreId = (String) session.getAttribute("storeId");
+		}
+
+		// 2. 최종 storeId를 Model에 담습니다.
+		model.addAttribute("storeId", finalStoreId);
+
+		return "/seller/sellerProductList";
+	}
 
 	@RequestMapping("/seller/storeInfoupdateInfo.do")
 	public String storeUpdate(Model model) throws Exception {
 
 		return "/seller/storeUpdateInfo";
 	}
-
-	
-
-	
 
 	@RequestMapping(value = "/seller/orderList.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
@@ -224,11 +209,11 @@ public class SellerController {
 		// 3. Map 객체 자체를 반환하여 Spring의 Jackson이 JSON으로 안전하게 변환하도록 합니다.
 		return resultMap;
 	}
-	
+
 	@RequestMapping(value = "/seller/productlist.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public Map<String, Object> productList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
-		
+
 		// 1. 반환 타입이 Map<String, Object>로 변경되었습니다.
 		HashMap<String, Object> resultMap = sellerService.getProductList(map);
 
@@ -332,23 +317,26 @@ public class SellerController {
 	@PatchMapping("/api/seller/chat/{orderId}/read")
 	@ResponseBody
 	public ResponseEntity<String> markMessagesAsRead(@PathVariable("orderId") Long orderId,
-			@RequestParam("readerId") String readerId) {
+	        @RequestParam("readerId") String readerId) {
 
-		System.out.println(
-				"REQUEST: [ChatController] 메시지 읽음 처리 요청 수신. Order ID: " + orderId + ", Reader ID: " + readerId);
+	    System.out.println("REQUEST: [ChatController] 메시지 읽음 처리 요청 수신. Order ID: " + orderId + ", Reader ID: " + readerId);
 
-		try {
-			// SellerService의 메서드명을 ChatService와 동일하게 가정하고 호출
-			sellerService.updateMessageReadStatus(orderId, readerId);
-			System.out.println("RESPONSE: [ChatController] 메시지 읽음 처리 성공.");
-			return new ResponseEntity<>("Messages marked as read.", HttpStatus.OK);
+	    try {
+	        // 1. XML의 parameterType="HashMap"에 맞게 맵 생성
+	        HashMap<String, Object> map = new HashMap<>();
+	        map.put("orderId", orderId);
+	        map.put("userId", readerId); // XML에서 #{userId}라고 썼으므로 키값을 "userId"로 맞춰야 함!
 
-		} catch (Exception e) {
-			System.err.println("ERROR: [ChatController] 메시지 읽음 처리 중 API 오류 발생.");
-			e.printStackTrace();
-			return new ResponseEntity<>("Failed to mark messages as read.", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+	        // 2. 서비스 호출 시 맵을 전달
+	        sellerService.updateMessageReadStatus(map); 
+	        
+	        System.out.println("RESPONSE: [ChatController] 메시지 읽음 처리 성공.");
+	        return new ResponseEntity<>("Messages marked as read.", HttpStatus.OK);
 
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new ResponseEntity<>("Failed to mark messages as read.", HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
 	}
 
 	@RequestMapping(value = "/seller/review/list.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -459,8 +447,6 @@ public class SellerController {
 		return new Gson().toJson(resultMap);
 	}
 
-	
-
 	// ✅ 판매자 정보 수정
 	@RequestMapping(value = "/seller/updateInfo.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
@@ -510,130 +496,117 @@ public class SellerController {
 
 		return new Gson().toJson(resultMap);
 	}
-	
-	
-
-	
 
 	@RequestMapping(value = "/store/update.dox", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> updateStoreInfo(
-	        @RequestParam Map<String, String> params,
-	        @RequestParam(value = "storeProfileImg", required = false) MultipartFile storeProfileImg,
-	        @RequestParam(value = "storeBannerImg", required = false) MultipartFile storeBannerImg
-	) {
+	public Map<String, Object> updateStoreInfo(@RequestParam Map<String, String> params,
+			@RequestParam(value = "storeProfileImg", required = false) MultipartFile storeProfileImg,
+			@RequestParam(value = "storeBannerImg", required = false) MultipartFile storeBannerImg) {
 
-	    Map<String, Object> result = new HashMap<>();
+		Map<String, Object> result = new HashMap<>();
 
-	    try {
-	        // ===============================
-	        // 1. 파라미터 추출
-	        // ===============================
-	        String userId = params.get("userId");
-	        String storeId = params.get("storeId");
-	        String storeName = params.get("storeName");
-	        String storeAddr = params.get("storeAddrMain"); // DB 컬럼: STORE_ADDR
-	        String storeIntro = params.get("storeIntro");
-	        String deliveryYn = params.get("deliveryYn");
-	        String chatYn = params.get("chatYn"); // DB 컬럼: IS_CHAT_ENABLED
+		try {
+			// ===============================
+			// 1. 파라미터 추출
+			// ===============================
+			String userId = params.get("userId");
+			String storeId = params.get("storeId");
+			String storeName = params.get("storeName");
+			String storeAddr = params.get("storeAddrMain"); // DB 컬럼: STORE_ADDR
+			String storeIntro = params.get("storeIntro");
+			String deliveryYn = params.get("deliveryYn");
+			String chatYn = params.get("chatYn"); // DB 컬럼: IS_CHAT_ENABLED
 
-	        // ===============================
-	        // 2. 필수 값 검증
-	        // ===============================
-	        if (userId == null || userId.isEmpty()
-	                || storeId == null || storeId.isEmpty()) {
+			// ===============================
+			// 2. 필수 값 검증
+			// ===============================
+			if (userId == null || userId.isEmpty() || storeId == null || storeId.isEmpty()) {
 
-	            result.put("result", "failure");
-	            result.put("message", "필수 정보(사용자 ID 또는 가게 ID)가 누락되었습니다.");
-	            return result;
-	        }
+				result.put("result", "failure");
+				result.put("message", "필수 정보(사용자 ID 또는 가게 ID)가 누락되었습니다.");
+				return result;
+			}
 
-	        // ===============================
-	        // 3. MyBatis 전달용 Map 생성
-	        // ===============================
-	        Map<String, Object> paramMap = new HashMap<>();
-	        paramMap.put("storeId", Integer.parseInt(storeId)); // NUMBER
-	        paramMap.put("userId", userId);
-	        paramMap.put("storeName", storeName != null ? storeName : "");
-	        paramMap.put("storeAddr", storeAddr != null ? storeAddr : "");
-	        paramMap.put("storeIntro", storeIntro != null ? storeIntro : "");
-	        paramMap.put("deliveryYn", deliveryYn != null ? deliveryYn : "N");
-	        paramMap.put("isChatEnabled", chatYn != null ? chatYn : "N");
+			// ===============================
+			// 3. MyBatis 전달용 Map 생성
+			// ===============================
+			Map<String, Object> paramMap = new HashMap<>();
+			paramMap.put("storeId", Integer.parseInt(storeId)); // NUMBER
+			paramMap.put("userId", userId);
+			paramMap.put("storeName", storeName != null ? storeName : "");
+			paramMap.put("storeAddr", storeAddr != null ? storeAddr : "");
+			paramMap.put("storeIntro", storeIntro != null ? storeIntro : "");
+			paramMap.put("deliveryYn", deliveryYn != null ? deliveryYn : "N");
+			paramMap.put("isChatEnabled", chatYn != null ? chatYn : "N");
 
-	        // ===============================
-	        // 4. 이미지 저장 처리
-	        // ===============================
-	        String uploadDir = "C:/img-product/";
-	        Files.createDirectories(Paths.get(uploadDir));
+			// ===============================
+			// 4. 이미지 저장 처리
+			// ===============================
+			String uploadDir = "C:/img-product/";
+			Files.createDirectories(Paths.get(uploadDir));
 
+			// ▶ 가게 프로필 이미지
+			if (storeProfileImg != null && !storeProfileImg.isEmpty()) {
 
-	        // ▶ 가게 프로필 이미지
-	        if (storeProfileImg != null && !storeProfileImg.isEmpty()) {
+				String orgName = storeProfileImg.getOriginalFilename();
+				String saveName = System.currentTimeMillis() + "_" + orgName;
 
-	            String orgName = storeProfileImg.getOriginalFilename();
-	            String saveName = System.currentTimeMillis() + "_" + orgName;
+				File file = new File(uploadDir + saveName);
+				storeProfileImg.transferTo(file);
 
-	            File file = new File(uploadDir + saveName);
-	            storeProfileImg.transferTo(file);
+				paramMap.put("profileFileName", saveName); // Service 조건용
+				paramMap.put("filePath", "/img-product/");
+				paramMap.put("fileName", saveName);
+				paramMap.put("fileOrgName", orgName);
+				paramMap.put("fileEtc", "image");
+			}
 
-	            paramMap.put("profileFileName", saveName);   // Service 조건용
-	            paramMap.put("filePath", "/img-product/");
-	            paramMap.put("fileName", saveName);
-	            paramMap.put("fileOrgName", orgName);
-	            paramMap.put("fileEtc", "image");
-	        }
+			// ▶ 가게 배너 이미지
+			if (storeBannerImg != null && !storeBannerImg.isEmpty()) {
 
+				String orgName = storeBannerImg.getOriginalFilename();
+				String saveName = System.currentTimeMillis() + "_" + orgName;
 
-	        // ▶ 가게 배너 이미지
-	        if (storeBannerImg != null && !storeBannerImg.isEmpty()) {
+				File file = new File(uploadDir + saveName);
+				storeBannerImg.transferTo(file);
 
-	            String orgName = storeBannerImg.getOriginalFilename();
-	            String saveName = System.currentTimeMillis() + "_" + orgName;
+				paramMap.put("bannerFileName", saveName);
+				paramMap.put("filePath", "/img-product/");
+				paramMap.put("fileName", saveName);
+				paramMap.put("fileOrgName", orgName);
+				paramMap.put("fileEtc", "image");
+			}
 
-	            File file = new File(uploadDir + saveName);
-	            storeBannerImg.transferTo(file);
+			// ===============================
+			// 5. 서비스 호출
+			// ===============================
+			boolean isUpdated = sellerService.updateStoreInfo(paramMap);
 
-	            paramMap.put("bannerFileName", saveName);
-	            paramMap.put("filePath", "/img-product/");
-	            paramMap.put("fileName", saveName);
-	            paramMap.put("fileOrgName", orgName);
-	            paramMap.put("fileEtc", "image");
-	        }
+			if (isUpdated) {
+				result.put("result", "success");
+			} else {
+				result.put("result", "failure");
+				result.put("message", "정보 수정에 실패했습니다. (가게 ID 및 사용자 ID 확인 필요)");
+			}
 
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			result.put("result", "failure");
+			result.put("message", "STORE_ID는 숫자여야 합니다.");
 
-	        // ===============================
-	        // 5. 서비스 호출
-	        // ===============================
-	        boolean isUpdated = sellerService.updateStoreInfo(paramMap);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.put("result", "failure");
+			result.put("message", "서버 오류가 발생했습니다. 로그를 확인하세요.");
+		}
 
-	        if (isUpdated) {
-	            result.put("result", "success");
-	        } else {
-	            result.put("result", "failure");
-	            result.put("message", "정보 수정에 실패했습니다. (가게 ID 및 사용자 ID 확인 필요)");
-	        }
-
-	    } catch (NumberFormatException e) {
-	        e.printStackTrace();
-	        result.put("result", "failure");
-	        result.put("message", "STORE_ID는 숫자여야 합니다.");
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        result.put("result", "failure");
-	        result.put("message", "서버 오류가 발생했습니다. 로그를 확인하세요.");
-	    }
-
-	    return result;
+		return result;
 	}
 
-
-
-	
 	private void processProductData(Seller seller) throws Exception {
 		// 1. 옵션 JSON 파싱
 		// ⭐ 이 메서드 호출이 컴파일되려면 Seller DTO에 getOptionsJson()가 있어야 합니다.
-		String optionsJson = seller.getOptionsJson(); 
+		String optionsJson = seller.getOptionsJson();
 		if (optionsJson != null && !optionsJson.isEmpty()) {
 			// NOTE: Seller DTO 내부에 List<Seller> options; 필드를 사용합니다.
 			List<Seller> options = objectMapper.readValue(optionsJson, new TypeReference<List<Seller>>() {
@@ -649,140 +622,135 @@ public class SellerController {
 			seller.setDisabledDates(disabledDates);
 		}
 	}
-	
 
 	@RequestMapping(value = "/seller/product/register.dox", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> registerProduct(
-	    Seller seller, // 상품 정보를 담은 Seller DTO (proName, price, deliveryFee, proType, lettering 등)
-	    @RequestParam("thumbnailFile") MultipartFile thumbnailFile,
-	    @RequestParam(value = "thumbnailUse", required = false) String thumbnailUse, 
-	    @RequestParam(value = "detailFiles", required = false) List<MultipartFile> detailFiles,
-	    @RequestParam(value = "longFile", required = false) MultipartFile longFile,
-	    @RequestParam("storeId") int receivedStoreId, // 클라이언트가 전송한 Store ID (int로 받음)
-	    @RequestParam("optionsJson") String optionsJson,
-	    @RequestParam("disabledDatesStr") String disabledDatesStr,
-	    HttpSession session // jakarta.servlet.http.HttpSession 사용
+	public Map<String, Object> registerProduct(Seller seller, // 상품 정보를 담은 Seller DTO (proName, price, deliveryFee,
+																// proType, lettering 등)
+			@RequestParam("thumbnailFile") MultipartFile thumbnailFile,
+			@RequestParam(value = "thumbnailUse", required = false) String thumbnailUse,
+			@RequestParam(value = "detailFiles", required = false) List<MultipartFile> detailFiles,
+			@RequestParam(value = "longFile", required = false) MultipartFile longFile,
+			@RequestParam("storeId") int receivedStoreId, // 클라이언트가 전송한 Store ID (int로 받음)
+			@RequestParam("optionsJson") String optionsJson, @RequestParam("disabledDatesStr") String disabledDatesStr,
+			HttpSession session // jakarta.servlet.http.HttpSession 사용
 	) {
-	    Map<String, Object> result = new HashMap<>();
+		Map<String, Object> result = new HashMap<>();
 
-	    // 🌟 1. 세션 USER_ID 유효성 검증
-	    String loggedInUserId = (String) session.getAttribute("sessionId");
-	    
-	    if (loggedInUserId == null || loggedInUserId.trim().isEmpty()) {
-	        System.out.println(">>> [FATAL] 세션 userId 유효성 최종 검증 실패: " + loggedInUserId);
-	        result.put("success", false);
-	        result.put("message", "세션 로그인 정보(userId)를 찾을 수 없습니다. (재로그인 필요)");
-	        return result; 
-	    }
+		// 🌟 1. 세션 USER_ID 유효성 검증
+		String loggedInUserId = (String) session.getAttribute("sessionId");
 
-	    // 2. DTO에 userId 설정
-	    seller.setUserId(loggedInUserId); 
-	    
-	    // 💡 3. 핵심 보안 검증: userId와 storeId의 소유권 일치 여부 확인
-	    try {
-	        // [필수 가정]: sellerService.checkStoreOwnership(userId, storeId)가 1(소유) 또는 0(미소유)을 반환한다고 가정
-            // ORA-01722 오류 방지 및 소유권 검증을 동시에 수행하는 새로운 메소드를 호출합니다.
-	        int isOwner = sellerService.checkStoreOwnership(loggedInUserId, receivedStoreId);
-	        
-	        if (isOwner != 1) { // 소유권이 없거나, userId와 storeId 쌍이 매핑되지 않으면
-	            result.put("success", false);
-	            result.put("message", "전달된 상점 ID(" + receivedStoreId + ")에 대한 접근 권한이 없습니다. (보안 오류)");
-	            return result;
-	        }
-	        
-	        // 4. 검증 통과: DTO에 최종 storeId 설정 (DB 타입이 String인 경우를 대비하여 String으로 변환)
-	        seller.setStoreId(String.valueOf(receivedStoreId));
-	        seller.setOptionsJson(optionsJson);
-	        seller.setDisabledDatesStr(disabledDatesStr);
-	        System.out.println("옵션 JSON: " + optionsJson.substring(0, Math.min(optionsJson.length(), 100)) + "...");
-	        System.out.println("불가 날짜: " + disabledDatesStr);
-	        // 5. 상품 데이터 유효성 검사 및 설정
-	        processProductData(seller);
+		if (loggedInUserId == null || loggedInUserId.trim().isEmpty()) {
+			System.out.println(">>> [FATAL] 세션 userId 유효성 최종 검증 실패: " + loggedInUserId);
+			result.put("success", false);
+			result.put("message", "세션 로그인 정보(userId)를 찾을 수 없습니다. (재로그인 필요)");
+			return result;
+		}
 
-	        if (seller.getProName() == null || seller.getProName().isEmpty()) {
-	            result.put("success", false);
-	            result.put("message", "상품 이름은 필수입니다.");
-	            return result;
-	        }
-	        
-	        // 6. DB 등록
-	        sellerService.registerProduct(seller); // 이 메소드는 상품 정보와 함께 proNo를 업데이트합니다.
-	        
-	        // 7. 파일 업로드
-	        fileService.uploadProductImages(
-	            seller.getProNo(), 
-	            thumbnailFile, 
-	            thumbnailUse,
-	            detailFiles, 
-	            longFile
-	        );
+		// 2. DTO에 userId 설정
+		seller.setUserId(loggedInUserId);
 
-	        result.put("success", true);
-	        result.put("message", "제품 등록 성공");
+		// 💡 3. 핵심 보안 검증: userId와 storeId의 소유권 일치 여부 확인
+		try {
+			// [필수 가정]: sellerService.checkStoreOwnership(userId, storeId)가 1(소유) 또는 0(미소유)을
+			// 반환한다고 가정
+			// ORA-01722 오류 방지 및 소유권 검증을 동시에 수행하는 새로운 메소드를 호출합니다.
+			int isOwner = sellerService.checkStoreOwnership(loggedInUserId, receivedStoreId);
 
-	    } catch (Exception e) {
-	        e.printStackTrace(); 
-	        
-	        String errorMessage = "제품 등록 중 서버 오류 발생: " + e.getMessage();
-	        if (e.getMessage() != null && e.getMessage().contains("checkStoreOwnership")) {
-	             errorMessage = "판매자 정보(STORE ID) 조회 오류 또는 유효성 검증 실패. 관리자에게 문의하세요.";
-	        }
-	        
-	        result.put("success", false);
-	        result.put("message", errorMessage);
-	    }
-	    return result;
+			if (isOwner != 1) { // 소유권이 없거나, userId와 storeId 쌍이 매핑되지 않으면
+				result.put("success", false);
+				result.put("message", "전달된 상점 ID(" + receivedStoreId + ")에 대한 접근 권한이 없습니다. (보안 오류)");
+				return result;
+			}
+
+			// 4. 검증 통과: DTO에 최종 storeId 설정 (DB 타입이 String인 경우를 대비하여 String으로 변환)
+			seller.setStoreId(String.valueOf(receivedStoreId));
+			seller.setOptionsJson(optionsJson);
+			seller.setDisabledDatesStr(disabledDatesStr);
+			System.out.println("옵션 JSON: " + optionsJson.substring(0, Math.min(optionsJson.length(), 100)) + "...");
+			System.out.println("불가 날짜: " + disabledDatesStr);
+			// 5. 상품 데이터 유효성 검사 및 설정
+			processProductData(seller);
+
+			if (seller.getProName() == null || seller.getProName().isEmpty()) {
+				result.put("success", false);
+				result.put("message", "상품 이름은 필수입니다.");
+				return result;
+			}
+
+			// 6. DB 등록
+			sellerService.registerProduct(seller); // 이 메소드는 상품 정보와 함께 proNo를 업데이트합니다.
+
+			// 7. 파일 업로드
+			fileService.uploadProductImages(seller.getProNo(), thumbnailFile, thumbnailUse, detailFiles, longFile);
+
+			result.put("success", true);
+			result.put("message", "제품 등록 성공");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			String errorMessage = "제품 등록 중 서버 오류 발생: " + e.getMessage();
+			if (e.getMessage() != null && e.getMessage().contains("checkStoreOwnership")) {
+				errorMessage = "판매자 정보(STORE ID) 조회 오류 또는 유효성 검증 실패. 관리자에게 문의하세요.";
+			}
+
+			result.put("success", false);
+			result.put("message", errorMessage);
+		}
+		return result;
 	}
-	
+
 	@RequestMapping(value = "/seller/product/update.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String DeleteSellerList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		
-		String json = map.get("disabledDates").toString(); 
+
+		String json = map.get("disabledDates").toString();
 		ObjectMapper mapper = new ObjectMapper();
-		List<Object> list = mapper.readValue(json, new TypeReference<List<Object>>(){});
+		List<Object> list = mapper.readValue(json, new TypeReference<List<Object>>() {
+		});
 		map.put("dateList", list);
-		
-		String json2 = map.get("options").toString(); 
+
+		String json2 = map.get("options").toString();
 		ObjectMapper mapper2 = new ObjectMapper();
-		List<HashMap<String, Object>> options = mapper2.readValue(json2, new TypeReference<List<HashMap<String, Object>>>(){});
+		List<HashMap<String, Object>> options = mapper2.readValue(json2,
+				new TypeReference<List<HashMap<String, Object>>>() {
+				});
 		map.put("optionList", options);
-		
+
 		System.out.println(map);
 		resultMap = sellerService.productUpdate(map);
 		return new Gson().toJson(resultMap);
-		
+
 	}
-	
-	@PostMapping(value="/member/update.dox", consumes = "application/json")
+
+	@PostMapping(value = "/member/update.dox", consumes = "application/json")
 	@ResponseBody
-    public Map<String, Object> updateMember(@RequestBody Map<String, Object> memberInfoMap) {
-        
-        Map<String, Object> response = new HashMap<>();
-        
-        try {
-            // 1. Service 호출
-            int result = sellerService.updateMemberInfo(memberInfoMap);
-            
-            if (result > 0) {
-                response.put("status", "success");
-                response.put("message", "회원 정보가 성공적으로 수정되었습니다.");
-            } else {
-                response.put("status", "fail");
-                response.put("message", "수정 대상 회원을 찾을 수 없거나 수정에 실패했습니다.");
-            }
-        } catch (Exception e) {
-            response.put("status", "error");
-            response.put("message", "서버 오류: " + e.getMessage());
-            // 실제 환경에서는 로그를 남기고 사용자에게 자세한 오류 메시지는 숨겨야 합니다.
-        }
-        
-        return response; // JSON 응답
-    }
-	
-	
+	public Map<String, Object> updateMember(@RequestBody Map<String, Object> memberInfoMap) {
+
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			// 1. Service 호출
+			int result = sellerService.updateMemberInfo(memberInfoMap);
+
+			if (result > 0) {
+				response.put("status", "success");
+				response.put("message", "회원 정보가 성공적으로 수정되었습니다.");
+			} else {
+				response.put("status", "fail");
+				response.put("message", "수정 대상 회원을 찾을 수 없거나 수정에 실패했습니다.");
+			}
+		} catch (Exception e) {
+			response.put("status", "error");
+			response.put("message", "서버 오류: " + e.getMessage());
+			// 실제 환경에서는 로그를 남기고 사용자에게 자세한 오류 메시지는 숨겨야 합니다.
+		}
+
+		return response; // JSON 응답
+	}
+
 //	@RequestMapping(value = "/seller/product/update.dox", method = RequestMethod.POST)
 //	@ResponseBody
 //	public Map<String, Object> updateProduct(
@@ -880,81 +848,80 @@ public class SellerController {
 //	    System.out.println("--- 상품 수정 요청 처리 종료 ---"); // 🛑 종료 로그
 //	    return result;
 //	}
-	
 
 	@RequestMapping(value = "/seller/productDelete.dox", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> deleteProduct(@RequestParam("proNo") int proNo) {
-	    // Vue.js의 AJAX 요청에 응답할 JSON 형태의 Map 객체 생성
-	    Map<String, Object> response = new HashMap<>();
-	    
-	    try {
-	        // 1. Service 계층을 호출하여 상품 삭제 로직 실행
-	        // (Service 내에서 이미지, 옵션 등 FK 테이블 데이터를 먼저 삭제하고 메인 상품을 삭제해야 합니다.)
-	        int result = sellerService.deleteProduct(proNo); 
-	        
-	        if (result > 0) {
-	            // 삭제 성공 (1개 이상의 행이 삭제됨)
-	            response.put("result", "success");
-	            response.put("message", proNo + "번 상품 삭제 성공");
-	        } else {
-	            // 삭제 실패 (삭제된 행이 0개, 예: 존재하지 않는 proNo 요청)
-	            response.put("result", "fail");
-	            response.put("message", proNo + "번 상품 삭제 실패: 상품 번호 불일치");
-	        }
-	    } catch (Exception e) {
-	        // DB 또는 트랜잭션 처리 중 오류 발생
-	        System.err.println("상품 삭제 서버 오류 (proNo: " + proNo + "): " + e.getMessage());
-	        response.put("result", "error");
-	        response.put("message", "서버 오류로 상품 삭제 실패");
-	    }
-	    
-	    return response;
+		// Vue.js의 AJAX 요청에 응답할 JSON 형태의 Map 객체 생성
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			// 1. Service 계층을 호출하여 상품 삭제 로직 실행
+			// (Service 내에서 이미지, 옵션 등 FK 테이블 데이터를 먼저 삭제하고 메인 상품을 삭제해야 합니다.)
+			int result = sellerService.deleteProduct(proNo);
+
+			if (result > 0) {
+				// 삭제 성공 (1개 이상의 행이 삭제됨)
+				response.put("result", "success");
+				response.put("message", proNo + "번 상품 삭제 성공");
+			} else {
+				// 삭제 실패 (삭제된 행이 0개, 예: 존재하지 않는 proNo 요청)
+				response.put("result", "fail");
+				response.put("message", proNo + "번 상품 삭제 실패: 상품 번호 불일치");
+			}
+		} catch (Exception e) {
+			// DB 또는 트랜잭션 처리 중 오류 발생
+			System.err.println("상품 삭제 서버 오류 (proNo: " + proNo + "): " + e.getMessage());
+			response.put("result", "error");
+			response.put("message", "서버 오류로 상품 삭제 실패");
+		}
+
+		return response;
 	}
-	
+
 	@PostMapping("/store/infoUpdate.dox")
 	@ResponseBody
 	public Map<String, Object> getStoreInfoForUpdate(@RequestParam("storeId") int storeId) {
-	    Map<String, Object> resultMap = new HashMap<>();
+		Map<String, Object> resultMap = new HashMap<>();
 
-	    try {
-	        // 🟢 서비스 호출 (int 타입 storeId 사용)
-	        Map<String, Object> storeInfo = sellerService.selectStoreInfoData(storeId);
+		try {
+			// 🟢 서비스 호출 (int 타입 storeId 사용)
+			Map<String, Object> storeInfo = sellerService.selectStoreInfoData(storeId);
 
-	        if (storeInfo != null) {
-	            resultMap.put("store", storeInfo);
-	            resultMap.put("success", true);
-	            resultMap.put("message", "가게 정보 조회 성공");
-	        } else {
-	            resultMap.put("success", false);
-	            resultMap.put("message", "해당 STORE_ID로 등록된 가게 정보가 없습니다.");
-	        }
-	    } catch (Exception e) {
-	        System.err.println("가게 정보 조회 중 오류 발생: " + e.getMessage());
-	        resultMap.put("success", false);
-	        resultMap.put("message", "서버 오류로 인해 정보를 조회할 수 없습니다.");
-	    }
+			if (storeInfo != null) {
+				resultMap.put("store", storeInfo);
+				resultMap.put("success", true);
+				resultMap.put("message", "가게 정보 조회 성공");
+			} else {
+				resultMap.put("success", false);
+				resultMap.put("message", "해당 STORE_ID로 등록된 가게 정보가 없습니다.");
+			}
+		} catch (Exception e) {
+			System.err.println("가게 정보 조회 중 오류 발생: " + e.getMessage());
+			resultMap.put("success", false);
+			resultMap.put("message", "서버 오류로 인해 정보를 조회할 수 없습니다.");
+		}
 
-	    return resultMap;
+		return resultMap;
 	}
-	
-	
+
 	@RequestMapping(value = "/seller/insertProductAllergy.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String DeleteList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		
-		String json = map.get("ingreName").toString(); 
+
+		String json = map.get("ingreName").toString();
 		ObjectMapper mapper = new ObjectMapper();
-		List<Object> list = mapper.readValue(json, new TypeReference<List<Object>>(){});
+		List<Object> list = mapper.readValue(json, new TypeReference<List<Object>>() {
+		});
 		map.put("list", list);
 		System.out.println(map);
-		resultMap=sellerService.insertProductAllergy(map);
-		
+		resultMap = sellerService.insertProductAllergy(map);
+
 		return new Gson().toJson(resultMap);
-		
+
 	}
-	
+
 //	@ResponseBody
 //    @RequestMapping(value = "/seller/insertProductAllergy.dox", method = RequestMethod.POST)
 //    public Map<String, Object> insertProductAllergy(
@@ -999,25 +966,40 @@ public class SellerController {
 //        return resultMap;
 //    }
 	// 메인페이지 알림 카운트 (메시지 + 새 주문)
-    @RequestMapping("/seller/unreadCount.dox")
-    @ResponseBody
-    public HashMap<String, Object> getUnreadCount(@RequestParam HashMap<String, Object> map) {
-        HashMap<String, Object> resultMap = new HashMap<>();
-        
-        //  안 읽은 전체 메시지 개수 가져오기
-        int unreadCount = sellerService.getTotalUnreadCount(map);
-        
-        // 새 주문(오늘자 결제완료) 개수 가져오기
-        int newOrderCount = sellerService.getNewOrderCount(map);
-        
- 
-        resultMap.put("count", unreadCount); // 채팅 아이콘 옆 숫자
-        
+	@RequestMapping("/seller/unreadCount.dox")
+	@ResponseBody
+	public HashMap<String, Object> getUnreadCount(@RequestParam HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<>();
 
-        resultMap.put("hasNewOrder", newOrderCount > 0); 
-        
-        return resultMap;
-    }
+		// 안 읽은 전체 메시지 개수 가져오기
+		int unreadCount = sellerService.getTotalUnreadCount(map);
 
+		// 새 주문(오늘자 결제완료) 개수 가져오기
+		int newOrderCount = sellerService.getNewOrderCount(map);
 
+		resultMap.put("count", unreadCount); // 채팅 아이콘 옆 숫자
+
+		resultMap.put("hasNewOrder", newOrderCount > 0);
+
+		return resultMap;
+	}
+	
+	@RequestMapping(value = "/seller/updateOrderStatus.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public Map<String, Object> updateOrderStatus(@RequestParam HashMap<String, Object> map) throws Exception {
+	    HashMap<String, Object> resultMap = new HashMap<>();
+
+	    try {
+	        resultMap = sellerService.updateOrderStatus(map);
+	        System.out.println("LOG: [Controller] 주문 상태 변경 요청 처리 완료 - " + map);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        resultMap.put("status", "error");
+	        resultMap.put("message", "상태 변경 중 서버 오류: " + e.getMessage());
+	    }
+
+	    // Map을 직접 반환 (Spring이 자동으로 JSON 변환)
+	    return resultMap;
+	}
 }

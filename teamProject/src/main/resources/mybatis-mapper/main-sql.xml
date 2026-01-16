@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.teamProject.main.mapper.MainMapper">
 
@@ -19,19 +18,19 @@
 		      AND P.STORE_ID = #{storeId}
 		</if>
 
-		
+
 		<!-- 지역 목록 -->
 		<if test="area != '' and area !=null">	<!--area가 빈값이나 null이 아닐 때-->
-			AND STORE_AREA = #{area} 
-			<!--내가 area값으로 보낸 (선택한) 지역 값이 들어가면 그 내역만 나오게! -->	
+			AND STORE_AREA = #{area}
+			<!--내가 area값으로 보낸 (선택한) 지역 값이 들어가면 그 내역만 나오게! -->
 			<!--빈값이면 일단 전체 목록 다 나오도록 -->							
 		</if>
-		
+
 		<!-- 검색 조건에 맞게 출력 -->
 		<if test="keyword != '' and keyword !=null">
 			AND PRO_NAME LIKE '%' || #{keyword} || '%'
 		</if>
-		
+
 		<!-- 상품 카테고리별 -->
 		<if test="category != null and category != ''">
         AND PRO_TYPE = #{category} 
@@ -56,7 +55,7 @@
         
         OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY <!--페이징-->	
 	</select>
-	
+
 	<!-- 메인화면 페이징 처리 위해 게시글 개수 구하기 (resultType int) -->
 	<select id="selectMainCnt" parameterType="hashmap" resultType="int">
 		SELECT COUNT(*) AS CNT
@@ -66,23 +65,23 @@
 		WHERE 1=1
 		<!-- 지역 목록 -->
 		<if test="area != '' and area !=null">	<!--area가 빈값이나 null이 아닐 때-->
-			AND STORE_AREA = #{area} 
-			<!--내가 area값으로 보낸 (선택한) 지역 값이 들어가면 그 내역만 나오게! -->	
+			AND STORE_AREA = #{area}
+			<!--내가 area값으로 보낸 (선택한) 지역 값이 들어가면 그 내역만 나오게! -->
 			<!--빈값이면 일단 전체 목록 다 나오도록 -->							
 		</if>
-		
+
 		<!-- 검색 조건에 맞게 출력 -->
 		<if test="keyword != '' and keyword !=null">
 			AND PRO_NAME LIKE '%' || #{keyword} || '%'
 		</if>
-		
+
 		<!-- 상품 카테고리별 -->
 		<if test="category != null and category != ''">
         AND PRO_TYPE = #{category} 
     	</if>	
 	</select>
-	
-	
+
+
 	<!-- 헤더 QnA 버튼 눌렀을 때 (QnA 전체 리스트 불러오기)  -->
 	<select id="selectQnaList" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">
 		 SELECT 
@@ -101,8 +100,8 @@
 	        ON Q.USER_ID = U.USER_ID
 	    LEFT JOIN SELLER_INFO_TBL S
 	        ON Q.STORE_ID = S.STORE_ID
-	    WHERE 1=1			
-		
+	    WHERE 1=1
+
 		<!-- 검색어가 있을 때만 조건 추가 -->
 		<if test="qnaKeyword != null and qnaKeyword != ''">
 		    <choose>
@@ -130,8 +129,8 @@
 	    
 		OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY <!--페이징-->
 	</select>
-	
-	
+
+
 	<!-- QnA 페이징 처리 위해 게시글 개수 구하기 (resultType int) -->
 		<select id="selectQnaCnt" parameterType="hashmap" resultType="int">
 	    SELECT COUNT(*)
@@ -158,30 +157,30 @@
 	        AND Q.USER_ID = #{userId}
 	    </if>
 	</select>
-	
-	
+
+
 	<!--'내 주변 디저트 찾기' & '마이페이지'에서 로그인 세션에 따른 정보 찾기-->
 	<select id="selectUser" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main"> 
 		SELECT *
 		FROM USER_TBL
 		WHERE USER_ID = #{userId}
-	</select>	
-	
+	</select>
+
 	<!--'내 주변 디저트 찾기'에서 판매중인 가게 리스트 불러오기 (보완중) -->
 	<select id="selectSeller" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main"> 
 		SELECT *
 		FROM SELLER_INFO_TBL
 		WHERE STORE_PASS = 'P'
 	</select>
-	
-	
+
+
 	<!-- 하단 광고배너의 광고 id (AD_ID) 찾기 -->
 	<select id="selectAdInfo" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main"> 
 		SELECT *
 		FROM AD_TBL
 		WHERE STATUS = '진행중'
 	</select>
-	
+
 	<!-- 하단 광고배너의 광고 히스토리 찾기 (PER_MONTH) -->
 	<select id="selectAdHistory" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main"> 
     SELECT *
@@ -189,21 +188,21 @@
     INNER JOIN AD_TBL A ON H.AD_ID = A.AD_ID
     WHERE A.STATUS = '진행중'
 	</select>
-	
+
 	<!-- 하단 광고배너의 광고 단가 찾기 -->
 	<select id="selectAdUnitCost" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main"> 
     SELECT CLICK_UNIT_COST AS clickUnitCost
     FROM AD_TBL
     WHERE AD_ID = #{adId}
-	</select>	
-	
+	</select>
+
 	<!-- 광고배너 클릭시 카운트 증가 : AD_TBL -->
 	<update id="updateAdClick" parameterType="hashmap">
 		UPDATE AD_TBL SET
 			CLICKS = CLICKS + 1
 		WHERE AD_ID =  #{adId}
 	</update>
-	
+
 	<!-- 광고배너 클릭시 히스토리 테이블 카운트 & 총비용 증가 : AD_HISTORY_TBL -->
 	<update id="updateAdHistory" parameterType="hashmap">
 		UPDATE AD_HISTORY_TBL SET
@@ -211,14 +210,14 @@
         	MONTHLY_COST = MONTHLY_COST + #{clickUnitCost}  
         WHERE AD_ID = #{adId}
       	AND PER_MONTH = TO_DATE(#{currentMonth}, 'YYYY-MM-DD HH24:MI:SS')
-	</update>	
-	
+	</update>
+
 	<!-- 알레르기 원재료 리스트 -->
 	<select id="selectIngreList" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">
 		SELECT *			
 		FROM INGREDIENT_TBL
 	</select>
-	
+
 	<!-- 원재료 '미포함'한 상품 리스트 -->
 	<select id="selectIngreProList" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">
 	    SELECT 
@@ -250,7 +249,7 @@
 	    )
 	    OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY <!--페이징-->
 	</select>
-	
+
 	<!-- 원재료 '미포함' 상품 리스트 페이징 처리 위해 게시글 개수 구하기 (resultType int) -->
 	<select id="selectIngreProCnt" parameterType="hashmap" resultType="int">
 	    SELECT COUNT(*) AS CNT
@@ -273,7 +272,7 @@
 	          </choose>
 	    )
 	</select>
-	
+
 	<!--멤버십 판별-->
 	<select id="checkMembership" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">
 	SELECT *
@@ -281,8 +280,8 @@
 	WHERE USER_ID = #{userId}
 	
 	</select>
-	
-	
+
+
 	<!-- 멤버쉽 가입 판매자 상품 이미지 (FILEUSE 컬럼 : T(상위이미지)) -->
 	<select id="selectMemberProImg" parameterType="hashmap" resultType="com.example.teamProject.main.model.Main">
 		SELECT I.FILEPATH, I.FILENAME, S.STORE_NAME, S.MEMBERSHIP, P.PRO_NO

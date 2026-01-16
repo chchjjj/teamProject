@@ -50,7 +50,7 @@ public interface SellerMapper {
 	//전송된 메세지 객체
 	void updateChatRoomLastMessage(Seller message);
 	//특정 채팅방의 모든 메시지를 읽음 처리 ('Y')
-	void updateMessageReadStatus(Long orderId, String readerId);
+	void updateMessageReadStatus(HashMap<String, Object> map);
 	// 리뷰 리스트
 	List<HashMap<String, Object>>  selectReviewList(HashMap<String, Object> param);
 	
@@ -172,4 +172,11 @@ public interface SellerMapper {
 	 
 	// 메인페이지 새 주문(오늘자 결제완료) 카운트
 	 int getNewOrderCount(HashMap<String, Object> map);
+	// 주문 상태 업데이트 (배달/픽업 공용)
+	 int updateOrderStatus(HashMap<String, Object> map);
+	// 배송 상태 업데이트 
+	 int updateDeliveryStatus(HashMap<String, Object> map);
+
+	 // 픽업 상태 업데이트 
+	 int updatePickupStatus(HashMap<String, Object> map);
 }

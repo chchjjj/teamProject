@@ -226,16 +226,21 @@ public class SellerService {
 	        }
 	    }
 
-	    public void updateMessageReadStatus(Long orderId, String readerId) {
+	    public void updateMessageReadStatus(HashMap<String, Object> map) {
 	        try {
-	            System.out.println("DEBUG: [ChatService] 메시지 읽음 처리 시도. Order ID: " + orderId + ", Reader ID: " + readerId);
-	            sellerMapper.updateMessageReadStatus(orderId, readerId);
+	            System.out.println("DEBUG: [ChatService] 메시지 읽음 처리 시도. 데이터: " + map);
+	            
+	            // 이미 컨트롤러에서 map에 "orderId"와 "userId"를 잘 담아 보냈으므로 
+	            // 서비스에서는 가공 없이 바로 매퍼로 전달만 하면 됩니다.
+	            sellerMapper.updateMessageReadStatus(map);
+	            
 	            System.out.println("DEBUG: [ChatService] 메시지 읽음 처리 성공.");
 	        } catch (Exception e) {
-	            System.err.println("ERROR: [ChatService] 메시지 읽음 처리 중 오류 발생 - Order ID: " + orderId);
+	            System.err.println("ERROR: [ChatService] 메시지 읽음 처리 중 오류 발생");
 	            e.printStackTrace();
 	        }
 	    }
+	    
 public HashMap<String, Object> selectReviewList(HashMap<String, Object> param) {
 	        
 	        HashMap<String, Object> resultMap = new HashMap<>();
@@ -804,5 +809,127 @@ public int getTotalUnreadCount(HashMap<String, Object> map) {
 // 오늘 들어온 새 주문 카운트
 public int getNewOrderCount(HashMap<String, Object> map) {
  return sellerMapper.getNewOrderCount(map);
+}
+
+
+
+
+
+public HashMap<String, Object> updateOrderStatus(HashMap<String, Object> map) {
+    HashMap<String, Object> resultMap = new HashMap<>();
+    
+    try {
+        System.out.println("=== updateOrderStatus 시작 ===");
+        System.out.println("받은 파라미터: " + map);
+        
+        String status = (String) map.get("status");
+        Object orderIdObj = map.get("orderId");
+        
+        // orderId를 Integer로 변환
+        Integer orderId = null;
+        if (orderIdObj != null) {
+            if (orderIdObj instanceof Integer) {
+                orderId = (Integer) orderIdObj;
+            } else if (orderIdObj instanceof String) {
+                try {
+                    orderId = Integer.parseInt((String) orderIdObj);
+                } catch (NumberFormatException e) {
+                    resultMap.put("status", "fail");
+                    resultMap.put("message", "주문번호 형식이 잘못되었습니다.");
+                    return resultMap;
+                }
+            }
+        }
+        
+        System.out.println("orderId (Integer): " + orderId);
+        System.out.println("status: " + status);
+        
+        if (orderId == null) {
+            resultMap.put("status", "fail");
+            resultMap.put("message", "주문번호가 없습니다.");
+            return resultMap;
+        }
+        
+        // map에 Integer로 다시 넣기
+        map.put("orderId", orderId);
+        
+        // 1. 주문 상태 업데이트
+        int orderUpdated = sellerMapper.updateOrderStatus(map);
+        System.out.println("주문 업데이트 결과: " + orderUpdated);
+        
+        if (orderUpdated > 0) {
+            // 2. 주문 상세 정보 조회
+            HashMap<String, Object> orderParam = new HashMap<>();
+            orderParam.put("orderId", orderId);
+            List<HashMap<String, Object>> orderDetail = sellerMapper.selectOrderDetail(orderParam);
+            
+            System.out.println("주문 상세 조회 결과: " + orderDetail);
+            
+            if (orderDetail != null && !orderDetail.isEmpty()) {
+                // DELIVERY_YN 대신 DELIVERY_TYPE 사용
+                String deliveryType = (String) orderDetail.get(0).get("DELIVERY_TYPE");
+                System.out.println("배송 타입: " + deliveryType);
+                
+                // 3. 배송 주문인 경우 (D = 배송)
+                if ("D".equals(deliveryType)) {
+                    String deliveryStatus = mapOrderStatusToDeliveryStatus(status);
+                    if (deliveryStatus != null) {
+                        HashMap<String, Object> deliveryMap = new HashMap<>();
+                        deliveryMap.put("orderId", orderId);
+                        deliveryMap.put("deliveryStatus", deliveryStatus);
+                        int deliveryUpdated = sellerMapper.updateDeliveryStatus(deliveryMap);
+                        System.out.println("배송 상태 업데이트 결과: " + deliveryUpdated);
+                    }
+                }
+                // 4. 픽업 주문인 경우 (P = 픽업)
+                else if ("P".equals(deliveryType)) {
+                    String pickupStatus = mapOrderStatusToPickupStatus(status);
+                    if (pickupStatus != null) {
+                        HashMap<String, Object> pickupMap = new HashMap<>();
+                        pickupMap.put("orderId", orderId);
+                        pickupMap.put("pickupStatus", pickupStatus);
+                        int pickupUpdated = sellerMapper.updatePickupStatus(pickupMap);
+                        System.out.println("픽업 상태 업데이트 결과: " + pickupUpdated);
+                    }
+                }
+            }
+            
+            resultMap.put("status", "success");
+            resultMap.put("message", "주문 상태가 성공적으로 변경되었습니다.");
+        } else {
+            resultMap.put("status", "fail");
+            resultMap.put("message", "주문을 찾을 수 없습니다. ORDER_ID: " + orderId);
+        }
+        
+    } catch (Exception e) {
+        e.printStackTrace();
+        resultMap.put("status", "error");
+        resultMap.put("message", "상태 변경 중 오류 발생: " + e.getMessage());
+    }
+    
+    System.out.println("=== updateOrderStatus 종료 ===");
+    System.out.println("결과: " + resultMap);
+    
+    return resultMap;
+}
+
+// 주문 상태 → 배송 상태 매핑
+private String mapOrderStatusToDeliveryStatus(String orderStatus) {
+    switch (orderStatus) {
+        case "C": return "A";  // 결제수락 → 주문수락완료
+        case "D": return "D";  // 배송시작 → 배송중
+        case "F": return "F";  // 완료 → 배송완료
+        default: return null;
+    }
+}
+
+// 주문 상태 → 픽업 상태 매핑
+private String mapOrderStatusToPickupStatus(String orderStatus) {
+    switch (orderStatus) {
+        case "C": return "A";  // 결제수락 → 준비중
+        case "R": return "B";  // 픽업대기 → 준비완료
+        case "F": return "C";  // 완료 → 픽업완료
+        default: return null;
+    }
 }
 }
