@@ -1,5 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-
 <%@ include file="/WEB-INF/seller/sellerSideBar.jsp" %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -12,377 +11,433 @@
         integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     
-   <style>
-    /* ---------------------------------------------------- */
-    /* 1. Color Variables & Global Styles (Espresso Theme) */
-    /* ---------------------------------------------------- */
-    :root {
-        --espresso: #3E2723; /* 주요 색상: 짙은 갈색 */
-        --peony: #F4C9D6; /* 보조 색상: 분홍색 */
-        --butter: #FFEDAC; /* 배경 및 하이라이트: 버터색 */
-        --light-bg: #F4F4F4; /* 밝은 배경 */
-        --white: #FFFFFF;
-        --primary-color: var(--espresso);
-        --secondary-color: var(--peony);
-    }
-
-    body {
-        margin: 0;
-        font-family: 'Malgun Gothic', sans-serif;
-        background-color: var(--light-bg);
-    }
-
-    /* ---------------------------------------------------- */
-    /* 2. Layout & Header & Sidebar */
-    /* ---------------------------------------------------- */
-    .header-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 20px;
-        background-color: var(--white);
-        /* 흰색 적용 */
-        border-bottom: 1px solid #ddd;
-    }
-
-    .search-area {
-        display: flex;
-        align-items: center;
-    }
-
-    .search-area input {
-        padding: 8px;
-        border: 1px solid #ccc;
-        margin-right: 5px;
-        border-radius: 4px;
-    }
-
-    .main-wrapper {
-        display: flex;
-        /* min-height를 100vh로 설정하여 푸터가 없어도 전체 화면을 차지하게 함 */
-        min-height: calc(100vh - 50px);
-        /* 헤더 높이만큼 조정 */
-    }
-
-    .sidebar {
-        width: 220px;
-        background-color: var(--butter);
-        /* 버터색 적용 */
-        flex-shrink: 0;
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        padding-top: 20px;
-    }
-
-    .sidebar-menu {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .sidebar-menu li {
-        margin: 0;
-        padding: 0;
-    }
-
-    .sidebar-menu a {
-        display: block;
-        padding: 15px 20px;
-        text-decoration: none;
-        color: var(--espresso);
-        font-weight: bold;
-        transition: background-color 0.2s, color 0.2s;
-    }
-
-    .sidebar-menu a:hover {
-        background-color: var(--espresso);
-        color: var(--white);
-    }
-
-    .sidebar-menu .active a {
-        background-color: var(--espresso);
-        color: var(--white);
-        border-left: 5px solid var(--peony);
-        padding-left: 15px;
-    }
-
-    .content-area {
-        flex-grow: 1;
-        padding: 30px;
-        background-color: var(--light-bg);
-        /* light-bg로 유지 */
-        margin-left: 220px;
-        box-sizing: border-box;
-    }
-
-    .page-title {
-        font-size: 24px;
-        font-weight: 300;
-        margin-bottom: 20px;
-        color: var(--espresso);
-        /* 제목 색상 적용 */
-        padding-bottom: 10px;
-        border-bottom: 2px solid var(--espresso);
-    }
-
-
-    /* ---------------------------------------------------- */
-    /* 3. Review Card Styles (New Design 적용) */
-    /* ---------------------------------------------------- */
-    .review-card {
-        display: flex;
-        padding: 20px;
-        margin-bottom: 20px;
-        border-radius: 8px;
-        background-color: var(--white);
-        /* 흰색 배경으로 변경 */
-        border: 1px solid #e0e0e0;
-        /* 테두리 추가 */
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        /* 그림자 강화 */
-        transition: all 0.3s ease;
-    }
-
-    .review-card:hover {
-        box-shadow: 0 4px 15px rgba(62, 39, 35, 0.1);
-        border-color: var(--peony);
-        /* 호버 시 피오니색 강조 */
-    }
-
-    .review-image-area {
-        width: 120px;
-        /* 크기 약간 줄임 */
-        height: 120px;
-        /* 크기 약간 줄임 */
-        background-color: var(--butter);
-        /* 버터색 배경 적용 */
-        border: 1px solid var(--peony);
-        /* 피오니색 테두리 적용 */
-        margin-right: 20px;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--espresso);
-        /* 에스프레소 폰트 */
-        font-weight: bold;
-        flex-shrink: 0;
-        font-size: 13px;
-    }
-
-    .review-content-area {
-        flex-grow: 1;
-        position: relative;
-    }
-
-    .review-meta {
-        margin-bottom: 10px;
-        font-size: 14px;
-        color: var(--primary-color);
-        /* 에스프레소 색상 적용 */
-        padding-bottom: 5px;
-        border-bottom: 1px dashed var(--butter);
-        /* 버터색 점선 구분선 */
-    }
-
-    .review-meta strong {
-        margin-right: 15px;
-        color: var(--primary-color);
-    }
-
-    .review-meta span {
-        color: #666;
-    }
-
-    .review-body {
-        font-size: 16px;
-        margin-top: 5px;
-        margin-bottom: 15px;
-        /* 간격 조정 */
-        color: #333;
-    }
-
-    .review-rating {
-        font-size: 22px;
-        /* 폰트 크기 키움 */
-        font-weight: bold;
-        color: var(--peony);
-        /* 피오니색으로 별점 강조 */
-        display: block;
-        /* 별점 단독 줄 사용 */
-    }
-
-    .delete-button {
-        position: absolute;
-        top: 0px;
-        /* 위치 조정 */
-        right: 0px;
-        padding: 8px 12px;
-        /* 버튼 크기 조정 */
-        border: 1px solid var(--primary-color);
-        /* 에스프레소 테두리 */
-        background-color: var(--white);
-        /* 흰색 배경 */
-        color: var(--primary-color);
-        /* 에스프레소 글자색 */
-        cursor: pointer;
-        border-radius: 6px;
-        /* 둥근 모서리 */
-        font-size: 13px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-
-    .delete-button:hover {
-        background-color: var(--peony);
-        border-color: var(--peony);
-        color: var(--primary-color);
-        transform: translateY(-1px);
-    }
-
-    /* ---------------------------------------------------- */
-    /* 4. Pagination (New Design 적용) */
-    /* ---------------------------------------------------- */
-    .pagination {
-        display: flex;
-        justify-content: center;
-        margin-top: 30px;
-    }
-
-    .pagination a {
-        margin: 0 5px;
-        padding: 10px 15px;
-        /* 크기 조정 */
-        text-decoration: none;
-        border-radius: 6px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-
-        /* 기본 스타일: 에스프레소 테두리/글자, 흰색 배경 */
-        background-color: var(--white);
-        color: var(--primary-color);
-        border: 1px solid var(--primary-color);
-    }
-
-    .pagination a:hover {
-        background-color: var(--primary-color);
-        color: var(--white);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(62, 39, 35, 0.3);
-    }
-
-    .pagination .current {
-        background-color: var(--secondary-color);
-        /* 현재 페이지는 피오니색으로 강조 */
-        color: var(--primary-color);
-        border: 1px solid var(--secondary-color);
-        box-shadow: 0 2px 8px rgba(244, 201, 214, 0.4);
-    }
-
-    /* ---------------------------------------------------- */
-    /* 5. Responsive adjustments */
-    /* ---------------------------------------------------- */
-    @media (max-width: 768px) {
-        body {
-            flex-direction: column;
+    <style>
+        :root {
+            --espresso: #3E2723;
+            --peony: #F4C9D6;
+            --butter: #FFEDAC;
+            --light-bg: #F8F9FA;
+            --white: #FFFFFF;
+            --primary-color: var(--espresso);
+            --secondary-color: var(--peony);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
-        /* 사이드바는 이전 요청과 동일하게 100% 너비로 고정 해제 */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+            background: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--white) 0%, #FAFAFA 100%);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-area input {
+            padding: 10px 16px;
+            border: 2px solid #E0E0E0;
+            border-radius: 24px;
+            font-size: 14px;
+            transition: var(--transition);
+            outline: none;
+            width: 280px;
+        }
+
+        .search-area input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(62, 39, 35, 0.1);
+        }
+
+        /* Main Wrapper & Sidebar */
+        .main-wrapper {
+            display: flex;
+            min-height: calc(100vh - 65px);
+        }
+
         .sidebar {
-            position: static;
-            width: 100%;
-            height: auto;
-            padding-top: 10px;
+            width: 240px;
+            background: linear-gradient(180deg, var(--butter) 0%, #FFE89C 100%);
+            flex-shrink: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            padding-top: 80px;
+            box-shadow: 4px 0 12px rgba(0, 0, 0, 0.05);
+            z-index: 99;
         }
 
         .sidebar-menu {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            padding: 0 10px;
+            list-style: none;
+            padding: 0 12px;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 4px;
         }
 
         .sidebar-menu a {
-            padding: 10px 15px;
-            text-align: center;
-            border-left: none !important;
-            border-bottom: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            color: var(--espresso);
+            font-weight: 600;
+            font-size: 15px;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+
+        .sidebar-menu a:hover {
+            background-color: rgba(62, 39, 35, 0.08);
+            transform: translateX(4px);
         }
 
         .sidebar-menu .active a {
-            border-left: none;
-            border-bottom: 3px solid var(--peony);
-            padding-left: 15px;
+            background-color: var(--espresso);
+            color: var(--white);
+            box-shadow: 0 4px 12px rgba(62, 39, 35, 0.3);
         }
 
+        /* Content Area */
         .content-area {
-            margin-left: 0;
-            padding: 20px 15px;
+            flex-grow: 1;
+            padding: 40px;
+            margin-left: 240px;
+            animation: fadeIn 0.5s ease;
         }
 
-        /* 리뷰 카드 모바일 레이아웃 조정 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 32px;
+            color: var(--espresso);
+            padding-bottom: 16px;
+            border-bottom: 3px solid var(--espresso);
+            display: inline-block;
+            position: relative;
+        }
+
+        .page-title:after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--peony);
+        }
+
+        /* Review Card */
         .review-card {
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
+            display: flex;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            background-color: var(--white);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
         }
 
-        .review-image-area {
-            margin-right: 0;
-            margin-bottom: 15px;
+        .review-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--peony) 0%, var(--butter) 100%);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .review-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--espresso);
+        }
+
+        .review-card:hover:before {
+            opacity: 1;
+        }
+
+        .review-content-area {
+            flex-grow: 1;
+            position: relative;
+        }
+
+        .review-meta {
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: var(--primary-color);
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #E0E0E0;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .review-meta strong {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .review-meta span {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .review-body {
+            font-size: 15px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .review-rating {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--peony) 0%, #F0B8CA 100%);
+            color: var(--espresso);
+            box-shadow: 0 2px 8px rgba(244, 201, 214, 0.4);
         }
 
         .delete-button {
-            position: static;
-            /* 모바일에서 상대 위치로 변경 */
-            margin-top: 10px;
-            width: calc(100% - 24px);
-            /* 중앙 정렬을 위해 전체 너비 조정 */
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 14px;
+            border: 1px solid var(--primary-color);
+            background-color: var(--white);
+            color: var(--primary-color);
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: var(--transition);
         }
-    }
-</style>
+
+        .delete-button:hover {
+            background-color: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(62, 39, 35, 0.3);
+        }
+
+        .delete-button:active {
+            transform: translateY(0);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            font-size: 15px;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+            gap: 6px;
+        }
+
+        .pagination a {
+            padding: 10px 14px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            transition: var(--transition);
+            background-color: var(--white);
+            color: var(--primary-color);
+            border: 1px solid #E0E0E0;
+            cursor: pointer;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .pagination a:hover:not(.disabled):not(.current) {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(62, 39, 35, 0.3);
+        }
+
+        .pagination .current {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #F0B8CA 100%);
+            color: var(--primary-color);
+            border: 1px solid var(--secondary-color);
+            box-shadow: 0 2px 8px rgba(244, 201, 214, 0.4);
+            font-weight: 700;
+        }
+
+        .pagination .disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                padding-top: 0;
+                background: linear-gradient(90deg, var(--butter) 0%, #FFE89C 100%);
+            }
+
+            .sidebar-menu {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-around;
+                padding: 12px;
+            }
+
+            .sidebar-menu li {
+                margin: 0;
+                flex: 1 1 auto;
+            }
+
+            .sidebar-menu a {
+                padding: 12px 16px;
+                text-align: center;
+                font-size: 13px;
+                justify-content: center;
+            }
+
+            .sidebar-menu .active a {
+                border-bottom: 3px solid var(--peony);
+            }
+
+            .content-area {
+                margin-left: 0;
+                padding: 24px 16px;
+            }
+
+            .page-title {
+                font-size: 24px;
+                margin-bottom: 24px;
+            }
+
+            .review-card {
+                flex-direction: column;
+                padding: 16px;
+            }
+
+            .delete-button {
+                position: static;
+                margin-top: 12px;
+                width: 100%;
+            }
+
+            .review-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+
+            .pagination {
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .pagination a {
+                padding: 8px 12px;
+                font-size: 12px;
+                min-width: 36px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-
     <div id="app">
         <div class="main-wrapper">
-            
             <div class="content-area">
-                <h1 class="page-title" style="display: none;">리뷰 관리</h1> 
+                <h1 class="page-title">리뷰 관리</h1>
             
                 <div v-if="pagedReviews.length > 0">
                     <div v-for="review in pagedReviews" :key="review.REVIEW_ID" class="review-card">
-                     
                         <div class="review-content-area">
                             <div class="review-meta">
-                                <strong>{{ review.USER_ID }} (닉네임)</strong>
-                                <span>작성일: {{ review.CDATETIME }}</span>
+                                <strong>{{ review.USER_ID }}</strong>
+                                <span>{{ review.CDATETIME }}</span>
                             </div>
                             <div class="review-body">
                                 {{ review.REVIEW_CONTENT }}
                             </div>
                             <div class="review-rating">
-                                별점 : {{ review.RATING }}
+                                ★ {{ review.RATING }}
                             </div>
                             <button @click="fnDeleteReview(review.REVIEW_ID)" class="delete-button">
-                                삭제(삭제요청)
+                                삭제 요청
                             </button>
                         </div>
                     </div>
                 </div>
-                <div v-else>
-                    <p style="text-align: center; padding: 50px; color: #666; background-color: #f9f9f9; border-radius: 5px;">
-                        <span v-if="reviewList && reviewList.length > 0">선택된 페이지에 리뷰가 없습니다.</span>
-                        <span v-else>아직 받은 리뷰가 없습니다.</span>
-                    </p>
+                <div v-else class="empty-state">
+                    <p v-if="reviewList && reviewList.length > 0">선택된 페이지에 리뷰가 없습니다.</p>
+                    <p v-else>아직 받은 리뷰가 없습니다.</p>
                 </div>
 
                 <div class="pagination" v-if="totalPages > 1">
                     <a @click.prevent="fnChangePage(currentPage - 1)" 
-                       :class="{ 'disabled': currentPage === 1 }">&lt;</a>
+                       :class="{ 'disabled': currentPage === 1 }">
+                        ◀
+                    </a>
                     
                     <a v-for="page in totalPages" :key="page" 
                        @click.prevent="fnChangePage(page)"
@@ -391,15 +446,15 @@
                     </a>
                     
                     <a @click.prevent="fnChangePage(currentPage + 1)" 
-                       :class="{ 'disabled': currentPage === totalPages }">&gt;</a>
+                       :class="{ 'disabled': currentPage === totalPages }">
+                        ▶
+                    </a>
                 </div>
-                
             </div>
         </div>
     </div>
 </body>
 
-</html>
 <script>
     const app = Vue.createApp({
         data() {
@@ -417,7 +472,6 @@
             pagedReviews() {
                 const start = (this.currentPage - 1) * this.itemsPerPage;
                 const end = start + this.itemsPerPage;
-                
                 return this.reviewList.slice(start, end);
             }
         },
@@ -449,7 +503,7 @@
             },
             fnDeleteReview: function(reviewId) {
                 if (confirm(reviewId + "번 리뷰를 삭제 요청 목록에 추가하시겠습니까?")) {
-                    alert("삭제 요청이 완료 되었습니다.");
+                    alert("삭제 요청이 완료되었습니다.");
                 }
             }
         },
@@ -460,3 +514,5 @@
 
     app.mount('#app');
 </script>
+
+</html>
