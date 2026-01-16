@@ -362,7 +362,7 @@
 
     .orderId{
         font-size: 14px;
-        color: var(--text-color);
+        color: #999;  /* ✅ 회색으로 변경 */
         font-weight: normal;
         margin-left: 10px;
     }
@@ -372,8 +372,49 @@
         text-overflow: ellipsis;
         margin-right: 50px;
     }
+
+    /* 판매처 헤더 스타일 */
+    .store-header {
+        background-color: #f8f9fa;
+        padding: 0px 20px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .store-name-header {
+        font-weight: bold;
+        font-size: 18px;
+        color: var(--text-color);
+    }
+
+    /* 판매처 그룹 컨테이너 */
+    .store-group {
+        margin-bottom: 30px;
+        padding: 15px;
+        background-color: #fafafa;
+        border-radius: 12px;
+    }
+
+    /* 판매처별 소계 */
+    .store-subtotal {
+        text-align: right;
+        padding: 10px 0;
+        border-top: 1px solid #e0e0e0;
+        margin-top: 10px;
+    }
+
+    .title {
+        margin-bottom: 20px; 
+        color: var(--primary-color); 
+        text-align: center; 
+        font-size: 30px;
+    }
     
-</style>
+    </style>
 </head>
 <body>
     
@@ -381,33 +422,51 @@
     
     <div id="app-container">
         <div id="app">
-            <h2 style="margin-top: 0; color: var(--primary-color); text-align: center; font-size: 30px;">주문 상세 내역</h2>
+            <h2 class="title">주문 상세 내역</h2>
             <div class="order-list">
-                <div v-for="item in groupedOrdersList" class="order-item-card">
-                    
-                    <div class="item-details">
-                        <div class="pro-name">
-                            <div v-for="jitem in item.groupedDetails">
-                                {{jitem.proName}}
-                                <span class="orderId">(수량 : {{jitem.quantity}} 개)</span>
-                            </div>
-                            <span class="orderId">(주문번호: {{item.orderId}})</span>
-                        </div>
-                        
-                        <div>
-                            판매처: {{item.storeName}}
-                        </div>
+            <!-- 판매처별 그룹 -->
+            <div v-for="item in groupedOrdersList" :key="item.orderId" class="store-group">
+                
+                <!-- 판매처 헤더 (소계 포함) -->
+                <div class="store-header">
+                    <div>
+                        <span class="store-name-header">🏪 {{ item.storeName }}</span>
+                        <span class="orderId" style="margin-left: 15px;">(주문번호: {{item.orderId}})</span>
                     </div>
-
+                    <!-- ✅ 판매처별 소계를 헤더 오른쪽에 배치 -->
                     <div class="item-meta">
                         <div class="total-price">
-                            {{item.totalPrice.toLocaleString('ko-KR')}} 원
+                            {{ calculateStoreTotal(item.groupedDetails).toLocaleString('ko-KR') }} 원
                         </div>
                     </div>
-
+                </div>
+                
+                <!-- 해당 판매처의 상품들 -->
+                <div v-for="(jitem, index) in item.groupedDetails" :key="index" class="order-item-card">
+                    <div class="item-details">
+                        <div class="pro-name">
+                            {{jitem.proName}} <span class="orderId">(수량 : {{jitem.quantity}} 개)</span>
+                            
+                            <div v-if="jitem.options && jitem.options.length > 0" style="margin-top: 10px;">
+                                <p style="font-weight: bold; margin-bottom: 5px; padding-left: 20px; font-size: 0.8em;">선택 옵션:</p>
+                                <ul style="list-style-type: none; padding-left: 40px;">
+                                    <li v-for="opt in jitem.options" :key="opt.orderOptionId" style="margin-bottom: 3px; font-size: 0.6em;">
+                                        {{ opt.topOpt }} : {{ opt.subOpt }}
+                                        <span v-if="opt.cartOptQuantity > 1"> (수량: {{ opt.cartOptQuantity }} 개)</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="item-meta">
+                        <div class="store-subtotal-header">
+                            {{jitem.subtotal.toLocaleString('ko-KR')}} 원
+                        </div>
                     </div>
                 </div>
-            
+            </div>
+        </div>
             <hr class="separator"> 
             <div class="info-section">
                 
@@ -777,8 +836,6 @@
                         amount: amount,
                         groupedOrdersList: JSON.stringify(self.groupedOrdersList),  // ✅ 여기 변경
                         orderIdList: JSON.stringify(self.orderIdList), // ⭐ 추가
-                        //selectedDate: self.selectedDate
-                        // 그 외 기타 등등
                     };
                     $.ajax({
                         url: "/payment/payment.dox",
@@ -807,7 +864,6 @@
                         groupedOrdersList: JSON.stringify(self.groupedOrdersList),  // ✅ 여기 변경
                         orderIdList: JSON.stringify(self.orderIdList), // ⭐ 추가
                         selectedDate: self.selectedDate
-                        // 그 외 기타 등등
                     };
                     $.ajax({
                         url: "/payment/deliPayment.dox",
@@ -836,7 +892,6 @@
                         groupedOrdersList: JSON.stringify(self.groupedOrdersList),  // ✅ 여기 변경
                         orderIdList: JSON.stringify(self.orderIdList), // ⭐ 추가
                         selectedDate: self.selectedDate
-                        // 그 외 기타 등등
                     };
                     $.ajax({
                         url: "/payment/pickPayment.dox",
@@ -879,18 +934,15 @@
                                 orderId: order.orderId,
                                 storeName: order.storeName,
                                 fullAddress: order.fullAddress,
-                                proName: order.proName,
-                                quantity: Number(order.quantity || 1),
                                 orderDate: order.orderDate,
                                 deliveryType: order.deliveryType || "D",
                                 deliveryFee: Number(order.deliveryFee || 0),
                                 totalPrice: Number(order.totalPrice || 0),
                                 chatYn: order.chatYn,
-                                addOptionPrice: Number(order.addOptionPrice || 0),
                                 status: order.status || "S",
                                 wishDeli: order.wishDeli || "시간 미지정",
                                 pickTime: order.pickTime || "시간 미지정",
-                                storeAddr:order.storeAddr,
+                                storeAddr: order.storeAddr,
                                 storeId: order.storeId,
                                 groupedDetails: {}
                             };
@@ -910,6 +962,7 @@
                             };
                         }
 
+                        // ✅ ORDER_OPTION_TBL 데이터 매핑 (중복 방지)
                         if (order.orderOptionId) {
                             const exists = groupedOrders[orderId].groupedDetails[orderDetailId].options
                                 .find(opt => opt.orderOptionId === order.orderOptionId);
@@ -919,21 +972,26 @@
                                     orderOptionId: order.orderOptionId,
                                     topOptionId: order.topOptionId,
                                     subOptionId: order.subOptionId,
-                                    optionName: order.optionName || "옵션",
-                                    valueName: order.valueName || "",
-                                    priceDiff: Number(order.priceDiff || 0),
-                                    addQuantity: Number(order.addQuantity || 0),
-                                    optionTotal: Number(order.optionTotal || 0)
+                                    topOpt: order.topOpt || "옵션",           // ✅ 상위 옵션 이름
+                                    subOpt: order.subOpt || "",               // ✅ 하위 옵션 이름
+                                    subOptPrice: Number(order.subOptPrice || order.priceDiff || 0), // ✅ 옵션 가격
+                                    cartOptQuantity: Number(order.addQuantity || 0)  // ✅ 옵션 수량
                                 });
                             }
                         }
                     });
-                    self.groupedOrdersList = Object.values(groupedOrders);
+
+                    // Object를 Array로 변환
+                    self.groupedOrdersList = Object.values(groupedOrders).map(order => ({
+                        ...order,
+                        groupedDetails: Object.values(order.groupedDetails)
+                    }));
+
                     self.groupedOrdersList = self.groupedOrdersList.slice().reverse();
                     console.log("최종 주문 목록:", self.groupedOrdersList);
-                    self.kind = self.groupedOrdersList.length; // 상품 종류 갯수
-                    console.log("상품 종류 갯수: " + self.kind + "개");
-                    for(let i=0; i<self.groupedOrdersList.length; i++){ // 총 결제가격 구하기
+                    
+                    self.kind = self.groupedOrdersList.length;
+                    for(let i=0; i<self.groupedOrdersList.length; i++){
                         self.paymentPrice += self.groupedOrdersList[i].totalPrice;
                         console.log("self.groupedOrdersList[i].totalPrice:" + self.groupedOrdersList[i].totalPrice);
                     }
@@ -1011,6 +1069,21 @@
                     });
                 },
 
+                // 천 단위 콤마 찍기
+                formatNumber: function (value) {
+                    if (value === undefined || value === null) return '0';
+                    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                },
+
+                // ✅ 판매처별 소계 계산 함수 추가
+                calculateStoreTotal: function(groupedDetails) {
+                    let total = 0;
+                    groupedDetails.forEach(detail => {
+                        total += Number(detail.subtotal || 0);
+                    });
+                    return total;
+                },
+
                 
                 
             }, // methods
@@ -1042,7 +1115,6 @@
                 setTimeout(() => {
                     self.initFlatpickr(); // 캘린더 초기화
                 }, 300); // 0.3초 딜레이
-                
             }
         });
 

@@ -12,23 +12,28 @@
 		INNER JOIN PRODUCT_TBL P ON C.PRO_NO = P.PRO_NO
 		WHERE C.CART_ID IN
 		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
-			#{item} 
+			#{item}
 		</foreach>
 	</select>
 	
-	<select id="selectOrderList" parameterType="hashmap" resultType="com.example.teamProject.payment.model.Payment"> 
-		SELECT * 
-		FROM ORDER_TBL O
-        INNER JOIN ORDER_DETAIL_TBL OD ON O.ORDER_ID = OD.ORDER_ID 
-        
-        <!--옵션 정보까지 불러올려면 아래 줄이 필요함--> 
-        INNER JOIN ORDER_OPTION_TBL OO ON OD.ORDER_DETAIL_ID = OO.ORDER_DETAIL_ID
-		
-		WHERE O.ORDER_ID IN
-		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
-			#{item} 
-		</foreach>
-	</select>
+	<select id="selectOrderList" parameterType="hashmap" resultType="com.example.teamProject.payment.model.Payment">
+    SELECT
+        O.*,
+        OD.*,
+        OO.*,
+        PO.OPTION_NAME AS TOP_OPT,
+        PSO.VALUE_NAME AS SUB_OPT,
+        PSO.PRICE_DIFF AS SUB_OPT_PRICE
+    FROM ORDER_TBL O
+    INNER JOIN ORDER_DETAIL_TBL OD ON O.ORDER_ID = OD.ORDER_ID
+    INNER JOIN ORDER_OPTION_TBL OO ON OD.ORDER_DETAIL_ID = OO.ORDER_DETAIL_ID
+    LEFT JOIN PRODUCT_OPTION_TBL PO ON OO.TOP_OPTION_ID = PO.TOP_OPTION_ID
+    LEFT JOIN PRODUCT_SUB_OPTION_TBL PSO ON OO.SUB_OPTION_ID = PSO.SUB_OPTION_ID
+    WHERE O.ORDER_ID IN
+    <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+        #{item}
+    </foreach>
+</select>
 	
 	<delete id="deleteCartList" parameterType="hashmap">
 		DELETE FROM CART_TBL
