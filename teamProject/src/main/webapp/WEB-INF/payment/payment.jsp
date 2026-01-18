@@ -527,7 +527,7 @@
                     // 변수 - (key : value)
                     userId: "${sessionId}", //사용자 아이디
                     toName: "${sessionName}", //받을 사람
-                    toPhone: "${sessionPhone}", //받을 사람의 휴대폰 번호
+                    toPhone: "", //받을 사람의 휴대폰 번호
                     orderList: [], //배송 정보 확정 전 단계, ORDER_TBL + ORDER_DETAIL_TBL + ORDER_OPTION_TBL
                     deliveryType: "", //배달인지 픽업인지 (배달이면 D, 픽업이면 P)
                     paymentPrice: 0, //최종 결제금액
@@ -588,6 +588,7 @@
                             console.log("Order 리스트 출력");// 테스트용
                             console.log(data);// 테스트용
                             self.orderList = data.list;
+                            self.toPhone = data.phoneList[0].phone; //수령인 휴대폰 번호
                             self.fnGroupOrderList(self.orderList);
                             self.deliveryType = data.list[0].deliveryType; //배달인지 픽업인지
                             console.log("self.deliveryType[0] ===> " + data.list[0].deliveryType);
@@ -1092,6 +1093,8 @@
                     });
                     return total;
                 },
+
+                
 
                 
                 
