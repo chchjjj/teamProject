@@ -295,9 +295,12 @@
                             phone: self.userInfo.phone,
                             address: self.userInfo.address,
                             deliveryDate: self.selectedDate,
+                            deliveryStatus: self.deliveryType === 'D' ? 'Z' : null,  // 01.19 수정: xml에서도 하드코딩을 파라미터로 고쳐서 이거까지 추가되어야 작동이 됩니다.
+  
 
                             // 픽업 테이블에 넣을 것
                             storeAddr: self.infoList.storeAddr,
+                            pickupStatus: self.deliveryType === 'P' ? 'A' : null,      // 01.19 수정: xml에서도 하드코딩을 파라미터로 고쳐서 이거까지 추가되어야 작동이 됩니다.
 
                             subtotal : (self.totalPrice - finalDeliveryFee) // 배송비 제외금액
                         };
