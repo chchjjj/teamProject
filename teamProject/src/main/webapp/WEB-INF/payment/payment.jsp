@@ -424,51 +424,7 @@
     <div id="app-container">
         <div id="app">
             <h2 class="title">주문 상세 내역</h2>
-            <div class="order-list">
-            <!-- 판매처별 그룹 -->
-            <div v-for="item in groupedOrdersList" :key="item.orderId" class="store-group">
-                
-                <!-- 판매처 헤더 (소계 포함) -->
-                <div class="store-header">
-                    <div>
-                        <span class="store-name-header">🏪 {{ item.storeName }}</span>
-                        <span class="orderId" style="margin-left: 15px;">(주문번호: {{item.orderId}})</span>
-                    </div>
-                    <!-- ✅ 판매처별 소계를 헤더 오른쪽에 배치 -->
-                    <div class="item-meta">
-                        <div class="total-price">
-                            {{ calculateStoreTotal(item.groupedDetails).toLocaleString('ko-KR') }} 원
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 해당 판매처의 상품들 -->
-                <div v-for="(jitem, index) in item.groupedDetails" :key="index" class="order-item-card">
-                    <div class="item-details">
-                        <div class="pro-name">
-                            {{jitem.proName}} <span class="orderId">(수량 : {{jitem.quantity}} 개)</span>
-                            
-                            <div v-if="jitem.options && jitem.options.length > 0" style="margin-top: 10px;">
-                                <p style="font-weight: bold; margin-bottom: 5px; padding-left: 20px; font-size: 0.8em;">선택 옵션:</p>
-                                <ul style="list-style-type: none; padding-left: 40px;">
-                                    <li v-for="opt in jitem.options" :key="opt.orderOptionId" style="margin-bottom: 3px; font-size: 0.6em;">
-                                        {{ opt.topOpt }} : {{ opt.subOpt }}
-                                        <span v-if="opt.cartOptQuantity > 1"> (수량: {{ opt.cartOptQuantity }} 개)</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                
-                    <div class="item-meta">
-                        <div class="store-subtotal-header">
-                            {{jitem.subtotal.toLocaleString('ko-KR')}} 원
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-            <hr class="separator"> 
+            
             <div class="info-section">
                 
                 <div v-if="deliveryType=='D'" class="info-row">
@@ -498,7 +454,7 @@
                 <div class="info-row">
                     <span>전화번호:</span>
                     <span v-if="toPhone">{{maskPhone(toPhone)}}</span> 
-                    <span v-else>${sessionPhone}</span> 
+                    <span v-else>{{maskPhone("${sessionPhone}")}}</span> 
                 </div>
 
             </div>
@@ -516,6 +472,54 @@
                 <button @click="fnCheck" class="btn btn-primary">결제하기</button>
             </div>
 
+            <hr class="separator"> 
+
+            <div class="order-list">
+            <!-- 판매처별 그룹 -->
+                <div v-for="item in groupedOrdersList" :key="item.orderId" class="store-group">
+                    
+                    <!-- 판매처 헤더 (소계 포함) -->
+                    <div class="store-header">
+                        <div>
+                            <span class="store-name-header">🏪 {{ item.storeName }}</span>
+                            <span class="orderId" style="margin-left: 15px;">(주문번호: {{item.orderId}})</span>
+                        </div>
+                        <!-- ✅ 판매처별 소계를 헤더 오른쪽에 배치 -->
+                        <div class="item-meta">
+                            <div class="total-price">
+                                {{ calculateStoreTotal(item.groupedDetails).toLocaleString('ko-KR') }} 원
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 해당 판매처의 상품들 -->
+                    <div v-for="(jitem, index) in item.groupedDetails" :key="index" class="order-item-card">
+                        <div class="item-details">
+                            <div class="pro-name">
+                                {{jitem.proName}} <span class="orderId">(수량 : {{jitem.quantity}} 개)</span>
+                                
+                                <div v-if="jitem.options && jitem.options.length > 0" style="margin-top: 10px;">
+                                    <p style="font-weight: bold; margin-bottom: 5px; padding-left: 20px; font-size: 0.8em;">선택 옵션:</p>
+                                    <ul style="list-style-type: none; padding-left: 40px;">
+                                        <li v-for="opt in getSortedOptions(jitem.options)" :key="opt.orderOptionId" style="margin-bottom: 3px; font-size: 0.6em;">
+                                            {{ opt.topOpt }} : {{ opt.subOpt }}
+                                            <span v-if="opt.cartOptQuantity > 1"> (수량: {{ opt.cartOptQuantity }} 개)</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <div class="item-meta">
+                            <div class="store-subtotal-header">
+                                {{jitem.subtotal.toLocaleString('ko-KR')}} 원
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            
         </div>
     </div>
     
@@ -1121,6 +1125,24 @@
                     }
                     return phone; // 형식이 맞지 않으면 원본 반환
                 },
+
+                //상세 옵션 화면 출력 시 정렬 시키기
+                getSortedOptions: function(options) {
+                    if (!options || options.length === 0) return [];
+                    
+                    // 원본 배열을 변경하지 않도록 복사본 생성
+                    return [...options].sort((a, b) => {
+                        // topOpt 기준으로 오름차순 정렬
+                        if (a.topOpt < b.topOpt) return -1;
+                        if (a.topOpt > b.topOpt) return 1;
+                        
+                        // topOpt가 같으면 subOpt로 정렬
+                        if (a.subOpt < b.subOpt) return -1;
+                        if (a.subOpt > b.subOpt) return 1;
+                        
+                        return 0;
+                    });
+                }
 
                 
                 
