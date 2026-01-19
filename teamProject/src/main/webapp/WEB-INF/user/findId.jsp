@@ -23,7 +23,7 @@
 
             #app {
                 display: flex;
-                height: 100vh;
+                min-height: 100vh;
             }
 
             /* ===== 왼쪽 패널 ===== */
@@ -54,7 +54,8 @@
                 align-items: center;
                 padding-top: 200px;
                 position: relative;
-                overflow: hidden;
+                overflow-y: auto;
+                overflow-x: hidden;
             }
 
             .right-panel::before {

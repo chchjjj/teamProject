@@ -23,7 +23,7 @@
 
             #app {
                 display: flex;
-                height: 100vh;
+                min-height: 100vh;
             }
 
             /* ===== 왼쪽 영역 ===== */
@@ -54,7 +54,8 @@
                 /* 세로 중앙 정렬 */
                 align-items: center;
                 position: relative;
-                overflow: hidden;
+                overflow-y: auto;
+                overflow-x: hidden;
             }
 
             .right-panel::before {
