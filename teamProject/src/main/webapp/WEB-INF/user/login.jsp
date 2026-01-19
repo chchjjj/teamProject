@@ -19,7 +19,7 @@
             /* 전체 컨테이너 */
             #app {
                 display: flex;
-                height: 100vh;
+                min-height: 100vh;
             }
 
             /* 왼쪽 환영 문구 영역 */
@@ -54,9 +54,10 @@
                 justify-content: center;
                 align-items: center;
                 position: relative;
-                overflow: hidden;
-                 justify-content: flex-start; /* 🔹 상단 정렬로 변경 */
-    padding-top: 80px; /* 🔹 위쪽 여백 추가 */
+                overflow-y: auto;
+                overflow-x: hidden;
+                justify-content: flex-start; /* 🔹 상단 정렬로 변경 */
+                padding-top: 80px; /* 🔹 위쪽 여백 추가 */
             }
 
             .right-panel::before {

@@ -26,7 +26,7 @@
 
             #app {
                 display: flex;
-                height: 100vh;
+                min-height: 100vh;
             }
 
             /* ===== 왼쪽 영역 ===== */
@@ -57,7 +57,8 @@
                 align-items: center;
                 padding-top: 80px;
                 position: relative;
-                overflow: hidden;
+                overflow-y: auto;
+                overflow-x: hidden;
             }
 
             .right-panel::before {

@@ -414,6 +414,7 @@
         font-size: 30px;
     }
     
+    
     </style>
 </head>
 <body>
@@ -496,7 +497,7 @@
                 
                 <div class="info-row">
                     <span>전화번호:</span>
-                    <span>{{toPhone}}</span> 
+                    <span>{{maskPhone(toPhone)}}</span> 
                 </div>
 
             </div>
@@ -1094,7 +1095,25 @@
                     return total;
                 },
 
-                
+                // 휴대폰 번호 마스킹 처리 (010-1*3*-5*7* 형식)
+                maskPhone: function(phone) {
+                    if (!phone) return '';
+                    // 숫자만 추출
+                    const cleaned = phone.replace(/\D/g, '');
+                    
+                    if (cleaned.length === 11) {
+                        // 010-1234-5678 형식
+                        return cleaned.substring(0, 3) + '-' + 
+                            cleaned[3] + '*' + cleaned[5] + '*' + '-' + 
+                            cleaned[7] + '*' + cleaned[9] + '*';
+                    } else if (cleaned.length === 10) {
+                        // 010-123-4567 형식
+                        return cleaned.substring(0, 3) + '-' + 
+                            cleaned[3] + '*' + cleaned[5] + '-' + 
+                            cleaned[6] + '*' + cleaned[8] + '*';
+                    }
+                    return phone; // 형식이 맞지 않으면 원본 반환
+                },
 
                 
                 
