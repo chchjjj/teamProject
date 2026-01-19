@@ -423,9 +423,9 @@
                                             <span v-else-if="order.deliveryStatus==='F'">배송완료</span>
                                         </span>
                                         <span v-else-if="order.deliveryType==='P'">
-                                            <span v-if="order.deliveryStatus==='Z'">준비중</span>
-                                            <span v-else-if="order.deliveryStatus==='A'">준비완료</span>
-                                            <span v-else-if="order.deliveryStatus==='D'">픽업완료</span>
+                                            <span v-if="order.pickupStatus==='A'">준비중</span>
+                                            <span v-else-if="order.pickupStatus==='B'">준비완료</span>
+                                            <span v-else-if="order.pickupStatus==='C'">픽업완료</span>
                                         </span>
                                     </span>
                                 </div>
@@ -549,6 +549,7 @@
                                 orderDate: order.orderDate,
                                 deliveryType: order.deliveryType || "D",
                                 deliveryStatus: order.deliveryStatus || "Z",
+                                pickupStatus: order.pickupStatus || "A",
                                 deliveryFee: Number(order.deliveryFee || 0),
                                 totalPrice: Number(order.totalPrice || 0),
                                 chatYn: order.chatYn,
@@ -607,10 +608,10 @@
                             default: return '0%';
                         }
                     } else if (order.deliveryType === 'P') {
-                        switch(order.deliveryStatus) {
-                            case 'Z': return '30%';
-                            case 'A': return '80%';
-                            case 'D': return '100%';
+                        switch(order.pickupStatus) {
+                            case 'A': return '30%';
+                            case 'B': return '80%';
+                            case 'C': return '100%';
                             default: return '0%';
                         }
                     }

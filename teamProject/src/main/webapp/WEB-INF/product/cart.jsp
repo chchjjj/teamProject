@@ -652,14 +652,18 @@
                         if (!storeId) return;
 
                         if (!stores[storeId]) {
+                            // 미리 deliveryType를 가진다
+                            const deliveryType = cart.deliveryType || 'P';
                             stores[storeId] = {
+
                                 userId: this.userId,
                                 storeId: storeId,
                                 storeName: cart.storeName,
                                 fullAddress: cart.userAddr || '주소없음',
                                 letteringWord: cart.letteringWord || '',
                                 deliveryFee: Number(cart.deliveryFee || 0),
-                                deliveryType: cart.deliveryType || 'P',
+                                deliveryType: deliveryType,
+                                deliveryStatus: deliveryType === 'D' ? 'Z' : 'A',
                                 chatYn: cart.chatYn || 'N',
                                 userName: cart.userName,
                                 phone: cart.phone,
