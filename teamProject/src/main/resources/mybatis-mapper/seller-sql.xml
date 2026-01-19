@@ -52,15 +52,30 @@
 	</select>
 
 <select id="selectMonthlySales" resultType="hashmap" parameterType="hashmap">
-    SELECT 
-        TO_CHAR(o.ORDER_DATE, 'MM') AS MONTH, 
-        SUM(o.TOTAL_PRICE - NVL(o.DELIVERY_FEE, 0)) AS TOTAL
-    FROM ORDER_TBL o 
-    INNER JOIN SELLER_INFO_TBL s 
-        ON o.STORE_NAME = s.STORE_NAME 
-    WHERE s.USER_ID = #{userId}
-    GROUP BY TO_CHAR(o.ORDER_DATE, 'MM') 
-    ORDER BY TO_CHAR(o.ORDER_DATE, 'MM')
+<![CDATA[
+  SELECT
+    M.MONTH,
+    NVL(D.MONTHLY_INCOME, 0) AS TOTAL
+FROM (
+    -- 1. 관리자 쿼리처럼 1월~12월 틀을 먼저 만듭니다.
+    SELECT LEVEL AS MONTH
+    FROM DUAL
+    CONNECT BY LEVEL <= 12
+) M
+LEFT JOIN (
+    -- 2. 해당 판매자의 실제 판매 데이터만 가져옵니다.
+    SELECT
+        EXTRACT(MONTH FROM O.ORDER_DATE) AS ORDER_MONTH,
+        SUM(O.TOTAL_PRICE - O.DELIVERY_FEE) AS MONTHLY_INCOME
+    FROM ORDER_TBL O
+    JOIN SELLER_INFO_TBL S ON O.STORE_NAME = S.STORE_NAME
+    WHERE S.USER_ID = 'user04'  -- 로그인한 판매자의 ID 기준
+      AND O.STATUS = 'P'        -- 결제 완료된 건만 수익으로 인정
+
+    GROUP BY EXTRACT(MONTH FROM O.ORDER_DATE)
+) D ON M.MONTH = D.ORDER_MONTH
+ORDER BY M.MONTH
+]]>
 </select>
 
 		<!-- 수정  댓글 카운터 -->
