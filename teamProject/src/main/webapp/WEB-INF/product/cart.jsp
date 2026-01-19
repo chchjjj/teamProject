@@ -603,7 +603,7 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            alert("주문이 완료되었습니다!");
+                            // alert("주문이 완료되었습니다!");
 
                             //self.fnAllRemove(true);
                             const deliveryType = selectedItemsData[0].deliveryType; // 선택한 상품들의 배송유형 동일함
