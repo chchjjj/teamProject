@@ -262,7 +262,7 @@
                     return {
                         list: [],        // 가게 목록
                         userId: "${sessionId}",
-                        salesData: [],    
+                        salesData: [],
                         selectedMonth: "all"
                     }
                 },
@@ -286,27 +286,30 @@
                     },
                     drawChart() {
                         if (!Array.isArray(this.salesData) || this.salesData.length === 0) return;
+
+                        // 선택된 월에 따라 데이터 필터링
                         let displayData = this.salesData;
-            if (this.selectedMonth !== "all") {
-                displayData = this.salesData.filter(item => item.MONTH === this.selectedMonth);
-            }
+                        if (this.selectedMonth !== "all") {
+                            displayData = this.salesData.filter(item => item.MONTH === this.selectedMonth);
+                        }
 
                         let chartData = [['월', '매출', { role: 'style' }, { role: 'annotation' }]];
 
-                        this.salesData.forEach(item => {
+                        // ⚠️ 여기를 수정: this.salesData 대신 displayData 사용
+                        displayData.forEach(item => {
                             const total = Number(item.TOTAL);
                             chartData.push([
                                 item.MONTH,
                                 total,
-                                'color: #F4C9D6; fill-opacity: 0.9;', // 막대 색상
-                                total.toLocaleString() + '원' // 막대 위 금액 표시
+                                'color: #F4C9D6; fill-opacity: 0.9;',
+                                total.toLocaleString() + '원'
                             ]);
                         });
 
                         const data = google.visualization.arrayToDataTable(chartData);
 
                         const options = {
-                            title: '', // HTML로 제목을 따로 만들었으므로 여기선 지웁니다 (중요!)
+                            title: '',
                             fontName: 'Pretendard, sans-serif',
                             chartArea: {
                                 left: '10%',
@@ -325,6 +328,7 @@
                                 textStyle: { color: '#aaa', fontSize: 11 }
                             },
                             hAxis: {
+                                format: '0',  // ← 이 부분 추가: 정수로만 표시
                                 textStyle: { color: '#3E2723', fontSize: 14, bold: true }
                             },
                             legend: { position: 'none' },
