@@ -292,6 +292,74 @@ public class ProductService {
 			return resultMap;
 		}
 		
+		//productDetail.jsp의 구매하기(바로 구매)
+		
+		@Transactional
+	      public HashMap<String, Object> insertOrder(HashMap<String, Object> map) {
+	            // TODO Auto-generated method stub
+	            HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	            
+	            // 선택한 옵션의 내용을 담은 list
+	            List<HashMap<String, Object>> list = (List<HashMap<String, Object>>) map.get("list");
+	            
+	            
+	            int cnt1 = ProductMapper.insertOrder(map); // 주문서 테이블에 인서트 
+	            
+//	            //배송, 픽업 테이블 insert (orderId 포함해서)
+//	            String deliveryType = (String) map.get("deliveryType");
+//	             if ("D".equals(deliveryType)) {
+//	                 ProductMapper.insertDeliv(map);
+//	                 
+//	             } else if ("P".equals(deliveryType)) {
+//	                 ProductMapper.insertPickUp(map);
+//	                 
+//	             }
+	            
+	            //1.19 수정 : 주문 현황이 제대로 뜨게 하기 위해서  xml에 원래 하드코딩을 파라미터로 변해서 배속/픽업 부분만 수정하겠습니다.
+	            // 배송 타입에 따라 DELIVERY_TBL 또는 PICKUP_TBL에 INSERT
+	            String deliveryType = (String) map.get("deliveryType");
+	            
+	            if ("D".equals(deliveryType)) {
+	                // 배송 상태 기본값 설정 (없으면 'Z')
+	                if (map.get("deliveryStatus") == null) {
+	                    map.put("deliveryStatus", "Z");
+	                }
+	                ProductMapper.insertDeliv(map);
+	                
+	            } else if ("P".equals(deliveryType)) {
+	                // 픽업 상태 기본값 설정 (없으면 'A')
+	                if (map.get("pickupStatus") == null) {
+	                    map.put("pickupStatus", "A");
+	                }
+	                ProductMapper.insertPickUp(map);
+	            }
+	            
+	             String isChatRequested = (String) map.get("isChatRequested");
+	             if ("Y".equals(isChatRequested)) {
+	                 ProductMapper.insertChat(map);
+	                 
+	             }
+	             
+	            int cnt2 = ProductMapper.insertOrderDt(map); // 주문서 디테일 테이블에 인서트
+	            
+	            
+	            
+	            //주문서 옵션 테이블 반복
+	            for(int i=0; i<list.size(); i++) {
+	               
+	               HashMap<String, Object> inputMap = list.get(i);
+	               inputMap.put("orderDetailId", map.get("orderDetailId"));
+	               System.out.println(i+1 + "번째 맵 ==> " + inputMap);
+	               ProductMapper.insertOrderOpt(inputMap);
+	            }
+	            
+	            resultMap.put("result", "success");
+	            resultMap.put("orderId", map.get("orderId"));   // 여기 추가
+	            
+	            return resultMap;
+	             
+	         }
+		
 	//주문서 (구매하기)
 	
 		@Transactional
