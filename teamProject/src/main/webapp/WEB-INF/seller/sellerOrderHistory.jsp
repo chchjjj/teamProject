@@ -32,9 +32,11 @@
 
                 body {
                     margin: 0;
+                    margin-left: 250px;
+                    /* ⭐ 사이드바 너비만큼만 밀기 */
                     font-family: 'Malgun Gothic', sans-serif;
                     background-color: var(--light-bg);
-                    display: flex;
+                    /* display: flex 삭제 - body에 flex 필요 없음 */
                     min-height: 100vh;
                 }
 
@@ -54,19 +56,19 @@
                     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
                 }
 
-                /* 콘텐츠 영역: 중앙에서 오른쪽으로 약간 밀기 */
+                /* 콘텐츠 영역: 창 가운데 정렬 */
                 .content-area {
                     flex-grow: 1;
                     padding: 40px;
-                    margin-left: 220px;
-                    /* 사이드바 고정 여백 */
-                    padding-left: 100px;
-                    /* ⭐ 중앙보다 오른쪽으로 밀기 위한 추가 여백 */
+                    /* margin-left 완전히 삭제 */
                     display: flex;
                     flex-direction: column;
-                    align-items: flex-start;
-                    /* 왼쪽 정렬로 변경하여 여백 조절을 쉽게 함 */
+                    align-items: center;
                     min-width: 850px;
+                    max-width: 1400px;
+                    /* 최대 너비 설정 */
+                    margin: 0 auto;
+                    /* 좌우 중앙 정렬 */
                 }
 
                 .page-title {
@@ -77,11 +79,10 @@
                     padding-bottom: 15px;
                     border-bottom: 3px solid var(--espresso);
                     text-align: left;
-                    /* 제목도 정렬에 맞춰 왼쪽으로 */
                     width: 100%;
                     max-width: 1000px;
-                    /* 카드 너비와 통일 */
                 }
+
 
                 /* ---------------------------------------------------- */
                 /* 3. Order Card Styles */
@@ -253,20 +254,18 @@
                 /* ---------------------------------------------------- */
                 @media (max-width: 1100px) {
                     .content-area {
-                        padding-left: 40px;
-                        /* 화면이 작아지면 여백 축소 */
+                        padding: 40px;
+                        /* ⭐ padding-left 삭제 */
                     }
                 }
 
                 @media (max-width: 768px) {
-                    .sidebar {
-                        display: none;
-                    }
+
 
                     .content-area {
                         margin-left: 0;
                         padding: 20px;
-                        padding-left: 20px;
+                        /* ⭐ padding-left 삭제 */
                         min-width: 100%;
                     }
                 }
@@ -337,7 +336,7 @@
             <div id="app">
                 <div class="main-wrapper">
                     <div class="content-area">
-                        <h1 class="page-title">마이페이지 (판매자) - 판매 내역</h1>
+                        <h1 class="page-title"> 판매 내역</h1>
 
                         <div class="filter-search-container">
                             <div class="filter-buttons">
@@ -442,115 +441,115 @@
                 },
                 methods: {
                     goDetail: function (orderId) {
-        if (!orderId) {
-            console.error("Order ID가 누락되었습니다.");
-            return;
-        }
-        const form = document.createElement('form');
-        form.setAttribute('method', 'post');
-        form.setAttribute('action', '/seller/OrderHistoryViewDetail.do');
-        const hiddenField = document.createElement('input');
-        hiddenField.setAttribute('type', 'hidden');
-        hiddenField.setAttribute('name', 'orderId');
-        hiddenField.setAttribute('value', orderId);
-        form.appendChild(hiddenField);
-        document.body.appendChild(form);
-        form.submit();
-    },
+                        if (!orderId) {
+                            console.error("Order ID가 누락되었습니다.");
+                            return;
+                        }
+                        const form = document.createElement('form');
+                        form.setAttribute('method', 'post');
+                        form.setAttribute('action', '/seller/OrderHistoryViewDetail.do');
+                        const hiddenField = document.createElement('input');
+                        hiddenField.setAttribute('type', 'hidden');
+                        hiddenField.setAttribute('name', 'orderId');
+                        hiddenField.setAttribute('value', orderId);
+                        form.appendChild(hiddenField);
+                        document.body.appendChild(form);
+                        form.submit();
+                    },
 
-    // 2. 필터 변경 (필터 클릭 시 호출)
-    setFilter(type) {
-        this.filterType = type;
-        this.changePage(1); // 필터 바뀔 때 항상 1페이지로
-    },
+                    // 2. 필터 변경 (필터 클릭 시 호출)
+                    setFilter(type) {
+                        this.filterType = type;
+                        this.changePage(1); // 필터 바뀔 때 항상 1페이지로
+                    },
 
-    // 3. 페이지 변경 (검색, 필터, 페이징 클릭 시 호출)
-    changePage(page) {
-        // totalPages 업데이트 (필터링된 결과 기준)
-        this.totalPages = Math.ceil(this.filteredOrders.length / this.pageSize) || 1;
+                    // 3. 페이지 변경 (검색, 필터, 페이징 클릭 시 호출)
+                    changePage(page) {
+                        // totalPages 업데이트 (필터링된 결과 기준)
+                        this.totalPages = Math.ceil(this.filteredOrders.length / this.pageSize) || 1;
 
-        if (page < 1 || page > this.totalPages) return;
+                        if (page < 1 || page > this.totalPages) return;
 
-        this.currentPage = page;
-        
-        // 페이지 블록 계산
-        this.calculatePageBlock(page);
+                        this.currentPage = page;
 
-        // 중요: allOrders가 아니라 'filteredOrders'에서 잘라내야 함
-        const start = (page - 1) * this.pageSize;
-        const end = start + this.pageSize;
-        this.pagedOrderList = this.filteredOrders.slice(start, end);
-    },
+                        // 페이지 블록 계산
+                        this.calculatePageBlock(page);
 
-    // 4. 서버 데이터 로드
-    fnList: function () {
-        if (!this.userId || this.userId === "null" || this.userId === "") {
-            console.warn("userId가 없습니다.");
-            return;
-        }
+                        // 중요: allOrders가 아니라 'filteredOrders'에서 잘라내야 함
+                        const start = (page - 1) * this.pageSize;
+                        const end = start + this.pageSize;
+                        this.pagedOrderList = this.filteredOrders.slice(start, end);
+                    },
 
-        $.ajax({
-            url: "/seller/orderList.dox",
-            type: "POST",
-            dataType: "json",
-            data: { userId: this.userId },
-            success: (data) => {
-                this.allOrders = (data.list || []).map(o => ({
-                    orderId: o.ORDER_ID,
-                    orderDate: o.ORDER_CREATED_AT,
-                    status: o.STATUS,
-                    userName: o.USER_NAME,
-                    userPhone: o.USER_PHONE,
-                    proName: o.PRO_NAME,
-                    totalPrice: (o.PRICE || 0) + (o.PRICE_DIFF || 0),
-                    pickupDate: o.PICKUP_DELIVERY_DATE,
-                    deliveryDate: o.PICKUP_DELIVERY_DATE,
-                    options: `${o.OPTION_NAME || '옵션 없음'}: ${o.VALUE_NAME || '기본'}`,
-                    cnt: 1,
-                    productImage: o.PRO_IMAGE_URL || '',
-                    unreadCount: o.UNREAD_COUNT || 0
-                }));
-                // 데이터 로드 후 필터 적용하여 1페이지 표시
-                this.changePage(1); 
-            },
-            error: (xhr, status, error) => {
-                console.error("조회 실패:", error);
-            }
-        });
-    },
+                    // 4. 서버 데이터 로드
+                    fnList: function () {
+                        if (!this.userId || this.userId === "null" || this.userId === "") {
+                            console.warn("userId가 없습니다.");
+                            return;
+                        }
 
-    calculatePageBlock: function (page) {
-        const currentBlock = Math.ceil(page / this.pageBlockSize);
-        this.startPage = (currentBlock - 1) * this.pageBlockSize + 1;
-        this.endPage = Math.min(this.startPage + this.pageBlockSize - 1, this.totalPages);
-    },
+                        $.ajax({
+                            url: "/seller/orderList.dox",
+                            type: "POST",
+                            dataType: "json",
+                            data: { userId: this.userId },
+                            success: (data) => {
+                                this.allOrders = (data.list || []).map(o => ({
+                                    orderId: o.ORDER_ID,
+                                    orderDate: o.ORDER_CREATED_AT,
+                                    status: o.STATUS,
+                                    userName: o.USER_NAME,
+                                    userPhone: o.USER_PHONE,
+                                    proName: o.PRO_NAME,
+                                    totalPrice: (o.PRICE || 0) + (o.PRICE_DIFF || 0),
+                                    pickupDate: o.PICKUP_DELIVERY_DATE,
+                                    deliveryDate: o.PICKUP_DELIVERY_DATE,
+                                    options: `${o.OPTION_NAME || '옵션 없음'}: ${o.VALUE_NAME || '기본'}`,
+                                    cnt: 1,
+                                    productImage: o.PRO_IMAGE_URL || '',
+                                    unreadCount: o.UNREAD_COUNT || 0
+                                }));
+                                // 데이터 로드 후 필터 적용하여 1페이지 표시
+                                this.changePage(1);
+                            },
+                            error: (xhr, status, error) => {
+                                console.error("조회 실패:", error);
+                            }
+                        });
+                    },
 
-    getPages: function () {
-        const pages = [];
-        for (let i = this.startPage; i <= this.endPage; i++) {
-            pages.push(i);
-        }
-        return pages;
-    },
+                    calculatePageBlock: function (page) {
+                        const currentBlock = Math.ceil(page / this.pageBlockSize);
+                        this.startPage = (currentBlock - 1) * this.pageBlockSize + 1;
+                        this.endPage = Math.min(this.startPage + this.pageBlockSize - 1, this.totalPages);
+                    },
 
-    formatDate: function (date) {
-        if (window.moment && date) return moment(date).format('YYYY.MM.DD');
-        return date || '-';
-    },
+                    getPages: function () {
+                        const pages = [];
+                        for (let i = this.startPage; i <= this.endPage; i++) {
+                            pages.push(i);
+                        }
+                        return pages;
+                    },
 
-    formatNumber: function (number) {
-        if (number === null || number === undefined) return '0';
-        return number.toLocaleString();
-    },
+                    formatDate: function (date) {
+                        if (window.moment && date) return moment(date).format('YYYY.MM.DD');
+                        return date || '-';
+                    },
 
-    isNewOrder: function (orderDate) {
-        if (!orderDate) return false;
-        const now = moment();
-        const orderTime = moment(orderDate, "MMM DD, YYYY, h:mm:ss A");
-        if (!orderTime.isValid()) return false;
-        const duration = moment.duration(now.diff(orderTime));
-        return duration.asHours() <= 24 && duration.asHours() >= 0;
-    }
+                    formatNumber: function (number) {
+                        if (number === null || number === undefined) return '0';
+                        return number.toLocaleString();
+                    },
+
+                    isNewOrder: function (orderDate) {
+                        if (!orderDate) return false;
+                        const now = moment();
+                        const orderTime = moment(orderDate, "MMM DD, YYYY, h:mm:ss A");
+                        if (!orderTime.isValid()) return false;
+                        const duration = moment.duration(now.diff(orderTime));
+                        return duration.asHours() <= 24 && duration.asHours() >= 0;
+                    }
 
 
                 },

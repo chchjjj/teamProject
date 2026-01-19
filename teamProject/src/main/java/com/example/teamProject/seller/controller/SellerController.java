@@ -137,9 +137,14 @@ public class SellerController {
 	}
 
 	@RequestMapping("/seller/order/addOption.do")
-	public String addOption(Model model) throws Exception {
+	public String addOption(@RequestParam(value="orderId", required=false) String orderId, Model model) throws Exception {
+	    
+	
+	    System.out.println("넘어온 주문번호: " + orderId);
+	    
+	    model.addAttribute("orderId", orderId);
 
-		return "/seller/orderOptionAdd";
+	    return "/seller/orderOptionAdd";
 	}
 
 	@RequestMapping("/seller/order/calendarView.do")
