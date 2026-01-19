@@ -497,7 +497,8 @@
                 
                 <div class="info-row">
                     <span>전화번호:</span>
-                    <span>{{maskPhone(toPhone)}}</span> 
+                    <span v-if="toPhone">{{maskPhone(toPhone)}}</span> 
+                    <span v-else>${sessionPhone}</span> 
                 </div>
 
             </div>
@@ -589,7 +590,13 @@
                             console.log("Order 리스트 출력");// 테스트용
                             console.log(data);// 테스트용
                             self.orderList = data.list;
-                            self.toPhone = data.phoneList[0].phone; //수령인 휴대폰 번호
+                            // ✅ phoneList 존재 여부 확인 후 할당
+                            if (data.phoneList && data.phoneList.length > 0) {
+                                self.toPhone = data.phoneList[0].phone;
+                            } else {
+                                console.log("phoneList가 비어있습니다.");
+                                self.toPhone = ""; // 기본값 설정
+                            }
                             self.fnGroupOrderList(self.orderList);
                             self.deliveryType = data.list[0].deliveryType; //배달인지 픽업인지
                             console.log("self.deliveryType[0] ===> " + data.list[0].deliveryType);
