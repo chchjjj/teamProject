@@ -107,6 +107,7 @@ public class User {
 	    //픽업
 	    private String pickTime;
 	    private String storeAddr;
+	    private String pickupStatus;
 	    
 	    //review
 //		    private String cDateTime;

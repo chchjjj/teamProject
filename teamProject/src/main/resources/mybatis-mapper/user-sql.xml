@@ -135,6 +135,11 @@
 	        O.DELIVERY_FEE,
 	        O.DELIVERY_TYPE,
 	        DELI.DELIVERY_STATUS,
+	        CASE 
+	            WHEN O.DELIVERY_TYPE = 'D' THEN DELI.DELIVERY_STATUS
+	            WHEN O.DELIVERY_TYPE = 'P' THEN PI.PICKUP_STATUS
+	            ELSE NULL
+    		END AS DELIVERY_STATUS,
 	        O.FULL_ADDRESS,
             O.CHAT_YN,
 	        O.ORDER_DATE,
