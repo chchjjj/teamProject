@@ -486,9 +486,12 @@
                         </div>
                         <!-- ✅ 판매처별 소계를 헤더 오른쪽에 배치 -->
                         <div class="item-meta">
-                            <div class="total-price">
+                            <span v-if="deliveryType=='D'" style="margin-right: 30px;">
+                                *배송비는 미포함한 금액입니다.
+                            </span>
+                            <span class="total-price">
                                 {{ calculateStoreTotal(item.groupedDetails).toLocaleString('ko-KR') }} 원
-                            </div>
+                            </span>
                         </div>
                     </div>
                     
@@ -805,13 +808,13 @@
                         pay_method: "card",
                         merchant_uid: "merchant_" + new Date().getTime(),
                         name: proName, //상품이름, 대표로 제일 첫번째 상품명을 보여준다.
-                        amount: 1, //실제 결제금액은 1원, 원래는 self.paymentPrice
+                        amount: 1, //테스트를 위해 결제금액은 1원, 원래는 self.paymentPrice
                         buyer_tel: self.toPhone, // 구매자 휴대폰 번호
                         buyer_name: self.toName // 구매자 성함
                       } , function (rsp) { // callback
                           if (rsp.success) {
                             // 결제 성공 시
-                            alert("결제가 완료되었습니다.");
+                            // alert("결제가 완료되었습니다.");
                             console.log(rsp);
                             
                             // 실제 구현용 여기부터
@@ -866,11 +869,11 @@
                         data: param,
                         success: function (data) {
                             if(data.result == "success"){
-                                alert("결제되었습니다!");
+                                alert("결제가 완료되었습니다.");
                                 self.fnCartDelete();
                                 location.href="/main.do";
                             } else {
-                                alert("fnPayHistory 오류가 발생했습니다!");
+                                alert("오류가 발생했습니다!");
                                 location.href="/main.do";
                             }
                         }
@@ -894,11 +897,11 @@
                         data: param,
                         success: function (data) {
                             if(data.result == "success"){
-                                alert("결제되었습니다!");
+                                alert("결제가 완료되었습니다.");
                                 self.fnCartDelete();
                                 location.href="/main.do";
                             } else {
-                                alert(" fnDeliPayHistory 오류가 발생했습니다!");
+                                alert("오류가 발생했습니다!");
                                 location.href="/main.do";
                             }
                         }
@@ -922,11 +925,11 @@
                         data: param,
                         success: function (data) {
                             if(data.result == "success"){
-                                alert("결제되었습니다!");
+                                alert("결제가 완료되었습니다.");
                                 self.fnCartDelete();
                                 location.href="/main.do";
                             } else {
-                                alert("fnPickPayHistory 오류가 발생했습니다!");
+                                alert("오류가 발생했습니다!");
                                 location.href="/main.do";
                             }
                         }
