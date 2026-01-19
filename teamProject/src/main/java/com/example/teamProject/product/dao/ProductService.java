@@ -292,92 +292,122 @@ public class ProductService {
 			return resultMap;
 		}
 		
+		//productDetail.jsp의 구매하기(바로 구매)
+		
+		@Transactional
+	      public HashMap<String, Object> insertOrder(HashMap<String, Object> map) {
+	            // TODO Auto-generated method stub
+	            HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	            
+	            // 선택한 옵션의 내용을 담은 list
+	            List<HashMap<String, Object>> list = (List<HashMap<String, Object>>) map.get("list");
+	            
+	            
+	            int cnt1 = ProductMapper.insertOrder(map); // 주문서 테이블에 인서트 
+	            
+//	            //배송, 픽업 테이블 insert (orderId 포함해서)
+//	            String deliveryType = (String) map.get("deliveryType");
+//	             if ("D".equals(deliveryType)) {
+//	                 ProductMapper.insertDeliv(map);
+//	                 
+//	             } else if ("P".equals(deliveryType)) {
+//	                 ProductMapper.insertPickUp(map);
+//	                 
+//	             }
+	            
+	            //1.19 수정 : 주문 현황이 제대로 뜨게 하기 위해서  xml에 원래 하드코딩을 파라미터로 변해서 배속/픽업 부분만 수정하겠습니다.
+	            // 배송 타입에 따라 DELIVERY_TBL 또는 PICKUP_TBL에 INSERT
+	            String deliveryType = (String) map.get("deliveryType");
+	            
+	            if ("D".equals(deliveryType)) {
+	                // 배송 상태 기본값 설정 (없으면 'Z')
+	                if (map.get("deliveryStatus") == null) {
+	                    map.put("deliveryStatus", "Z");
+	                }
+	                ProductMapper.insertDeliv(map);
+	                
+	            } else if ("P".equals(deliveryType)) {
+	                // 픽업 상태 기본값 설정 (없으면 'A')
+	                if (map.get("pickupStatus") == null) {
+	                    map.put("pickupStatus", "A");
+	                }
+	                ProductMapper.insertPickUp(map);
+	            }
+	            
+	             String isChatRequested = (String) map.get("isChatRequested");
+	             if ("Y".equals(isChatRequested)) {
+	                 ProductMapper.insertChat(map);
+	                 
+	             }
+	             
+	            int cnt2 = ProductMapper.insertOrderDt(map); // 주문서 디테일 테이블에 인서트
+	            
+	            
+	            
+	            //주문서 옵션 테이블 반복
+	            for(int i=0; i<list.size(); i++) {
+	               
+	               HashMap<String, Object> inputMap = list.get(i);
+	               inputMap.put("orderDetailId", map.get("orderDetailId"));
+	               System.out.println(i+1 + "번째 맵 ==> " + inputMap);
+	               ProductMapper.insertOrderOpt(inputMap);
+	            }
+	            
+	            resultMap.put("result", "success");
+	            resultMap.put("orderId", map.get("orderId"));   // 여기 추가
+	            
+	            return resultMap;
+	             
+	         }
+		
 	//주문서 (구매하기)
 	
-		@Transactional
-		public HashMap<String, Object> insertOrder(HashMap<String, Object> map) {
-				// TODO Auto-generated method stub
-				HashMap<String, Object> resultMap = new HashMap<String, Object>();
-				
-				// 선택한 옵션의 내용을 담은 list
-				List<HashMap<String, Object>> list = (List<HashMap<String, Object>>) map.get("list");
-				
-				
-				int cnt1 = ProductMapper.insertOrder(map); // 주문서 테이블에 인서트 
-				
-				//배송, 픽업 테이블 insert (orderId 포함해서)
-				String deliveryType = (String) map.get("deliveryType");
-			    if ("D".equals(deliveryType)) {
-			        ProductMapper.insertDeliv(map);
-			        
-			    } else if ("P".equals(deliveryType)) {
-			        ProductMapper.insertPickUp(map);
-			        
-			    }
-			    String isChatRequested = (String) map.get("isChatRequested");
-			    if ("Y".equals(isChatRequested)) {
-			        ProductMapper.insertChat(map);
-			        
-			    }
-			    
-				int cnt2 = ProductMapper.insertOrderDt(map); // 주문서 디테일 테이블에 인서트
-				
-				
-				
-				//주문서 옵션 테이블 반복
-				for(int i=0; i<list.size(); i++) {
-					
-					HashMap<String, Object> inputMap = list.get(i);
-					inputMap.put("orderDetailId", map.get("orderDetailId"));
-					System.out.println(i+1 + "번째 맵 ==> " + inputMap);
-					ProductMapper.insertOrderOpt(inputMap);
-				}
-				
-				resultMap.put("result", "success");
-				resultMap.put("orderId", map.get("orderId"));   // 여기 추가
-			   
-				return resultMap;
-			    
-			}
-		
 		@Transactional
 		public HashMap<String, Object> insertCartToOrder(HashMap<String, Object> map) {
 		    HashMap<String, Object> resultMap = new HashMap<>();
 
+		    // 장바구니에서 넘어온 상품 리스트 가져오기
 		    List<HashMap<String, Object>> cartList = 
 		        (List<HashMap<String, Object>>) map.get("cartList");
 		    
 		    System.out.println("맵=>" + map);
 		    System.out.println("카트리스트=>" + cartList);
 		    
+		    // 주문할 상품이 없으면 실패 반환
 		    if (cartList == null || cartList.isEmpty()) {
 		        resultMap.put("result", "fail");
 		        resultMap.put("message", "주문할 상품이 없습니다."); 
 		        return resultMap;
 		    }
 
+		    // 생성된 주문 ID를 담을 리스트
 		    List<Object> orderIdList = new ArrayList<>();
 		   
 		    // cartList는 이제 store별로 그룹화된 데이터
+		    // 각 가게별로 주문서 생성
 		    for (int i = 0; i < cartList.size(); i++) {
 		        HashMap<String, Object> storeOrder = cartList.get(i);
 		        
-		        // 공통 데이터 (store 레벨)
-		        String userId = (String) storeOrder.get("userId");
-		        String storeId = (String) storeOrder.get("storeId");
-		        String storeName = (String) storeOrder.get("storeName");
-		        String letteringWord = (String) storeOrder.get("letteringWord");
-		        int deliveryFee = ((Number) storeOrder.get("deliveryFee")).intValue();
-		        int orderTotalPrice = ((Number) storeOrder.get("orderTotalPrice")).intValue();
-		        int orderSubtotal = ((Number) storeOrder.get("orderSubtotal")).intValue();
-		        String deliveryType = (String) storeOrder.get("deliveryType");
-		        String chatYn = (String) storeOrder.get("chatYn");
-		        String userName = (String) storeOrder.get("userName");
-		        String phone = (String) storeOrder.get("phone");
-		        String fullAddress = (String) storeOrder.get("fullAddress");
-		        String storeAddr = (String) storeOrder.get("storeAddr");
+		        // 공통 데이터 추출 (store 레벨)
+		        String userId = (String) storeOrder.get("userId");           // 구매자 ID
+		        String storeId = (String) storeOrder.get("storeId");         // 가게 ID
+		        String storeName = (String) storeOrder.get("storeName");     // 가게 이름
+		        String letteringWord = (String) storeOrder.get("letteringWord"); // 레터링 문구
+		        int deliveryFee = ((Number) storeOrder.get("deliveryFee")).intValue(); // 배송비
+		        int orderTotalPrice = ((Number) storeOrder.get("orderTotalPrice")).intValue(); // 총 결제금액
+		        int orderSubtotal = ((Number) storeOrder.get("orderSubtotal")).intValue(); // 상품 합계
+		        String deliveryType = (String) storeOrder.get("deliveryType"); // 배송 방식 (D=배송, P=픽업)
+		        
+		        // ✅ 배송/픽업 상태 가져오기 (프론트에서 전달받음)
+		        String deliveryStatus = (String) storeOrder.get("deliveryStatus");
+		        
+		        String chatYn = (String) storeOrder.get("chatYn");           // 채팅 신청 여부
+		        String userName = (String) storeOrder.get("userName");       // 수령인 이름
+		        String phone = (String) storeOrder.get("phone");             // 수령인 연락처
+		        String fullAddress = (String) storeOrder.get("fullAddress"); // 배송 주소
+		        String storeAddr = (String) storeOrder.get("storeAddr");     // 가게 주소 (픽업용)
 
-		        // ORDER_TBL 인서트용 데이터
+		        // ORDER_TBL 인서트용 데이터 준비
 		        HashMap<String, Object> orderMap = new HashMap<>();
 		        orderMap.put("userId", userId);
 		        orderMap.put("storeName", storeName);
@@ -391,9 +421,10 @@ public class ProductService {
 		        orderMap.put("useraddress", fullAddress);
 		        orderMap.put("storeAddr", storeAddr);
 		        
-		        // ORDER_TBL 인서트
+		        // ORDER_TBL 인서트 (주문서 생성)
 		        ProductMapper.insertCartToOrder(orderMap);
 		        
+		        // 생성된 주문 ID 가져오기
 		        Object orderId = orderMap.get("orderId");
 		        orderIdList.add(orderId);
 
@@ -402,35 +433,38 @@ public class ProductService {
 		            (List<HashMap<String, Object>>) storeOrder.get("items");
 		        
 		        if (items != null && !items.isEmpty()) {
+		            // 각 상품별로 처리
 		            for (HashMap<String, Object> item : items) {
-		                // ORDER_DETAIL_TBL 인서트
+		                // ORDER_DETAIL_TBL 인서트 (주문 상세 정보)
 		                HashMap<String, Object> detailMap = new HashMap<>();
 		                detailMap.put("orderId", orderId);
-		                detailMap.put("proNo", item.get("proNo"));
-		                detailMap.put("storeId", item.get("storeId"));
-		                detailMap.put("proName", item.get("proName"));
-		                detailMap.put("itemQty", item.get("quantity"));  // quantity로 변경됨
-		                detailMap.put("defPrice", item.get("price"));     // price로 변경됨
-		                detailMap.put("subtotal", item.get("subtotal"));  // 계산된 subtotal
-		                detailMap.put("letteringWord", item.get("letteringWord"));
+		                detailMap.put("proNo", item.get("proNo"));           // 상품 번호
+		                detailMap.put("storeId", item.get("storeId"));       // 가게 번호
+		                detailMap.put("proName", item.get("proName"));       // 상품명
+		                detailMap.put("itemQty", item.get("quantity"));      // 수량
+		                detailMap.put("defPrice", item.get("price"));        // 상품 기본 가격
+		                detailMap.put("subtotal", item.get("subtotal"));     // 소계
+		                detailMap.put("letteringWord", item.get("letteringWord")); // 레터링 문구
 		                
 		                System.out.println("detailMap ==> " + detailMap);
 		                ProductMapper.insertCartToOrderDt(detailMap);
 		                
+		                // 생성된 주문 상세 ID 가져오기
 		                Object orderDetailId = detailMap.get("orderDetailId");
 
-		                // ORDER_OPTION_TBL 인서트
+		                // ORDER_OPTION_TBL 인서트 (선택한 옵션들)
 		                List<HashMap<String, Object>> options = 
 		                    (List<HashMap<String, Object>>) item.get("options");
 		                
 		                if (options != null && !options.isEmpty()) {
+		                    // 각 옵션별로 처리
 		                    for (HashMap<String, Object> opt : options) {
 		                        HashMap<String, Object> optMap = new HashMap<>();
 		                        optMap.put("orderDetailId", orderDetailId);
-		                        optMap.put("topOptionId", opt.get("topOptionId"));
-		                        optMap.put("subOptionId", opt.get("subOptionId"));
-		                        optMap.put("priceDiff", opt.get("priceDiff"));
-		                        optMap.put("addQuantity", opt.get("addQuantity"));
+		                        optMap.put("topOptionId", opt.get("topOptionId"));   // 상위 옵션 ID
+		                        optMap.put("subOptionId", opt.get("subOptionId"));   // 하위 옵션 ID
+		                        optMap.put("priceDiff", opt.get("priceDiff"));       // 옵션 추가 금액
+		                        optMap.put("addQuantity", opt.get("addQuantity"));   // 옵션 수량
 		                        
 		                        ProductMapper.insertCartToOrderOpt(optMap);
 		                    }
@@ -438,7 +472,7 @@ public class ProductService {
 		            }
 		        }
 		        
-		        // 배송/픽업 정보 인서트
+		        // ✅ 배송/픽업 정보 인서트
 		        HashMap<String, Object> deliveryMap = new HashMap<>();
 		        deliveryMap.put("orderId", orderId);
 		        deliveryMap.put("userId", userId);
@@ -449,18 +483,27 @@ public class ProductService {
 		        deliveryMap.put("userAddr", fullAddress);
 		        deliveryMap.put("storeAddr", storeAddr);
 
+		        // 배송 타입에 따라 DELIVERY_TBL 또는 PICKUP_TBL에 인서트
 		        if ("D".equals(deliveryType)) {
+		            // ✅ 배송 주문: DELIVERY_TBL에 배송 상태 추가
+		            // deliveryStatus가 없으면 기본값 'Z'(주문신청) 사용
+		            deliveryMap.put("deliveryStatus", deliveryStatus != null ? deliveryStatus : "Z");
 		            ProductMapper.insertDelivCart(deliveryMap);
+		            
 		        } else if ("P".equals(deliveryType)) {
+		            // ✅ 픽업 주문: PICKUP_TBL에 픽업 상태 추가
+		            // pickupStatus가 없으면 기본값 'A'(준비중) 사용
+		            deliveryMap.put("pickupStatus", deliveryStatus != null ? deliveryStatus : "A");
 		            ProductMapper.insertPickUpCart(deliveryMap);
 		        }
 
-		        // 채팅 선택 시
+		        // 채팅 선택 시 CHAT_TBL에 인서트
 		        if ("Y".equals(chatYn)) {
 		            ProductMapper.insertChat(deliveryMap);
 		        }
 		    }
 		    
+		    // 생성된 모든 주문 ID 리스트 반환
 		    resultMap.put("orderIdList", orderIdList);
 		    resultMap.put("result", "success");
 		    

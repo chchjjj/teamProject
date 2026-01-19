@@ -391,7 +391,7 @@ OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 	VALUES (
 		SEQ_DELI_ID.NEXTVAL,
 		#{orderId},
-		'Z',
+		NVL(#{deliveryStatus}, 'Z'),  <!-- 1.19 수정-->
 		#{userName},<!--배달테이블에만 있는거-->
 		#{phone},<!--배달테이블에만 있는거-->
 		#{address},<!--배달테이블에만 있는거-->
@@ -412,7 +412,7 @@ OFFSET #{page} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 		#{storeAddr},
 		TO_DATE(#{deliveryDate}, 'YYYY-MM-DD HH24:MI'),
 		TO_DATE(#{deliveryDate}, 'YYYY-MM-DD HH24:MI'),
-		'A',
+		NVL(#{pickupStatus}, 'A'),<!-- 1.19 수정-->
 		SYSDATE,
 		SYSDATE
 	)
