@@ -49,4 +49,10 @@ public interface PaymentMapper {
 	//주문서에 배송지 정보가 갱신됐는지 확인하기
 	Payment selectOrderAddress(HashMap<String, Object> map);
 
+	//수령인 전화번호 갱신하기
+	int updateDeliveryPhone(HashMap<String, Object> map);
+
+	// 수령인 전화번호 가져오기
+	List<Payment> selectPhoneList(HashMap<String, Object> map);
+
 }

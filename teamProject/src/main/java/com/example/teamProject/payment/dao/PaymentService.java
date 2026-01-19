@@ -20,13 +20,21 @@ public class PaymentService {
 	@Autowired
 	PaymentMapper paymentMapper; 
 	
+	@Transactional
 	public HashMap<String, Object> getOrderList(HashMap<String, Object> map) {
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 		try {
 			//List<HashMap<String, Object>> list = (List<HashMap<String, Object>>) map.get("list");
 			System.out.println("map 안에 담긴 값은 ===>" + map);
+			
+			//주문 목록 출력
 			List<Payment> OrderList = paymentMapper.selectOrderList(map);
+			
+			//수령인 전화번호 가져오기
+			List<Payment> phoneList = paymentMapper.selectPhoneList(map);
+			
 			resultMap.put("list", OrderList); 
+			resultMap.put("phoneList", phoneList);
 			resultMap.put("result", "success");
 		} catch (Exception e) { 
 			resultMap.put("result", "fail");
@@ -280,11 +288,14 @@ public class PaymentService {
 	            //map.put("orderId", orderId);
 	            paymentMap.put("orderId", orderId);
 	            paymentMap.put("fullAddress", map.get("fullAddress"));
+	            paymentMap.put("phone", map.get("phone"));
 	            
 	            System.out.println("반복문 속 paymentMap: " + paymentMap);
 	            
 	            paymentMapper.updateOrderAddress(paymentMap);
+	            paymentMapper.updateDeliveryPhone(paymentMap);
 	        }
+	        
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			resultMap.put("result", "fail");

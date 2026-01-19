@@ -247,7 +247,7 @@
                 {{item.fullAddress}}
             </div>
             <div class="card-button-group">
-                <button class="btn-modify" @click="fnUseAddress(item.fullAddress)">선택</button>
+                <button class="btn-modify" @click="fnUseAddress(item.fullAddress, item.phone)">선택</button>
                 <button class="btn-delete" @click="fnRemoveAddress(item.addressId)">삭제</button>
             </div>
         </div>
@@ -392,7 +392,7 @@
                 });
             },
 
-            fnUseAddress: function(fullAddress){
+            fnUseAddress: function(fullAddress, phone){
                 let self = this;
                 if (self.orderIdList.length === 0) {
                         alert("배송지를 선택할 주문서가 없습니다.");
@@ -400,6 +400,7 @@
                 }
                 let param = {
                     fullAddress : fullAddress,
+                    phone : phone,
                     orderIdList: JSON.stringify(self.orderIdList) //문자열로 전송
                 };
                 $.ajax({
@@ -438,7 +439,6 @@
             self.fnAddressList(); //주소 목록 출력(기본 주소 외에 추가 입력한 것)
             let str = "${orderIdList}";
              self.orderIdList = JSON.parse(str); //파싱을 해줘야 문자열을 리스트로 바꿀 수 있다.
-            //self.orderIdList = JSON.parse("$orderIdList"); //파싱을 해줘야 문자열을 리스트로 바꿀 수 있다.
             // console.log("self.orderIdList: " + self.orderIdList);
             // console.log("최종적으로 사용할 orderIdList 값은 => " + self.orderIdList);
         }

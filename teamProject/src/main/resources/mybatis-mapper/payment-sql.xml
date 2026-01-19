@@ -122,4 +122,21 @@
 		WHERE ORDER_ID = #{orderId}
 	</update>
 	
+	<update id="updateDeliveryPhone" parameterType="hashmap">
+	    UPDATE DELIVERY_TBL
+		SET 
+			PHONE = #{phone}
+		WHERE ORDER_ID = #{orderId}
+	</update>
+	
+	<select id="selectPhoneList" parameterType="hashmap" resultType="com.example.teamProject.payment.model.Payment"> 
+	    SELECT PHONE
+	    FROM DELIVERY_TBL
+	    WHERE ORDER_ID IN
+	    <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+	        #{item}
+	    </foreach>
+	</select>
+	
+	
 </mapper>

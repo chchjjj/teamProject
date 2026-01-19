@@ -230,9 +230,9 @@
             .inputNum{
                 width: 100px;
             }
-            .mask{
+            /* .mask{
                 -webkit-text-security: square;
-            }
+            } */
         </style>
     </head>
 
@@ -279,23 +279,20 @@
                         <input v-if="!phoneCheckFlg" type="tel" class="small-input" v-model="phone1" maxlength="3">
                         <input v-else type="tel" class="small-input" v-model="phone1" maxlength="3" disabled>
                         -
-                        <input v-if="!phoneCheckFlg" type="tel" class="mask small-input" v-model="phone2" maxlength="4"> 
-                        <input v-else type="tel" class="mask small-input" v-model="phone2" maxlength="4" disabled>
+                        <input v-if="!phoneCheckFlg" type="tel" class="small-input" v-model="phone2" maxlength="4"> 
+                        <input v-else type="tel" class="small-input" v-model="phone2" maxlength="4" disabled>
                         -
-                        <input v-if="!phoneCheckFlg" type="tel" class="mask small-input" v-model="phone3" maxlength="4">
-                        <input v-else type="tel" class="mask small-input" v-model="phone3" maxlength="4" disabled>
-                        <template v-if="!phoneCheckFlg">
-                            <button @click="fnPhoneCheck">중복체크</button>
+                        <input v-if="!phoneCheckFlg" type="tel" class="small-input" v-model="phone3" maxlength="4">
+                        <input v-else type="tel" class="small-input" v-model="phone3" maxlength="4" disabled>
+                        
+                        <template v-if="!sendMessageFlg">
+                            <button @click="fnPhoneCheck">인증번호 받기</button>
                         </template>
                         <template v-else>
-                            <template v-if="!sendMessageFlg">
-                                <button @click="fnSendSms">인증번호 받기</button>
-                            </template>
-                            <template v-else>
-                                <input v-model="inputNum" :placeholder="timer" class="inputNum">
-                                <button v-if="!smsFlg" @click="fnSmsAuth">인증</button>
-                            </template>
+                            <input v-model="inputNum" :placeholder="timer" class="inputNum">
+                            <button v-if="!smsFlg" @click="fnSmsAuth">인증</button>
                         </template>
+                        
                     </div>
 
                     <div class="btn-line">
@@ -391,8 +388,8 @@
                                 alert("이미 가입된 번호입니다. 로그인 / 아이디 찾기를 이용하세요");
                             }
                             else {
-                                alert("사용 가능한 번호입니다.");
                                 self.phoneCheckFlg = true;
+                                self.fnSendSms();
                             }
                         }
                     });
