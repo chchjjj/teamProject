@@ -10,11 +10,7 @@
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
-        <!--페이지 이동-->
         <script src="/js/page-change.js"></script>
-
-        <!-- mitt 불러오기 -->
-        <!-- <script src="https://unpkg.com/mitt/dist/mitt.umd.js"></script>  -->
 
         <style>
 
@@ -195,12 +191,9 @@
     </head>
 
     <body>
-        <!-- 헤더 -->
         <%@ include file="/WEB-INF/main/header.jsp" %>
 
             <div id="app">
-                <!-- html 코드는 id가 app인 태그 안에서 작업 -->
-
                 <div class="container">
 
                     <main class="content-container">
@@ -225,17 +218,14 @@
                             </label>
                         </div>
 
-                        <!-- 검색기능 -->
                         <div class="search-area">
                             <button @click="fnIngreProList">검색</button>
                         </div>
 
-                        <!-- 해당하는 상품이 없을 경우 -->
                         <div v-if="emptyMessage" class="no-result">
                             {{ emptyMessage }}
                         </div>
 
-                        <!-- 상품목록 (해당하는 상품 있을 경우) -->
                         <div v-else class="product-grid">
                             <div class="product-item" v-for="item in proList" @click="fnProDetail(item.proNo)">
                                 <div class="product-image-wrapper">
@@ -245,7 +235,6 @@
                                         <img v-else :src="(item.filePath + item.fileName).trim()" alt="상품 이미지"
                                             class="product-image"
                                             style="width: 100%; height: auto; border-radius: 10px;">
-                                        <!-- 멤버쉽 Y이면 추천 딱지 표시 -->
                                         <img v-if="item.membership === 'Y'" class="recommend-badge"
                                             src="/img/recommend.png" alt="추천 딱지">
                                 </div>
@@ -260,9 +249,7 @@
                         </div>
 
 
-                        <!--페이징-->
                         <div class="pagination" v-if="proList && proList.length > 0">
-                            <!-- 페이지 숫자 양옆 화살표 (fnMove) -->
                             <a href="#" @click="fnMove(-1)" v-if="page != 1">&lt;</a>
                             <a href="#" v-for="num in index" :key="num" @click="fnPage(num)"
                                 :class="{ active : page == num }">
@@ -274,7 +261,6 @@
                     </main>
                 </div>
             </div>
-            <!-- 푸터 -->
             <%@ include file="/WEB-INF/main/footer.jsp" %>
     </body>
 
@@ -327,9 +313,14 @@
                 },
 
                 // '검색' 클릭 시 해당 원재료 미포함 상품 불러오기
-                fnIngreProList: function () {
+                fnIngreProList: function (isPaging) { // ★ 페이징 이동인지 검색 버튼 클릭인지 구분하기 위해 인자 추가 가능하지만, 최소 수정을 위해 내부 로직 변경
                     let self = this;
                     
+                    // 페이징 번호를 눌러서 호출한게 아니라면(즉, 검색 버튼 클릭 시) 페이지 1로 초기화
+                    if(isPaging !== 'Y') {
+                        self.page = 1;
+                    }
+
                     //  console.log("선택된 원재료:", self.ingreName); // ← 여기 확인
                     // 배열이 아닐 때 강제로 배열로 변환 
                     let names = Array.isArray(self.ingreName) ? self.ingreName : [self.ingreName];
@@ -364,7 +355,7 @@
                 fnProDetail: function (proNo) {
                     let self = this;
                     // console.log(proNo); // main 화면에서 클릭한 상품번호 출력(확인완료)
-                    pageChange("/productDetail.do", { proNo: proNo });  // 상세페이지로 proNo 넘겨줌            
+                    pageChange("/productDetail.do", { proNo: proNo });  // 상세페이지로 proNo 넘겨줌             
                 },
 
 
@@ -381,7 +372,7 @@
                         data: param,
                         success: function (data) {
                             // console.log(data);
-                            self.list = data.list; // data에 있는 list 값을 변수 list에 담기      
+                            self.list = data.list; // data에 있는 list 값을 변수 list에 담기       
 
                         }
                     });
@@ -398,7 +389,7 @@
                     let self = this;
                     self.page = num; // 현재 페이지를 num의 숫자로 반영
                     //self.fnIngreList(); // 반영 후 기준으로 리스트 재호출
-                    self.fnIngreProList(); // ← 상품 목록 조회로 변경
+                    self.fnIngreProList('Y'); // ← 상품 목록 조회로 변경 (페이징 유지 인자 추가)
                 },
 
                 // 페이지 숫자 양옆 화살표 버튼 누르면 페이지 이동
@@ -406,7 +397,7 @@
                     let self = this;
                     self.page += move; // 현재 페이지를 -1 또는 +1 
                     //self.fnIngreList();
-                    self.fnIngreProList(); // ← 상품 목록 조회로 변경
+                    self.fnIngreProList('Y'); // ← 상품 목록 조회로 변경 (페이징 유지 인자 추가)
                 },
 
 
