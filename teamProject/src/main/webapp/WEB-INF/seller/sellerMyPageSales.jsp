@@ -284,22 +284,31 @@
                             }
                         });
                     },
-                    drawChart() {
+                   drawChart() {
                         if (!Array.isArray(this.salesData) || this.salesData.length === 0) return;
 
-                        // 선택된 월에 따라 데이터 필터링
+                        // 1️⃣ 필터
                         let displayData = this.salesData;
                         if (this.selectedMonth !== "all") {
-                            displayData = this.salesData.filter(item => item.MONTH === this.selectedMonth);
+                            displayData = displayData.filter(
+                                item => item.MONTH === this.selectedMonth
+                            );
                         }
 
+                        // 2️⃣ 서버에서 YYYY.MM 문자열로 내려온다는 전제
+                        // 👉 문자열 기준 정렬 (이게 전부입니다)
+                        displayData = [...displayData].sort(
+                            (a, b) => a.MONTH.localeCompare(b.MONTH)
+                        );
+
+                        // 3️⃣ 차트 데이터
                         let chartData = [['월', '매출', { role: 'style' }, { role: 'annotation' }]];
 
-                        // ⚠️ 여기를 수정: this.salesData 대신 displayData 사용
                         displayData.forEach(item => {
                             const total = Number(item.TOTAL);
+
                             chartData.push([
-                                item.MONTH,
+                                item.MONTH,                     // ← 그대로 사용
                                 total,
                                 'color: #F4C9D6; fill-opacity: 0.9;',
                                 total.toLocaleString() + '원'
@@ -309,8 +318,6 @@
                         const data = google.visualization.arrayToDataTable(chartData);
 
                         const options = {
-                            title: '',
-                            fontName: 'Pretendard, sans-serif',
                             chartArea: {
                                 left: '10%',
                                 top: '10%',
@@ -319,8 +326,8 @@
                             },
                             bar: { groupWidth: '40%' },
                             annotations: {
-                                textStyle: { fontSize: 13, bold: true, color: '#3E2723' },
-                                alwaysOutside: true
+                                alwaysOutside: true,
+                                textStyle: { fontSize: 13, bold: true, color: '#3E2723' }
                             },
                             vAxis: {
                                 format: '#,###',
@@ -328,14 +335,15 @@
                                 textStyle: { color: '#aaa', fontSize: 11 }
                             },
                             hAxis: {
-                                format: '0',  // ← 이 부분 추가: 정수로만 표시
                                 textStyle: { color: '#3E2723', fontSize: 14, bold: true }
                             },
                             legend: { position: 'none' },
                             animation: { startup: true, duration: 800, easing: 'out' }
                         };
 
-                        const chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+                        const chart = new google.visualization.ColumnChart(
+                            document.getElementById('chart_div')
+                        );
                         chart.draw(data, options);
                     }
                 },

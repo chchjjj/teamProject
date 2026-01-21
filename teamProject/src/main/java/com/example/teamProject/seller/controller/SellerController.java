@@ -78,33 +78,82 @@ public class SellerController {
 
 	@RequestMapping("/seller/productUpdate.do")
 	public String productUpdate(@RequestParam(value = "proNo", required = false) Integer proNo, HttpSession session,
-			Model model) {
+	        Model model) {
 
-		Map<String, Object> product = new HashMap<>();
-		List<Map<String, Object>> options = new ArrayList<>();
-		String disabledDatesStr = "";
+	    Map<String, Object> product = new HashMap<>();
+	    List<Map<String, Object>> options = new ArrayList<>();
+	    String disabledDatesStr = "";
 
-		if (proNo != null) {
-			// 상품 정보 조회
-			product = sellerService.getProduct(proNo);
+	    if (proNo != null) {
+	        product = sellerService.getProduct(proNo);
+	        List<Map<String, Object>> productImages = sellerService.getProductImages(proNo);
 
-			// 옵션 정보 조회
-			options = sellerService.getOptionsByProduct(proNo);
+	        System.out.println("🔍 [DEBUG] proNo: " + proNo);
+	        System.out.println("🔍 [DEBUG] product 데이터: " + product);
+	        System.out.println("🔍 [DEBUG] productImages 개수: " + (productImages != null ? productImages.size() : 0));
 
-			// 불가 날짜 문자열
-			disabledDatesStr = String.join(",", sellerService.getDisabledDates(proNo));
-		}
+	        if (productImages != null && !productImages.isEmpty()) {
+	            String thumbnailPath = null;
+	            List<String> detailPaths = new ArrayList<>();
+	            String longPath = null;
 
-		model.addAttribute("pageTitle", proNo == null ? "제품 등록" : "제품 수정");
-		model.addAttribute("proNo", proNo);
-		model.addAttribute("sessionId", session.getAttribute("userId"));
+	            for (Map<String, Object> img : productImages) {
+	                String fileUse = (String) img.get("FILEUSE");
+	                String filePath = (String) img.get("FILEPATH");
+	                String fileName = (String) img.get("FILENAME");
+	                
+	                System.out.println("🖼️ [DEBUG] 이미지 타입: " + fileUse + ", 경로: " + filePath + ", 파일명: " + fileName);
+	                
+	                // 🔥 NULL 체크 추가
+	                if (filePath == null || fileName == null) {
+	                    System.err.println("⚠️ [WARNING] 경로 또는 파일명이 NULL입니다. fileUse: " + fileUse);
+	                    continue;
+	                }
+	                
+	                // 🔥 경로 끝에 슬래시가 없으면 추가
+	                if (!filePath.endsWith("/")) {
+	                    filePath += "/";
+	                }
+	                
+	                String fullPath = filePath + fileName;
+	                
+	                System.out.println("✅ [DEBUG] 조립된 전체 경로: " + fullPath);
 
-		// Map과 List<Map> 그대로 JSON으로 변환
-		model.addAttribute("productJson", new Gson().toJson(product));
-		model.addAttribute("optionsJson", new Gson().toJson(options));
-		model.addAttribute("disabledDatesStr", disabledDatesStr);
+	                if ("T".equals(fileUse)) {
+	                    thumbnailPath = fullPath;
+	                } else if ("D".equals(fileUse) || "I".equals(fileUse)) {
+	                    detailPaths.add(fullPath);
+	                } else if ("M".equals(fileUse)) {
+	                    longPath = fullPath;
+	                }
+	            }
 
-		return "/seller/productUpdate";
+	            // 🔥 최종 경로 설정
+	            product.put("THUMBNAIL_PATH", thumbnailPath);
+	            product.put("DETAIL_IMAGE_PATHS", detailPaths);
+	            product.put("LONG_IMAGE_PATH", longPath);
+
+	            System.out.println("✅ [FINAL] 썸네일 경로: " + thumbnailPath);
+	            System.out.println("✅ [FINAL] 상세 이미지 개수: " + detailPaths.size());
+	            System.out.println("✅ [FINAL] 롱 이미지 경로: " + longPath);
+	        } else {
+	            System.err.println("⚠️ [WARNING] productImages가 비어있거나 NULL입니다!");
+	        }
+
+	        options = sellerService.getOptionsByProduct(proNo);
+	        disabledDatesStr = String.join(",", sellerService.getDisabledDates(proNo));
+	    }
+
+	    System.out.println("📤 [FINAL] product Map 전체: " + product);
+
+	    model.addAttribute("pageTitle", proNo == null ? "제품 등록" : "제품 수정");
+	    model.addAttribute("proNo", proNo);
+	    model.addAttribute("sessionId", session.getAttribute("userId"));
+	    model.addAttribute("productJson", new Gson().toJson(product));
+	    model.addAttribute("optionsJson", new Gson().toJson(options));
+	    model.addAttribute("disabledDatesStr", disabledDatesStr);
+
+	    return "/seller/productUpdate";
 	}
 
 	@RequestMapping("/seller/OrderHistoryViewDetail.do")
@@ -709,26 +758,114 @@ public class SellerController {
 
 	@RequestMapping(value = "/seller/product/update.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	public String DeleteSellerList(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
-		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-
-		String json = map.get("disabledDates").toString();
-		ObjectMapper mapper = new ObjectMapper();
-		List<Object> list = mapper.readValue(json, new TypeReference<List<Object>>() {
-		});
-		map.put("dateList", list);
-
-		String json2 = map.get("options").toString();
-		ObjectMapper mapper2 = new ObjectMapper();
-		List<HashMap<String, Object>> options = mapper2.readValue(json2,
-				new TypeReference<List<HashMap<String, Object>>>() {
-				});
-		map.put("optionList", options);
-
-		System.out.println(map);
-		resultMap = sellerService.productUpdate(map);
-		return new Gson().toJson(resultMap);
-
+	public String updateProduct(
+	    @RequestParam HashMap<String, Object> map,
+	    @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
+	    @RequestParam(value = "detailFiles", required = false) List<MultipartFile> detailFiles,
+	    @RequestParam(value = "longFile", required = false) MultipartFile longFile
+	) throws Exception {
+	    
+	    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+	    
+	    try {
+	        System.out.println("=== 상품 수정 요청 받음 ===");
+	        System.out.println("proNo: " + map.get("proNo"));
+	        System.out.println("썸네일 파일: " + (thumbnailFile != null ? thumbnailFile.getOriginalFilename() : "없음"));
+	        
+	        // ===============================
+	        // 1. 파일 업로드 처리
+	        // ===============================
+	        String uploadDir = "C:/img-product/";
+	        File dir = new File(uploadDir);
+	        if (!dir.exists()) {
+	            dir.mkdirs();
+	        }
+	        
+	        // 썸네일 이미지 저장
+	        if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
+	            String orgName = thumbnailFile.getOriginalFilename();
+	            String saveName = System.currentTimeMillis() + "_" + orgName;
+	            
+	            File file = new File(uploadDir + saveName);
+	            thumbnailFile.transferTo(file);
+	            
+	            map.put("thumbnailPath", "/img-product/" + saveName);
+	            System.out.println("✅ 썸네일 저장: /img-product/" + saveName);
+	        }
+	        
+	        // 상세 이미지 저장
+	        if (detailFiles != null && !detailFiles.isEmpty()) {
+	            List<String> detailPaths = new ArrayList<>();
+	            for (MultipartFile file : detailFiles) {
+	                if (!file.isEmpty()) {
+	                    String orgName = file.getOriginalFilename();
+	                    String saveName = System.currentTimeMillis() + "_" + orgName;
+	                    
+	                    File saveFile = new File(uploadDir + saveName);
+	                    file.transferTo(saveFile);
+	                    
+	                    detailPaths.add("/img-product/" + saveName);
+	                }
+	            }
+	            if (!detailPaths.isEmpty()) {
+	                map.put("detailImagePaths", detailPaths);
+	                System.out.println("✅ 상세 이미지 저장: " + detailPaths.size() + "개");
+	            }
+	        }
+	        
+	        // 롱 이미지 저장
+	        if (longFile != null && !longFile.isEmpty()) {
+	            String orgName = longFile.getOriginalFilename();
+	            String saveName = System.currentTimeMillis() + "_" + orgName;
+	            
+	            File file = new File(uploadDir + saveName);
+	            longFile.transferTo(file);
+	            
+	            map.put("longImagePath", "/img-product/" + saveName);
+	            System.out.println("✅ 롱 이미지 저장: /img-product/" + saveName);
+	        }
+	        
+	        // ===============================
+	        // 2. JSON 데이터 파싱
+	        // ===============================
+	        ObjectMapper mapper = new ObjectMapper();
+	        
+	        // 불가 날짜 파싱
+	        String disabledDatesJson = (String) map.get("disabledDates");
+	        if (disabledDatesJson != null && !disabledDatesJson.isEmpty() && !disabledDatesJson.equals("[]")) {
+	            List<Object> dateList = mapper.readValue(disabledDatesJson, new TypeReference<List<Object>>() {});
+	            map.put("dateList", dateList);
+	            System.out.println("✅ 불가 날짜: " + dateList.size() + "개");
+	        }
+	        
+	        // 옵션 파싱
+	        String optionsJson = (String) map.get("options");
+	        if (optionsJson != null && !optionsJson.isEmpty() && !optionsJson.equals("[]")) {
+	            List<HashMap<String, Object>> options = mapper.readValue(optionsJson, new TypeReference<List<HashMap<String, Object>>>() {});
+	            map.put("optionList", options);
+	            System.out.println("✅ 옵션: " + options.size() + "개");
+	        }
+	        
+	        // ===============================
+	        // 3. 서비스 호출
+	        // ===============================
+	        System.out.println("전체 데이터: " + map);
+	        resultMap = sellerService.productUpdate(map);
+	        
+	        if (resultMap.get("result") == null) {
+	            resultMap.put("result", "success");
+	        }
+	        
+	        System.out.println("=== 상품 수정 완료 ===");
+	        
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        resultMap.put("result", "error");
+	        resultMap.put("message", e.getMessage());
+	        System.err.println("❌ 상품 수정 오류: " + e.getMessage());
+	    }
+	    
+	    return new Gson().toJson(resultMap);
 	}
 
 	@PostMapping(value = "/member/update.dox", consumes = "application/json")
