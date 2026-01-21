@@ -802,6 +802,7 @@ public HashMap<String, Object> productUpdate(HashMap<String, Object> map) throws
         // ===============================
         // 2. 썸네일 이미지 처리 ⭐⭐⭐
         // ===============================
+
         if (map.get("thumbnailPath") != null) {
             System.out.println("🖼️ [SERVICE] 썸네일 업데이트: " + map.get("thumbnailPath"));
             
@@ -812,72 +813,82 @@ public HashMap<String, Object> productUpdate(HashMap<String, Object> map) throws
             sellerMapper.deleteProductImgByType(deleteParam);
             
             // 새 썸네일 삽입
+            String fullPath = map.get("thumbnailPath").toString();
+            String fileName = fullPath.substring(fullPath.lastIndexOf("/") + 1);
+            
             HashMap<String, Object> imgMap = new HashMap<>();
             imgMap.put("proNo", map.get("proNo"));
-            imgMap.put("filepath", "/img-product/");
-            imgMap.put("filename", map.get("thumbnailPath").toString().replace("/img-product/", ""));
-            imgMap.put("fileorgname", map.get("thumbnailPath").toString().replace("/img-product/", ""));
-            imgMap.put("fileuse", "T");
-            imgMap.put("fileetc", "PNG");
+            imgMap.put("filepath", "/img-product/");    // 🔥 키 이름 확인
+            imgMap.put("filename", fileName);            // 🔥 키 이름 확인
+            imgMap.put("fileorgname", fileName);         // 🔥 키 이름 확인
+            imgMap.put("fileuse", "T");                  // 🔥 키 이름 확인
+            imgMap.put("fileetc", "PNG");                // 🔥 키 이름 확인
+            
+            System.out.println("🔍 imgMap 내용: " + imgMap); // 디버깅용
             
             sellerMapper.insertProductImg(imgMap);
             System.out.println("✅ [SERVICE] 썸네일 DB 업데이트 완료");
         }
-        
-        // ===============================
-        // 3. 상세 이미지 처리
-        // ===============================
-        if (map.get("detailImagePaths") != null) {
-            @SuppressWarnings("unchecked")
-            List<String> detailPaths = (List<String>) map.get("detailImagePaths");
-            
-            System.out.println("🖼️ [SERVICE] 상세 이미지 업데이트: " + detailPaths.size() + "개");
-            
-            // 기존 상세 이미지 삭제 (I 타입)
-            HashMap<String, Object> deleteParam = new HashMap<>();
-            deleteParam.put("proNo", map.get("proNo"));
-            deleteParam.put("fileuse", "I");
-            sellerMapper.deleteProductImgByType(deleteParam);
-            
-            // 새 상세 이미지 삽입
-            for (String path : detailPaths) {
-                HashMap<String, Object> imgMap = new HashMap<>();
-                imgMap.put("proNo", map.get("proNo"));
-                imgMap.put("filepath", "/img-product/");
-                imgMap.put("filename", path.replace("/img-product/", ""));
-                imgMap.put("fileorgname", path.replace("/img-product/", ""));
-                imgMap.put("fileuse", "I");
-                imgMap.put("fileetc", "PNG");
-                
-                sellerMapper.insertProductImg(imgMap);
-            }
-            System.out.println("✅ [SERVICE] 상세 이미지 DB 업데이트 완료");
-        }
-        
-        // ===============================
-        // 4. 롱 이미지 처리
-        // ===============================
-        if (map.get("longImagePath") != null) {
-            System.out.println("🖼️ [SERVICE] 롱 이미지 업데이트: " + map.get("longImagePath"));
-            
-            // 기존 롱 이미지 삭제 (M 타입)
-            HashMap<String, Object> deleteParam = new HashMap<>();
-            deleteParam.put("proNo", map.get("proNo"));
-            deleteParam.put("fileuse", "M");
-            sellerMapper.deleteProductImgByType(deleteParam);
-            
-            // 새 롱 이미지 삽입
-            HashMap<String, Object> imgMap = new HashMap<>();
-            imgMap.put("proNo", map.get("proNo"));
-            imgMap.put("filepath", "/img-product/");
-            imgMap.put("filename", map.get("longImagePath").toString().replace("/img-product/", ""));
-            imgMap.put("fileorgname", map.get("longImagePath").toString().replace("/img-product/", ""));
-            imgMap.put("fileuse", "M");
-            imgMap.put("fileetc", "PNG");
-            
-            sellerMapper.insertProductImg(imgMap);
-            System.out.println("✅ [SERVICE] 롱 이미지 DB 업데이트 완료");
-        }
+
+     // ===============================
+     // 3. 상세 이미지 처리
+     // ===============================
+     if (map.get("detailImagePaths") != null) {
+         @SuppressWarnings("unchecked")
+         List<String> detailPaths = (List<String>) map.get("detailImagePaths");
+         
+         System.out.println("🖼️ [SERVICE] 상세 이미지 업데이트: " + detailPaths.size() + "개");
+         
+         // 기존 상세 이미지 삭제
+         HashMap<String, Object> deleteParam = new HashMap<>();
+         deleteParam.put("proNo", map.get("proNo"));
+         deleteParam.put("fileuse", "I");
+         sellerMapper.deleteProductImgByType(deleteParam);
+         
+         // 새 상세 이미지 삽입
+         for (String fullPath : detailPaths) {
+             String fileName = fullPath.substring(fullPath.lastIndexOf("/") + 1);
+             
+             HashMap<String, Object> imgMap = new HashMap<>();
+             imgMap.put("proNo", map.get("proNo"));
+             imgMap.put("filepath", "/img-product/");
+             imgMap.put("filename", fileName);
+             imgMap.put("fileorgname", fileName);
+             imgMap.put("fileuse", "I");
+             imgMap.put("fileetc", "PNG");
+             
+             sellerMapper.insertProductImg(imgMap);
+         }
+         System.out.println("✅ [SERVICE] 상세 이미지 DB 업데이트 완료");
+     }
+
+     // ===============================
+     // 4. 롱 이미지 처리
+     // ===============================
+     if (map.get("longImagePath") != null) {
+         System.out.println("🖼️ [SERVICE] 롱 이미지 업데이트: " + map.get("longImagePath"));
+         
+         // 기존 롱 이미지 삭제
+         HashMap<String, Object> deleteParam = new HashMap<>();
+         deleteParam.put("proNo", map.get("proNo"));
+         deleteParam.put("fileuse", "M");
+         sellerMapper.deleteProductImgByType(deleteParam);
+         
+         // 새 롱 이미지 삽입
+         String fullPath = map.get("longImagePath").toString();
+         String fileName = fullPath.substring(fullPath.lastIndexOf("/") + 1);
+         
+         HashMap<String, Object> imgMap = new HashMap<>();
+         imgMap.put("proNo", map.get("proNo"));
+         imgMap.put("filepath", "/img-product/");
+         imgMap.put("filename", fileName);
+         imgMap.put("fileorgname", fileName);
+         imgMap.put("fileuse", "M");
+         imgMap.put("fileetc", "PNG");
+         
+         sellerMapper.insertProductImg(imgMap);
+         System.out.println("✅ [SERVICE] 롱 이미지 DB 업데이트 완료");
+     }
         
         // ===============================
         // 5. 불가 날짜 처리 (기존 로직)
@@ -900,8 +911,17 @@ public HashMap<String, Object> productUpdate(HashMap<String, Object> map) throws
         // 6. 옵션 처리
         // ===============================
         if (map.get("optionList") != null) {
+        	
+        	Object proNoObj = map.get("proNo");
+            if (proNoObj instanceof String) {
+                map.put("proNo", Integer.parseInt((String) proNoObj));
+            }
+
+         
+           
             // 기존 옵션 삭제
-            sellerMapper.deleteProductOptions(map);
+            sellerMapper.deleteProductSubOptions(map);  // 먼저 하위 옵션 삭제
+            sellerMapper.deleteProductTopOptions(map);  // 그 다음 상위 옵션 삭제
             
             @SuppressWarnings("unchecked")
             List<HashMap<String, Object>> optionList = (List<HashMap<String, Object>>) map.get("optionList");
@@ -915,19 +935,28 @@ public HashMap<String, Object> productUpdate(HashMap<String, Object> map) throws
                 sellerMapper.insertTopOption(topMap);
                 Integer topOptionId = (Integer) topMap.get("optNo");
                 
+                System.out.println("🔍 생성된 TOP_OPTION_ID: " + topOptionId); // 디버깅용
+                
+                if (topOptionId == null) {
+                    throw new RuntimeException("TOP_OPTION_ID 생성 실패!");
+                }
+                
                 @SuppressWarnings("unchecked")
                 List<HashMap<String, Object>> subOptions = (List<HashMap<String, Object>>) topOption.get("subOptions");
                 
                 if (subOptions != null) {
                     for (HashMap<String, Object> subOption : subOptions) {
                         HashMap<String, Object> subMap = new HashMap<>();
-                        subMap.put("topOptionId", topOptionId);
+                        subMap.put("topOptionId", topOptionId);  // 🔥 이제 NULL이 아님
                         subMap.put("valueName", subOption.get("valueName"));
                         subMap.put("priceDiff", subOption.get("priceDiff"));
+                        
+                        System.out.println("🔍 SubOption 삽입: " + subMap); // 디버깅용
                         
                         sellerMapper.insertSubOption(subMap);
                     }
                 }
+            
             }
             System.out.println("✅ [SERVICE] 옵션 업데이트 완료");
         }
