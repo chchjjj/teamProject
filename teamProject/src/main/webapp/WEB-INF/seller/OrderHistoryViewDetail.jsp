@@ -265,8 +265,10 @@
 
                             <div class="product-area">
                                 <div class="product-image">
-                                    <img v-if="orderDetail.productImage" :src="orderDetail.productImage" alt="상품">
-                                    <span v-else>No Image</span>
+                                    <img v-if="orderDetail.productImage" :src="orderDetail.productImage" alt="상품 이미지"
+                                        @error="handleImageError"
+                                        style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                    <span v-else style="color: #999; font-size: 14px;">이미지 없음</span>
                                 </div>
                                 <div class="options-list">
                                     <h2 style="margin:0 0 15px 0;">[[ orderDetail.proName ]]</h2>
@@ -343,6 +345,19 @@
                         };
                     },
                     methods: {
+                        handleImageError(event) {
+                            console.error('이미지 로드 실패:', event.target.src);
+                            event.target.style.display = 'none';
+                            event.target.parentElement.innerHTML = '<span style="color:#999;">이미지 로드 실패</span>';
+                        },
+                        handleImageError(event) {
+                            console.error('❌ 이미지 로딩 실패:', event.target.src);
+                            event.target.style.display = 'none';
+                            const parent = event.target.parentElement;
+                            parent.innerHTML = '<span style="color: red; font-size: 14px;">이미지 로딩 실패<br>경로: ' +
+                                event.target.src.substring(event.target.src.lastIndexOf('/') + 1) +
+                                '</span>';
+                        },
                         fnDetail() {
                             if (!this.orderId) return;
                             this.loading = true;
@@ -351,23 +366,73 @@
                                 type: "POST",
                                 data: { orderId: this.orderId },
                                 success: (data) => {
+                                    console.log('🔍 서버 응답 전체:', data);
+
                                     if (data && data.orderDetail) {
                                         const od = Array.isArray(data.orderDetail) ? data.orderDetail[0] : data.orderDetail;
+
+                                        console.log('🔍 주문 상세 데이터:', od);
+
+                                        // STATUS 값 검증
+                                        const validStatus = ['P', 'C', 'D', 'R', 'F', 'X'];
+                                        const status = od.STATUS || od.status || 'P';
+
+                                        // 🖼️ 이미지 경로 처리 (여러 가능성 체크)
+                                        let imageUrl = od.PRO_IMAGE_URL ||
+                                            od.proImageUrl ||
+                                            od.PRO_IMAGE ||
+                                            od.proImage ||
+                                            od.THUMBNAIL_PATH ||
+                                            od.thumbnailPath ||
+                                            od.IMAGE_URL ||
+                                            od.imageUrl ||
+                                            '';
+
+                                        console.log('🖼️ 원본 이미지 경로:', imageUrl);
+
+                                        // 빈 경로이거나 '/'로만 끝나는 경우 제외
+                                        if (imageUrl && imageUrl.trim() !== '' && !imageUrl.endsWith('/')) {
+                                            // 상대 경로를 절대 경로로 변환
+                                            if (!imageUrl.startsWith('http') && !imageUrl.startsWith('/')) {
+                                                imageUrl = '/' + imageUrl;
+                                            }
+                                        } else {
+                                            console.warn('⚠️ 유효하지 않은 이미지 경로:', imageUrl);
+                                            imageUrl = null;
+                                        }
+
+                                        console.log('✅ 최종 이미지 경로:', imageUrl);
+
                                         this.orderDetail = {
-                                            orderId: od.ORDER_ID,
-                                            status: od.STATUS,
-                                            deliveryYn: od.DELIVERY_TYPE === 'D' ? 'Y' : 'N', // DELIVERY_TYPE을 Y/N으로 변환
-                                            userName: od.USER_NAME || '-',
-                                            proName: od.PRO_NAME || '-',
-                                            totalPrice: od.TOTAL_PRICE || 0,
-                                            productPrice: od.PRODUCT_PRICE || 0,
-                                            manualOptionPrice: od.MANUAL_OPTION_PRICE || 0,
-                                            autoOptionPriceDiff: od.AUTO_OPTION_PRICE_DIFF || 0,
-                                            optionDetails: od.OPTION_DETAILS || '선택 옵션 없음',
-                                            message: od.LETTERING_WORD || '요청사항 없음',
-                                            productImage: od.PRO_IMAGE_URL || ''
+                                            orderId: od.ORDER_ID || od.orderId,
+                                            status: validStatus.includes(status) ? status : 'P',
+                                            deliveryYn: (od.DELIVERY_TYPE || od.deliveryType) === 'D' ? 'Y' : 'N',
+                                            userName: od.USER_NAME || od.userName || '-',
+                                            proName: od.PRO_NAME || od.proName || '-',
+                                            totalPrice: od.TOTAL_PRICE || od.totalPrice || 0,
+                                            productPrice: od.PRODUCT_PRICE || od.productPrice || 0,
+                                            manualOptionPrice: od.MANUAL_OPTION_PRICE || od.manualOptionPrice || 0,
+                                            autoOptionPriceDiff: od.AUTO_OPTION_PRICE_DIFF || od.autoOptionPriceDiff || 0,
+                                            optionDetails: od.OPTION_DETAILS || od.optionDetails || '선택 옵션 없음',
+                                            message: od.LETTERING_WORD || od.letteringWord || '요청사항 없음',
+                                            productImage: imageUrl
                                         };
+
+                                        console.log('📦 매핑된 주문 정보:', this.orderDetail);
+
+                                        // 이미지 로드 테스트
+                                        if (imageUrl) {
+                                            const testImg = new Image();
+                                            testImg.onload = () => console.log('✅ 이미지 로드 성공:', imageUrl);
+                                            testImg.onerror = () => console.error('❌ 이미지 로드 실패:', imageUrl);
+                                            testImg.src = imageUrl;
+                                        }
                                     }
+                                    this.loading = false;
+                                },
+                                error: (xhr, status, error) => {
+                                    console.error('Ajax 에러:', error);
+                                    console.error('응답:', xhr.responseText);
                                     this.loading = false;
                                 }
                             });
