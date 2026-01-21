@@ -319,7 +319,7 @@
                 
                 //상세주소가 있을 경우 addr에 상세주소 합치기
                 if(self.detailAddr){
-                    addr = self.mainAddr + " " + self.detailAddr;
+                    addr = self.mainAddr + ", " + self.detailAddr;
                 } else {
                     addr = self.mainAddr;
                 }
