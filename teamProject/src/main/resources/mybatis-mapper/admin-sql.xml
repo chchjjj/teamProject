@@ -12,7 +12,7 @@
    			AND (USER_ID =#{keyWord} OR USER_NAME LIKE '%'||#{keyWord}||'%')
    		</if>
    		<if test="option=='userId'">
-   			AND USER_ID =#{keyWord}
+   			AND USER_ID LIKE '%'||#{keyWord}||'%'
    		</if>
    		<if test="option=='userName'">
    			AND USER_NAME LIKE '%'||#{keyWord}||'%'
@@ -38,7 +38,7 @@
    			AND (USER_ID =#{keyWord} OR USER_NAME LIKE '%'||#{keyWord}||'%')
    		</if>
    		<if test="option=='userId'">
-   			AND USER_ID =#{keyWord}
+   			AND USER_ID LIKE '%'||#{keyWord}||'%'
    		</if>
    		<if test="option=='userName'">
    			AND USER_NAME LIKE '%'||#{keyWord}||'%'
