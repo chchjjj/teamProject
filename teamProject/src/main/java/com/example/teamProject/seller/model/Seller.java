@@ -133,5 +133,8 @@ public class Seller {
 	 public void setTopOptionId(Integer topOptionId) {
 	        this.topOptionId = topOptionId;
 	    }
+	 private String thumbnailPath;
+	 public String getThumbnailPath() { return thumbnailPath; }
+	    public void setThumbnailPath(String thumbnailPath) { this.thumbnailPath = thumbnailPath; }
 	
 }

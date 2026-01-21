@@ -222,4 +222,6 @@ public interface SellerMapper {
 
 	// 하위 옵션 삽입 (HashMap 버전)
 	int insertSubOption(HashMap<String, Object> map);
+	//이미지
+	void insertProductImage(Map<String, Object> imgData);
 }

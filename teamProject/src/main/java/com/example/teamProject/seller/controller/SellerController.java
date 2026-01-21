@@ -685,82 +685,151 @@ public class SellerController {
 
 	@RequestMapping(value = "/seller/product/register.dox", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> registerProduct(Seller seller, // 상품 정보를 담은 Seller DTO (proName, price, deliveryFee,
-																// proType, lettering 등)
-			@RequestParam("thumbnailFile") MultipartFile thumbnailFile,
-			@RequestParam(value = "thumbnailUse", required = false) String thumbnailUse,
-			@RequestParam(value = "detailFiles", required = false) List<MultipartFile> detailFiles,
-			@RequestParam(value = "longFile", required = false) MultipartFile longFile,
-			@RequestParam("storeId") int receivedStoreId, // 클라이언트가 전송한 Store ID (int로 받음)
-			@RequestParam("optionsJson") String optionsJson, @RequestParam("disabledDatesStr") String disabledDatesStr,
-			HttpSession session // jakarta.servlet.http.HttpSession 사용
+	public Map<String, Object> registerProduct(
+	    Seller seller,
+	    @RequestParam("thumbnailFile") MultipartFile thumbnailFile,
+	    @RequestParam(value = "thumbnailUse", required = false) String thumbnailUse,
+	    @RequestParam(value = "detailFiles", required = false) List<MultipartFile> detailFiles,
+	    @RequestParam(value = "longFile", required = false) MultipartFile longFile,
+	    @RequestParam("storeId") int receivedStoreId,
+	    @RequestParam("optionsJson") String optionsJson,
+	    @RequestParam("disabledDatesStr") String disabledDatesStr,
+	    HttpSession session
 	) {
-		Map<String, Object> result = new HashMap<>();
+	    Map<String, Object> result = new HashMap<>();
+	    String loggedInUserId = (String) session.getAttribute("sessionId");
 
-		// 🌟 1. 세션 USER_ID 유효성 검증
-		String loggedInUserId = (String) session.getAttribute("sessionId");
+	    if (loggedInUserId == null || loggedInUserId.trim().isEmpty()) {
+	        result.put("success", false);
+	        result.put("message", "세션 로그인 정보(userId)를 찾을 수 없습니다.");
+	        return result;
+	    }
 
-		if (loggedInUserId == null || loggedInUserId.trim().isEmpty()) {
-			System.out.println(">>> [FATAL] 세션 userId 유효성 최종 검증 실패: " + loggedInUserId);
-			result.put("success", false);
-			result.put("message", "세션 로그인 정보(userId)를 찾을 수 없습니다. (재로그인 필요)");
-			return result;
-		}
+	    seller.setUserId(loggedInUserId);
 
-		// 2. DTO에 userId 설정
-		seller.setUserId(loggedInUserId);
+	    try {
+	        int isOwner = sellerService.checkStoreOwnership(loggedInUserId, receivedStoreId);
+	        if (isOwner != 1) {
+	            result.put("success", false);
+	            result.put("message", "상점 접근 권한이 없습니다.");
+	            return result;
+	        }
 
-		// 💡 3. 핵심 보안 검증: userId와 storeId의 소유권 일치 여부 확인
-		try {
-			// [필수 가정]: sellerService.checkStoreOwnership(userId, storeId)가 1(소유) 또는 0(미소유)을
-			// 반환한다고 가정
-			// ORA-01722 오류 방지 및 소유권 검증을 동시에 수행하는 새로운 메소드를 호출합니다.
-			int isOwner = sellerService.checkStoreOwnership(loggedInUserId, receivedStoreId);
+	        seller.setStoreId(String.valueOf(receivedStoreId));
+	        seller.setOptionsJson(optionsJson);
+	        seller.setDisabledDatesStr(disabledDatesStr);
+	        processProductData(seller);
 
-			if (isOwner != 1) { // 소유권이 없거나, userId와 storeId 쌍이 매핑되지 않으면
-				result.put("success", false);
-				result.put("message", "전달된 상점 ID(" + receivedStoreId + ")에 대한 접근 권한이 없습니다. (보안 오류)");
-				return result;
-			}
+	        if (seller.getProName() == null || seller.getProName().isEmpty()) {
+	            result.put("success", false);
+	            result.put("message", "상품 이름은 필수입니다.");
+	            return result;
+	        }
 
-			// 4. 검증 통과: DTO에 최종 storeId 설정 (DB 타입이 String인 경우를 대비하여 String으로 변환)
-			seller.setStoreId(String.valueOf(receivedStoreId));
-			seller.setOptionsJson(optionsJson);
-			seller.setDisabledDatesStr(disabledDatesStr);
-			System.out.println("옵션 JSON: " + optionsJson.substring(0, Math.min(optionsJson.length(), 100)) + "...");
-			System.out.println("불가 날짜: " + disabledDatesStr);
-			// 5. 상품 데이터 유효성 검사 및 설정
-			processProductData(seller);
+	        // ✅ 실제 프로젝트 경로 사용
+	        String projectPath = System.getProperty("user.dir").replace("\\", "/");
+	        String uploadDir = projectPath + "/src/main/webapp/img-product/";
+	        
+	        System.out.println("====================================");
+	        System.out.println("📁 업로드 디렉토리: " + uploadDir);
+	        System.out.println("====================================");
+	        
+	        File dir = new File(uploadDir);
+	        if (!dir.exists()) {
+	            boolean created = dir.mkdirs();
+	            System.out.println("📁 디렉토리 생성: " + created);
+	        }
 
-			if (seller.getProName() == null || seller.getProName().isEmpty()) {
-				result.put("success", false);
-				result.put("message", "상품 이름은 필수입니다.");
-				return result;
-			}
+	        // 1. 먼저 상품 기본 정보만 DB에 등록 (proNo 생성)
+	        sellerService.registerProduct(seller);
+	        
+	        int proNo = seller.getProNo();
+	        System.out.println("✅ 상품 등록 완료 - proNo: " + proNo);
 
-			// 6. DB 등록
-			sellerService.registerProduct(seller); // 이 메소드는 상품 정보와 함께 proNo를 업데이트합니다.
+	        // 2. 썸네일 파일 저장
+	        if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
+	            String originalFilename = thumbnailFile.getOriginalFilename();
+	            String saveName = System.currentTimeMillis() + "_thumb_" + originalFilename;
+	            File destFile = new File(uploadDir + saveName);
+	            
+	            System.out.println("📤 썸네일 저장 시작");
+	            System.out.println("   - 원본 파일명: " + originalFilename);
+	            System.out.println("   - 저장 파일명: " + saveName);
+	            System.out.println("   - 저장 경로: " + destFile.getAbsolutePath());
+	            
+	            thumbnailFile.transferTo(destFile);
+	            
+	            System.out.println("✅ 썸네일 파일 저장 완료: " + destFile.exists());
+	            
+	            // DB에 이미지 경로 저장
+	            String dbPath = "/img-product/" + saveName;
+	            
+	            Map<String, Object> imgData = new HashMap<>();
+	            imgData.put("proNo", proNo);
+	            imgData.put("imgPath", dbPath);
+	            imgData.put("imgType", "THUMBNAIL");
+	            imgData.put("thumbnailUse", thumbnailUse);
+	            
+	            sellerService.insertProductImage(imgData);
+	            System.out.println("✅ DB 이미지 정보 저장 완료");
+	        } else {
+	            System.out.println("⚠️ 썸네일 파일이 없습니다!");
+	        }
 
-			// 7. 파일 업로드
-			fileService.uploadProductImages(seller.getProNo(), thumbnailFile, thumbnailUse, detailFiles, longFile);
+	        // 3. 상세 이미지 저장
+	        if (detailFiles != null && !detailFiles.isEmpty()) {
+	            System.out.println("📤 상세 이미지 저장 시작 - 개수: " + detailFiles.size());
+	            
+	            for (int i = 0; i < detailFiles.size(); i++) {
+	                MultipartFile detailFile = detailFiles.get(i);
+	                if (!detailFile.isEmpty()) {
+	                    String originalFilename = detailFile.getOriginalFilename();
+	                    String saveName = System.currentTimeMillis() + "_detail_" + i + "_" + originalFilename;
+	                    File destFile = new File(uploadDir + saveName);
+	                    
+	                    detailFile.transferTo(destFile);
+	                    System.out.println("✅ 상세 이미지 " + (i+1) + " 저장: " + destFile.exists());
+	                    
+	                    Map<String, Object> imgData = new HashMap<>();
+	                    imgData.put("proNo", proNo);
+	                    imgData.put("imgPath", "/img-product/" + saveName);
+	                    imgData.put("imgType", "DETAIL");
+	                    imgData.put("imgOrder", i);
+	                    
+	                    sellerService.insertProductImage(imgData);
+	                }
+	            }
+	        }
 
-			result.put("success", true);
-			result.put("message", "제품 등록 성공");
+	        // 4. 긴 이미지 저장
+	        if (longFile != null && !longFile.isEmpty()) {
+	            String originalFilename = longFile.getOriginalFilename();
+	            String saveName = System.currentTimeMillis() + "_long_" + originalFilename;
+	            File destFile = new File(uploadDir + saveName);
+	            
+	            longFile.transferTo(destFile);
+	            System.out.println("✅ 긴 이미지 저장: " + destFile.exists());
+	            
+	            Map<String, Object> imgData = new HashMap<>();
+	            imgData.put("proNo", proNo);
+	            imgData.put("imgPath", "/img-product/" + saveName);
+	            imgData.put("imgType", "LONG");
+	            
+	            sellerService.insertProductImage(imgData);
+	        }
 
-		} catch (Exception e) {
-			e.printStackTrace();
+	        result.put("success", true);
+	        result.put("message", "제품 등록 성공");
+	        result.put("proNo", proNo);
 
-			String errorMessage = "제품 등록 중 서버 오류 발생: " + e.getMessage();
-			if (e.getMessage() != null && e.getMessage().contains("checkStoreOwnership")) {
-				errorMessage = "판매자 정보(STORE ID) 조회 오류 또는 유효성 검증 실패. 관리자에게 문의하세요.";
-			}
-
-			result.put("success", false);
-			result.put("message", errorMessage);
-		}
-		return result;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        result.put("success", false);
+	        result.put("message", "서버 오류: " + e.getMessage());
+	    }
+	    return result;
 	}
-
+	
 	@RequestMapping(value = "/seller/product/update.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String updateProduct(
