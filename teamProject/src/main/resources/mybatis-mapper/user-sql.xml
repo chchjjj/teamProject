@@ -340,7 +340,21 @@ ORDER BY R.CDATETIME DESC
 	</update>	
 	
 	
-	
+	<insert id="insertProductImage" parameterType="map">
+    INSERT INTO product_img (
+        pro_no,
+        img_path,
+        img_type,
+        thumbnail_use,
+        img_order
+    ) VALUES (
+        #{proNo},
+        #{imgPath},
+        #{imgType},
+        #{thumbnailUse},
+        #{imgOrder}
+    )
+</insert>
 	
 </mapper>
 

@@ -1073,4 +1073,68 @@ public List<Map<String, Object>> getProductImages(int proNo) {
     return images;
 }
 
+/**
+ * 상품 이미지 정보를 DB에 저장
+ * @param imgData 이미지 정보 (proNo, imgPath, imgType, thumbnailUse, imgOrder 등)
+ */
+@Transactional
+public void insertProductImage(Map<String, Object> imgData) {
+    try {
+        System.out.println("📥 [SERVICE] insertProductImage 호출");
+        System.out.println("   - proNo: " + imgData.get("proNo"));
+        System.out.println("   - imgPath: " + imgData.get("imgPath"));
+        System.out.println("   - imgType: " + imgData.get("imgType"));
+        
+        // imgType에 따라 fileuse 설정
+        String imgType = (String) imgData.get("imgType");
+        String fileuse = "";
+        
+        switch(imgType) {
+            case "THUMBNAIL":
+                fileuse = "T";
+                break;
+            case "DETAIL":
+                fileuse = "I";
+                break;
+            case "LONG":
+                fileuse = "L";
+                break;
+            default:
+                fileuse = "I";
+        }
+        
+        // 전체 경로에서 파일명만 추출
+        String fullPath = (String) imgData.get("imgPath");
+        String fileName = fullPath.substring(fullPath.lastIndexOf("/") + 1);
+        String filePath = fullPath.substring(0, fullPath.lastIndexOf("/") + 1);
+        
+        // DB 저장용 Map 생성
+        HashMap<String, Object> dbMap = new HashMap<>();
+        dbMap.put("proNo", imgData.get("proNo"));
+        dbMap.put("filepath", filePath);
+        dbMap.put("filename", fileName);
+        dbMap.put("fileorgname", fileName);
+        dbMap.put("fileuse", fileuse);
+        dbMap.put("fileetc", "PNG"); // 필요시 실제 확장자로 변경
+        
+        // thumbnailUse가 있으면 추가
+        if (imgData.get("thumbnailUse") != null) {
+            dbMap.put("thumbnailUse", imgData.get("thumbnailUse"));
+        }
+        
+        // imgOrder가 있으면 추가
+        if (imgData.get("imgOrder") != null) {
+            dbMap.put("imgOrder", imgData.get("imgOrder"));
+        }
+        
+        sellerMapper.insertProductImg(dbMap);
+        System.out.println("✅ [SERVICE] 이미지 정보 DB 저장 완료");
+        
+    } catch (Exception e) {
+        System.err.println("❌ [SERVICE] 이미지 저장 실패: " + e.getMessage());
+        e.printStackTrace();
+        throw new RuntimeException("상품 이미지 저장 중 오류 발생", e);
+    }
+}
+
 }

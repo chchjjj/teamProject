@@ -620,7 +620,7 @@
                                 success: (response) => {
                                     if (response.success) {
                                         alert(this.proNo ? "제품 정보 수정 완료" : "제품 등록 완료");
-                                        location.href = "/seller/productlist.do";
+                                        location.href = "/seller/storeList.do";
                                     } else {
                                         alert("실패: " + (response.message || "알 수 없는 오류"));
                                     }
