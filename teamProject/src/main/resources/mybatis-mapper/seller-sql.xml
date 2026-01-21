@@ -554,13 +554,15 @@ ORDER BY T3.PRO_NAME
     WHERE PRO_NO = #{proNo}
 </delete>
 
-	<insert id="insertDisabledDate">
-		INSERT INTO DISABLED_DATE_TBL (
-		PRO_NO, DISABLED_DATE
-		) VALUES (
-		#{param1}, TO_DATE(#{param2}, 'YYYY-MM-DD')
-		)
-	</insert>
+	<insert id="insertDisabledDate" parameterType="hashmap">
+    INSERT INTO DISABLED_DATE_TBL (
+        PRO_NO, 
+        DISABLED_DATE
+    ) VALUES (
+        #{proNo, jdbcType=NUMERIC},
+        TO_DATE(#{disabledDate, jdbcType=VARCHAR}, 'YYYY-MM-DD')
+    )
+</insert>
 
 	<delete id="deleteDisabledDates" parameterType="int">
 		DELETE FROM DISABLED_DATE_TBL WHERE PRO_NO = #{proNo}
@@ -855,7 +857,7 @@ ORDER BY T3.PRO_NAME
     )
 </insert>
 
-<insert id="insertTopOption" parameterType="hashmap">
+<insert id="insertTopOption" parameterType="hashmap" useGeneratedKeys="true" keyProperty="optNo">
     <selectKey keyProperty="optNo" resultType="int" order="BEFORE">
         SELECT PRODUCT_OPTION_SEQ.NEXTVAL FROM DUAL
     </selectKey>

@@ -378,7 +378,7 @@
                                 <button class="filter-btn" :class="{ active: filterType === 'new' }"
                                     @click="setFilter('new')">NEW 주문만</button>
                                 <button class="filter-btn" :class="{ active: filterType === 'chat' }"
-                                    @click="setFilter('chat')">채팅 만</button>
+                                    @click="setFilter('chat')">안읽은 채팅</button>
                             </div>
                             <div class="search-box">
                                 <input type="text" v-model="searchKeyword" class="search-input"

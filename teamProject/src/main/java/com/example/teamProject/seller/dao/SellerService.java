@@ -568,15 +568,12 @@ public void updateProduct(Seller seller) { // Exception을 던지지 않고 Runt
         System.out.println(">>> [DB] 기존 불가 날짜 삭제 완료.");
         
         if (seller.getDisabledDates() != null && !seller.getDisabledDates().isEmpty()) {
-            System.out.println(">>> 등록할 불가 날짜 개수: " + seller.getDisabledDates().size() + "개");
-            // 🌟 for문 대신 Batch Insert 권장 (현재는 로깅을 위해 for문 유지)
             for(String date : seller.getDisabledDates()) {
-                sellerMapper.insertDisabledDate(proNo, date);
-                System.out.println("    - 불가 날짜 등록: " + date);
+                HashMap<String, Object> dateMap = new HashMap<>();
+                dateMap.put("proNo", proNo);
+                dateMap.put("disabledDate", date);  // 또는 "date"
+                sellerMapper.insertDisabledDate(dateMap);  // HashMap 버전 호출
             }
-            System.out.println(">>> [DB] 새 불가 날짜 재등록 완료.");
-        } else {
-            System.out.println(">>> 등록할 불가 날짜 없음.");
         }
         
         // 🚨 3. 메서드 종료 확인
@@ -632,57 +629,54 @@ public void registerProduct(Seller seller) throws Exception {
  
  // 3. 불가 날짜 등록
  if (seller.getDisabledDates() != null && !seller.getDisabledDates().isEmpty()) {
-     for(String date : seller.getDisabledDates()) {
-         sellerMapper.insertDisabledDate(proNo, date);
-     }
- }
+	    for(String date : seller.getDisabledDates()) {
+	        HashMap<String, Object> dateMap = new HashMap<>();
+	        dateMap.put("proNo", proNo);
+	        dateMap.put("disabledDate", date);
+	        sellerMapper.insertDisabledDate(dateMap);
+	    }
+	}
 }
 
 //옵션 등록을 위한 내부 유틸리티 메서드
 private void insertOptions(int proNo, List<Seller> options) {
-  // 🚨 1. 입력 데이터 확인
-  System.out.println("==================== insertOptions 시작 ====================");
-  System.out.println(">>> PRO_NO: " + proNo);
+    System.out.println(">>> PRO_NO: " + proNo);
 
-  if (options == null || options.isEmpty()) {
-      System.out.println(">>> 등록할 옵션 리스트가 비어있거나 NULL입니다.");
-      return;
-  }
+    if (options == null || options.isEmpty()) {
+        System.out.println(">>> 등록할 옵션 리스트가 비어있거나 NULL입니다.");
+        return;
+    }
 
-  int topOptionIndex = 0;
-  for (Seller topOpt : options) {
-      topOpt.setProNo(proNo); 
-      
-      // 🚨 2. 상위 옵션 등록 직전, 핵심 필드 값 확인 (NULL 여부 확인)
-      System.out.println("--- [Top Option #" + (++topOptionIndex) + " 등록 시도] ---");
-      System.out.println("  OptionName: " + topOpt.getOptionName());
-      // ⚠️ ORA-01400의 원인: 이 값이 'null'로 찍힌다면 DTO/JSON 파싱 문제입니다.
-     
-      
-      // 1. 상위 옵션 등록 (topOptionId 생성)
-      sellerMapper.insertTopOption(topOpt); 
-      int topOptionId = topOpt.getTopOptionId();
-      
-      System.out.println("  [DB] 상위 옵션 등록 완료. TOP_OPTION_ID: " + topOptionId);
-      
-      // 2. 하위 옵션 등록
-      if (topOpt.getSubOptions() != null) {
-          System.out.println("  하위 옵션 개수: " + topOpt.getSubOptions().size() + "개");
-          
-          int subOptionIndex = 0;
-          for (Seller subOpt : topOpt.getSubOptions()) { 
-              subOpt.setTopOptionId(topOptionId); 
-              
-              // 🚨 3. 하위 옵션 등록 직전, 데이터 확인
-              System.out.println("  - Sub Option #" + (++subOptionIndex) + " ValueName: " + subOpt.getValueName());
-              
-              sellerMapper.insertSubOption(subOpt);
-          }
-      } else {
-          System.out.println("  하위 옵션 없음.");
-      }
-  }
-  System.out.println("==================== insertOptions 완료 ====================");
+    int topOptionIndex = 0;
+    for (Seller topOpt : options) {
+        topOpt.setProNo(proNo); 
+        
+        System.out.println("--- [Top Option #" + (++topOptionIndex) + " 등록 시도] ---");
+        System.out.println("  OptionName: " + topOpt.getOptionName());
+        
+        // 1. 상위 옵션 등록 (optNo가 Seller 객체에 자동으로 설정됨)
+        sellerMapper.insertTopOption(topOpt); 
+        int topOptionId = topOpt.getOptNo();  // ⭐ optNo를 가져옴 (topOptionId로 사용)
+        
+        System.out.println("  [DB] 상위 옵션 등록 완료. TOP_OPTION_ID: " + topOptionId);
+        
+        // 2. 하위 옵션 등록
+        if (topOpt.getSubOptions() != null) {
+            System.out.println("  하위 옵션 개수: " + topOpt.getSubOptions().size() + "개");
+            
+            int subOptionIndex = 0;
+            for (Seller subOpt : topOpt.getSubOptions()) { 
+                subOpt.setTopOptionId(topOptionId);  // ⭐ topOptionId 설정
+                
+                System.out.println("  - Sub Option #" + (++subOptionIndex) + " ValueName: " + subOpt.getValueName());
+                
+                sellerMapper.insertSubOption(subOpt);
+            }
+        } else {
+            System.out.println("  하위 옵션 없음.");
+        }
+    }
+    System.out.println("==================== insertOptions 완료 ====================");
 }
 
 @Transactional // 💡 두 개의 Mapper 호출을 하나의 트랜잭션으로 묶어줍니다.
@@ -785,194 +779,7 @@ public HashMap<String, Object> insertProductAllergy(HashMap<String, Object> map)
 //    return insertCount;
 //}
 
-@Transactional
-public HashMap<String, Object> productUpdate(HashMap<String, Object> map) throws Exception {
-    
-    HashMap<String, Object> resultMap = new HashMap<String, Object>();
-    
-    try {
-        System.out.println("🔧 [SERVICE] productUpdate 시작");
-        
-        // ===============================
-        // 1. 기본 상품 정보 업데이트
-        // ===============================
-        sellerMapper.updateProduct(map);
-        System.out.println("✅ [SERVICE] 상품 기본 정보 업데이트 완료");
-        
-        // ===============================
-        // 2. 썸네일 이미지 처리 ⭐⭐⭐
-        // ===============================
 
-        if (map.get("thumbnailPath") != null) {
-            System.out.println("🖼️ [SERVICE] 썸네일 업데이트: " + map.get("thumbnailPath"));
-            
-            // 기존 썸네일 삭제
-            HashMap<String, Object> deleteParam = new HashMap<>();
-            deleteParam.put("proNo", map.get("proNo"));
-            deleteParam.put("fileuse", "T");
-            sellerMapper.deleteProductImgByType(deleteParam);
-            
-            // 새 썸네일 삽입
-            String fullPath = map.get("thumbnailPath").toString();
-            String fileName = fullPath.substring(fullPath.lastIndexOf("/") + 1);
-            
-            HashMap<String, Object> imgMap = new HashMap<>();
-            imgMap.put("proNo", map.get("proNo"));
-            imgMap.put("filepath", "/img-product/");    // 🔥 키 이름 확인
-            imgMap.put("filename", fileName);            // 🔥 키 이름 확인
-            imgMap.put("fileorgname", fileName);         // 🔥 키 이름 확인
-            imgMap.put("fileuse", "T");                  // 🔥 키 이름 확인
-            imgMap.put("fileetc", "PNG");                // 🔥 키 이름 확인
-            
-            System.out.println("🔍 imgMap 내용: " + imgMap); // 디버깅용
-            
-            sellerMapper.insertProductImg(imgMap);
-            System.out.println("✅ [SERVICE] 썸네일 DB 업데이트 완료");
-        }
-
-     // ===============================
-     // 3. 상세 이미지 처리
-     // ===============================
-     if (map.get("detailImagePaths") != null) {
-         @SuppressWarnings("unchecked")
-         List<String> detailPaths = (List<String>) map.get("detailImagePaths");
-         
-         System.out.println("🖼️ [SERVICE] 상세 이미지 업데이트: " + detailPaths.size() + "개");
-         
-         // 기존 상세 이미지 삭제
-         HashMap<String, Object> deleteParam = new HashMap<>();
-         deleteParam.put("proNo", map.get("proNo"));
-         deleteParam.put("fileuse", "I");
-         sellerMapper.deleteProductImgByType(deleteParam);
-         
-         // 새 상세 이미지 삽입
-         for (String fullPath : detailPaths) {
-             String fileName = fullPath.substring(fullPath.lastIndexOf("/") + 1);
-             
-             HashMap<String, Object> imgMap = new HashMap<>();
-             imgMap.put("proNo", map.get("proNo"));
-             imgMap.put("filepath", "/img-product/");
-             imgMap.put("filename", fileName);
-             imgMap.put("fileorgname", fileName);
-             imgMap.put("fileuse", "I");
-             imgMap.put("fileetc", "PNG");
-             
-             sellerMapper.insertProductImg(imgMap);
-         }
-         System.out.println("✅ [SERVICE] 상세 이미지 DB 업데이트 완료");
-     }
-
-     // ===============================
-     // 4. 롱 이미지 처리
-     // ===============================
-     if (map.get("longImagePath") != null) {
-         System.out.println("🖼️ [SERVICE] 롱 이미지 업데이트: " + map.get("longImagePath"));
-         
-         // 기존 롱 이미지 삭제
-         HashMap<String, Object> deleteParam = new HashMap<>();
-         deleteParam.put("proNo", map.get("proNo"));
-         deleteParam.put("fileuse", "M");
-         sellerMapper.deleteProductImgByType(deleteParam);
-         
-         // 새 롱 이미지 삽입
-         String fullPath = map.get("longImagePath").toString();
-         String fileName = fullPath.substring(fullPath.lastIndexOf("/") + 1);
-         
-         HashMap<String, Object> imgMap = new HashMap<>();
-         imgMap.put("proNo", map.get("proNo"));
-         imgMap.put("filepath", "/img-product/");
-         imgMap.put("filename", fileName);
-         imgMap.put("fileorgname", fileName);
-         imgMap.put("fileuse", "M");
-         imgMap.put("fileetc", "PNG");
-         
-         sellerMapper.insertProductImg(imgMap);
-         System.out.println("✅ [SERVICE] 롱 이미지 DB 업데이트 완료");
-     }
-        
-        // ===============================
-        // 5. 불가 날짜 처리 (기존 로직)
-        // ===============================
-        List<Object> dateList = (List<Object>) map.get("dateList");
-        if (dateList != null && !dateList.isEmpty()) {
-            sellerMapper.deleteProductDate(map);
-            
-            for (int i = 0; i < dateList.size(); i++) {
-                HashMap<String, Object> param = new HashMap<>(); // 🔥 새 HashMap 생성
-                param.put("proNo", map.get("proNo"));
-                param.put("date", (String) dateList.get(i));
-                System.out.println((String) dateList.get(i));
-                sellerMapper.insertProductDate(param); // 🔥 param 사용
-            }
-            System.out.println("✅ [SERVICE] 불가 날짜 업데이트 완료");
-        }
-        
-        // ===============================
-        // 6. 옵션 처리
-        // ===============================
-        if (map.get("optionList") != null) {
-        	
-        	Object proNoObj = map.get("proNo");
-            if (proNoObj instanceof String) {
-                map.put("proNo", Integer.parseInt((String) proNoObj));
-            }
-
-         
-           
-            // 기존 옵션 삭제
-            sellerMapper.deleteProductSubOptions(map);  // 먼저 하위 옵션 삭제
-            sellerMapper.deleteProductTopOptions(map);  // 그 다음 상위 옵션 삭제
-            
-            @SuppressWarnings("unchecked")
-            List<HashMap<String, Object>> optionList = (List<HashMap<String, Object>>) map.get("optionList");
-            
-            for (HashMap<String, Object> topOption : optionList) {
-                HashMap<String, Object> topMap = new HashMap<>();
-                topMap.put("proNo", map.get("proNo"));
-                topMap.put("optionName", topOption.get("optionName"));
-                topMap.put("isQuantitySelectAble", topOption.get("isQuantitySelectAble"));
-                
-                sellerMapper.insertTopOption(topMap);
-                Integer topOptionId = (Integer) topMap.get("optNo");
-                
-                System.out.println("🔍 생성된 TOP_OPTION_ID: " + topOptionId); // 디버깅용
-                
-                if (topOptionId == null) {
-                    throw new RuntimeException("TOP_OPTION_ID 생성 실패!");
-                }
-                
-                @SuppressWarnings("unchecked")
-                List<HashMap<String, Object>> subOptions = (List<HashMap<String, Object>>) topOption.get("subOptions");
-                
-                if (subOptions != null) {
-                    for (HashMap<String, Object> subOption : subOptions) {
-                        HashMap<String, Object> subMap = new HashMap<>();
-                        subMap.put("topOptionId", topOptionId);  // 🔥 이제 NULL이 아님
-                        subMap.put("valueName", subOption.get("valueName"));
-                        subMap.put("priceDiff", subOption.get("priceDiff"));
-                        
-                        System.out.println("🔍 SubOption 삽입: " + subMap); // 디버깅용
-                        
-                        sellerMapper.insertSubOption(subMap);
-                    }
-                }
-            
-            }
-            System.out.println("✅ [SERVICE] 옵션 업데이트 완료");
-        }
-        
-        resultMap.put("result", "success");
-        System.out.println("✅ [SERVICE] productUpdate 완료");
-        
-    } catch (Exception e) {
-        e.printStackTrace();
-        resultMap.put("result", "error");
-        resultMap.put("message", e.getMessage());
-        throw e;
-    }
-    
-    return resultMap;
-}
 //메인페이지 카운트
 public int getTotalUnreadCount(HashMap<String, Object> map) {
     return sellerMapper.getTotalUnreadCount(map);
@@ -984,7 +791,152 @@ public int getNewOrderCount(HashMap<String, Object> map) {
 }
 
 
+@Transactional(rollbackFor = Exception.class) // 에러 발생 시 롤백 보장
+public HashMap<String, Object> productUpdate(HashMap<String, Object> map) throws Exception {
+    
+    HashMap<String, Object> resultMap = new HashMap<String, Object>();
+    
+    try {
+        System.out.println("🔧 [SERVICE] productUpdate 시작");
+        
+        // ===============================
+        // 0. proNo 타입 안전하게 변환 (가장 먼저 수행)
+        // ===============================
+        if (map.get("proNo") == null) throw new RuntimeException("상품 번호(proNo)가 없습니다.");
+        int proNo = Integer.parseInt(String.valueOf(map.get("proNo")));
+        map.put("proNo", proNo); // 변환된 int 값을 다시 맵에 저장
 
+        // ===============================
+        // 1. 기본 상품 정보 업데이트
+        // ===============================
+        sellerMapper.updateProduct(map); // 인터페이스 명칭 확인 (updateProductInfo)
+        System.out.println("✅ [SERVICE] 상품 기본 정보 업데이트 완료");
+        
+        // ===============================
+        // 2. 썸네일 이미지 처리
+        // ===============================
+        if (map.get("thumbnailPath") != null && !map.get("thumbnailPath").toString().isEmpty()) {
+            // 기존 썸네일 삭제
+            HashMap<String, Object> deleteParam = new HashMap<>();
+            deleteParam.put("proNo", proNo);
+            deleteParam.put("fileuse", "T");
+            sellerMapper.deleteProductImgByType(deleteParam);
+            
+            // 새 썸네일 삽입
+            String fullPath = map.get("thumbnailPath").toString();
+            String fileName = fullPath.substring(fullPath.lastIndexOf("/") + 1);
+            
+            HashMap<String, Object> imgMap = new HashMap<>();
+            imgMap.put("proNo", proNo);
+            imgMap.put("filepath", "/img-product/");
+            imgMap.put("filename", fileName);
+            imgMap.put("fileorgname", fileName);
+            imgMap.put("fileuse", "T");
+            imgMap.put("fileetc", "PNG");
+            
+            sellerMapper.insertProductImg(imgMap);
+            System.out.println("✅ [SERVICE] 썸네일 업데이트 완료");
+        }
+
+        // ===============================
+        // 3. 상세 이미지 처리
+        // ===============================
+        if (map.get("detailImagePaths") != null) {
+            @SuppressWarnings("unchecked")
+            List<String> detailPaths = (List<String>) map.get("detailImagePaths");
+            
+            HashMap<String, Object> deleteParam = new HashMap<>();
+            deleteParam.put("proNo", proNo);
+            deleteParam.put("fileuse", "I");
+            sellerMapper.deleteProductImgByType(deleteParam);
+            
+            for (String fullPath : detailPaths) {
+                if(fullPath == null || fullPath.isEmpty()) continue;
+                String fileName = fullPath.substring(fullPath.lastIndexOf("/") + 1);
+                
+                HashMap<String, Object> imgMap = new HashMap<>();
+                imgMap.put("proNo", proNo);
+                imgMap.put("filepath", "/img-product/");
+                imgMap.put("filename", fileName);
+                imgMap.put("fileorgname", fileName);
+                imgMap.put("fileuse", "I");
+                imgMap.put("fileetc", "PNG");
+                sellerMapper.insertProductImg(imgMap);
+            }
+        }
+
+        // ===============================
+        // 5. 불가 날짜 처리 (인터페이스 insertDisabledDate 기준)
+        // ===============================
+        if (map.get("dateList") != null) {
+            @SuppressWarnings("unchecked")
+            List<String> dateList = (List<String>) map.get("dateList");
+            
+            // 기존 날짜 삭제 (전체 맵 전달)
+            sellerMapper.deleteDisabledDates(map); 
+            
+            for (String dateStr : dateList) {
+                if(dateStr == null || dateStr.isEmpty()) continue;
+                HashMap<String, Object> dateMap = new HashMap<>();
+                dateMap.put("proNo", proNo);
+                dateMap.put("disabledDate", dateStr);
+                sellerMapper.insertDisabledDate(dateMap); // 인터페이스 명칭 확인
+            }
+            System.out.println("✅ [SERVICE] 불가 날짜 업데이트 완료");
+        }
+        
+        // ===============================
+        // 6. 옵션 처리
+        // ===============================
+        if (map.get("optionList") != null) {
+            // 기존 옵션 삭제
+            sellerMapper.deleteProductSubOptions(map);
+            sellerMapper.deleteProductTopOptions(map);
+            
+            @SuppressWarnings("unchecked")
+            List<HashMap<String, Object>> optionList = (List<HashMap<String, Object>>) map.get("optionList");
+            
+            for (HashMap<String, Object> topOption : optionList) {
+                HashMap<String, Object> topMap = new HashMap<>();
+                topMap.put("proNo", proNo);
+                topMap.put("optionName", topOption.get("optionName"));
+                topMap.put("isQuantitySelectAble", topOption.get("isQuantitySelectAble"));
+                
+                // 상위 옵션 등록 (selectKey를 통해 topMap에 optNo가 담김)
+                sellerMapper.insertTopOption(topMap);
+                
+                // ⭐ 오라클/MyBatis에서 반환된 PK 값을 안전하게 가져오는 방법
+                if (topMap.get("optNo") == null) throw new RuntimeException("상위 옵션 ID 생성 실패");
+                int topOptionId = Integer.parseInt(String.valueOf(topMap.get("optNo")));
+                
+                @SuppressWarnings("unchecked")
+                List<HashMap<String, Object>> subOptions = (List<HashMap<String, Object>>) topOption.get("subOptions");
+                
+                if (subOptions != null) {
+                    for (HashMap<String, Object> subOption : subOptions) {
+                        HashMap<String, Object> subMap = new HashMap<>();
+                        subMap.put("topOptionId", topOptionId);
+                        subMap.put("valueName", subOption.get("valueName"));
+                        subMap.put("priceDiff", subOption.get("priceDiff"));
+                        sellerMapper.insertSubOption(subMap);
+                    }
+                }
+            }
+            System.out.println("✅ [SERVICE] 옵션 업데이트 완료");
+        }
+        
+        resultMap.put("result", "success");
+        
+    } catch (Exception e) {
+        System.err.println("❌ [SERVICE] 에러 발생: " + e.getMessage());
+        e.printStackTrace();
+        resultMap.put("result", "error");
+        resultMap.put("message", e.getMessage());
+        throw e; // 트랜잭션 롤백을 위해 던짐
+    }
+    
+    return resultMap;
+}
 
 
 public HashMap<String, Object> updateOrderStatus(HashMap<String, Object> map) {
