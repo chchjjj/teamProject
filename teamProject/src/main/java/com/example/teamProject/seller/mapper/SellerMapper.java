@@ -114,8 +114,7 @@ public interface SellerMapper {
  	// 특정 상품의 모든 옵션 삭제
  	void deleteProductOptions(int proNo);
 
- 	// 불가 날짜 등록
- 	void insertDisabledDate(int proNo, String date);
+
 
  	// 특정 상품의 모든 불가 날짜 삭제
  	void deleteDisabledDates(int proNo);

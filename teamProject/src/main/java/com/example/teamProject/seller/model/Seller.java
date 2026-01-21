@@ -115,7 +115,23 @@ public class Seller {
 	private String status = "N";
 
 	private String proType = "케이크";
-
 	
+	 private Integer optNo;           // 추가
+
+
+	 public Integer getOptNo() {
+	        return optNo;
+	    }
+	 
+	 public void setOptNo(Integer optNo) {
+	        this.optNo = optNo;
+	    }
+	 
+	 public Integer getTopOptionId() {
+	        return topOptionId;
+	    }
+	 public void setTopOptionId(Integer topOptionId) {
+	        this.topOptionId = topOptionId;
+	    }
 	
 }
