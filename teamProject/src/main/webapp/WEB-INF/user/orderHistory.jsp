@@ -702,7 +702,6 @@
 
                         const orderDetailId = order.orderDetailId;
                         if (!orderDetailId) return;
-
                         if (!groupedOrders[orderId].groupedDetails[orderDetailId]) {
                             groupedOrders[orderId].groupedDetails[orderDetailId] = {
                                 orderDetailId: order.orderDetailId,
