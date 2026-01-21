@@ -199,7 +199,7 @@
                             </div>
                         </div>
 
-                        <button class="membership-btn" @click="fnUpdateMembership">
+                        <button class="membership-btn" @click="fnMembershipPay">
                             멤버십 가입신청
                         </button>
                     </div>
