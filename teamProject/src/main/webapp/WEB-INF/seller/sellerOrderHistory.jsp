@@ -325,6 +325,39 @@
                 .search-input:focus {
                     border-color: var(--peony);
                 }
+
+                .date-filter {
+                    display: flex;
+                    align-items: center;
+                }
+
+                .date-select {
+                    padding: 8px 16px;
+                    border: 2px solid #E0E0E0;
+                    border-radius: 20px;
+                    background: white;
+                    cursor: pointer;
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: var(--espresso);
+                    transition: all 0.2s;
+                    outline: none;
+                    min-width: 140px;
+                }
+
+                .date-select:hover {
+                    border-color: var(--espresso);
+                }
+
+                .date-select:focus {
+                    border-color: var(--peony);
+                    box-shadow: 0 0 0 3px rgba(244, 201, 214, 0.2);
+                }
+
+                .sort-filter {
+                    display: flex;
+                    align-items: center;
+                }
             </style>
         </head>
 
@@ -344,12 +377,34 @@
                                     @click="setFilter('all')">전체 보기</button>
                                 <button class="filter-btn" :class="{ active: filterType === 'new' }"
                                     @click="setFilter('new')">NEW 주문만</button>
+                                <button class="filter-btn" :class="{ active: filterType === 'chat' }"
+                                    @click="setFilter('chat')">채팅 만</button>
                             </div>
                             <div class="search-box">
                                 <input type="text" v-model="searchKeyword" class="search-input"
                                     placeholder="주문 번호를 입력하세요" @keyup.enter="changePage(1)">
                                 <button class="view-detail-button" @click="changePage(1)">검색</button>
                             </div>
+
+                            <div class="date-filter">
+                                <select v-model="dateFilter" @change="changePage(1)" class="date-select">
+                                    <option value="all">전체 날짜</option>
+                                    <option value="today">오늘</option>
+                                    <option value="tomorrow">내일</option>
+                                    <option value="week">이번 주</option>
+                                    <option value="month">이번 달</option>
+                                </select>
+                            </div>
+
+                            <div class="sort-filter">
+                                <select v-model="sortOrder" @change="changePage(1)" class="date-select">
+                                    <option value="newest">최신 주문순</option>
+                                    <option value="oldest">오래된 주문순</option>
+                                    <option value="deliveryAsc">배송일 빠른순</option>
+                                    <option value="deliveryDesc">배송일 늦은순</option>
+                                </select>
+                            </div>
+
                         </div>
 
                         <div v-if="filteredOrders.length === 0" class="no-orders">
@@ -365,7 +420,7 @@
                                         주문 ID: {{ order.orderId }} |
                                         <span v-if="isNewOrder(order.orderDate)" class="new-order-tag">NEW</span>
                                         주문자: {{ order.userName }} |
-                                        주문일: {{ formatDate(order.pickupDate) }}
+                                        주문일: {{ formatDate(order.orderDate) }}
                                         <span v-if="order.status === 'X'"
                                             style="color: white; background-color: #ff4d4f; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 10px; font-weight: bold;">주문취소</span>
                                     </div>
@@ -396,6 +451,8 @@
                             <button :disabled="currentPage === totalPages"
                                 @click="changePage(currentPage + 1)">다음</button>
                         </div>
+
+
                     </div>
                 </div>
             </div>
@@ -418,12 +475,21 @@
                         startPage: 1,
                         endPage: 1,
                         filterType: 'all', // 'all' 또는 'new'
-                        searchKeyword: ''  // 주문번호 검색어
+                        searchKeyword: '', // 주문번호 검색어
+                        dateFilter: 'all',
+                        sortOrder: 'newest'
                     };
                 },
                 computed: {
                     filteredOrders() {
                         let list = this.allOrders;
+                        if (this.filterType === 'chat') {
+                            list = list.filter(order => order.unreadCount > 0);
+
+                        }
+                        if (this.dateFilter !== 'all') {
+                            list = list.filter(order => this.matchesDateFilter(order));
+                        }
 
                         // 1. "NEW 주문만" 필터링
                         if (this.filterType === 'new') {
@@ -436,10 +502,52 @@
                                 String(order.orderId).includes(this.searchKeyword)
                             );
                         }
+
+                        list = this.sortOrders(list);
                         return list;
                     }
                 },
                 methods: {
+                    sortOrders: function (orders) {
+                        const sorted = [...orders]; // 원본 배열 보호
+
+                        switch (this.sortOrder) {
+                            case 'newest':
+                                // 최신 주문순 (주문일 기준)
+                                return sorted.sort((a, b) =>
+                                    moment(b.orderDate).valueOf() - moment(a.orderDate).valueOf()
+                                );
+
+                            case 'oldest':
+                                // 오래된 주문순 (주문일 기준)
+                                return sorted.sort((a, b) =>
+                                    moment(a.orderDate).valueOf() - moment(b.orderDate).valueOf()
+                                );
+
+                            case 'deliveryAsc':
+                                // 배송일 빠른순
+                                return sorted.sort((a, b) => {
+                                    const dateA = a.pickupDate || a.deliveryDate;
+                                    const dateB = b.pickupDate || b.deliveryDate;
+                                    if (!dateA) return 1;
+                                    if (!dateB) return -1;
+                                    return moment(dateA).valueOf() - moment(dateB).valueOf();
+                                });
+
+                            case 'deliveryDesc':
+                                // 배송일 늦은순
+                                return sorted.sort((a, b) => {
+                                    const dateA = a.pickupDate || a.deliveryDate;
+                                    const dateB = b.pickupDate || b.deliveryDate;
+                                    if (!dateA) return 1;
+                                    if (!dateB) return -1;
+                                    return moment(dateB).valueOf() - moment(dateA).valueOf();
+                                });
+
+                            default:
+                                return sorted;
+                        }
+                    },
                     goDetail: function (orderId) {
                         if (!orderId) {
                             console.error("Order ID가 누락되었습니다.");
@@ -455,6 +563,25 @@
                         form.appendChild(hiddenField);
                         document.body.appendChild(form);
                         form.submit();
+                    }, matchesDateFilter: function (order) {
+                        const deliveryDate = order.pickupDate || order.deliveryDate;
+                        if (!deliveryDate) return false;
+
+                        const date = moment(deliveryDate);
+                        const today = moment().startOf('day');
+
+                        switch (this.dateFilter) {
+                            case 'today':
+                                return date.isSame(today, 'day');
+                            case 'tomorrow':
+                                return date.isSame(today.clone().add(1, 'day'), 'day');
+                            case 'week':
+                                return date.isBetween(today, today.clone().add(7, 'days'), 'day', '[]');
+                            case 'month':
+                                return date.isSame(today, 'month');
+                            default:
+                                return true;
+                        }
                     },
 
                     // 2. 필터 변경 (필터 클릭 시 호출)

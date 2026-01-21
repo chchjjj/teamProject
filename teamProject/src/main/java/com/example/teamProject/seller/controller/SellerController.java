@@ -48,6 +48,7 @@ public class SellerController {
 	  @Autowired
 	    private ServletContext servletContext;
 
+	  
 	@Autowired
 	FileService fileService;
 
@@ -59,7 +60,7 @@ public class SellerController {
 
 	@RequestMapping("/seller/storeList.do")
 	public String storeListRedirect() throws Exception {
-		return "seller/sellerMyPage";
+		return "seller/sellerMyPage";	
 	}
 
 	@RequestMapping("/seller/sales.do")
