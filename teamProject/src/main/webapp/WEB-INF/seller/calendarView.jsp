@@ -34,11 +34,21 @@
                 }
 
                 .page-title {
-                    font-size: 24px;
-                    font-weight: 300;
-                    margin-bottom: 20px;
-                    color: #333;
-                }
+                font-size: 28px;
+                font-weight: 800;
+                color: var(--espresso);
+                margin-bottom: 30px;
+                padding-left: 15px;
+                border-left: 6px solid var(--peony);
+                /* 왼쪽에 핑크색 포인트 바 */
+                display: flex;
+                align-items: center;
+                letter-spacing: -1px;
+                background: linear-gradient(to right, #ffffff, #fdfdfd);
+                padding-top: 10px;
+                padding-bottom: 10px;
+                border-radius: 0 8px 8px 0;
+            }
 
                 #calendar {
                     max-width: 1100px;
@@ -46,6 +56,11 @@
                     padding: 20px;
                     border: 1px solid #ddd;
                     border-radius: 8px;
+
+                    /* 아래 내용 추가 */
+                    transform: scale(0.88);      /* 전체 크기를 85%로 축소 */
+                    transform-origin: top center; /* 축소 기준점을 위쪽 중앙으로 설정 */
+                    margin-bottom: -100px;       /* 축소된 만큼 생기는 빈 공간(공백) 제거 */
                 }
 
                 /* ---------------------- 이벤트 스타일 ---------------------- */
