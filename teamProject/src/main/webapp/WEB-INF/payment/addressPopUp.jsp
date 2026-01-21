@@ -7,6 +7,9 @@
     <title>배송지 팝업</title>
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <%-- 🌟 카카오(Daum) 우편번호 서비스 API 라이브러리 추가 --%>
+            <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
     <style>
         /* 1. CSS 변수 정의 */
         :root {
@@ -206,29 +209,24 @@
     <div id="app">
         <div class="new-address-input-area" v-if="showAddForm"> 
             <div> 
-                주소 : <input v-model="addr" disabled>
+                주소 : <input v-model="mainAddr" disabled>
                 <button class="btn-addr-search" @click="fnSearchAddr">주소검색</button>
+                <div style="margin-top:10px;">
+                    상세주소 :
+                    <input v-if="!mainAddr" v-model="detailAddr" disabled placeholder="주소검색 버튼을 클릭하여 주소를 입력하세요.">
+                    <input v-else v-model="detailAddr" placeholder="상세주소를 입력하세요." style="width: 250px;">
+                </div>
             </div>
             <div>
                 핸드폰번호 :
-                <input class="phone" v-model="phone1"> -
-                <input class="phone" v-model="phone2"> -
-                <input class="phone" v-model="phone3">
+                <input class="phone" v-model="phone1"  maxlength="3" inputmode="numeric" @input="phone1 = phone1.replace(/\D/g, '')"> -
+                <input class="phone" v-model="phone2" maxlength="4" inputmode="numeric" @input="phone2 = phone2.replace(/\D/g, '')"> -
+                <input class="phone" v-model="phone3" maxlength="4" inputmode="numeric" @input="phone3 = phone3.replace(/\D/g, '')">
             </div>
              <div>
                 <button @click="fnAddAddress">+ 배송지 신규 입력</button>
             </div> 
         </div>
-
-        <div v-if="showAddrFrame" style="margin-top:10px; text-align:center;">
-            <iframe 
-                id="jusoFrame" 
-                src="/user/addr.do" 
-                style="width:100%; height:500px; border:1px solid #ccc;"
-            ></iframe>
-            <button @click="showAddrFrame=false" style="margin-top:10px;">닫기</button>
-        </div>
-
 
         <div class="address-card default-address-card">
             <div class="card-title">기본배송지</div>
@@ -258,15 +256,6 @@
 </html>
 
 <script>
-    function jusoCallBack(roadFullAddr, roadAddrPart1, addrDetail, roadAddrPart2, engAddr, jibunAddr, zipNo, admCd, rnMgtSn, bdMgtSn, detBdNmList, bdNm, bdKdcd, siNm, sggNm, emdNm, liNm, rn, udrtYn, buldMnnm, buldSlno, mtYn, lnbrMnnm, lnbrSlno, emdNo) {
-                // console.log(roadFullAddr);
-                // console.log(addrDetail);
-                // console.log(zipNo);
-
-                window.vueObj.fnResult(roadFullAddr, addrDetail, zipNo);
-    }
-    //주소 api 관련 여기까지
-
     const app = Vue.createApp({
         data() {
             return {
@@ -276,7 +265,8 @@
                     {addressId: 1, phone: '010-0000-0000', fullAddress: 'ㅇㅇ시 ㅇㅇ구 ㅇㅇ동 ㅇㅇㅇㅇㅇㅇㅇㅇ....'},
                     {addressId: 2, phone: '010-0000-0000', fullAddress: 'ㅇㅇ시 ㅇㅇ구 ㅇㅇ동 ㅇㅇㅇㅇㅇㅇㅇㅇ....'}
                 ], // 기본 주소 이외에 구매자가 추가로 입력한 배송지 정보
-                addr: "", //추가할 배송지 주소 
+                mainAddr: "", //주소 api에서 받아오는 주소
+                detailAddr: "", //추가할 배송지 상세주소
 
                 //세션
                 userPhone: "${sessionPhone}", //사용자의 기본 휴대폰 번호
@@ -292,31 +282,28 @@
                 phone3: "",
 
                 // 신규 배송지 입력 폼 표시 여부 (기본 true로 설정)
-                showAddForm: true ,
-                showAddrFrame: false // iframe 표시 여부
+                showAddForm: true
 
             };
         },
         methods: {
             // 함수(메소드) - (key : function())
 
-            fnToggleAddrFrame: function(){
-                this.showAddrFrame = !this.showAddrFrame;
-            },
-
-            // iframe에서 postMessage로 받은 결과 처리
-            fnResult: function (roadFullAddr, addrDetail, zipNo) {
-                this.addr = roadFullAddr + " " + addrDetail;
-                this.showAddrFrame = false; // 닫기
-            },
             //주소 api 사용하기 여기부터
             fnSearchAddr: function(){
-                window.open("/user/addr.do", "addr", "width=500, height=500, top=100, left=900");
+                const self = this;
+                new daum.Postcode({
+                    oncomplete: function (data) {
+                        // 도로명 주소(roadAddr) 또는 지번 주소(jibunAddr) 중 선택된 것을 사용
+                        self.mainAddr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
+
+                        // console.log("✅ 주소 검색 완료 (addr 전체 주소 반영):", mainAddr);
+                    }
+                }).open({
+                    // 팝업 중앙 정렬 옵션 (모바일 대응에 유리)
+                    popupName: 'postcodePopup'
+                });
             },
-            // fnResult: function (roadFullAddr, addrDetail, zipNo) {
-            //         let self = this;
-            //         self.addr = roadFullAddr;
-            // },
             //주소 api 사용하기 여기까지
 
             // 신규 배송지 입력 폼 표시/숨김 토글
@@ -328,7 +315,18 @@
             //배송지 추가
             fnAddAddress: function(){
                 let self = this;
-                if (self.addr == "") {
+                let addr = "";
+                
+                //상세주소가 있을 경우 addr에 상세주소 합치기
+                if(self.detailAddr){
+                    addr = self.mainAddr + " " + self.detailAddr;
+                } else {
+                    addr = self.mainAddr;
+                }
+
+                
+
+                if (addr == "") {
                     alert("주소를 입력해주세요.");
                     return;
                 }
@@ -337,12 +335,14 @@
                     return;
                 }
 
+                
+
                 let phone = self.phone1 + "-" + self.phone2 + "-" + self.phone3;
 
                 let param = {
                     userId: self.userId,
                     phone: phone,
-                    addr : self.addr
+                    addr : addr
                 };
                 $.ajax({
                     url: "/payment/addAddress.dox",
@@ -420,21 +420,6 @@
         mounted() {
             // 처음 시작할 때 실행되는 부분
             let self = this;
-            //스크립트에서 vue 내부의 데이터 접근 (주소 api 관련)
-            window.vueObj = this;
-            window.addEventListener("message", (event) => {
-                // 보안 검증 (내 도메인에서만 허용)
-                if (event.origin !== window.location.origin) {
-                    console.warn("외부 origin의 메시지는 무시", event.origin);
-                    return;
-                }
-
-                // jusoPopup.jsp에서 보낸 데이터 받기
-                if (event.data && event.data.type === "jusoResult") {
-                    this.fnResult(event.data.roadFullAddr, event.data.addrDetail, event.data.zipNo);
-                }
-            });
-
 
             self.fnAddressList(); //주소 목록 출력(기본 주소 외에 추가 입력한 것)
             let str = "${orderIdList}";

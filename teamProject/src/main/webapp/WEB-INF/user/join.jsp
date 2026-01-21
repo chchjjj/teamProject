@@ -277,13 +277,13 @@
 
                     <label>휴대폰 번호</label>
                     <div class="phone-box">
-                        <input v-if="!phoneCheckFlg" type="tel" class="small-input" v-model="phone1" maxlength="3">
+                        <input v-if="!phoneCheckFlg" type="tel" class="small-input" v-model="phone1" maxlength="3" inputmode="numeric" @input="phone1 = phone1.replace(/\D/g, '')">
                         <input v-else type="tel" class="small-input" v-model="phone1" maxlength="3" disabled>
                         -
-                        <input v-if="!phoneCheckFlg" type="tel" class="small-input" v-model="phone2" maxlength="4"> 
+                        <input v-if="!phoneCheckFlg" type="tel" class="small-input" v-model="phone2" maxlength="4" inputmode="numeric" @input="phone2 = phone2.replace(/\D/g, '')"> 
                         <input v-else type="tel" class="small-input" v-model="phone2" maxlength="4" disabled>
                         -
-                        <input v-if="!phoneCheckFlg" type="tel" class="small-input" v-model="phone3" maxlength="4">
+                        <input v-if="!phoneCheckFlg" type="tel" class="small-input" v-model="phone3" maxlength="4" inputmode="numeric" @input="phone3 = phone3.replace(/\D/g, '')">
                         <input v-else type="tel" class="small-input" v-model="phone3" maxlength="4" disabled>
                         
                         <template v-if="!sendMessageFlg">
@@ -499,10 +499,10 @@
                         return;
                     }
 
-                    if(!self.phoneCheckFlg){
-                        alert("휴대폰 번호 중복 체크를 진행해주세요.");
-                        return;
-                    }
+                    // if(!self.phoneCheckFlg){
+                    //     alert("휴대폰 번호 중복 체크를 진행해주세요.");
+                    //     return;
+                    // }
 
                     //문자 인증이 완료되지 않으면 
                     //회원가입 불가능(안내문구 출력)
