@@ -196,7 +196,7 @@
     /* 6. 주문 카드 스타일 (변경 없음) */
     #app {
         width: 100%;
-        max-width: 900px;
+        max-width: 950px;
         background-color: var(--card-bg-color); 
         padding: 30px;
         border-radius: 12px;
@@ -428,6 +428,8 @@
             <div class="info-section">
                 
                 <div v-if="deliveryType=='D'" class="info-row">
+                    <!-- <span>배송 정보:</span>
+                    <span>{{groupedOrdersList[0].fullAddress}}</span> -->
                     <span>배송 정보: {{groupedOrdersList[0].fullAddress}}</span>
                     <button @click="fnDelivery" class="btn btn-delivery">배송지 선택/변경</button>
                 </div>
@@ -808,7 +810,7 @@
                         pay_method: "card",
                         merchant_uid: "merchant_" + new Date().getTime(),
                         name: proName, //상품이름, 대표로 제일 첫번째 상품명을 보여준다.
-                        amount: 1, //테스트를 위해 결제금액은 1원, 원래는 self.paymentPrice
+                        amount: self.paymentPrice, //테스트를 위해 결제금액은 1원, 원래는 self.paymentPrice
                         buyer_tel: self.toPhone, // 구매자 휴대폰 번호
                         buyer_name: self.toName // 구매자 성함
                       } , function (rsp) { // callback
