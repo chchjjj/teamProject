@@ -816,7 +816,6 @@
                       } , function (rsp) { // callback
                           if (rsp.success) {
                             // 결제 성공 시
-                            // alert("결제가 완료되었습니다.");
                             console.log(rsp);
                             
                             // 실제 구현용 여기부터
