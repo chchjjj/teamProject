@@ -423,7 +423,9 @@
                             return names[status] || status;
                         },
                         formatNumber(num) { return Number(num).toLocaleString(); },
-                        goToOptionAdd(id) { window.location.href = `/seller/order/addOption.do?orderId=${id}`; },
+                        goToOptionAdd(id) {
+                            window.location.href = "/seller/order/addOption.do?orderId=" + id;
+                        },
                         goToChat(id) { pageChange("/chat/chatSeller.do", { orderId: id }); }
                     },
                     mounted() { this.fnDetail(); }

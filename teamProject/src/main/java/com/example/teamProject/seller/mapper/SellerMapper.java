@@ -179,4 +179,47 @@ public interface SellerMapper {
 
 	 // 픽업 상태 업데이트 
 	 int updatePickupStatus(HashMap<String, Object> map);
+	 //이미지 가져오기
+	 List<Map<String, Object>> selectProductImg(int proNo);
+	 
+
+
+	// 상품 이미지 개수 조회 (타입별)
+	int selectProductImgCount(HashMap<String, Object> map);
+
+	// 상품 이미지 수정
+	int updateProductImg(HashMap<String, Object> map);
+
+	// 상품 이미지 삽입
+	int insertProductImg(HashMap<String, Object> map);
+
+	// 상품 이미지 타입별 삭제
+	int deleteProductImgByType(HashMap<String, Object> map);
+
+	// 상품 이미지 전체 삭제
+	int deleteProductImgAll(HashMap<String, Object> map);
+
+
+
+
+	// 상품 정보 수정 (HashMap 버전)
+	int updateProductInfo(HashMap<String, Object> map);
+
+
+
+	// 상품 불가 날짜 삽입 (HashMap 버전)
+	int insertDisabledDate(HashMap<String, Object> map);
+
+	// 상품 불가 날짜 삭제 (HashMap 버전)
+	int deleteDisabledDates(HashMap<String, Object> map);
+
+
+	// 상품 옵션 전체 삭제 (HashMap 버전)
+	int deleteProductOptions(HashMap<String, Object> map);
+
+	// 상위 옵션 삽입 (HashMap 버전, selectKey로 optNo 반환)
+	int insertTopOption(HashMap<String, Object> map);
+
+	// 하위 옵션 삽입 (HashMap 버전)
+	int insertSubOption(HashMap<String, Object> map);
 }
