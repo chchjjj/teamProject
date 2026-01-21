@@ -303,7 +303,7 @@
                         if (data.result === 'success') {
                             const count = self.ingreName.length;
                             if (count > 0) {
-                                self.successMessage = `알레르기 원재료 ${count}개가 성공적으로 등록/수정되었습니다.`;
+                                self.successMessage = `알레르기 원재료가 성공적으로 등록/수정되었습니다.`;
                             } else {
                                 self.successMessage = "알레르기 원재료가 모두 해제되어 등록된 정보가 없습니다.";
                             }

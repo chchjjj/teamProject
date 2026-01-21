@@ -128,9 +128,11 @@
         /* Content Area */
         .content-area {
             flex-grow: 1;
-            padding: 40px;
-            margin-left: 240px;
-            animation: fadeIn 0.5s ease;
+    padding: 40px 80px;  /* 🔥 좌우 패딩 증가 */
+    margin-left: 240px;
+    max-width: 1400px;   /* 🔥 최대 너비 제한 */
+    margin-right: auto;  /* 🔥 오른쪽 자동 여백 */
+    animation: fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn {

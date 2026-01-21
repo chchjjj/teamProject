@@ -215,8 +215,9 @@ public interface SellerMapper {
 
 
 	// 상품 옵션 전체 삭제 (HashMap 버전)
-	int deleteProductOptions(HashMap<String, Object> map);
-
+	int deleteProductSubOptions(HashMap<String, Object> map);
+	//상위 옵션 삭제 
+	int deleteProductTopOptions(HashMap<String, Object> map);
 	// 상위 옵션 삽입 (HashMap 버전, selectKey로 optNo 반환)
 	int insertTopOption(HashMap<String, Object> map);
 

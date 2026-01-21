@@ -74,10 +74,10 @@
         }
 
         /* Main Wrapper & Sidebar */
-        .main-wrapper {
-            display: flex;
-            min-height: calc(100vh - 65px);
-        }
+ .main-wrapper {
+    display: flex;
+    min-height: calc(100vh - 65px);
+}
 
         .sidebar {
             width: 240px;
@@ -143,12 +143,14 @@
         }
 
         /* Content Area */
-        .content-area {
-            flex-grow: 1;
-            padding: 40px;
-            margin-left: 240px;
-            animation: fadeIn 0.5s ease;
-        }
+       .content-area {
+    flex-grow: 1;
+    padding: 40px 80px;  /* 좌우 패딩 증가 */
+    margin-left: 240px;  /* 사이드바 너비만큼 */
+    max-width: 1400px;   /* 최대 너비 제한 */
+    margin-right: auto;  /* 오른쪽 자동 여백 */
+    animation: fadeIn 0.5s ease;
+}
 
         @keyframes fadeIn {
             from {
@@ -422,9 +424,18 @@
             }
 
             .content-area {
-                margin-left: 0;
-                padding: 24px 16px;
-            }
+    flex-grow: 1;
+    padding: 40px;
+    margin-left: 240px;
+    animation: fadeIn 0.5s ease;
+    
+    /* 🔥 추가: 중앙 정렬 */
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 280px;  /* 240px(사이드바) + 40px(여백) */
+    padding-right: 40px;
+}
 
             .page-title {
                 font-size: 24px;

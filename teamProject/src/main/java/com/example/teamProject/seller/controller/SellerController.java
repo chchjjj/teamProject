@@ -34,6 +34,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.ServletContext;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Controller
 public class SellerController {
@@ -43,7 +45,10 @@ public class SellerController {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+	  @Autowired
+	    private ServletContext servletContext;
 
+	  
 	@Autowired
 	FileService fileService;
 
@@ -55,7 +60,7 @@ public class SellerController {
 
 	@RequestMapping("/seller/storeList.do")
 	public String storeListRedirect() throws Exception {
-		return "seller/sellerMyPage";
+		return "seller/sellerMyPage";	
 	}
 
 	@RequestMapping("/seller/sales.do")
@@ -769,13 +774,11 @@ public class SellerController {
 	    
 	    try {
 	        System.out.println("=== 상품 수정 요청 받음 ===");
-	        System.out.println("proNo: " + map.get("proNo"));
-	        System.out.println("썸네일 파일: " + (thumbnailFile != null ? thumbnailFile.getOriginalFilename() : "없음"));
 	        
-	        // ===============================
-	        // 1. 파일 업로드 처리
-	        // ===============================
-	        String uploadDir = "C:/img-product/";
+	        // 🔥 실제 webapp 경로 얻기
+	        String uploadDir = servletContext.getRealPath("/img-product/");
+	        System.out.println("📁 업로드 경로: " + uploadDir);
+	        
 	        File dir = new File(uploadDir);
 	        if (!dir.exists()) {
 	            dir.mkdirs();
@@ -790,7 +793,7 @@ public class SellerController {
 	            thumbnailFile.transferTo(file);
 	            
 	            map.put("thumbnailPath", "/img-product/" + saveName);
-	            System.out.println("✅ 썸네일 저장: /img-product/" + saveName);
+	            System.out.println("✅ 썸네일 저장: " + file.getAbsolutePath());
 	        }
 	        
 	        // 상세 이미지 저장

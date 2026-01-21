@@ -526,14 +526,8 @@ ORDER BY T3.PRO_NAME
 		</insert>
 
 
-	<insert id="insertTopOption"
-		parameterType="com.example.teamProject.seller.model.Seller">
-		<selectKey keyProperty="topOptionId" resultType="int" order="BEFORE">
-		SELECT PRODUCT_OPTION_SEQ.NEXTVAL FROM DUAL
-		</selectKey> INSERT
-		INTO PRODUCT_OPTION_TBL ( TOP_OPTION_ID, PRO_NO, OPTION_NAME,
-		IS_QUANTITY_SELECTABLE ) VALUES ( #{topOptionId}, #{proNo},
-		#{optionName}, #{isQuantitySelectAble, jdbcType=VARCHAR} ) </insert>
+
+
 
 	<insert id="insertSubOption"
 		parameterType="com.example.teamProject.seller.model.Seller">
@@ -544,12 +538,21 @@ ORDER BY T3.PRO_NAME
 		VALUE_NAME, PRICE_DIFF ) VALUES ( #{subOptionId}, #{topOptionId},
 		#{valueName, jdbcType=VARCHAR}, #{priceDiff, jdbcType=NUMERIC} ) </insert>
 
-	<delete id="deleteProductOptions" parameterType="int">
-		DELETE FROM PRODUCT_SUB_OPTION_TBL WHERE TOP_OPTION_ID IN (
-		SELECT TOP_OPTION_ID FROM PRODUCT_OPTION_TBL WHERE PRO_NO = #{proNo}
-		);
-		DELETE FROM PRODUCT_OPTION_TBL WHERE PRO_NO = #{proNo};
-	</delete>
+<!-- 1. 하위 옵션 삭제 -->
+<delete id="deleteProductSubOptions" parameterType="hashmap">
+    DELETE FROM PRODUCT_SUB_OPTION_TBL 
+    WHERE TOP_OPTION_ID IN (
+        SELECT TOP_OPTION_ID 
+        FROM PRODUCT_OPTION_TBL 
+        WHERE PRO_NO = #{proNo}
+    )
+</delete>
+
+<!-- 2. 상위 옵션 삭제 -->
+<delete id="deleteProductTopOptions" parameterType="hashmap">
+    DELETE FROM PRODUCT_OPTION_TBL 
+    WHERE PRO_NO = #{proNo}
+</delete>
 
 	<insert id="insertDisabledDate">
 		INSERT INTO DISABLED_DATE_TBL (
@@ -842,17 +845,32 @@ ORDER BY T3.PRO_NAME
         FILEUSE,
         FILEETC
     ) VALUES (
-        SEQ_PRODUCT_IMG.NEXTVAL,
-        #{proNo},         
-        #{filePath},      
-        #{fileName},
-        #{fileOrgName},
-        #{fileUse},
-        #{fileEtc}
+        PRODUCT_IMG_SEQ.NEXTVAL,
+        #{proNo, jdbcType=NUMERIC},
+        #{filepath, jdbcType=VARCHAR},
+        #{filename, jdbcType=VARCHAR},
+        #{fileorgname, jdbcType=VARCHAR},
+        #{fileuse, jdbcType=VARCHAR},
+        #{fileetc, jdbcType=VARCHAR}
     )
 </insert>
 
-
+<insert id="insertTopOption" parameterType="hashmap">
+    <selectKey keyProperty="optNo" resultType="int" order="BEFORE">
+        SELECT PRODUCT_OPTION_SEQ.NEXTVAL FROM DUAL
+    </selectKey>
+    INSERT INTO PRODUCT_OPTION_TBL (
+        TOP_OPTION_ID,
+        PRO_NO,
+        OPTION_NAME,
+        IS_QUANTITY_SELECTABLE
+    ) VALUES (
+        #{optNo, jdbcType=NUMERIC},
+        #{proNo, jdbcType=NUMERIC},
+        #{optionName, jdbcType=VARCHAR},
+        #{isQuantitySelectAble, jdbcType=VARCHAR}
+    )
+</insert>
 
  
 </mapper>
