@@ -37,7 +37,7 @@
 - 카카오맵 / 주소 / 달력 / 결제(포트원) / 문자인증(coolsms) API
  ***
  ## 📜 발표 PPT
- ### ▶ [발표자료](https://drive.google.com/file/d/1vvmXk1nGDIXIeREsSAAhQdoHZbIMEPfU/view?usp=drive_link)
+ ### ▶ [발표자료](https://drive.google.com/file/d/19VKTnpwgoJs_NHvvYJglDcQ5HJxTo_YG/view?usp=sharing)
  ## 🎬 시연 영상
  ### ▶ [시연영상](https://drive.google.com/drive/folders/1riGB_MYRkvWfvxpnFrVEcJdwaho6IQS-?hl=ko)
  ***
