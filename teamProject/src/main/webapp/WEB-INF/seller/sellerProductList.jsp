@@ -268,9 +268,9 @@
                     <div class="product-info">
                         <h4>{{ product.proName }} (No. {{ product.proNo }})</h4>
                         <div class="product-details">
-                            <span>가격: **{{ product.price.toLocaleString() }}**원</span>
+                            <span>가격: {{ product.price.toLocaleString() }}원</span>
                             <span>재고: {{ product.stockQty }}개</span>
-                            <span>판매 상태: **{{ product.status === 'Y' ? '판매 중' : '판매 중지' }}**</span>
+                            <span>판매 상태: {{ product.status === 'Y' ? '판매 중' : '판매 중지' }}</span>
                             <span>등록일: {{ product.createdAt.substring(0, 10) }}</span>
                         </div>
                     </div>
