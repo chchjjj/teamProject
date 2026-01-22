@@ -542,7 +542,6 @@
                     orderList: [], //배송 정보 확정 전 단계, ORDER_TBL + ORDER_DETAIL_TBL + ORDER_OPTION_TBL
                     deliveryType: "", //배달인지 픽업인지 (배달이면 D, 픽업이면 P)
                     paymentPrice: 0, //최종 결제금액
-                    proNameKind: 0, // 한 주문 안의 상품 종류
                     kind: 0, //상품 갯수
                     
                     //order_tbl 관련 변수
@@ -551,11 +550,6 @@
                     groupedOrdersList: [], //주문들을 그룹화한 리스트
 
                     //달력
-                    disabledDates: [
-                        "2025-11-01",
-                        "2025-11-05",
-                        { from: "2025-11-10", to: "2025-11-15" }
-                    ],
                     selectedDate: null, // 달력 정보
                     datePicker: null,   // flatpickr 객체를 저장할 변수
 
@@ -596,19 +590,19 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log("Order 리스트 출력");// 테스트용
-                            console.log(data);// 테스트용
+                            // console.log("Order 리스트 출력");// 테스트용
+                            // console.log(data);// 테스트용
                             self.orderList = data.list;
                             // ✅ phoneList 존재 여부 확인 후 할당
                             if (data.phoneList && data.phoneList.length > 0) {
                                 self.toPhone = data.phoneList[0].phone;
                             } else {
-                                console.log("phoneList가 비어있습니다.");
+                                // console.log("phoneList가 비어있습니다.");
                                 self.toPhone = ""; // 기본값 설정
                             }
                             self.fnGroupOrderList(self.orderList);
                             self.deliveryType = data.list[0].deliveryType; //배달인지 픽업인지
-                            console.log("self.deliveryType[0] ===> " + data.list[0].deliveryType);
+                            // console.log("self.deliveryType[0] ===> " + data.list[0].deliveryType);
                         }
                     });
                 },
@@ -624,7 +618,7 @@
                         data: param,
                         success: function (data) {
                             self.cartList = data.list;
-                            console.log(data);
+                            // console.log(data);
                             self.fnGroupCartList(self.cartList);
                         },
                         error: function (xhr, status, error) {
@@ -637,7 +631,7 @@
                     const grouped = {};
                     if (!Array.isArray(list) || list.length === 0) {
                         this.groupedCartList = [];
-                        console.log("장바구니 목록이 비어 있거나 올바르지 않아 그룹화하지 않습니다.");
+                        // console.log("장바구니 목록이 비어 있거나 올바르지 않아 그룹화하지 않습니다.");
                         return;
                     }
                     list.forEach(item => {
@@ -699,7 +693,7 @@
 
                     }
                     this.groupedCartList = this.groupedCartList.slice().reverse();
-                    console.log("그룹화된 장바구니 ===>", this.groupedCartList);
+                    // console.log("그룹화된 장바구니 ===>", this.groupedCartList);
                 },
 
                 //결제 성공까지 했을 때 필요 없어진 장바구니 목록을 지우는 함수
@@ -715,8 +709,8 @@
                         type: "POST",
                         data: param,
                         success: function (data) {
-                            console.log("장바구니 비우기");// 테스트용
-                            console.log(data);// 테스트용
+                            // console.log("장바구니 비우기");// 테스트용
+                            // console.log(data);// 테스트용
                         }
                     });
                 },
@@ -816,7 +810,7 @@
                       } , function (rsp) { // callback
                           if (rsp.success) {
                             // 결제 성공 시
-                            console.log(rsp);
+                            // console.log(rsp);
                             
                             // 실제 구현용 여기부터
                             if(self.orderId.length > 0){
@@ -1014,12 +1008,12 @@
                     }));
 
                     self.groupedOrdersList = self.groupedOrdersList.slice().reverse();
-                    console.log("최종 주문 목록:", self.groupedOrdersList);
+                    // console.log("최종 주문 목록:", self.groupedOrdersList);
                     
                     self.kind = self.groupedOrdersList.length;
                     for(let i=0; i<self.groupedOrdersList.length; i++){
                         self.paymentPrice += self.groupedOrdersList[i].totalPrice;
-                        console.log("self.groupedOrdersList[i].totalPrice:" + self.groupedOrdersList[i].totalPrice);
+                        // console.log("self.groupedOrdersList[i].totalPrice:" + self.groupedOrdersList[i].totalPrice);
                     }
                 },
 
@@ -1059,46 +1053,6 @@
                     if (this.datePicker) {
                         this.datePicker.open();
                     }
-                },
-
-                //판매자가 지정한 날짜 비활성화 기능
-                disableDateInfo() {
-                    let self = this;
-                    $.ajax({
-                        url: "/product/disableDateInfo.dox",
-                        dataType: "json",
-                        type: "POST",
-                        data: { proNo: self.proNo },
-                        success: function (data) {
-                            // 객체 배열 → 날짜 문자열 배열로 변환
-                            self.disabledDates = Array.isArray(data.list) ?
-                                data.list.map(item => item.disabledDate) : [];
-
-                            // console.log("disabledDates:", self.disabledDates);
-
-                            // Flatpickr 초기화 또는 기존 인스턴스에 적용
-                            if (self.datePicker) {
-                                self.datePicker.set('disable', self.disabledDates);
-                            } else {
-                                self.initFlatpickr();
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            console.error("disableDateInfo AJAX 에러:", error);
-                            self.disabledDates = [];
-                            if (self.datePicker) {
-                                self.datePicker.set('disable', self.disabledDates);
-                            } else {
-                                self.initFlatpickr();
-                            }
-                        }
-                    });
-                },
-
-                // 천 단위 콤마 찍기
-                formatNumber: function (value) {
-                    if (value === undefined || value === null) return '0';
-                    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 },
 
                 // ✅ 판매처별 소계 계산 함수 추가
@@ -1158,7 +1112,7 @@
 
                 //주문번호를 장바구니에서 받지 않은 경우
                 if(orderId && orderId.length > 0) {
-                    console.log("orderId 값이 존재하며 orderId 값은 => " + self.orderId);
+                    // console.log("orderId 값이 존재하며 orderId 값은 => " + self.orderId);
                     self.orderIdList.push(orderId);
                 } 
                 
@@ -1171,7 +1125,7 @@
                     self.selectItem = JSON.parse(str2);
                 }
 
-                console.log("최종적으로 사용할 orderIdList 값은 => " + self.orderIdList);
+                // console.log("최종적으로 사용할 orderIdList 값은 => " + self.orderIdList);
                 self.fnOrderList(); //주문 목록 출력
                 self.fnCart(); // 장바구니 목록 가져오기
 
